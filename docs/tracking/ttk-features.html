@@ -1,0 +1,181 @@
+<html>
+
+<head>
+
+<title>Toolkit Demo Bugs</title>
+
+<style type="text/css">
+<!--
+body { 
+  background-color: #eeeeff;
+  font-size: 12pt;
+  width: 600pt;
+}
+ol { 
+  padding-left: 20pt;
+}
+.header { 
+  font-weight: bold;
+  padding-top: 20pt;
+  padding-bottom: 10pt;
+}
+blockquote { 
+  background-color: white;
+  margin: 0pt;
+  padding: 10pt;
+  padding-bottom: 5pt;
+  border: 1pt solid #666666;
+}  
+-->
+</style>
+
+</head>
+
+
+<body>
+
+<h1>Toolkit Requested Features</h1>
+
+
+<ol>
+
+
+<li class="header">Code to add DCT does not work</li>
+
+<blockquote>
+
+Reported: 10/27/07<br>
+Status: mostly fixed<br><br>
+
+This occurs accros the board. At the least, the default should be to get the current date. <br><br>
+
+10/30/07: this is now mostly fixed:
+<ul>
+<li>The DCT is extracted for TimeBank and the ATEE data. For rte3 it
+uses the default, which is to set the DCT to the current date. For
+user input (which should use the simple-xml document type) the dct is
+also set to the current date.
+<li>The DCT is handed to GUTime, which uses it to compute the value of
+timexes like today, tomorrow and this week. I have seen cases where
+today is correctly resolved to the current data ("he looked at the
+procession today") as well as cases where today is resolved to
+PRESENT_REF ("he looked at the game today"). In the latter case there
+is a temporal function.
+<li>The DCT is also handed over to Blinker, but the Blinker rules that
+link events to the DCT are not yet implemented.
+</ul>
+
+11/01/07: 
+<ul>
+<li>But note that at some point we need to get the DCT into the
+picture again. It now lives as a variable in the document model and
+not in the text itself. So what is displayed in the views does not
+have the DCT, not does it enter in the Tango TBox because the DCT is
+never tagged with a TIMEX3 tag.
+</ul>
+
+</blockquote>
+
+
+
+<li class="header"> John leaves today</li>
+
+<blockquote>
+
+Reported: 10/29/07<br>
+Status: fixed<br><br>
+
+This now gets a link BEFORE(leaves, today). This relation comes from
+the classifier, it should be overwritten by a relation from
+Blinker. Note that "John looked at the game today" does work.<br><br>
+
+10/30/07:
+<ul>
+<li>Blinker now has a rule that fires for the pattern "[VERBCHUNK]
+[CHUNK-WITH_TIMEX]" where the chunk with timex cannot include an EVENT
+(in which case it the timex would be linked to the event in the same
+chunk, cf "John leaves the 1997 war")> This also works for "John
+leaves the house today".
+<li>The rule is smart enough to know that it should not create a link
+for "John does not leave today"
+</ul>
+
+<br>
+
+10/31/07:
+<ul>
+<li>The rule was intentionally made more stupid, it does create a link
+for "John does not leave today". See explanation immediately below.
+</ul>
+
+</blockquote>
+
+
+
+<li class="header">John does not leave today</li>
+
+<blockquote>
+
+Reported: 10/29/07<br>
+Status: fixed<br><br>
+
+Gets the relation INCLUDES(leave, today). A fix for the previous bug
+should be sophisticated enough to not assign INCLUDES(today, leave),
+but this can only be done by assigning the negation of a reltype,
+which we cannot do.<br><br>
+
+10/31/07:
+<ul>
+<li>It is okay to have an INCLUDES relation here, the idea being that
+there is an INCLUDES relation but that it is coloured by a negative
+polarity, similar to the way some tlinks are coloured by
+intentionality.
+</ul>
+
+
+</blockquote>
+
+
+
+<li class="header">Timexes are not linked</li>
+
+<blockquote>
+
+Reported: 10/30/07<br>
+Status: fixed<br><br>
+
+The simple ordering rules for timexes have not yet been added to the toolkit.<br><br>
+
+10/30/07:<br>
+<ul>
+<li>Timex linking added to Blinker, but threw away all the IDENTITY
+results from the code, replacing it with a simple string match
+<li>Documents with many timexes will now be much more connected
+</ul>
+
+
+</blockquote>
+
+
+
+
+</ol>
+
+
+</body>
+</html>
+
+
+<!--
+
+<li class="header"></li>
+
+<blockquote>
+
+Reported: 10/31/07<br>
+Status: not fixed<br><br>
+
+
+</blockquote>
+
+-->

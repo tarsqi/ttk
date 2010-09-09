@@ -1,0 +1,57 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891102-0086 </DOCNO>
+<DD> = 891102 </DD>
+<AN> 891102-0086. </AN>
+<HL> Financing Business:
+@  Rogers Communications Inc. </HL>
+<DD> 11/02/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> RCI.B </CO>
+<TEXT><s><NG><lex pos="NNP">ROGERS</lex></NG> <lex pos="NPS">COMMUNICATIONS</lex> <NG><lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBZ">plans</lex></VG> <VG><lex pos="TO">to</lex> <lex pos="VB">raise</lex></VG> <lex pos="CD">175</lex> <lex pos="CD">million</lex> <lex pos="TO">to</lex> <NG><lex pos="CD">180</lex> <lex pos="CD">million</lex> <lex pos="JJ">Canadian</lex> <lex pos="NNS">dollars</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNP">US</lex></NG> <lex pos="$">$</lex> <lex pos="CD">148.9</lex> <lex pos="CD">million</lex> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">153.3</lex> <lex pos="CD">million</lex> <lex pos=")">)</lex> <lex pos="IN">through</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">private</lex> <lex pos="NN">placement</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">perpetual</lex> <lex pos="JJ">preferred</lex> <lex pos="NNS">shares</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="JJ">Perpetual</lex> <lex pos="JJ">preferred</lex> <lex pos="NNS">shares</lex> <lex pos="NNS">aren</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">t</lex></NG> <lex pos="JJ">retractable</lex> <lex pos="IN">by</lex> <NG><lex pos="DT">the</lex> <lex pos="NNS">holders</lex></NG> <lex pos=",">,</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Rogers</lex></NG> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">shares</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB">be</lex></VG> <lex pos="JJ">convertible</lex> <lex pos="IN">into</lex> <NG><lex pos="NNP">Class</lex> <lex pos="NNP">B</lex> <lex pos="NNS">shares</lex></NG> <lex pos=",">,</lex> <lex pos="CC">but</lex> <lex pos="IN">that</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBZ">has</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">option</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB">redeem</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">shares</lex></NG> <lex pos="IN">before</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">conversion</lex></NG> <VG><lex pos="VBZ">takes</lex></VG> <NG><lex pos="NN">place</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">A</lex> <lex pos="NN">spokesman</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Toronto</lex> <lex pos="NN">cable</lex> <lex pos="NN">television</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NNS">telecommunications</lex> <lex pos="NN">concern</lex></NG> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">coupon</lex> <lex pos="NN">rate</lex></NG> <VG><lex pos="VBZ">has</lex></VG> <NG><lex pos="NN">n</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">t</lex></NG> <lex pos="RB">yet</lex> <VG><lex pos="VBN">been</lex> <lex pos="VBN">fixed</lex></VG> <lex pos=",">,</lex> <lex pos="CC">but</lex> <VG><lex pos="MD">will</lex> <lex pos="RB">probably</lex> <lex pos="VB">be</lex> <lex pos="VBN">set</lex></VG> <lex pos="IN">at</lex> <lex pos="RB">around</lex> <NG><lex pos="CD">8</lex> <lex pos="NN">%</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="PP">He</lex></NG> <VG><lex pos="VBD">declined</lex></VG> <VG><lex pos="TO">to</lex> <lex pos="VB">discuss</lex></VG> <NG><lex pos="JJ">other</lex> <lex pos="NNS">terms</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">issue</lex></NG> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

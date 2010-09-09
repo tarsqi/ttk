@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<DOC>
+
+
+<DOCNO> WSJ891102<lex>-</lex>0032 </DOCNO>
+  891102 
+ 891102<lex>-</lex>0032<lex>.</lex> 
+<HL> Business Brief <lex pos=":">--</lex> Dunkin<lex>'</lex> Donuts Inc.<lex>:</lex>
+@  DD Acquisition Extended
+@  Its <lex pos="SYM" currency="WHOLE">$</lex>45<lex>-</lex>a-Share Takeover Bid </HL>
+ 11/02/89 
+ WALL STREET JOURNAL <lex pos="(">(</lex>J<lex pos=")">)</lex> 
+ UNI<lex>.</lex>A DUNK T.CAO 
+ TENDER OFFERS<lex>,</lex> MERGERS<lex>,</lex> ACQUISITIONS <lex pos="(">(</lex>TNM<lex pos=")">)</lex>
+RESTAURANTS<lex>,</lex> SUPERMARKETS AND DRUGSTORES <lex pos="(">(</lex>RFD<lex pos=")">)</lex> 
+<TEXT>
+   <s><NG><HEAD><lex pos="NNP">DD</lex> <lex pos="NNP">Acquisition</lex> <lex pos="NNP">Corp.</lex></HEAD></NG><lex pos=",">,</lex> <NG><lex pos="DT">a</lex> <HEAD><lex pos="NN">partnership</lex></HEAD></NG> <lex pos="IN">of</lex> <NGP><POS><NG><HEAD><lex pos="NNP">Unicorp</lex> <lex pos="NNP">Canada</lex> <lex pos="NNP">Corp.</lex></HEAD></NG><lex pos="POS">'s</lex></POS> <NG><HEAD><lex pos="NNP">Kingsbridge</lex> <lex pos="NNP">Capital</lex> <lex pos="NNP">Group</lex></HEAD></NG></NGP> <lex pos="CC">and</lex> <NG><HEAD><lex pos="NNP">Cara</lex> <lex pos="NNP">Operations</lex> <lex pos="NNP">Ltd.</lex></HEAD></NG><lex pos=",">,</lex> <VG-VBN><VNX><lex pos="VBN">extended</lex></VNX></VG-VBN> <lex pos="TO">to</lex> <NG><HEAD><lex pos="NNP">Nov.</lex></HEAD></NG> <lex pos="CD">20</lex> <POS><lex pos="PRP$">its</lex></POS> <lex pos="SYM" currency="WHOLE">$</lex><lex pos="CD">45</lex><lex pos=":">-</lex><NG><lex pos="JJ">a-share</lex> <HEAD><lex pos="NN">offer</lex></HEAD></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">all</lex> <HEAD><lex pos="NNP">Dunkin</lex></HEAD></NG><lex pos="''">'</lex> <NG><lex pos="NNP">Donuts</lex> <lex pos="NNP">Inc.</lex> <HEAD><lex pos="NNS">shares</lex></HEAD></NG> <lex pos="JJ">outstanding</lex><lex pos=".">.</lex></s> 
+
+   <s><NG><lex pos="DT">The</lex> <HEAD><lex pos="NN">offer</lex></HEAD></NG><lex pos=",">,</lex> <lex pos="WDT">which</lex> <VG><VX><lex pos="VBD">was</lex></VX></VG> <lex pos="JJ">due</lex> <VG-INF><INF><lex pos="TO">to</lex> <lex pos="VB">expire</lex></INF></VG-INF> <NG><HEAD><lex pos="NN">yesterday</lex></HEAD></NG><lex pos=",">,</lex> <NG><HEAD><lex pos="NNS">is</lex></HEAD></NG> <lex pos="JJ">conditional</lex> <lex pos="IN">on</lex> <lex pos="CD">50.1</lex><NG><HEAD><lex pos="NN">%</lex></HEAD></NG> <lex pos="IN">of</lex> <NG><HEAD><lex pos="NNP">Dunkin</lex></HEAD></NG><lex pos="''">'</lex> <NG><lex pos="JJ">common</lex> <HEAD><lex pos="NNS">shares</lex></HEAD></NG><lex pos=",">,</lex> <lex pos="IN">on</lex> <NG><lex pos="DT">a</lex> <RX><lex pos="RB">fully</lex></RX> <AX-PRENOMINAL><lex pos="VBN">diluted</lex></AX-PRENOMINAL> <HEAD><lex pos="NN">basis</lex></HEAD></NG><lex pos=",">,</lex> <VG-VBG><VGX><lex pos="VBG">being</lex> <lex pos="VBN">tendered</lex></VGX></VG-VBG> <lex pos="CC">and</lex> <lex pos="IN">on</lex> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NN">withdrawal</lex></HEAD></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NN">company</lex></HEAD></NG><lex pos="''">'s</lex> <NG><lex pos="NN">poison</lex> <lex pos="NN">pill</lex> <lex pos="NNS">rights</lex> <HEAD><lex pos="NN">plan</lex></HEAD></NG><lex pos=".">.</lex></s> 
+
+   <s><NG><HEAD><lex pos="NN">Acquisition</lex></HEAD></NG> <VG><VX><lex pos="VBZ">has</lex> <lex pos="VBN">launched</lex></VX></VG> <NG><lex pos="DT">a</lex> <HEAD><lex pos="NN">suit</lex></HEAD></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="NNP">Delaware</lex> <HEAD><lex pos="NN">court</lex></HEAD></NG> <VG-VBG><VGX><lex pos="VBG">seeking</lex></VGX></VG-VBG> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NN">withdrawal</lex></HEAD></NG> <lex pos="IN">of</lex> <NG><HEAD><lex pos="NNP">Dunkin</lex></HEAD></NG><lex pos="''">'s</lex> <NG><lex pos="NN">poison</lex> <lex pos="NN">pill</lex> <HEAD><lex pos="NNS">rights</lex></HEAD></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">employee</lex> <lex pos="NN">stock</lex> <lex pos="NN">ownership</lex> <HEAD><lex pos="NNS">plans</lex></HEAD></NG><lex pos=",">,</lex> <lex pos="WDT">which</lex> <NG><lex pos="PRP">it</lex></NG> <VG><VX><lex pos="VBZ">claims</lex></VX></VG> <VG><VX><lex pos="VBD">were</lex> <lex pos="VBN">put</lex></VX></VG> <NG><lex pos="DT">in</lex> <HEAD><lex pos="NN">place</lex></HEAD></NG> <VG-INF><INF><lex pos="TO">to</lex> <lex pos="VB">deter</lex></INF></VG-INF> <NG><HEAD><lex pos="NNS">bidders</lex></HEAD></NG><lex pos=".">.</lex></s> 
+<s><NG><HEAD><lex pos="NN">Acquisition</lex></HEAD></NG> <VG><VX><lex pos="VBD">said</lex></VX></VG> <lex pos="CD">2.2</lex> <lex pos="CD">million</lex> <NG><HEAD><lex pos="NNS">shares</lex></HEAD></NG><lex pos=",">,</lex> <lex pos="CC">or</lex> <lex pos="IN">about</lex> <lex pos="CD">38.5</lex><NG><HEAD><lex pos="NN">%</lex></HEAD></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NNS">shares</lex></HEAD></NG> <lex pos="JJ">outstanding</lex><lex pos=",">,</lex> <VG><VX><lex pos="VBP">have</lex> <lex pos="VBN">been</lex> <lex pos="VBN">tendered</lex></VX></VG> <lex pos="IN">under</lex> <NGP><POS><lex pos="PRP$">its</lex></POS> <NG><HEAD><lex pos="NN">offer</lex></HEAD></NG></NGP><lex pos=".">.</lex></s> 
+<s><NG><lex pos="DT">The</lex> <HEAD><lex pos="NNS">partners</lex></HEAD></NG> <VG><VX><lex pos="VBD">said</lex></VX></VG> <NG><lex pos="PRP">they</lex></NG> <VG><RX><lex pos="RB">already</lex></RX> <VX><lex pos="VBP">hold</lex></VX></VG> <lex pos="CD">15</lex><NG><HEAD><lex pos="NN">%</lex></HEAD></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">all</lex> <HEAD><lex pos="NNS">shares</lex></HEAD></NG> <lex pos="JJ">outstanding</lex><lex pos=".">.</lex></s> 
+
+   <s><NG><HEAD><lex pos="NNP">Dunkin</lex></HEAD></NG><lex pos="''">'</lex> <VG><VX><lex pos="VBZ">has</lex> <lex pos="VBN">set</lex></VX></VG> <NG><HEAD><lex pos="NNP">Nov.</lex></HEAD></NG> <lex pos="CD">10</lex> <lex pos="IN">as</lex> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NN">deadline</lex></HEAD></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NN">receipt</lex></HEAD></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">any</lex> <AX-PRENOMINAL><lex pos="VBG">competing</lex></AX-PRENOMINAL> <HEAD><lex pos="NNS">bids</lex></HEAD></NG><lex pos=".">.</lex></s> 
+<s><NG><HEAD><lex pos="NNP">DD</lex> <lex pos="NNP">Acquisition</lex></HEAD></NG> <VG><VX><lex pos="VBD">said</lex></VX></VG> <NG><lex pos="DT">the</lex> <HEAD><lex pos="NN">extension</lex></HEAD></NG> <VG><VX><lex pos="VBZ">is</lex></VX></VG> <VG-INF><INF><lex pos="TO">to</lex> <lex pos="VB">allow</lex></INF></VG-INF> <NG><lex pos="DT">this</lex> <HEAD><lex pos="NN">process</lex></HEAD></NG> <VG-INF><INF><lex pos="TO">to</lex> <lex pos="VB">be</lex> <lex pos="VBN">completed</lex></INF></VG-INF><lex pos=".">.</lex></s> 
+<s><NG><HEAD><lex pos="NNP">Dunkin</lex></HEAD></NG><lex pos="''">'</lex> <VG><VX><lex pos="VBZ">is</lex> <lex pos="VBN">based</lex></VX></VG> <lex pos="IN">in</lex> <NG><HEAD><lex pos="NNP">Randolph</lex></HEAD></NG><lex pos=",">,</lex> <NG><HEAD><lex pos="NNP">Mass.</lex> 
+<lex pos="NNP">Cara</lex></HEAD></NG><lex pos=",">,</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">food</lex> <HEAD><lex pos="NNS">services</lex></HEAD></NG> <VG><VX><lex pos="VBP">chain</lex></VX></VG> <NG><HEAD><lex pos="NN">operator</lex></HEAD></NG> <lex pos="CC">and</lex> <NG><HEAD><lex pos="NNP">Unicorp</lex></HEAD></NG><lex pos=",">,</lex> <NG><lex pos="DT">a</lex> <AX-PRENOMINAL><lex pos="VBG">holding</lex></AX-PRENOMINAL> <HEAD><lex pos="NN">company</lex></HEAD></NG><lex pos=",">,</lex> <VG><VX><lex pos="VBP">are</lex> <lex pos="VBN">based</lex></VX></VG> <NG><lex pos="DT">in</lex> <HEAD><lex pos="NNP">Toronto</lex></HEAD></NG><lex pos=".">.</lex></s> 
+
+</TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</DOC>

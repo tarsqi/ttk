@@ -1,0 +1,30 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891025-0157 </DOCNO>
+<DD> = 891025 </DD>
+<AN> 891025-0157. </AN>
+<HL> Advanced Medical Makes Purchase </HL>
+<DD> 10/25/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> AMA HENG </CO>
+<IN> TENDER OFFERS, MERGERS, ACQUISITIONS (TNM)
+MEDICAL AND BIOTECHNOLOGY (MTC) </IN>
+<DATELINE> SAN FRANCISCO  </DATELINE>
+<TEXT><s><NG><lex pos="NNP">Advanced</lex> <lex pos="NNP">Medical</lex></NG> <lex pos="NPS">Technologies</lex> <NG><lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD">purchased</lex></VG> <NG><lex pos="CD">93</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">unit</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Henley</lex> <lex pos="NNP">Group</lex> <lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Advanced</lex> <lex pos="NNP">Medical</lex></NG> <VG><lex pos="VBD">paid</lex></VG> <lex pos="$">$</lex> <lex pos="CD">106</lex> <lex pos="CD">million</lex> <lex pos="IN">in</lex> <NG><lex pos="NN">cash</lex></NG> <lex pos="IN">for</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN">share</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">unit</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Henley</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNP">Fisher</lex> <lex pos="NNP">Scientific</lex> <lex pos="NN">subsidiary</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">unit</lex></NG> <VG><lex pos="VBZ">makes</lex></VG> <NG><lex pos="JJ">intravenous</lex> <lex pos="NNS">pumps</lex></NG> <VG><lex pos="VBN">used</lex></VG> <lex pos="IN">by</lex> <NG><lex pos="NNS">hospitals</lex></NG> <lex pos="CC">and</lex> <VG><lex pos="VBD">had</lex></VG> <lex pos="JJR">more</lex> <lex pos="IN">than</lex> <lex pos="$">$</lex> <lex pos="CD">110</lex> <lex pos="CD">million</lex> <lex pos="IN">in</lex> <NG><lex pos="NNS">sales</lex> <lex pos="JJ">last</lex> <lex pos="NN">year</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBG">according</lex></VG> <lex pos="TO">to</lex> <NG><lex pos="NNP">Advanced</lex> <lex pos="NNP">Medical</lex></NG> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

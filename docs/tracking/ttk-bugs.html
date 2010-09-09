@@ -1,0 +1,158 @@
+<html>
+
+<head>
+
+<title>Toolkit Demo Bugs</title>
+
+<style type="text/css">
+<!--
+body { 
+  background-color: #eeeeff;
+  font-size: 12pt;
+  width: 600pt;
+}
+ol { 
+  padding-left: 20pt;
+}
+.header { 
+  font-weight: bold;
+  padding-top: 20pt;
+  padding-bottom: 10pt;
+}
+blockquote { 
+  background-color: white;
+  margin: 0pt;
+  padding: 10pt;
+  padding-bottom: 5pt;
+  border: 1pt solid #666666;
+}  
+-->
+</style>
+
+</head>
+
+
+<body>
+
+<h1>Toolkit Demo Bugs</h1>
+
+
+<ol>
+
+
+<li class="header">Conversion error on TimeBank-1-pre/ABC19980108.1830.0711</li>
+
+<blockquote>
+
+Reported: 10/29/07<br>
+Status: fixed for this document<br><br>
+
+When processing TimeBank-1-pre/ABC19980108.1830.0711, with document
+type timebank-preprocessed, the code that converts into the shallow
+tree throws an error. This error does not occur with
+TimeBank/ABC19980108.1830.0711.xml, it also does not occur with
+TimeBank-1-pre/ABC19980114.1830.0611<br><br>
+
+10/30/07:<br>
+<ul>
+<li>This was caused by an error in Evita, which takes a token "owns"
+and marks up the 's' as an event. There may to be some interplay with
+the VX tags or some of the other tags that go beyond the minimum set
+of NG and VG.
+<li>The document was replaced by one created with the toolkit
+preprocessor. But other documents with extra tags remain in the
+directory. Many of them seem to work, but the error was not truly
+fixed so other documents could croak.
+</ul>
+
+
+</blockquote>
+
+
+
+
+<li class="header">Preprocessor error on TimeBank/AP900815-0044.xml</li>
+
+<blockquote>
+
+Reported: 10/30/07<br>
+Status: fixed for this document<br><br>
+
+Seems like an exception in the unpacking code of the converter. This
+error does not occur on the other AP document.<br><br>
+
+10/30/07:
+<ul>
+<li>This was caused by stray XML tags in the document. The tokenizer
+leaves them glued on, the tagger creates items like
+"&lt;IN-MW>according/VBG to/TO &lt;/IN-MW>diplomatic/JJ" and the
+chunker introduces crossing tags:
+"&lt;VG>&lt;IN-MW>according/VBG&lt;/VG> to/TO
+&lt;/IN-MW>diplomatic/JJ". The formatConversor chokes on these.
+<li>This was fixed for this document by removing the offending tags
+when first creating the fragment.
+<li>Needs a more robust solution
+</ul>
+
+</blockquote>
+
+
+<li class="header">No event in "He'll sleep"</li>
+
+<blockquote>
+
+Reported: 10/30/07<br>
+Status: not fixed<br><br>
+
+This is a problem with the tagger, which tags 'll' and 'sleep' as
+nouns. All is fine with "He will sleep". What also works is "He'll
+vindicate us".
+
+</blockquote>
+
+
+
+<li class="header">ATEE document break in an early processing phase</li>
+
+<blockquote>
+
+Reported: 10/30/07<br>
+Status: fixed for these documents<br><br>
+
+This is similar to the problem with TimeBank/AP900815-0044.xml:
+unexpected XML tags do not mesh with the preprocessing
+modules. <br><br>
+
+10/30/07:<br>
+<ul>
+<li>Fixed by filtering out the Para tags
+<li>Need a better solution
+</ul>
+
+</blockquote>
+
+
+
+
+
+
+</ol>
+
+
+</body>
+</html>
+
+
+<!--
+
+<li class="header"></li>
+
+<blockquote>
+
+Reported: 10/31/07<br>
+Status: not fixed<br><br>
+
+
+</blockquote>
+
+-->

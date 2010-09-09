@@ -1,0 +1,136 @@
+<html>
+
+<head>
+
+<title>Toolkit Demo Bugs</title>
+
+<style type="text/css">
+<!--
+body { 
+  background-color: #eeeeff;
+  font-size: 12pt;
+  width: 600pt;
+}
+ol { 
+  padding-left: 20pt;
+}
+.header { 
+  font-weight: bold;
+  padding-top: 20pt;
+  padding-bottom: 10pt;
+}
+blockquote { 
+  background-color: white;
+  margin: 0pt;
+  padding: 10pt;
+  padding-bottom: 5pt;
+  border: 1pt solid #666666;
+}  
+-->
+</style>
+
+</head>
+
+
+<body>
+
+<h1>Toolkit Demo GUI Bugs</h1>
+
+
+<ol>
+
+
+<li class="header">Inconsistencies with pipeline selection</li>
+
+<blockquote>
+
+Reported: 10/29/07<br>
+Status: not fixed<br><br>
+
+When you select a non-standard pipeline, weird things can happen:
+<ul>
+<li> when all components are deselected, all components will be
+applied
+<li> there is no validation of the pipeline wrt to the source data
+<li> when loading data/in/simple-xml/in1.xml and selecting preprocessing
+and gutime, errors are thrown when the runPost script runs
+</ul>
+
+</blockquote>
+
+
+
+<li class="header">The GUI uses trap_errors=False by default</li>
+
+<blockquote>
+
+Reported: 10/30/07<br>
+Status: fixed<br><br>
+
+The default needs to be set to True to avoid showing too many errors
+during a demo.<br><br>
+
+10/30/07: changed the default to True in the gui code
+
+
+</blockquote>
+
+
+
+
+<li class="header">Automatic update of document type</li>
+
+<blockquote>
+
+Reported: 10/30/07<br>
+Status: not fixed<br><br>
+
+The document type should automatically upate when a file is read from
+ATEE, TimeBank, rte3 etcetera. 
+
+</blockquote>
+
+
+
+<li class="header">Table display all screwed up for some files</li>
+
+<blockquote>
+
+Reported: 10/31/07<br>
+Status: fixed<br><br>
+
+There seem to be missing tr tags in the tables you get from the View
+button in the Control Panel. The local links are fine, but the all
+links display is rotten. This happens for data/in/simple-xml/in1.xml.
+
+10/31/07:<br>
+<ul>
+<li>A prrint statement in create_html.pl seemed to have screwed up the tables
+</ul>
+
+
+</blockquote>
+
+
+
+
+</ol>
+
+
+</body>
+</html>
+
+
+<!--
+
+<li class="header"></li>
+
+<blockquote>
+
+Reported: 10/31/07<br>
+Status: not fixed<br><br>
+
+
+</blockquote>
+
+-->

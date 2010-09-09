@@ -1,0 +1,59 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891102-0023 </DOCNO>
+<DD> = 891102 </DD>
+<AN> 891102-0023. </AN>
+<HL> Business Brief -- RMS International Inc.:
+@  Financing Sources, Waivers
+@  On Debt Are Being Sought </HL>
+<DD> 11/02/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> RMS </CO>
+<IN> EARNINGS (ERN) </IN>
+<TEXT><s><NG><lex pos="NNP">RMS</lex> <lex pos="NNP">International</lex> <lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> <lex pos=",">,</lex> <NG><lex pos="NNP">Hasbrouk</lex> <lex pos="NNP">Heights</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">N.J.</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBG">facing</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">cash-flow</lex> <lex pos="NN">squeeze</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBZ">is</lex> <lex pos="VBG">seeking</lex></VG> <NG><lex pos="JJ">other</lex> <lex pos="NN">financing</lex> <lex pos="NNS">sources</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NNS">waivers</lex></NG> <lex pos="IN">from</lex> <NG><lex pos="NN">debenture</lex> <lex pos="NNS">holders</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos="IN">that</lex> <lex pos="IN">because</lex> <lex pos="IN">of</lex> <NG><lex pos="VBG">softening</lex> <lex pos="NNS">sales</lex></NG> <NG><lex pos="PP">it</lex></NG> <NG><lex pos="NNP">isn</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">t</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NN">compliance</lex></NG> <lex pos="IN">with</lex> <NG><lex pos="NNS">requirements</lex></NG> <lex pos="IN">that</lex> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VB">maintain</lex></VG> <lex pos="$">$</lex> <lex pos="CD">3</lex> <lex pos="CD">million</lex> <lex pos="IN">in</lex> <NG><lex pos="VBG">working</lex> <lex pos="NN">capital</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">RMS</lex></NG> <VG><lex pos="VBZ">distributes</lex></VG> <NG><lex pos="JJ">electronic</lex> <lex pos="NNS">devices</lex></NG> <lex pos="CC">and</lex> <VG><lex pos="VBZ">produces</lex></VG> <NG><lex pos="NN">power</lex> <lex pos="NNS">supplies</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="JJ">plastic</lex> <lex pos="NN">literature</lex> <lex pos="NNS">displays</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">RMS</lex></NG> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD">had</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="NN">loss</lex></NG> <lex pos="IN">of</lex> <lex pos="$">$</lex> <lex pos="CD">158</lex> <lex pos=",">,</lex> <lex pos="CD">666</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">10</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <TIMEX3 tid="t1" TYPE="DATE"><lex pos="JJ">third</lex> <lex pos="NN">quarter</lex></TIMEX3></NG> <lex pos=",">,</lex> <VG><lex pos="VBN">compared</lex></VG> <lex pos="IN">with</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">year-earlier</lex> <lex pos="NN">loss</lex></NG> <lex pos="IN">of</lex> <lex pos="$">$</lex> <lex pos="CD">26</lex> <lex pos=",">,</lex> <lex pos="CD">956</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">two</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNS">Sales</lex></NG> <VG><lex pos="VBD">rose</lex></VG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">3</lex> <lex pos="CD">million</lex> <lex pos="IN">from</lex> <lex pos="$">$</lex> <lex pos="CD">2.9</lex> <lex pos="CD">million</lex> <lex pos=".">.</lex> </s> <s><lex pos="IN">For</lex> <NG><TIMEX3 tid="t2" TYPE="DURATION" VAL="P9M"><lex pos="DT">the</lex> <lex pos="CD">nine</lex> <lex pos="NNS">months</lex></TIMEX3></NG> <lex pos=",">,</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBD">reported</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">net</lex> <lex pos="NN">loss</lex></NG> <lex pos="IN">of</lex> <lex pos="$">$</lex> <lex pos="CD">608</lex> <lex pos=",">,</lex> <lex pos="CD">413</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">39</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBN">compared</lex></VG> <lex pos="IN">with</lex> <NG><lex pos="JJ">year-earlier</lex> <lex pos="JJ">net</lex> <lex pos="NN">income</lex></NG> <lex pos="IN">of</lex> <lex pos="$">$</lex> <lex pos="CD">967</lex> <lex pos=",">,</lex> <lex pos="CD">809</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">62</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNS">Sales</lex></NG> <VG><lex pos="VBD">rose</lex></VG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">9.8</lex> <lex pos="CD">million</lex> <lex pos="IN">from</lex> <lex pos="$">$</lex> <lex pos="CD">8.9</lex> <lex pos="CD">million</lex> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

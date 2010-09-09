@@ -1,0 +1,7 @@
+<TARSQITEST>
+<INFO date='2008-12-08-15-55' />
+
+<TESTINGERROR module='evita'> __init__() takes at most 2 arguments (6 given) </TESTINGERROR>
+
+
+</TARSQITEST>

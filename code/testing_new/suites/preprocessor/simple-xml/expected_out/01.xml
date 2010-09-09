@@ -1,0 +1,5 @@
+<TEXT>
+<s><NG><lex lid = "l0" pos="NNP" lemma="Mr.">Mr.</lex> <lex lid = "l1" pos="NNP" lemma="Vinken">Vinken</lex> </NG><VG><lex lid = "l2" pos="VBD" lemma="get">got</lex> </VG><NG><lex lid = "l3" pos="DT" lemma="the">the</lex> <lex lid = "l4" pos="NN" lemma="flue">flue</lex> </NG><lex lid = "l5" pos="IN" lemma="on">on</lex> <NG><lex lid = "l6" pos="NNP" lemma="Nov.">Nov.</lex> </NG><lex lid = "l7" pos="JJ" lemma="29th">29th</lex> <lex lid = "l8" pos="." lemma=".">.</lex> </s>
+<s><NG><lex lid = "l9" pos="PP" lemma="he">He</lex> </NG><VG><lex lid = "l10" pos="VBZ" lemma="be">is</lex> </VG><lex lid = "l11" pos="RBR" lemma="well">better</lex> <lex lid = "l12" pos="RB" lemma="now">now</lex> <lex lid = "l13" pos="." lemma=".">.</lex> </s>
+</TEXT>
+

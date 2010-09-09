@@ -1,0 +1,107 @@
+
+BLINKER TEMPORAL RULES
+======================
+
+The temporal rules in Blinker are taken from the GutenLink rule
+set. GutenLink uses seven kinds of rules, each operating on particular
+pairs of objects:
+
+	1- applies to intra-sentential event-timex pairs
+	2- applies to intra-sentential event-timex pairs, but only if a
+		signal is present
+	3- applies to main events of consectutive sentences
+	4- applies to reporting events and the document creation time (DCT)
+	5- applies to intra-sentential event-event pairs where one of the
+		events is a reporting event
+	6- applies to intra-sentential event-event pairs 
+	7- applies to any pair of timexes where both timexes are marked as
+		document creation times or publication times
+
+Each rule defines three types of features:
+
+	1- features that are local to one of the 
+value pairs
+The rule types are explained in more detail below.
+
+
+Rule 1: EVENT - TIMEX
+=====================
+
+These rules apply to intra-sentential EVENT-TIMEX3 pairs. There may or
+may not be a signal between the event and the timex.
+
+
+Implied Features:
+
+ - arg1.tag = EVENT
+ - arg2.tag = TIMEX3
+ - signal = NO
+ - sameSentence = YES
+
+Other features:
+
+ - distance = -1 | 1	
+	1 if event is before timex, -1 otherwise
+ - relation = <TimemlRel>	
+	any timeml relation, always IS_INCLUDED in this case
+ - confidence = <float>
+	always 1 if rules have not been trained,
+	otherwise a number from 0 to 1
+
+
+
+
+
+==> Rule 2: EVENT - SIGNAL - TIMEX
+
+- intra-sentential EVENT-TIMEX3 pairs
+- SIGNAL occuring between EVENT and TIMEX3
+
+
+==> Rule 3: MAIN_EVENT - MAIN_EVENT
+
+Applies to:
+- Two EVENTS that are both the first event in consecutive sentences
+
+
+==> Rule 4: REPORTING_EVENT - DCT
+
+Add temporal links between reporting events and the DCT, assumes
+(incorrectly) that all reporting events are included in the DCT.
+
+Applies to:
+- Each reporting verb and document time
+
+
+==> Rule 5: REPORTING_EVENT - EVENT
+
+Looks at subordinated contexts with reporting verb.
+
+Applies to:
+- REPORTING and EVENT in same sentence
+- REPORTING occurs before EVENT?
+
+Features:
+	sentType=DIRECT or INDIRECT
+	arg1.class=REPORTING
+	arg2.class=STATE or other thing except REPORTING
+	arg1.tense='PAST', 'PRESENT', 'FUTURE','NONE'
+	arg2.tense=
+	arg1.aspect='PROGRESS', 'PERFECT', 'PERFECT', 'NONE'
+
+
+==> Rule 6: EVENT - EVENT
+
+Applies to:
+- two events in the same sentence.
+
+
+==> Rule 7: DCT - DCT
+
+Creates identity links between TIMEX3 tags that have CREATION_TIME
+or PUBLICATION_TIME as the value of functionInDocument.
+
+Applies to:
+- all TIMEX3 pairs with "PUBLICATION_TIME" or "CREATION_TIME" as a
+  value of functionInDocument. 
+                                                                  

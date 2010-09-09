@@ -1,0 +1,41 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891026-0014 </DOCNO>
+<DD> = 891026 </DD>
+<AN> 891026-0014. </AN>
+<HL> Dividend News:
+@  Avon Rent-a-Car amp Truck Corp. </HL>
+<DD> 10/26/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> AVON </CO>
+<IN> DIVIDENDS (DIV) </IN>
+<TEXT><s><NG><lex pos="NNP">AVON</lex> <lex pos="NNP">RENT-A-CAR</lex> <lex pos="NN">amp</lex> <lex pos="NNP">TRUCK</lex> <lex pos="NNP">Corp</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD">declared</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="NN">dividend</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="CD">one</lex> <lex pos="NN">warrant</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">each</lex> <lex pos="CD">three</lex> <lex pos="NNS">shares</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">common</lex> <lex pos="NN">stock</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="RB">Currently</lex> <lex pos=",">,</lex> <NG><lex pos="NNP">Avon</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBN">based</lex></VG> <lex pos="IN">in</lex> <NG><lex pos="NNP">Santa</lex> <lex pos="NNP">Monica</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Calif</lex></NG> <lex pos=".">.</lex> <lex pos=",">,</lex> <VG><lex pos="VBZ">has</lex></VG> <NG><lex pos="CD">3.3</lex> <lex pos="CD">million</lex> <lex pos="JJ">common</lex> <lex pos="NNS">shares</lex></NG> <lex pos="JJ">outstanding</lex> <lex pos=".">.</lex> </s> <s><lex pos="IN">About</lex> <NG><lex pos="CD">1.1</lex> <lex pos="CD">million</lex> <lex pos="NNP">Class</lex> <lex pos="NNP">C</lex> <lex pos="NNS">warrants</lex></NG> <VG><lex pos="VBD">were</lex> <lex pos="VBN">issued</lex></VG> <lex pos=",">,</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos=".">.</lex> </s> <s><lex pos="DT">Each</lex> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Class</lex> <lex pos="NNP">C</lex> <lex pos="NNS">warrants</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB">enable</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">holders</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB">purchase</lex></VG> <NG><lex pos="CD">one</lex> <lex pos="NN">share</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">common</lex> <lex pos="NN">stock</lex></NG> <lex pos="IN">at</lex> <lex pos="$">$</lex> <lex pos="CD">5.50</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NNS">warrants</lex></NG> <VG><lex pos="MD">may</lex> <lex pos="VB">be</lex> <lex pos="VBN">exercised</lex></VG> <lex pos="IN">until</lex> <NG><lex pos="CD">90</lex> <lex pos="NNS">days</lex></NG> <lex pos="IN">after</lex> <lex pos="PP$">their</lex> <NG><lex pos="NN">issue</lex> <lex pos="NN">date</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Avon</lex></NG> <lex pos="RB">also</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB">issue</lex></VG> <lex pos="DT">an</lex> <lex pos="JJ">additional</lex> <lex pos="CD">243</lex> <lex pos=",">,</lex> <lex pos="CD">677</lex> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Class</lex> <lex pos="NNP">C</lex> <lex pos="NNS">warrants</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="NNS">holders</lex></NG> <lex pos="IN">of</lex> <lex pos="PP$">its</lex> <NG><lex pos="NNP">Class</lex> <lex pos="NNP">A</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Class</lex> <lex pos="NNP">B</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="JJ">unclassified</lex> <lex pos="NNS">warrants</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NN">Issuance</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">those</lex> <lex pos="NNS">warrants</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB">be</lex></VG> <lex pos="IN">at</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">rate</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">one-third</lex> <lex pos="NN">warrant</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">each</lex> <lex pos="NN">warrant</lex></NG> <VG><lex pos="VBN">exercised</lex></VG> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

@@ -1,0 +1,79 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> APW19980227.0476 </DOCNO>
+<DOCTYPE SOURCE="newswire"> NEWS STORY </DOCTYPE>
+<DATE_TIME> 02/27/1998 08:02:00 </DATE_TIME>
+<HEADER>
+w2381 Cx1f wstm-
+u i Cx13  Cx11  BC-WorldCourt-Lockerbie 5thLd   02-27 0169
+</HEADER>
+<BODY>
+ BC-World Court-Lockerbie, 5th Ld 
+<HEADLINE>
+World Court declares jurisdiction in Lockerbie dispute
+</HEADLINE>
+UR Eds: RECASTS lead to clarify; ADDS detail of U.S. and British
+objections in 3rd graf. QL
+UR AP Photo staffing QL
+UR By MIKE CORDER QC
+UR Associated Press Writer QC
+
+<TEXT><s><NG><lex pos="DT">THE</lex> <lex pos="NNP">HAGUE</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Netherlands</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNP">AP</lex></NG> <lex pos=")">)</lex> <lex pos="SYM">_</lex> <NG><lex pos="DT">The</lex> <lex pos="NNP">World</lex> <lex pos="NNP">Court</lex> <TIMEX3 tid="t1" TYPE="DATE" VAL="19980227"><lex pos="NNP">Friday</lex></TIMEX3></NG> <VG><lex pos="VBD">rejected</lex></VG> <NG><lex pos="NNP">U.S.</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="JJ">British</lex> <lex pos="NNS">objections</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">Libyan</lex> <lex pos="NNP">World</lex> <lex pos="NNP">Court</lex> <lex pos="NN">case</lex></NG> <lex pos="WDT">that</lex> <VG><lex pos="VBZ">has</lex> <lex pos="VBN">blocked</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">trial</lex></NG> <lex pos="IN">of</lex> <lex pos="CD">two</lex> <lex pos="NPS">Libyans</lex> <VG><lex pos="VBN">suspected</lex></VG> <lex pos="IN">of</lex> <VG><lex pos="VBG">blowing</lex></VG> <lex pos="RP">up</lex> <NG><lex pos="DT">a</lex> <lex pos="NNP">Pan</lex> <lex pos="NNP">Am</lex> <lex pos="JJ">jumbo</lex> <lex pos="NN">jet</lex></NG> <lex pos="IN">over</lex> <NG><lex pos="NNP">Scotland</lex></NG> <lex pos="IN">in</lex> <TIMEX3 tid="t2" TYPE="DATE" VAL="1988"><lex pos="CD">1988</lex></TIMEX3> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Libya</lex></NG> <lex pos=",">,</lex> <lex pos="WDT">which</lex> <VG><lex pos="VBD">brought</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">case</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">United</lex></NG> <lex pos="NPS">Nations</lex> <lex pos="POS">'</lex> <NG><lex pos="JJS">highest</lex> <lex pos="JJ">judicial</lex> <lex pos="NN">body</lex></NG> <lex pos="IN">in</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN">dispute</lex></NG> <lex pos="IN">with</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">United</lex></NG> <lex pos="NPS">States</lex> <lex pos="CC">and</lex> <NG><lex pos="NNP">Britain</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBD">hailed</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">ruling</lex></NG> <lex pos="CC">and</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="MD">would</lex> <lex pos="VB">press</lex></VG> <lex pos="RB">anew</lex> <lex pos="IN">for</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">trial</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">third</lex> <lex pos="JJ">neutral</lex> <lex pos="NN">country</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">Both</lex> <lex pos="NNP">U.S.</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NNP">British</lex> <lex pos="NNS">officials</lex></NG> <VG><lex pos="VBD">filed</lex></VG> <NG><lex pos="NNS">objections</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">court</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="JJ">s</lex> <lex pos="NN">jurisdiction</lex></NG> <lex pos="IN">in</lex> <TIMEX3 tid="t3" TYPE="DATE" VAL="1995"><lex pos="CD">1995</lex></TIMEX3> <lex pos=",">,</lex> <NG><lex pos="VBG">claiming</lex> <lex pos="NNP">Security</lex> <lex pos="NNP">Council</lex> <lex pos="NNS">resolutions</lex></NG> <VG><lex pos="VBN">imposed</lex></VG> <lex pos="IN">on</lex> <NG><lex pos="NNP">Lybia</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB">force</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">suspects</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">extradition</lex></NG> <VG><lex pos="VBD">overruled</lex></VG> <NG><lex pos="DT">a</lex> <TIMEX3 tid="t4" TYPE="DATE" VAL="1971"><lex pos="CD">1971</lex></TIMEX3> <lex pos="NN">Convention</lex></NG> <lex pos="WDT">which</lex> <VG><lex pos="VBZ">gives</lex></VG> <NG><lex pos="NNP">Libya</lex></NG> <NG><lex pos="DT">the</lex> <lex pos="NN">right</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB">try</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">men</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">decision</lex></NG> <lex pos=",">,</lex> <NG><lex pos="JJ">3rd</lex> <lex pos="NNP">graf</lex> <lex pos="NNS">pvs</lex></NG> <lex pos=".">.</lex> </s> </TEXT>
+(PROFILE
+(WS SL:BC-World Court-Lockerbie, 5th Ld; CT:i;
+(REG:EURO;)
+(REG:BRIT;)
+(REG:SCAN;)
+(REG:ENGL;)
+(LANG:ENGLISH;))
+)
+</BODY>
+<TRAILER>
+AP-NY-02-27-98 0802EST
+</TRAILER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

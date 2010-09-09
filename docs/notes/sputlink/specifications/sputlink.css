@@ -1,0 +1,49 @@
+.author { 
+          font-size: 14pt;
+          margin-bottom: 30pt;
+}
+
+.code { 
+     font-size: 12pt;
+     line-height: 14pt;
+     font-family: courier;
+}
+
+body { 
+       font-size: 12pt; 
+       line-height: 14pt;
+       background-color: white;
+}
+
+pre { 
+      font-size: 12pt; 
+      line-height: 16pt;
+}
+
+
+p { 
+    font-size: 12pt; 
+    line-height: 14pt;
+}
+
+h2 { 
+     margin-top: 30pt;
+}
+
+h3 { 
+     margin-top: 20pt;
+}
+
+ex { 
+     font-size: 12pt;
+     line-height: 14pt;
+     font-family: courier;
+}
+
+dd { 
+     margin-bottom: 10pt; 
+}
+
+sub { 
+     font-size: 8pt;
+}

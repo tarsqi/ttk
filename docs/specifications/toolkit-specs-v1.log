@@ -1,0 +1,203 @@
+This is pdfeTeX, Version 3.141592-1.11a-2.1 (Web2C 7.5.2) (format=pdflatex 2003.8.12)  10 APR 2007 15:01
+entering extended mode
+\write18 enabled.
+**toolkit-specs-v1.tex
+(./toolkit-specs-v1.tex{/usr/local/teTeX/share/texmf.local/pdftex/config/pdftex
+.cfg}
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/base/size11.clo
+File: size11.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/config/graphics.cfg
+File: graphics.cfg 2001/08/31 v1.1 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 80.
+
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/graphics/pdftex.def
+File: pdftex.def 2002/06/19 v0.03k graphics/color for pdftex
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2002/01/22 v2.2d
+
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2001/10/25 v2.2f
+\@emptytoks=\toks15
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 132.
+))
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/oberdiek/epstopdf.sty
+Package: epstopdf 2001/02/04 v1.1 Conversion with epstopdf on the fly (HO)
+)
+(./toolkit-specs-v1.aux)
+\openout1 = `toolkit-specs-v1.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+
+(/usr/local/teTeX/share/texmf.tetex/tex/context/base/supp-pdf.tex
+(/usr/local/teTeX/share/texmf.tetex/tex/context/base/supp-mis.tex
+loading : Context Support Macros / Missing
+\protectiondepth=\count88
+\scratchcounter=\count89
+\scratchtoks=\toks16
+\scratchdimen=\dimen105
+\scratchskip=\skip43
+\scratchmuskip=\muskip10
+\scratchbox=\box26
+\scratchread=\read1
+\scratchwrite=\write3
+\zeropoint=\dimen106
+\minusone=\count90
+\thousandpoint=\dimen107
+\emptytoks=\toks17
+\nextbox=\box27
+\nextdepth=\dimen108
+\everyline=\toks18
+\!!counta=\count91
+\!!countb=\count92
+\recursecounter=\count93
+)
+loading : Context Support Macros / PDF
+\nofMPsegments=\count94
+\nofMParguments=\count95
+\everyMPtoPDFconversion=\toks19
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 24.
+ (/usr/local/teTeX/share/texmf.tetex/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 24.
+
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 41.
+
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 41.
+ [1
+
+{/usr/local/teTeX/share/texmf.tetex/dvips/config/pdftex.map}]
+<images/architecture1.pdf, id=26, 538.007pt x 95.35304pt>
+File: images/architecture1.pdf Graphic file (type pdf)
+
+<use images/architecture1.pdf>
+<images/architecture2.pdf, id=27, 447.6695pt x 266.99449pt>
+File: images/architecture2.pdf Graphic file (type pdf)
+
+<use images/architecture2.pdf> [2 <./images/architecture1.pdf>] [3 <./images/ar
+chitecture2.pdf>] [4]
+<images/architecture3.pdf, id=63, 483.8045pt x 248.92699pt>
+File: images/architecture3.pdf Graphic file (type pdf)
+
+<use images/architecture3.pdf> [5 <./images/architecture3.pdf>] [6] [7]
+[8] <images/doc_resource1.pdf, id=90, 772.8554pt x 34.1273pt>
+File: images/doc_resource1.pdf Graphic file (type pdf)
+
+<use images/doc_resource1.pdf>
+Overfull \hbox (18.61513pt too wide) in paragraph at lines 273--274
+[][] 
+ []
+
+<images/doc_resource2.pdf, id=91, 212.79198pt x 122.45448pt>
+File: images/doc_resource2.pdf Graphic file (type pdf)
+
+<use images/doc_resource2.pdf>
+<images/doc_resource3.pdf, id=92, 754.7879pt x 33.12355pt>
+File: images/doc_resource3.pdf Graphic file (type pdf)
+
+<use images/doc_resource3.pdf>
+Overfull \hbox (18.61513pt too wide) in paragraph at lines 285--286
+[][] 
+ []
+
+[9 <./images/doc_resource1.pdf> <./images/doc_resource2.pdf> <./images/doc_reso
+urce3.pdf>] [10] <images/closure1.png, id=132, 998.73125pt x 585.18625pt>
+File: images/closure1.png Graphic file (type png)
+
+<use images/closure1.png>
+<images/closure2.png, id=133, 998.73125pt x 585.18625pt>
+File: images/closure2.png Graphic file (type png)
+
+<use images/closure2.png>
+<images/closure3.png, id=134, 434.62375pt x 396.48125pt>
+File: images/closure3.png Graphic file (type png)
+
+<use images/closure3.png> [11 <./images/closure1.png> <./images/closure2.png> <
+./images/closure3.png>] [12] (./toolkit-specs-v1.aux) ) 
+Here is how much of TeX's memory you used:
+ 1269 strings out of 95314
+ 16233 string characters out of 1187311
+ 60417 words of memory out of 1000001
+ 4341 multiletter control sequences out of 10000+50000
+ 12176 words of font info for 46 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 25i,6n,24p,1114b,303s stack positions out of 1500i,500n,5000p,200000b,5000s
+ 140 PDF objects out of 300000
+ 0 named destinations out of 131072
+ 46 words of extra memory for PDF output out of 65536
+{/usr/local/teTeX/share/
+texmf.tetex/dvips/tetex/f7b6d320.enc}</usr/local/teTeX/share/texmf.tetex/fonts/
+type1/bluesky/cm/cmr8.pfb></usr/local/teTeX/share/texmf.tetex/fonts/type1/blues
+ky/cm/cmbx10.pfb>{/usr/local/teTeX/share/texmf.tetex/dvips/tetex/aae443f0.enc}<
+/usr/local/teTeX/share/texmf.tetex/fonts/type1/bluesky/cm/cmmi10.pfb>{/usr/loca
+l/teTeX/share/texmf.tetex/dvips/tetex/09fbbfac.enc}</usr/local/teTeX/share/texm
+f.tetex/fonts/type1/bluesky/cm/cmtt10.pfb>{/usr/local/teTeX/share/texmf.tetex/d
+vips/tetex/bbad153f.enc}</usr/local/teTeX/share/texmf.tetex/fonts/type1/bluesky
+/cm/cmsy10.pfb>{/usr/local/teTeX/share/texmf.tetex/dvips/tetex/74afc74c.enc}</u
+sr/local/teTeX/share/texmf.tetex/fonts/type1/bluesky/cm/cmti10.pfb></usr/local/
+teTeX/share/texmf.tetex/fonts/type1/bluesky/cm/cmbx12.pfb>{/usr/local/teTeX/sha
+re/texmf.tetex/dvips/tetex/0ef0afca.enc}</usr/local/teTeX/share/texmf.tetex/fon
+ts/type1/bluesky/cm/cmcsc10.pfb></usr/local/teTeX/share/texmf.tetex/fonts/type1
+/bluesky/cm/cmr10.pfb></usr/local/teTeX/share/texmf.tetex/fonts/type1/bluesky/c
+m/cmr12.pfb></usr/local/teTeX/share/texmf.tetex/fonts/type1/bluesky/cm/cmr17.pf
+b>
+Output written on toolkit-specs-v1.pdf (12 pages, 274157 bytes).

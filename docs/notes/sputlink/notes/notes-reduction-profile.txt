@@ -1,0 +1,39 @@
+Thu Feb  7 15:58:10 2008    profile-reduction.txt
+
+         14122 function calls in 0.160 CPU seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.160    0.160 profile:0(propagator.reduce_graph())
+        1    0.000    0.000    0.160    0.160 <string>:1(?)
+        1    0.000    0.000    0.160    0.160 main.py:142(reduce_graph)
+        1    0.000    0.000    0.160    0.160 graph.py:108(reduce)
+        4    0.060    0.015    0.110    0.027 graph.py:317(pp)
+        1    0.000    0.000    0.050    0.050 graph.py:292(_remove_derivable_relations)
+      282    0.000    0.000    0.030    0.000 objects.py:110(is_derivable)
+     5534    0.030    0.000    0.030    0.000 objects.py:75(get_relset)
+     2916    0.020    0.000    0.020    0.000 mappings.py:121(abbreviate_convex_relation)
+        4    0.010    0.003    0.010    0.003 graph.py:266(get_edges)
+      364    0.010    0.000    0.010    0.000 objects.py:96(remove_constraint)
+     1206    0.010    0.000    0.010    0.000 utils.py:3(intersect_relations)
+      364    0.010    0.000    0.010    0.000 utils.py:36(compare_id)
+     1412    0.010    0.000    0.010    0.000 utils.py:85(compose_rels)
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        4    0.060    0.015    0.110    0.027 graph.py:317(pp)
+     5534    0.030    0.000    0.030    0.000 objects.py:75(get_relset)
+     2916    0.020    0.000    0.020    0.000 mappings.py:121(abbreviate_convex_relation)
+        4    0.010    0.003    0.010    0.003 graph.py:266(get_edges)
+      364    0.010    0.000    0.010    0.000 objects.py:96(remove_constraint)
+     1206    0.010    0.000    0.010    0.000 utils.py:3(intersect_relations)
+      364    0.010    0.000    0.010    0.000 utils.py:36(compare_id)
+     1412    0.010    0.000    0.010    0.000 utils.py:85(compose_rels)
+      282    0.000    0.000    0.030    0.000 objects.py:110(is_derivable)
+        1    0.000    0.000    0.160    0.160 profile:0(propagator.reduce_graph())
+        1    0.000    0.000    0.160    0.160 <string>:1(?)
+
+
+

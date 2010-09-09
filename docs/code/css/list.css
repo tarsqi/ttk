@@ -1,0 +1,33 @@
+body 
+{
+  font-size: 14pt;
+  background-color: #eeeeff;
+}
+
+h3 
+{ 
+  font-size: 20pt;
+  background-color: #ffffcc;
+  padding: 5pt;
+  padding-left: 10pt;
+  margin-top: 5pt;
+  margin-bottom: 0pt;
+  border-color: #cccccc;
+  border-style: solid;
+  border: solid thin #999999;
+}
+
+ul
+{
+  background-color: #FFFFFF;
+  padding: 10pt;
+  padding-left: 20pt;
+  border-color: #cccccc;
+  border-style: solid;
+  border: solid thin #999999;
+}
+
+li
+{  
+  padding: 1pt;
+}

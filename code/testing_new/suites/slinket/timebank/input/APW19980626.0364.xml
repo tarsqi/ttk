@@ -1,0 +1,85 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> APW19980626.0364 </DOCNO>
+<DOCTYPE SOURCE="newswire"> NEWS STORY </DOCTYPE>
+<DATE_TIME> 06/26/1998 07:07:00 </DATE_TIME>
+<HEADER>
+w2640 Cx1f wstm-
+r i Cx13  Cx11  BC-Germany-RightistsFine     06-26 0198
+</HEADER>
+<BODY>
+ BC-Germany-Rightists Fined 
+<HEADLINE>
+German far-right party fined for violating donor laws
+</HEADLINE>
+
+<TEXT><s><NG><lex pos="NNP">BONN</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Germany</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNP">AP</lex></NG> <lex pos=")">)</lex> <lex pos="SYM">_</lex> <NG><lex pos="DT">A</lex> <lex pos="JJ">phony</lex> <lex pos="NN">address</lex></NG> <VG><lex pos="VBN"><EVENT eid="e1" class="OCCURRENCE">listed</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">on</lex> <NG><lex pos="NN">disclosure</lex> <lex pos="NNS">forms</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">French</lex> <lex pos="NN">donor</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB"><EVENT eid="e2" class="OCCURRENCE">cost</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="VERB" eiid="ei2" tense="FUTURE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="JJ">far-right</lex> <lex pos="JJ">German</lex> <lex pos="NNS">People</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NN">Union</lex></NG> <lex pos="IN">about</lex> <lex pos="CD">549</lex> <lex pos=",">,</lex> <NG><lex pos="CD">000</lex> <lex pos="NNS">marks</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNS">dlrs</lex></NG> <lex pos="CD">305</lex> <lex pos=",">,</lex> <lex pos="CD">000</lex> <lex pos=")">)</lex> <lex pos=",">,</lex> <NG><lex pos="NN">parliament</lex></NG> <VG><lex pos="VBD"><EVENT eid="e3" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><TIMEX3 tid="t1" TYPE="DATE" VAL="19980626"><lex pos="NNP">Friday</lex></TIMEX3></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="JJ">Parliamentary</lex> <lex pos="NN">president</lex> <lex pos="NNP">Rita</lex> <lex pos="NNP">Suessmuth</lex></NG> <VG><lex pos="VBD"><EVENT eid="e4" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="VERB" eiid="ei4" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">People</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNP">Union</lex></NG> <lex pos="RB">correctly</lex> <VG><lex pos="VBD"><EVENT eid="e5" class="OCCURRENCE">listed</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNP">Jacques</lex> <lex pos="NNP">de</lex> <lex pos="NNP">Mathan</lex></NG> <lex pos="IN">as</lex> <VG><lex pos="VBG">having</lex> <lex pos="VBN"><EVENT eid="e6" class="OCCURRENCE">donated</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PRESPART" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <lex pos="IN">about</lex> <lex pos="CD">274</lex> <lex pos=",">,</lex> <NG><lex pos="CD">500</lex> <lex pos="NNS">marks</lex></NG> <lex pos="IN">in</lex> <TIMEX3 tid="t2" TYPE="DATE" VAL="1995"><lex pos="CD">1995</lex></TIMEX3> <lex pos=",">,</lex> <lex pos="CC">but</lex> <VG><lex pos="VBD"><EVENT eid="e7" class="OCCURRENCE">gave</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">false</lex> <lex pos="NN">address</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="PP">him</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="JJ">German</lex> <lex pos="NN">law</lex></NG> <VG><lex pos="VBZ"><EVENT eid="e8" class="OCCURRENCE">requires</EVENT></lex><MAKEINSTANCE eventID="e8" polarity="POS" pos="VERB" eiid="ei8" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNS">parties</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e9" class="OCCURRENCE">publish</EVENT></lex><MAKEINSTANCE eventID="e9" polarity="POS" pos="VERB" eiid="ei9" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">name</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">address</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NN">anyone</lex></NG> <lex pos="WP">who</lex> <VG><lex pos="VBZ"><EVENT eid="e10" class="OCCURRENCE">donates</EVENT></lex><MAKEINSTANCE eventID="e10" polarity="POS" pos="VERB" eiid="ei10" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="JJR">more</lex> <lex pos="IN">than</lex> <lex pos="CD">20</lex> <lex pos=",">,</lex> <NG><lex pos="CD">000</lex> <lex pos="NNS">marks</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNS">dlrs</lex></NG> <lex pos="CD">11</lex> <lex pos=",">,</lex> <lex pos="CD">000</lex> <lex pos=")">)</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">anti-foreigner</lex> <lex pos="NN">party</lex></NG> <VG><lex pos="VBD"><EVENT eid="e11" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e11" polarity="POS" pos="VERB" eiid="ei11" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD"><EVENT eid="e12" class="I_STATE">wanted</EVENT></lex><MAKEINSTANCE eventID="e12" polarity="POS" pos="VERB" eiid="ei12" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e13" class="OCCURRENCE">protect</EVENT></lex><MAKEINSTANCE eventID="e13" polarity="POS" pos="VERB" eiid="ei13" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">donor</lex></NG> <lex pos="IN">from</lex> <NG><lex pos="JJ">possible</lex> <lex pos="NNS"><EVENT eid="e14" class="OCCURRENCE">attacks</EVENT></lex><MAKEINSTANCE eventID="e14" polarity="POS" pos="NOUN" eiid="ei14" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Suessmuth</lex></NG> <VG><lex pos="VBD"><EVENT eid="e15" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e15" polarity="POS" pos="VERB" eiid="ei15" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos=",">,</lex> <lex pos="RB">however</lex> <lex pos=",">,</lex> <lex pos="IN">that</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">law</lex></NG> <VG><lex pos="VBZ">does</lex> <lex pos="RB">not</lex> <lex pos="VB"><EVENT eid="e16" class="OCCURRENCE">allow</EVENT></lex><MAKEINSTANCE eventID="e16" polarity="NEG" pos="VERB" eiid="ei16" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">for</lex> <VG><lex pos="VBG"><EVENT eid="e17" class="OCCURRENCE">providing</EVENT></lex><MAKEINSTANCE eventID="e17" polarity="POS" pos="VERB" eiid="ei17" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">false</lex> <lex pos="NN">address</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">any</lex> <lex pos="NN">reason</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">fine</lex></NG> <VG><lex pos="VBZ">is</lex></VG> <lex pos="RB">twice</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">donation</lex></NG> <lex pos=",">,</lex> <lex pos="RB">as</lex> <VG><lex pos="VBN"><EVENT eid="e18" class="OCCURRENCE">provided</EVENT></lex><MAKEINSTANCE eventID="e18" polarity="POS" pos="VERB" eiid="ei18" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">for</lex> <lex pos="IN">under</lex> <NG><lex pos="JJ">German</lex> <lex pos="NN">party</lex> <lex pos="NN">financing</lex> <lex pos="NNS">laws</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NN">Party</lex> <lex pos="NN">spokesman</lex> <lex pos="NNP">Bernd</lex> <lex pos="NNP">Droese</lex></NG> <VG><lex pos="VBD"><EVENT eid="e19" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e19" polarity="POS" pos="VERB" eiid="ei19" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">People</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNP">Union</lex></NG> <VG><lex pos="MD">would</lex> <lex pos="VB"><EVENT eid="e20" class="OCCURRENCE">challenge</EVENT></lex><MAKEINSTANCE eventID="e20" polarity="POS" pos="VERB" eiid="ei20" tense="NONE" aspect="NONE" modality="would"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">fine</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NN">court</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">extremist</lex> <lex pos="NN">party</lex></NG> <lex pos="RB">recently</lex> <VG><lex pos="VBD"><EVENT eid="e21" class="OCCURRENCE">took</EVENT></lex><MAKEINSTANCE eventID="e21" polarity="POS" pos="VERB" eiid="ei21" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">surprising</lex> <lex pos="CD">13</lex> <lex pos="NN">percent</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NN"><EVENT eid="e22" class="OCCURRENCE">vote</EVENT></lex><MAKEINSTANCE eventID="e22" polarity="POS" pos="NOUN" eiid="ei22" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">in</lex> <NG><lex pos="NNS"><EVENT eid="e23" class="OCCURRENCE">elections</EVENT></lex><MAKEINSTANCE eventID="e23" polarity="POS" pos="NOUN" eiid="ei23" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">depressed</lex> <lex pos="JJ">eastern</lex> <lex pos="JJ">German</lex> <lex pos="NN">state</lex></NG> <lex pos=",">,</lex> <lex pos="CC">and</lex> <VG><lex pos="VBZ"><EVENT eid="e24" class="I_STATE">hopes</EVENT></lex><MAKEINSTANCE eventID="e24" polarity="POS" pos="VERB" eiid="ei24" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e25" class="OCCURRENCE">win</EVENT></lex><MAKEINSTANCE eventID="e25" polarity="POS" pos="VERB" eiid="ei25" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="PP$">its</lex> <NG><lex pos="JJ">first</lex> <lex pos="NNS">seats</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">federal</lex> <lex pos="NN">parliament</lex></NG> <NG><lex pos="DT">this</lex> <TIMEX3 tid="t3" TYPE="DATE"><lex pos="NNP">September</lex></TIMEX3></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">UR</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NN">pfg-xx</lex></NG> <lex pos=")">)</lex> </s> </TEXT>
+(PROFILE
+(WS SL:BC-Germany-Rightists Fined; CT:i;
+(REG:EURO;)
+(REG:BRIT;)
+(REG:SCAN;)
+(REG:ENGL;)
+(LANG:ENGLISH;))
+)
+</BODY>
+<TRAILER>
+AP-NY-06-26-98 0707EDT
+</TRAILER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

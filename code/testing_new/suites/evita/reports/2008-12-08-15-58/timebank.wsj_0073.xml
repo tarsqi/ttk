@@ -1,0 +1,137 @@
+<TTKTestFailure><Expected>
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891102-0119 </DOCNO>
+<DD> = 891102 </DD>
+<AN> 891102-0119. </AN>
+<HL> Integra-A Rights Offering </HL>
+<DD> 11/02/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> ITGR HWG </CO>
+<DATELINE> IRVING, Texas  </DATELINE>
+<TEXT><s><NG><lex pos="NNP">Integra-A</lex> <lex pos="NNP">Hotel</lex> <lex pos="NN">amp</lex> <lex pos="NNP">Restaurant</lex> <lex pos="NNP">Co</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD" class="MissedTag"><EVENT eid="e1" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="PP$">its</lex> <NG><lex pos="JJ">planned</lex> <lex pos="NNS">rights</lex></NG> <VG><lex pos="VBG" class="MissedTag"><EVENT eid="e2" class="I_ACTION">offering</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="VERB" eiid="ei2" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB" class="MissedTag"><EVENT eid="e3" class="OCCURRENCE">raise</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="RB">about</lex> <lex pos="$">$</lex> <lex pos="CD">9</lex> <lex pos="CD">million</lex> <VG><lex pos="VBD">was</lex> <lex pos="VBN" class="MissedTag"><EVENT eid="e4" class="OCCURRENCE">declared</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="VERB" eiid="ei4" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="JJ">effective</lex> <lex pos="CC">and</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB" class="MissedTag"><EVENT eid="e5" class="ASPECTUAL">begin</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="FUTURE" aspect="NONE"></MAKEINSTANCE> <lex pos="VBG" class="MissedTag"><EVENT eid="e6" class="OCCURRENCE">mailing</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNS">materials</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="NNS">shareholders</lex></NG> <lex pos="IN">at</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">end</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">this</lex> <lex pos="NN">week</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="IN">Under</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">offer</lex></NG> <lex pos="," class="MissedTag">,</lex> <NG class="MissedTag"><lex pos="NNS" class="MissedTag">shareholders</lex></NG> <VG class="MissedTag"><lex pos="MD" class="MissedTag">will</lex> <lex pos="VB" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e7" class="MissedTag">receive</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="FUTURE" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <NG class="MissedTag"><lex pos="CD" class="MissedTag">one</lex> <lex pos="NN" class="MissedTag">right</lex></NG> <lex pos="IN" class="MissedTag">for</lex> <NG class="MissedTag"><lex pos="DT" class="MissedTag">each</lex> <lex pos="CD" class="MissedTag">105</lex> <lex pos="JJ" class="MissedTag">common</lex> <lex pos="NNS" class="MissedTag">shares</lex></NG> <VG class="MissedTag"><lex pos="VBD" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e8" class="MissedTag">owned</EVENT></lex><MAKEINSTANCE eventID="e8" polarity="POS" pos="VERB" eiid="ei8" tense="PAST" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <lex pos="." class="MissedTag">.</lex> </s> <s class="MissedTag"><NG class="MissedTag"><lex pos="DT" class="MissedTag">Each</lex> <lex pos="NN" class="MissedTag">right</lex></NG> <VG class="MissedTag"><lex pos="VBZ" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e9" class="MissedTag">entitles</EVENT></lex><MAKEINSTANCE eventID="e9" polarity="POS" pos="VERB" eiid="ei9" tense="PRESENT" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <NG class="MissedTag"><lex pos="DT" class="MissedTag">the</lex> <lex pos="NN" class="MissedTag">shareholder</lex></NG> <VG class="MissedTag"><lex pos="TO" class="MissedTag">to</lex> <lex pos="VB" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e10" class="MissedTag">buy</EVENT></lex><MAKEINSTANCE eventID="e10" polarity="POS" pos="VERB" eiid="ei10" tense="INFINITIVE" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <lex pos="$" class="MissedTag">$</lex> <NG class="MissedTag"><lex pos="CD" class="MissedTag">100</lex> <lex pos="NN" class="MissedTag">face</lex> <lex pos="NN">amount</lex></NG> <lex pos="IN" class="MissedTag">of</lex> <NG class="MissedTag"><lex pos="CD" class="MissedTag">13.5</lex> <lex pos="NN" class="MissedTag">%</lex> <lex pos="NNS" class="MissedTag">bonds</lex></NG> <lex pos="JJ" class="MissedTag">due</lex> <TIMEX3 tid="t2" TYPE="DATE" class="MissedTag" VAL="1993"><lex pos="CD" class="MissedTag">1993</lex></TIMEX3> <lex pos="CC" class="MissedTag">and</lex> <NG class="MissedTag"><lex pos="NNS" class="MissedTag">warrants</lex></NG> <VG class="MissedTag"><lex pos="TO" class="MissedTag">to</lex> <lex pos="VB" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e11" class="MissedTag">buy</EVENT></lex><MAKEINSTANCE eventID="e11" polarity="POS" pos="VERB" eiid="ei11" tense="INFINITIVE" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <NG class="MissedTag"><lex pos="CD" class="MissedTag">23.5</lex> <lex pos="JJ" class="MissedTag">common</lex> <lex pos="NNS" class="MissedTag">shares</lex></NG> <lex pos="IN" class="MissedTag">at</lex> <NG class="MissedTag"><lex pos="CD" class="MissedTag">30</lex> <lex pos="NNS" class="MissedTag">cents</lex></NG> <NG class="MissedTag"><lex pos="DT" class="MissedTag">a</lex> <lex pos="NN" class="MissedTag">share</lex></NG> <lex pos="." class="MissedTag">.</lex> </s> <s class="MissedTag"><NG class="MissedTag"><lex pos="DT" class="MissedTag">The</lex> <lex pos="NNS" class="MissedTag">rights</lex></NG> <lex pos="," class="MissedTag">,</lex> <lex pos="WDT" class="MissedTag">which</lex> <VG class="MissedTag"><lex pos="VBP" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e12" class="MissedTag">expire</EVENT></lex><MAKEINSTANCE eventID="e12" polarity="POS" pos="VERB" eiid="ei12" tense="PRESENT" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <NG class="MissedTag"><TIMEX3 tid="t3" TYPE="DATE" class="MissedTag" VAL="198911"><lex pos="NNP" class="MissedTag">Nov</lex></TIMEX3></NG> <lex pos="." class="MissedTag">.</lex> </s> <s class="MissedTag"><lex pos="CD" class="MissedTag">21</lex> <lex pos="," class="MissedTag">,</lex> <VG class="MissedTag"><lex pos="MD" class="MissedTag">can</lex> <lex pos="VB" class="MissedTag">be</lex> <lex pos="VBN" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e13" class="MissedTag">exercised</EVENT></lex><MAKEINSTANCE eventID="e13" polarity="POS" pos="VERB" class="MissedTag" eiid="ei13" tense="NONE" aspect="NONE" modality="can"></MAKEINSTANCE></VG> <lex pos="IN" class="MissedTag">for</lex> <lex pos="$" class="MissedTag">$</lex> <lex pos="CD" class="MissedTag">100</lex> <lex pos="DT" class="MissedTag">each</lex> <lex pos="." class="MissedTag">.</lex> </s> <s class="MissedTag"><NG class="MissedTag"><lex pos="NNP" class="MissedTag">Integra</lex></NG> <lex pos="," class="MissedTag">,</lex> <lex pos="WDT" class="MissedTag">which</lex> <VG class="MissedTag"><lex pos="VBZ" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e14" class="MissedTag">owns</EVENT></lex><MAKEINSTANCE eventID="e14" polarity="POS" pos="VERB" eiid="ei14" tense="PRESENT" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <lex pos="CC" class="MissedTag">and</lex> <VG class="MissedTag"><lex pos="VBZ" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e15" class="MissedTag">operates</EVENT></lex><MAKEINSTANCE eventID="e15" polarity="POS" pos="VERB" eiid="ei15" tense="PRESENT" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <NG class="MissedTag"><lex pos="NNS" class="MissedTag">hotels</lex></NG> <lex pos="," class="MissedTag">,</lex> <VG class="MissedTag"><lex pos="VBD" class="MissedTag"><EVENT eclass="REPORTING" eid="e16" class="MissedTag">said</EVENT></lex><MAKEINSTANCE eventID="e16" polarity="POS" pos="VERB" eiid="ei16" tense="PAST" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <lex pos="IN" class="MissedTag">that</lex> <NG class="MissedTag"><lex pos="NNP" class="MissedTag">Hallwood</lex> <lex pos="NNP">Group</lex> <lex pos="NNP">Inc</lex></NG> <lex pos="." class="MissedTag">.</lex> <VG class="MissedTag"><lex pos="VBZ" class="MissedTag">has</lex> <lex pos="VBN" class="MissedTag"><EVENT eclass="I_ACTION" eid="e17" class="MissedTag">agreed</EVENT></lex><MAKEINSTANCE eventID="e17" polarity="POS" pos="VERB" eiid="ei17" tense="PRESENT" aspect="PERFECTIVE" class="MissedTag"></MAKEINSTANCE></VG> <VG class="MissedTag"><lex pos="TO" class="MissedTag">to</lex> <lex pos="VB" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e18" class="MissedTag">exercise</EVENT></lex><MAKEINSTANCE eventID="e18" polarity="POS" pos="VERB" eiid="ei18" tense="INFINITIVE" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <NG class="MissedTag"><lex pos="DT" class="MissedTag">any</lex> <lex pos="NNS" class="MissedTag">rights</lex></NG> <lex pos="WDT" class="MissedTag">that</lex> <VG class="MissedTag"><lex pos="VBP" class="MissedTag">are</lex></VG> <NG class="MissedTag"><lex pos="NN" class="MissedTag">n</lex></NG> <lex pos="POS" class="MissedTag">'</lex> <NG class="MissedTag"><lex pos="NN" class="MissedTag">t</lex></NG> <VG class="MissedTag"><lex pos="VBN" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e19" class="MissedTag">exercised</EVENT></lex><MAKEINSTANCE eventID="e19" polarity="POS" pos="VERB" eiid="ei19" tense="PASTPART" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <lex pos="IN" class="MissedTag">by</lex> <NG class="MissedTag"><lex pos="JJ" class="MissedTag">other</lex> <lex pos="NNS" class="MissedTag">shareholders</lex></NG> <lex pos="." class="MissedTag">.</lex> </s> <s class="MissedTag"><NG class="MissedTag"><lex pos="NNP" class="MissedTag">Hallwood</lex></NG> <lex pos="," class="MissedTag">,</lex> <NG class="MissedTag"><lex pos="DT" class="MissedTag">a</lex> <lex pos="NNP" class="MissedTag">Cleveland</lex> <lex pos="NN" class="MissedTag">merchant</lex> <lex pos="NN">bank</lex></NG> <lex pos="," class="MissedTag">,</lex> <VG class="MissedTag"><lex pos="VBZ" class="MissedTag"><EVENT eclass="OCCURRENCE" eid="e20" class="MissedTag">owns</EVENT></lex><MAKEINSTANCE eventID="e20" polarity="POS" pos="VERB" eiid="ei20" tense="PRESENT" aspect="NONE" class="MissedTag"></MAKEINSTANCE></VG> <lex pos="RB" class="MissedTag">about</lex> <NG class="MissedTag"><lex pos="CD" class="MissedTag">11</lex> <lex pos="NN" class="MissedTag">%</lex></NG> <lex pos="IN" class="MissedTag">of</lex> <NG class="MissedTag"><lex pos="NNP" class="MissedTag">Integra</lex></NG> <lex pos="." class="MissedTag">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>
+</Expected><Observed>
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891102-0119 </DOCNO>
+<DD> = 891102 </DD>
+<AN> 891102-0119. </AN>
+<HL> Integra-A Rights Offering </HL>
+<DD> 11/02/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> ITGR HWG </CO>
+<DATELINE> IRVING, Texas  </DATELINE>
+<TEXT><s><NG><lex pos="NNP">Integra-A</lex> <lex pos="NNP">Hotel</lex> <lex pos="NN">amp</lex> <lex pos="NNP">Restaurant</lex> <lex pos="NNP">Co</lex></NG> <lex pos=".">.</lex> <VG><EVENT eid="e1" class="REPORTING"><lex pos="VBD" class="AddedTag">said</lex></EVENT><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="PP$">its</lex> <NG><lex pos="JJ">planned</lex> <lex pos="NNS">rights</lex></NG> <VG><EVENT eid="e2" class="I_ACTION"><lex pos="VBG" class="AddedTag">offering</lex></EVENT><MAKEINSTANCE eventID="e2" polarity="POS" pos="VERB" eiid="ei2" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <EVENT eid="e3" class="OCCURRENCE"><lex pos="VB" class="AddedTag">raise</lex></EVENT><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="RB">about</lex> <lex pos="$">$</lex> <lex pos="CD">9</lex> <lex pos="CD">million</lex> <VG><lex pos="VBD">was</lex> <EVENT eid="e4" class="OCCURRENCE"><lex pos="VBN" class="AddedTag">declared</lex></EVENT><MAKEINSTANCE eventID="e4" polarity="POS" pos="VERB" eiid="ei4" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="JJ">effective</lex> <lex pos="CC">and</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="MD">will</lex> <EVENT eid="e5" class="ASPECTUAL"><lex pos="VB" class="AddedTag">begin</lex></EVENT><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="FUTURE" aspect="NONE"></MAKEINSTANCE> <EVENT eid="e6" class="OCCURRENCE"><lex pos="VBG" class="AddedTag">mailing</lex></EVENT><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNS">materials</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="NNS">shareholders</lex></NG> <lex pos="IN">at</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">end</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">this</lex> <lex pos="NN">week</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="IN">Under</lex> <NG><lex pos="DT">the</lex> <EVENT eclass="OCCURRENCE" eid="e7" class="AddedTag"><lex pos="NN">offer</lex></EVENT><MAKEINSTANCE eventID="e7" polarity="POS" pos="NOUN" eiid="ei7" tense="NONE" aspect="NONE" class="AddedTag"></MAKEINSTANCE></NG> <lex pos="," class="AddedTag">,</lex> <NG class="AddedTag"><lex pos="NNS" class="AddedTag">shareholders</lex></NG> <VG class="AddedTag"><lex pos="MD" class="AddedTag">will</lex> <EVENT eclass="OCCURRENCE" eid="e8" class="AddedTag"><lex pos="VB" class="AddedTag">receive</lex></EVENT><MAKEINSTANCE eventID="e8" polarity="POS" pos="VERB" eiid="ei8" tense="FUTURE" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <NG class="AddedTag"><lex pos="CD" class="AddedTag">one</lex> <lex pos="NN" class="AddedTag">right</lex></NG> <lex pos="IN" class="AddedTag">for</lex> <NG class="AddedTag"><lex pos="DT" class="AddedTag">each</lex> <lex pos="CD" class="AddedTag">105</lex> <lex pos="JJ" class="AddedTag">common</lex> <lex pos="NNS" class="AddedTag">shares</lex></NG> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e9" class="AddedTag"><lex pos="VBD" class="AddedTag">owned</lex></EVENT><MAKEINSTANCE eventID="e9" polarity="POS" pos="VERB" eiid="ei9" tense="PAST" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <lex pos="." class="AddedTag">.</lex> </s> <s class="AddedTag"><NG class="AddedTag"><lex pos="DT" class="AddedTag">Each</lex> <lex pos="NN" class="AddedTag">right</lex></NG> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e10" class="AddedTag"><lex pos="VBZ" class="AddedTag">entitles</lex></EVENT><MAKEINSTANCE eventID="e10" polarity="POS" pos="VERB" eiid="ei10" tense="PRESENT" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <NG class="AddedTag"><lex pos="DT" class="AddedTag">the</lex> <lex pos="NN" class="AddedTag">shareholder</lex></NG> <VG class="AddedTag"><lex pos="TO" class="AddedTag">to</lex> <EVENT eclass="OCCURRENCE" eid="e11" class="AddedTag"><lex pos="VB" class="AddedTag">buy</lex></EVENT><MAKEINSTANCE eventID="e11" polarity="POS" pos="VERB" eiid="ei11" tense="INFINITIVE" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <lex pos="$" class="AddedTag">$</lex> <NG class="AddedTag"><lex pos="CD" class="AddedTag">100</lex> <lex pos="NN">face</lex> <lex pos="NN" class="AddedTag">amount</lex></NG> <lex pos="IN" class="AddedTag">of</lex> <NG class="AddedTag"><lex pos="CD" class="AddedTag">13.5</lex> <lex pos="NN" class="AddedTag">%</lex> <lex pos="NNS" class="AddedTag">bonds</lex></NG> <lex pos="JJ" class="AddedTag">due</lex> <TIMEX3 tid="t2" TYPE="DATE" class="AddedTag" VAL="1993"><lex pos="CD" class="AddedTag">1993</lex></TIMEX3> <lex pos="CC" class="AddedTag">and</lex> <NG class="AddedTag"><lex pos="NNS" class="AddedTag">warrants</lex></NG> <VG class="AddedTag"><lex pos="TO" class="AddedTag">to</lex> <EVENT eclass="OCCURRENCE" eid="e12" class="AddedTag"><lex pos="VB" class="AddedTag">buy</lex></EVENT><MAKEINSTANCE eventID="e12" polarity="POS" pos="VERB" eiid="ei12" tense="INFINITIVE" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <NG class="AddedTag"><lex pos="CD" class="AddedTag">23.5</lex> <lex pos="JJ" class="AddedTag">common</lex> <lex pos="NNS" class="AddedTag">shares</lex></NG> <lex pos="IN" class="AddedTag">at</lex> <NG class="AddedTag"><lex pos="CD" class="AddedTag">30</lex> <lex pos="NNS" class="AddedTag">cents</lex></NG> <NG class="AddedTag"><lex pos="DT" class="AddedTag">a</lex> <lex pos="NN" class="AddedTag">share</lex></NG> <lex pos="." class="AddedTag">.</lex> </s> <s class="AddedTag"><NG class="AddedTag"><lex pos="DT" class="AddedTag">The</lex> <lex pos="NNS" class="AddedTag">rights</lex></NG> <lex pos="," class="AddedTag">,</lex> <lex pos="WDT" class="AddedTag">which</lex> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e13" class="AddedTag"><lex pos="VBP" class="AddedTag">expire</lex></EVENT><MAKEINSTANCE eventID="e13" polarity="POS" pos="VERB" eiid="ei13" tense="PRESENT" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <NG class="AddedTag"><TIMEX3 tid="t3" TYPE="DATE" class="AddedTag" VAL="198911"><lex pos="NNP" class="AddedTag">Nov</lex></TIMEX3></NG> <lex pos="." class="AddedTag">.</lex> </s> <s class="AddedTag"><lex pos="CD" class="AddedTag">21</lex> <lex pos="," class="AddedTag">,</lex> <VG class="AddedTag"><lex pos="MD" class="AddedTag">can</lex> <lex pos="VB" class="AddedTag">be</lex> <EVENT eclass="OCCURRENCE" eid="e14" class="AddedTag"><lex pos="VBN" class="AddedTag">exercised</lex></EVENT><MAKEINSTANCE eventID="e14" polarity="POS" pos="VERB" class="AddedTag" eiid="ei14" tense="NONE" aspect="NONE" modality="can"></MAKEINSTANCE></VG> <lex pos="IN" class="AddedTag">for</lex> <lex pos="$" class="AddedTag">$</lex> <lex pos="CD" class="AddedTag">100</lex> <lex pos="DT" class="AddedTag">each</lex> <lex pos="." class="AddedTag">.</lex> </s> <s class="AddedTag"><NG class="AddedTag"><lex pos="NNP" class="AddedTag">Integra</lex></NG> <lex pos="," class="AddedTag">,</lex> <lex pos="WDT" class="AddedTag">which</lex> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e15" class="AddedTag"><lex pos="VBZ" class="AddedTag">owns</lex></EVENT><MAKEINSTANCE eventID="e15" polarity="POS" pos="VERB" eiid="ei15" tense="PRESENT" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <lex pos="CC" class="AddedTag">and</lex> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e16" class="AddedTag"><lex pos="VBZ" class="AddedTag">operates</lex></EVENT><MAKEINSTANCE eventID="e16" polarity="POS" pos="VERB" eiid="ei16" tense="PRESENT" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <NG class="AddedTag"><lex pos="NNS" class="AddedTag">hotels</lex></NG> <lex pos="," class="AddedTag">,</lex> <VG class="AddedTag"><EVENT eclass="REPORTING" eid="e17" class="AddedTag"><lex pos="VBD" class="AddedTag">said</lex></EVENT><MAKEINSTANCE eventID="e17" polarity="POS" pos="VERB" eiid="ei17" tense="PAST" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <lex pos="IN" class="AddedTag">that</lex> <NG class="AddedTag"><lex pos="NNP">Hallwood</lex> <lex pos="NNP">Group</lex> <lex pos="NNP" class="AddedTag">Inc</lex></NG> <lex pos="." class="AddedTag">.</lex> <VG class="AddedTag"><lex pos="VBZ" class="AddedTag">has</lex> <EVENT eclass="I_ACTION" eid="e18" class="AddedTag"><lex pos="VBN" class="AddedTag">agreed</lex></EVENT><MAKEINSTANCE eventID="e18" polarity="POS" pos="VERB" eiid="ei18" tense="PRESENT" aspect="PERFECTIVE" class="AddedTag"></MAKEINSTANCE></VG> <VG class="AddedTag"><lex pos="TO" class="AddedTag">to</lex> <EVENT eclass="OCCURRENCE" eid="e19" class="AddedTag"><lex pos="VB" class="AddedTag">exercise</lex></EVENT><MAKEINSTANCE eventID="e19" polarity="POS" pos="VERB" eiid="ei19" tense="INFINITIVE" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <NG class="AddedTag"><lex pos="DT" class="AddedTag">any</lex> <lex pos="NNS" class="AddedTag">rights</lex></NG> <lex pos="WDT" class="AddedTag">that</lex> <VG class="AddedTag"><lex pos="VBP" class="AddedTag">are</lex></VG> <NG class="AddedTag"><lex pos="NN" class="AddedTag">n</lex></NG> <lex pos="POS" class="AddedTag">'</lex> <NG class="AddedTag"><lex pos="NN" class="AddedTag">t</lex></NG> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e20" class="AddedTag"><lex pos="VBN" class="AddedTag">exercised</lex></EVENT><MAKEINSTANCE eventID="e20" polarity="POS" pos="VERB" eiid="ei20" tense="PASTPART" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <lex pos="IN" class="AddedTag">by</lex> <NG class="AddedTag"><lex pos="JJ" class="AddedTag">other</lex> <lex pos="NNS" class="AddedTag">shareholders</lex></NG> <lex pos="." class="AddedTag">.</lex> </s> <s class="AddedTag"><NG class="AddedTag"><lex pos="NNP" class="AddedTag">Hallwood</lex></NG> <lex pos="," class="AddedTag">,</lex> <NG class="AddedTag"><lex pos="DT" class="AddedTag">a</lex> <lex pos="NNP" class="AddedTag">Cleveland</lex> <lex pos="NN">merchant</lex> <lex pos="NN" class="AddedTag">bank</lex></NG> <lex pos="," class="AddedTag">,</lex> <VG class="AddedTag"><EVENT eclass="OCCURRENCE" eid="e21" class="AddedTag"><lex pos="VBZ" class="AddedTag">owns</lex></EVENT><MAKEINSTANCE eventID="e21" polarity="POS" pos="VERB" eiid="ei21" tense="PRESENT" aspect="NONE" class="AddedTag"></MAKEINSTANCE></VG> <lex pos="RB" class="AddedTag">about</lex> <NG class="AddedTag"><lex pos="CD" class="AddedTag">11</lex> <lex pos="NN" class="AddedTag">%</lex></NG> <lex pos="IN" class="AddedTag">of</lex> <NG class="AddedTag"><lex pos="NNP" class="AddedTag">Integra</lex></NG> <lex pos="." class="AddedTag">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>
+</Observed></TTKTestFailure>

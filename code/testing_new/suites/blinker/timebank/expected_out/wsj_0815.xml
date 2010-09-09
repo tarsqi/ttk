@@ -1,0 +1,62 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891027-0079 </DOCNO>
+<DD> = 891027 </DD>
+<AN> 891027-0079. </AN>
+<HL> Di Giorgio Corp. Seeks
+@  To Sell Certain Units </HL>
+<DD> 10/27/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> DIG </CO>
+<IN> TENDER OFFERS, MERGERS, ACQUISITIONS (TNM) </IN>
+<DATELINE> SAN FRANCISCO  </DATELINE>
+<TEXT><s><NG><lex pos="NNP">Di</lex> <lex pos="NNP">Giorgio</lex> <lex pos="NNP">Corp</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD"><EVENT eid="e1" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="PP">it</lex></NG> <lex pos="''">'</lex> <NG><lex pos="NNS">s</lex> <lex pos="VBG">continuing</lex> <lex pos="NNS"><EVENT eid="e2" class="OCCURRENCE">talks</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="NOUN" eiid="ei2" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">with</lex> <NG><lex pos="JJ">potential</lex> <lex pos="NNS">buyers</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">certain</lex> <lex pos="NNS">units</lex></NG> <lex pos=",">,</lex> <lex pos="CC">but</lex> <VG><lex pos="VBZ">has</lex> <lex pos="VBN"><EVENT eid="e3" class="OCCURRENCE">reached</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="PRESENT" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <NG><lex pos="DT">no</lex> <lex pos="NN">agreement</lex></NG> <lex pos="IN">on</lex> <NG><lex pos="DT">any</lex> <lex pos="NNS"><EVENT eid="e4" class="OCCURRENCE">deals</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="NOUN" eiid="ei4" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Di</lex> <lex pos="NNP">Giorgio</lex></NG> <lex pos=",">,</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">food</lex> <lex pos="NN">wholesaler</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">building</lex> <lex pos="NNS">products</lex> <lex pos="NN">maker</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBZ">is</lex> <lex pos="VBG"><EVENT eid="e5" class="I_ACTION">seeking</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="PRESENT" aspect="PROGRESSIVE"></MAKEINSTANCE></VG> <NG><lex pos="NNS">alternatives</lex></NG> <lex pos="TO">to</lex> <lex pos="DT">an</lex> <lex pos="JJ">unsolicited</lex> <lex pos="$">$</lex> <NG><lex pos="JJ">32-a-share</lex> <lex pos="NN">tender</lex> <lex pos="NN">offer</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">DIG</lex> <lex pos="NNP">Acquisition</lex> <lex pos="NNP">Corp</lex></NG> <lex pos=".">.</lex> <lex pos=",">,</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">unit</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Rose</lex></NG> <lex pos="NPS">Partners</lex> <NG><lex pos="NNP">Limited</lex> <lex pos="NNP">Partnership</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">DIG</lex></NG> <VG><lex pos="VBZ">is</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">vehicle</lex></NG> <VG><lex pos="VBG">being</lex> <lex pos="VBN"><EVENT eid="e6" class="OCCURRENCE">used</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e7" class="OCCURRENCE">pursue</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="TO">to</lex> <NG><lex pos="NN"><EVENT eid="e8" class="OCCURRENCE">acquisition</EVENT></lex><MAKEINSTANCE eventID="e8" polarity="POS" pos="NOUN" eiid="ei8" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Robert</lex> <lex pos="NNP">Mellor</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Di</lex> <lex pos="NNP">Giorgio</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="JJ">s</lex> <lex pos="JJ">executive</lex> <lex pos="JJ">vice</lex> <lex pos="NN">president</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBD"><EVENT eid="e9" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e9" polarity="POS" pos="VERB" eiid="ei9" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBZ"><EVENT eid="e10" class="OCCURRENCE">stands</EVENT></lex><MAKEINSTANCE eventID="e10" polarity="POS" pos="VERB" eiid="ei10" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e11" class="OCCURRENCE">reap</EVENT></lex><MAKEINSTANCE eventID="e11" polarity="POS" pos="VERB" eiid="ei11" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="JJR">more</lex> <lex pos="NN">money</lex></NG> <lex pos="IN">through</lex> <NG><lex pos="DT">the</lex> <lex pos="NN"><EVENT eid="e12" class="OCCURRENCE">sale</EVENT></lex><MAKEINSTANCE eventID="e12" polarity="POS" pos="NOUN" eiid="ei12" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">individual</lex> <lex pos="NNS">units</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="NNS">others</lex></NG> <lex pos="IN">than</lex> <lex pos="IN">by</lex> <NG><lex pos="VBG">accepting</lex> <lex pos="NNP">DIG</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NN">offer</lex></NG> <lex pos=".">.</lex> </s> <SLINK lid="l1" relType="MODAL" eventInstanceID="ei6" subordinatedEventInstance="ei7" syntax="toClause1"></SLINK><SLINK lid="l2" relType="EVIDENTIAL" eventInstanceID="ei9" subordinatedEventInstance="ei10" syntax="thatClause_NOT_that"></SLINK><TLINK lid="l3" relatedToEventInstance="ei7" relType="BEFORE" eventInstanceID="ei6" origin="S2T Rule 10"></TLINK><TLINK lid="l4" relatedToEventInstance="ei10" relType="BEFORE" eventInstanceID="ei9" origin="S2T Rule 1"></TLINK><TLINK lid="l5" relatedToEventInstance="ei10" relType="BEFORE" eventInstanceID="ei9" origin="Blinker - Type 5 (rule 25)"></TLINK></TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

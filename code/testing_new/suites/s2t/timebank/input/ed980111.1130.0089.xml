@@ -1,0 +1,59 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> ed980111.1130.0089 </DOCNO>
+<DOCTYPE SOURCE="broadcast news"> NEWS STORY </DOCTYPE>
+<BODY>
+
+<section endTime="169.690" type="report" startTime="89.143">
+<TEXT><s><NG><lex pos="DT">The</lex> <lex pos="NNS">lights</lex></NG> <VG><lex pos="VBP">are</lex></VG> <lex pos="IN">out</lex> <lex pos="CC">and</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">heat</lex></NG> <VG><lex pos="VBZ">is</lex></VG> <lex pos="RP">off</lex> <lex pos="CC">and</lex> <NG><lex pos="DT">those</lex> <lex pos="JJ">vital</lex> <lex pos="NNS">signs</lex></NG> <VG><lex pos="VBP">are</lex></VG> <lex pos="RB">not</lex> <lex pos="JJ"><EVENT eid="e1" class="I_STATE">likely</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="ADJECTIVE" eiid="ei1" tense="PRESENT" aspect="NONE"></MAKEINSTANCE> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e2" class="OCCURRENCE">change</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="VERB" eiid="ei2" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="RB">much</lex> <lex pos="IN">over</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">next</lex> <lex pos="JJ">several</lex> <lex pos="NNS">days</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="NN">p-</lex> <lex pos="NNS">people</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NNS">parts</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">northeastern</lex> <lex pos="NNP">US</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="JJ">eastern</lex> <lex pos="NNP">Canada</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">A</lex> <lex pos="JJ">powerful</lex> <lex pos="NN">ice</lex> <lex pos="NN"><EVENT eid="e3" class="OCCURRENCE">storm</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="NOUN" eiid="ei3" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <VG><lex pos="VBZ"><EVENT eid="e4" class="ASPECTUAL">continues</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="VERB" eiid="ei4" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e5" class="OCCURRENCE">maintain</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="PP$">its</lex> <NG><lex pos="NN"><EVENT eid="e6" class="OCCURRENCE">grip</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="NOUN" eiid="ei6" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos=".">.</lex> </s> <s><NG><TIMEX3 tid="t1" TYPE="DATE" VAL="20080819"><lex pos="NN">Yesterday</lex></TIMEX3> <lex pos="NNP">New</lex> <lex pos="NNP">York</lex> <lex pos="NN">governor</lex> <lex pos="NNP">George</lex> <lex pos="NNP">Pataki</lex></NG> <VG><lex pos="VBD"><EVENT eid="e7" class="OCCURRENCE">toured</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="CD">five</lex> <lex pos="NNS">counties</lex></NG> <lex pos="WDT">that</lex> <VG><lex pos="VBP">have</lex> <lex pos="VBN">been</lex> <lex pos="VBN"><EVENT eid="e8" class="OCCURRENCE">declared</EVENT></lex><MAKEINSTANCE eventID="e8" polarity="POS" pos="VERB" eiid="ei8" tense="PRESENT" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <lex pos="IN">under</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">state</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NN"><EVENT eid="e9" class="OCCURRENCE">emergency</EVENT></lex><MAKEINSTANCE eventID="e9" polarity="POS" pos="NOUN" eiid="ei9" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="PP">He</lex></NG> <VG><lex pos="VBD"><EVENT eid="e10" class="OCCURRENCE">added</EVENT></lex><MAKEINSTANCE eventID="e10" polarity="POS" pos="VERB" eiid="ei10" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="CD">one</lex> <lex pos="JJR">more</lex> <TIMEX3 tid="t2" TYPE="DATE" VAL="20080820"><lex pos="NN">today</lex></TIMEX3></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNS">Helicopters</lex></NG> <VG><lex pos="VBP">are</lex> <lex pos="VBG"><EVENT eid="e11" class="OCCURRENCE">flying</EVENT></lex><MAKEINSTANCE eventID="e11" polarity="POS" pos="VERB" eiid="ei11" tense="PRESENT" aspect="PROGRESSIVE"></MAKEINSTANCE></VG> <lex pos="IN">over</lex> <NG><lex pos="JJ">northern</lex> <lex pos="NNP">New</lex> <lex pos="NNP">York</lex> <TIMEX3 tid="t3" TYPE="DATE" VAL="20080820"><lex pos="NN">today</lex></TIMEX3></NG> <VG><lex pos="VBG"><EVENT eid="e12" class="I_ACTION">trying</EVENT></lex><MAKEINSTANCE eventID="e12" polarity="POS" pos="VERB" eiid="ei12" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e13" class="OCCURRENCE">locate</EVENT></lex><MAKEINSTANCE eventID="e13" polarity="POS" pos="VERB" eiid="ei13" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNS">people</lex></NG> <VG><lex pos="VBN"><EVENT eid="e14" class="OCCURRENCE">stranded</EVENT></lex><MAKEINSTANCE eventID="e14" polarity="POS" pos="VERB" eiid="ei14" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">without</lex> <NG><lex pos="NN">food</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NN">heat</lex></NG> <lex pos="CC">or</lex> <NG><lex pos="NN">medicine</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="IN">In</lex> <NG><lex pos="NNP">Maine</lex></NG> <lex pos=",">,</lex> <lex pos="IN">about</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">half</lex> <lex pos="CD">million</lex> <lex pos="NNS">people</lex></NG> <lex pos="RB">still</lex> <VG><lex pos="VB"><EVENT eid="e15" class="OCCURRENCE">don</EVENT></lex><MAKEINSTANCE eventID="e15" polarity="POS" pos="VERB" eiid="ei15" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="''">'</lex> <NG><lex pos="NN">t</lex></NG> <VG><lex pos="VBP"><EVENT eid="e16" class="OCCURRENCE">have</EVENT></lex><MAKEINSTANCE eventID="e16" polarity="POS" pos="VERB" eiid="ei16" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NN">power</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="PP">they</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">re</lex></NG> <VG><lex pos="VBG"><EVENT eid="e17" class="OCCURRENCE">going</EVENT></lex><MAKEINSTANCE eventID="e17" polarity="POS" pos="VERB" eiid="ei17" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <VG><lex pos="TO">to</lex> <lex pos="VB">have</lex></VG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e18" class="OCCURRENCE">live</EVENT></lex><MAKEINSTANCE eventID="e18" polarity="POS" pos="VERB" eiid="ei18" tense="INFINITIVE" aspect="NONE" modality="have to"></MAKEINSTANCE></VG> <lex pos="IN">without</lex> <NG><lex pos="PP">it</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">while</lex></NG> <lex pos=".">.</lex> </s> <ALINK lid="l1" relatedToEventInstance="ei5" relType="CONTINUES" eventInstanceID="ei4" syntax="toClause1"></ALINK><SLINK lid="l2" relType="MODAL" eventInstanceID="ei12" subordinatedEventInstance="ei13" syntax="toClause1"></SLINK></TEXT></section></BODY>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

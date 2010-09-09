@@ -1,0 +1,46 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> ea980120.1830.0456 </DOCNO>
+<DOCTYPE SOURCE="broadcast news"> NEWS STORY </DOCTYPE>
+<BODY>
+
+<section endTime="495.693" type="report" startTime="456.203">
+<TEXT><s><NG><lex pos="DT">The</lex> <lex pos="NNP">Pentagon</lex></NG> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="NN">today</lex></NG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB">re-examine</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">question</lex></NG> <VG><lex pos="VBP">are</lex></VG> <lex pos="DT">the</lex> <VG><lex pos="VBZ">remains</lex></VG> <lex pos="IN">inside</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Tomb</lex></NG> <lex pos="IN">of</lex> <lex pos="DT">the</lex> <lex pos="JJ">Unknown</lex> <lex pos="IN">from</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Vietnam</lex> <lex pos="NNP">War</lex></NG> <lex pos=",">,</lex> <lex pos="IN">in</lex> <NG><lex pos="NN">fact</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBN">known</lex></VG> <lex pos=".">?</lex> </s> <s><NG><lex pos="NNP">CBS</lex> <lex pos="NNP">News</lex></NG> <lex pos="RB">first</lex> <VG><lex pos="VBD">reported</lex></VG> <NG><lex pos="JJ">last</lex> <lex pos="NN">night</lex></NG> <lex pos="IN">that</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">tomb</lex></NG> <VG><lex pos="MD">may</lex> <lex pos="VB">contain</lex></VG> <lex pos="DT">the</lex> <VG><lex pos="VBZ">remains</lex></VG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Air</lex> <lex pos="NNP">Force</lex> <lex pos="NN">pilot</lex> <lex pos="NNP">Michael</lex> <lex pos="NNP">Blassie</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="EX">There</lex> <VG><lex pos="VBD">was</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="NN">suspicion</lex></NG> <NG><lex pos="DT">the</lex> <lex pos="NN">body</lex></NG> <VG><lex pos="VBD">was</lex></VG> <NG><lex pos="NNP">Blassie</lex></NG> <lex pos="IN">because</lex> <lex pos="PP$">his</lex> <NG><lex pos="NN">uniform</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">ID</lex> <lex pos="NN">card</lex></NG> <VG><lex pos="VBD">were</lex> <lex pos="VBN">found</lex></VG> <lex pos="IN">near</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">body</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NNP">Vietnam</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="CC">But</lex> <lex pos="RB">subsequently</lex> <lex pos=",">,</lex> <NG><lex pos="PP">they</lex></NG> <VG><lex pos="VBD">were</lex> <lex pos="VBN">lost</lex></VG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Blassie</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NN">mother</lex></NG> <lex pos="RB">now</lex> <VG><lex pos="VBZ">wants</lex></VG> <lex pos="DT">the</lex> <VG><lex pos="VBZ">remains</lex></VG> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">tomb</lex></NG> <VG><lex pos="VBN">tested</lex></VG> <lex pos="IN">for</lex> <NG><lex pos="NNP">DNA</lex></NG> <lex pos=".">.</lex> </s> </TEXT></section></BODY>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

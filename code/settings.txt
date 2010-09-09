@@ -1,0 +1,3 @@
+platform=linux2
+trap_errors=True
+perl=perl

@@ -1,0 +1,31 @@
+<TARSQITEST date='2008-11-21 11:43:24.161798' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing/reports/2008-11-21-11-43.txt' />
+<TARSQITEST date='2008-11-21 11:47:46.361270' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing/reports/2008-11-21-11-46.txt' />
+<TARSQITEST date='2008-12-08 15:01:11.143188' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testingNew/reports/2008-12-08-15-01.txt' />
+<TARSQITEST date='2008-12-08 15:04:12.560372' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testingNew/reports/2008-12-08-15-04.txt' />
+<TARSQITEST date='2008-12-08 15:07:21.474956' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testingNew/reports/2008-12-08-15-06.txt' />
+<TARSQITEST date='2008-12-08 15:36:18.937123' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-36.txt' />
+<TARSQITEST date='2008-12-08 15:39:14.228141' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-38.txt' />
+<TARSQITEST date='2008-12-08 15:48:13.077456' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-48.txt' />
+<TARSQITEST date='2008-12-08 15:51:16.188265' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-51.txt' />
+<TARSQITEST date='2008-12-08 15:55:33.853007' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-55.txt' />
+<TARSQITEST date='2008-12-08 15:55:45.566322' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-55.txt' />
+<TARSQITEST date='2008-12-08 15:55:55.339362' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-55.txt' />
+<TARSQITEST date='2008-12-08 15:56:16.305115' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-56.txt' />
+<TARSQITEST date='2008-12-08 15:57:20.547523' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-57.txt' />
+<TARSQITEST date='2008-12-08 15:57:43.013820' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-57.txt' />
+<TARSQITEST date='2008-12-08 15:58:17.373687' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-58.txt' />
+<TARSQITEST date='2008-12-08 15:58:34.864624' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-58.txt' />
+<TARSQITEST date='2008-12-08 15:59:56.553206' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-15-59.txt' />
+<TARSQITEST date='2008-12-08 16:00:11.736170' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-00.txt' />
+<TARSQITEST date='2008-12-08 16:20:42.862910' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-20.txt' />
+<TARSQITEST date='2008-12-08 16:21:33.106828' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-21.txt' />
+<TARSQITEST date='2008-12-08 16:22:51.986899' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-22.txt' />
+<TARSQITEST date='2008-12-08 16:24:26.612262' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-24.txt' />
+<TARSQITEST date='2008-12-08 16:28:16.217286' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-28.txt' />
+<TARSQITEST date='2008-12-08 16:29:43.840141' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-29.txt' />
+<TARSQITEST date='2008-12-08 16:31:05.893460' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-31.txt' />
+<TARSQITEST date='2008-12-08 16:32:23.529219' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-08-16-32.txt' />
+<TARSQITEST date='2008-12-09 11:11:25.021668' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-09-11-11.txt' />
+<TARSQITEST date='2008-12-09 11:12:46.097578' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-09-11-12.txt' />
+<TARSQITEST date='2008-12-09-14-34-04' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-09-14-34-04.txt' />
+<TARSQITEST date='2008-12-09-15-23-05' location='/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/reports/2008-12-09-15-23-05.txt' />

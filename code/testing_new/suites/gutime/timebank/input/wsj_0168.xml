@@ -1,0 +1,59 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891102-0022 </DOCNO>
+<DD> = 891102 </DD>
+<AN> 891102-0022. </AN>
+<HL> Business Brief -- Meridian National Corp.:
+@  McAlpines Acquire 10.2%
+@  Of Common for $1 Million </HL>
+<DD> 11/02/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> MRCO </CO>
+<IN> TENDER OFFERS, MERGERS, ACQUISITIONS (TNM) </IN>
+<TEXT><s><NG><lex pos="NNP">Meridian</lex> <lex pos="NNP">National</lex> <lex pos="NNP">Corp</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD">sold</lex></VG> <lex pos="CD">750</lex> <lex pos=",">,</lex> <NG><lex pos="CD">000</lex> <lex pos="NNS">shares</lex></NG> <lex pos="IN">of</lex> <lex pos="PP$">its</lex> <NG><lex pos="JJ">common</lex> <lex pos="NN">stock</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">McAlpine</lex> <lex pos="NN">family</lex> <lex pos="NNS">interests</lex></NG> <lex pos=",">,</lex> <lex pos="IN">for</lex> <lex pos="$">$</lex> <lex pos="CD">1</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <lex pos="$">$</lex> <lex pos="CD">1.35</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">sale</lex></NG> <VG><lex pos="VBZ">represents</lex></VG> <NG><lex pos="CD">10.2</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Meridian</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNS">shares</lex></NG> <lex pos="JJ">outstanding</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NNP">McAlpine</lex> <lex pos="NN">family</lex></NG> <lex pos=",">,</lex> <lex pos="WDT">which</lex> <VG><lex pos="VBZ">operates</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="NN">number</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="JJ">multinational</lex> <lex pos="NNS">companies</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBG">including</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">London-based</lex> <lex pos="NN">engineering</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">construction</lex> <lex pos="NN">company</lex></NG> <lex pos=",">,</lex> <lex pos="RB">also</lex> <VG><lex pos="VBN">lent</lex></VG> <lex pos="TO">to</lex> <NG><lex pos="NNP">Meridian</lex> <lex pos="NNP">National</lex></NG> <lex pos="$">$</lex> <lex pos="CD">500</lex> <lex pos=",">,</lex> <lex pos="CD">000</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">That</lex> <lex pos="NN">amount</lex></NG> <VG><lex pos="VBZ">is</lex></VG> <lex pos="JJ">convertible</lex> <lex pos="IN">into</lex> <NG><lex pos="NNS">shares</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Meridian</lex> <lex pos="JJ">common</lex> <lex pos="NN">stock</lex></NG> <lex pos="IN">at</lex> <lex pos="$">$</lex> <lex pos="CD">2</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos="IN">during</lex> <lex pos="PP$">its</lex> <NG><lex pos="JJ">one-year</lex> <lex pos="NN">term</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">loan</lex></NG> <VG><lex pos="MD">may</lex> <lex pos="VB">be</lex> <lex pos="VBN">extended</lex></VG> <lex pos="IN">by</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">McAlpine</lex> <lex pos="NN">group</lex></NG> <lex pos="IN">for</lex> <NG><lex pos="DT">an</lex> <lex pos="JJ">additional</lex> <lex pos="NN">year</lex></NG> <lex pos="IN">with</lex> <NG><lex pos="DT">an</lex> <lex pos="NN">increase</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">conversion</lex> <lex pos="NN">price</lex></NG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">2.50</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">sale</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNS">shares</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">McAlpine</lex> <lex pos="NN">family</lex></NG> <lex pos="IN">along</lex> <lex pos="IN">with</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">recent</lex> <lex pos="NN">sale</lex></NG> <lex pos="IN">of</lex> <lex pos="CD">750</lex> <lex pos=",">,</lex> <NG><lex pos="CD">000</lex> <lex pos="NNS">shares</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Meridian</lex> <lex pos="NN">stock</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="NNP">Haden</lex> <lex pos="NNP">MacLellan</lex> <lex pos="NNP">Holding</lex> <lex pos="NNP">PLC</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Surrey</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">England</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">recent</lex> <lex pos="JJ">public</lex> <lex pos="NN">offering</lex></NG> <VG><lex pos="VBP">have</lex> <lex pos="VBN">increased</lex></VG> <NG><lex pos="NNP">Meridian</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="JJ">s</lex> <lex pos="JJ">net</lex> <lex pos="NN">worth</lex></NG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">8.5</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="NNP">William</lex> <lex pos="NNP">Feniger</lex></NG> <lex pos=",">,</lex> <NG><lex pos="JJ">chief</lex> <lex pos="JJ">executive</lex> <lex pos="NN">officer</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Toledo</lex></NG> <lex pos=",">,</lex> <NG><lex pos="JJ">Ohio-based</lex> <lex pos="NNP">Meridian</lex></NG> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

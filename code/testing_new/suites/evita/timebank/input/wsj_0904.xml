@@ -1,0 +1,131 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891026-0155 </DOCNO>
+<DD> = 891026 </DD>
+<AN> 891026-0155. </AN>
+<HL> Technology amp Health:
+@  Compaq Computer
+@  Posts a 51% Surge
+@  In 3rd-Period Net
+@  ----
+@  By Robert Tomsho
+@  Staff Reporter of The Wall Street Journal </HL>
+<DD> 10/26/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> CPQ </CO>
+<IN> COMPUTERS AND INFORMATION TECHNOLOGY (CPR)
+EARNINGS (ERN) </IN>
+<DATELINE> HOUSTON  </DATELINE>
+<TEXT><s><NG><lex pos="NNP">Compaq</lex> <lex pos="NNP">Computer</lex> <lex pos="NNP">Corp</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD">said</lex></VG> <lex pos="IN">that</lex> <lex pos="PP$">its</lex> <NG><lex pos="JJ">net</lex> <lex pos="NN">income</lex></NG> <VG><lex pos="VBD">rose</lex></VG> <NG><lex pos="CD">51</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <TIMEX3 tid="t1" TYPE="DATE"><lex pos="JJ">third</lex> <lex pos="NN">quarter</lex></TIMEX3></NG> <lex pos=",">,</lex> <VG><lex pos="VBN">bolstered</lex></VG> <lex pos="IN">by</lex> <NG><lex pos="JJ">unusual</lex> <lex pos="NNS">gains</lex></NG> <lex pos="IN">from</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN">investment</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">disk-drive</lex> <lex pos="NN">maker</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="VBG">reflecting</lex> <lex pos="JJ">continued</lex> <lex pos="NN">growth</lex></NG> <lex pos="IN">in</lex> <lex pos="PP$">its</lex> <NG><lex pos="JJ">European</lex> <lex pos="NNS">operations</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">computer</lex> <lex pos="NN">maker</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos="JJ">net</lex> <VG><lex pos="VBD">jumped</lex></VG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">87</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <lex pos="$">$</lex> <lex pos="CD">2.02</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="IN">from</lex> <lex pos="$">$</lex> <lex pos="CD">58</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <lex pos="$">$</lex> <lex pos="CD">1.40</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <NG><TIMEX3 tid="t2" TYPE="DURATION" VAL="P1Y"><lex pos="DT">a</lex> <lex pos="NN">year</lex></TIMEX3></NG> <lex pos="RBR">earlier</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNS">Sales</lex></NG> <VG><lex pos="VBD">increased</lex></VG> <NG><lex pos="CD">36</lex> <lex pos="NN">%</lex></NG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">683</lex> <lex pos="CD">million</lex> <lex pos="IN">from</lex> <lex pos="$">$</lex> <lex pos="CD">502</lex> <lex pos="CD">million</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="JJS">latest</lex> <lex pos="NN">quarter</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNS">results</lex></NG> <lex pos=",">,</lex> <lex pos="RB">however</lex> <lex pos=",">,</lex> <VG><lex pos="VBD">included</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">pretax</lex> <lex pos="NN">gain</lex></NG> <lex pos="IN">of</lex> <lex pos="$">$</lex> <lex pos="CD">13.7</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">20</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <lex pos="VBG">carrying</lex> <lex pos="NN">value</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="JJ">s</lex> <lex pos="NN">investment</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NNP">Conner</lex></NG> <lex pos="NPS">Peripherals</lex> <NG><lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> <lex pos="CC">and</lex> <lex pos="DT">a</lex> <lex pos="$">$</lex> <NG><lex pos="CD">7.6</lex> <lex pos="CD">million</lex> <lex pos="NN">gain</lex></NG> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">11</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="IN">from</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">sale</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="CD">one</lex> <lex pos="CD">million</lex> <lex pos="NNP">Conner</lex> <lex pos="NNS">shares</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="JJ">Net</lex> <lex pos="IN">for</lex> <NG><TIMEX3 tid="t3" TYPE="DURATION" VAL="P9M"><lex pos="DT">the</lex> <lex pos="CD">nine</lex> <lex pos="NNS">months</lex></TIMEX3></NG> <VG><lex pos="VBD">was</lex></VG> <lex pos="$">$</lex> <lex pos="CD">254</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <lex pos="$">$</lex> <lex pos="CD">5.94</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="RB">up</lex> <NG><lex pos="CD">56</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">from</lex> <lex pos="$">$</lex> <lex pos="CD">163</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <lex pos="$">$</lex> <lex pos="CD">4.06</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <NG><TIMEX3 tid="t4" TYPE="DURATION" VAL="P1Y"><lex pos="DT">a</lex> <lex pos="NN">year</lex></TIMEX3></NG> <lex pos="RBR">earlier</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNS">Sales</lex></NG> <VG><lex pos="VBD">rose</lex></VG> <NG><lex pos="CD">50</lex> <lex pos="NN">%</lex></NG> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">2.1</lex> <lex pos="CD">billion</lex> <lex pos="IN">from</lex> <lex pos="$">$</lex> <lex pos="CD">1.4</lex> <lex pos="CD">billion</lex> <lex pos=".">.</lex> </s> <s><lex pos="JJ">Net</lex> <lex pos="IN">for</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">year-earlier</lex> <TIMEX3 tid="t5" TYPE="DURATION" VAL="P9M"><lex pos="CD">nine</lex> <lex pos="NNS">months</lex></TIMEX3></NG> <lex pos="RB">also</lex> <VG><lex pos="VBD">included</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="NN">gain</lex></NG> <lex pos="IN">of</lex> <lex pos="$">$</lex> <lex pos="CD">9.7</lex> <lex pos="CD">million</lex> <lex pos=",">,</lex> <lex pos="CC">or</lex> <NG><lex pos="CD">15</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="IN">in</lex> <NG><lex pos="DT">the</lex> <lex pos="VBG">carrying</lex> <lex pos="NN">value</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Conner</lex> <lex pos="NN">investment</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Michael</lex> <lex pos="NNP">Swavely</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NN">president</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Compaq</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNP">North</lex> <lex pos="NNP">America</lex> <lex pos="NN">division</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBD">attributed</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="JJ">s</lex> <TIMEX3 tid="t6" TYPE="DATE"><lex pos="JJ">third-quarter</lex></TIMEX3> <lex pos="NN">performance</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="JJ">continued</lex> <lex pos="NNS">increases</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="JJ">international</lex> <lex pos="NNS">sales</lex></NG> <lex pos=",">,</lex> <lex pos="WDT">which</lex> <VG><lex pos="VBD">accounted</lex></VG> <lex pos="IN">for</lex> <NG><lex pos="CD">43</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNS">sales</lex></NG> <lex pos=",">,</lex> <NG><lex pos="DT">a</lex> <lex pos="CD">74</lex> <lex pos="NN">%</lex> <lex pos="NN">increase</lex></NG> <lex pos="IN">from</lex> <NG><TIMEX3 tid="t7" TYPE="DURATION" VAL="P1Y"><lex pos="DT">a</lex> <lex pos="NN">year</lex></TIMEX3></NG> <lex pos="RBR">earlier</lex> <lex pos=".">.</lex> </s> <s><lex pos="CC">&amp;amp;</lex> <NG><lex pos="NN">quot</lex></NG> <lex pos=":">;</lex> <lex pos="IN">Over</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">next</lex> <lex pos="NN">couple</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNS">years</lex></NG> <NG><lex pos="PP">we</lex></NG> <VG><lex pos="MD">would</lex> <lex pos="RB">not</lex> <lex pos="VB">be</lex> <lex pos="VBN">surprised</lex></VG> <VG><lex pos="TO">to</lex> <lex pos="VB">see</lex></VG> <NG><lex pos="NNP">Europe</lex></NG> <lex pos="CC">and</lex> <lex pos="JJ">international</lex> <lex pos="(">{</lex> <NG><lex pos="NNS">sales</lex></NG> <lex pos=")">}</lex> <VG><lex pos="VBP">represent</lex></VG> <NG><lex pos="CD">50</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNS">revenues</lex></NG> <lex pos=",">,</lex> <lex pos="CC">&amp;amp;</lex> <NG><lex pos="NN">quot</lex></NG> <lex pos=":">;</lex> <NG><lex pos="PP">he</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos=".">.</lex> </s> <s><lex pos="IN">During</lex> <NG><lex pos="DT">the</lex> <TIMEX3 tid="t8" TYPE="DATE"><lex pos="JJ">third</lex> <lex pos="NN">quarter</lex></TIMEX3></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Compaq</lex></NG> <VG><lex pos="VBD">purchased</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">former</lex> <lex pos="NNP">Wang</lex></NG> <lex pos="NPS">Laboratories</lex> <NG><lex pos="NN">manufacturing</lex> <lex pos="NN">facility</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NNP">Stirling</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Scotland</lex></NG> <lex pos=",">,</lex> <lex pos="WDT">which</lex> <VG><lex pos="MD">will</lex> <lex pos="VB">be</lex> <lex pos="VBN">used</lex></VG> <lex pos="IN">for</lex> <NG><lex pos="JJ">international</lex> <lex pos="NN">service</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">repair</lex> <lex pos="NNS">operations</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Mr</lex></NG> <lex pos=".">.</lex> <NG><lex pos="NNP">Swavely</lex></NG> <VG><lex pos="VBD">said</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="JJ">new</lex> <lex pos="NN">space</lex></NG> <VG><lex pos="MD">will</lex> <lex pos="VB">allow</lex></VG> <NG><lex pos="NNP">Compaq</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB">increase</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">manufacturing</lex> <lex pos="NN">capacity</lex></NG> <lex pos="IN">of</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN">plant</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NNP">Erskine</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Scotland</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="IN">In</lex> <NG><lex pos="NNP">New</lex> <lex pos="NNP">York</lex> <lex pos="NNP">Stock</lex> <lex pos="NNP">Exchange</lex> <lex pos="JJ">composite</lex> <lex pos="NN">trading</lex> <TIMEX3 tid="t9" TYPE="DATE" VAL="19891025"><lex pos="NN">yesterday</lex></TIMEX3></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Compaq</lex> <lex pos="NNS">shares</lex></NG> <VG><lex pos="VBD">fell</lex></VG> <lex pos="$">$</lex> <lex pos="CD">1.625</lex> <lex pos="TO">to</lex> <lex pos="$">$</lex> <lex pos="CD">108.625</lex> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

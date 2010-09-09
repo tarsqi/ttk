@@ -1,0 +1,55 @@
+Thu Feb  7 15:58:09 2008    profile-closure.txt
+
+         109312 function calls in 1.640 CPU seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.640    1.640 profile:0(propagator.add_constraints())
+        1    0.000    0.000    1.640    1.640 <string>:1(?)
+        1    0.000    0.000    1.640    1.640 main.py:129(add_constraints)
+       86    0.190    0.002    1.640    0.019 graph.py:61(propagate)
+       86    0.000    0.000    1.640    0.019 main.py:116(add_constraint)
+     4289    0.290    0.000    0.710    0.000 graph.py:154(_check_k_i_j)
+     4069    0.210    0.000    0.590    0.000 graph.py:173(_check_i_j_k)
+     7874    0.150    0.000    0.350    0.000 graph.py:240(_compose)
+    24116    0.170    0.000    0.170    0.000 objects.py:215(__str__)
+     2439    0.030    0.000    0.160    0.000 graph.py:192(_combine)
+    11245    0.140    0.000    0.140    0.000 objects.py:75(get_relset)
+      932    0.050    0.000    0.070    0.000 graph.py:125(_intersect_constraints)
+     7874    0.070    0.000    0.070    0.000 utils.py:85(compose_rels)
+     7874    0.070    0.000    0.070    0.000 graph.py:257(_get_edge)
+    13450    0.060    0.000    0.060    0.000 graph.py:372(debug)
+     8806    0.050    0.000    0.050    0.000 objects.py:198(get_relset)
+      846    0.050    0.000    0.050    0.000 graph.py:214(_add_constraint_to_queue)
+     3371    0.030    0.000    0.030    0.000 utils.py:3(intersect_relations)
+      458    0.020    0.000    0.020    0.000 objects.py:194(get_node2)
+      458    0.020    0.000    0.020    0.000 graph.py:249(_add_constraint_to_edge)
+     4747    0.020    0.000    0.020    0.000 objects.py:82(get_node1)
+     4527    0.020    0.000    0.020    0.000 objects.py:86(get_node2)
+      458    0.000    0.000    0.010    0.000 objects.py:190(get_node1)
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     4289    0.290    0.000    0.710    0.000 graph.py:154(_check_k_i_j)
+     4069    0.210    0.000    0.590    0.000 graph.py:173(_check_i_j_k)
+       86    0.190    0.002    1.640    0.019 graph.py:61(propagate)
+    24116    0.170    0.000    0.170    0.000 objects.py:215(__str__)
+     7874    0.150    0.000    0.350    0.000 graph.py:240(_compose)
+    11245    0.140    0.000    0.140    0.000 objects.py:75(get_relset)
+     7874    0.070    0.000    0.070    0.000 utils.py:85(compose_rels)
+     7874    0.070    0.000    0.070    0.000 graph.py:257(_get_edge)
+    13450    0.060    0.000    0.060    0.000 graph.py:372(debug)
+      932    0.050    0.000    0.070    0.000 graph.py:125(_intersect_constraints)
+     8806    0.050    0.000    0.050    0.000 objects.py:198(get_relset)
+      846    0.050    0.000    0.050    0.000 graph.py:214(_add_constraint_to_queue)
+     2439    0.030    0.000    0.160    0.000 graph.py:192(_combine)
+     3371    0.030    0.000    0.030    0.000 utils.py:3(intersect_relations)
+      458    0.020    0.000    0.020    0.000 objects.py:194(get_node2)
+      458    0.020    0.000    0.020    0.000 graph.py:249(_add_constraint_to_edge)
+     4747    0.020    0.000    0.020    0.000 objects.py:82(get_node1)
+     4527    0.020    0.000    0.020    0.000 objects.py:86(get_node2)
+
+
+

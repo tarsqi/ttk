@@ -1,0 +1,65 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> APW19980227.0468 </DOCNO>
+<DOCTYPE SOURCE="newswire"> NEWS STORY </DOCTYPE>
+<DATE_TIME> 02/27/1998 07:56:00 </DATE_TIME>
+<HEADER>
+w2373 Cx1f wstm-
+r i Cx13  Cx11  BC-Russia-Kalashnikov'sM 1stLd   02-27 0148
+</HEADER>
+<BODY>
+ BC-Russia-Kalashnikov's Museum, 1st Ld 
+<HEADLINE>
+Moscow mayor donates funds to build Kalashnikov museum
+</HEADLINE>
+UR Eds: SUBS 3rd graf to conform to AP style. QL
+
+<TEXT><s><NG><lex pos="NNP">MOSCOW</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNP">AP</lex></NG> <lex pos=")">)</lex> <lex pos="SYM">_</lex> <NG><lex pos="DT">The</lex> <lex pos="NN">mayor</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Moscow</lex></NG> <VG><lex pos="VBZ">has</lex> <lex pos="VBN"><EVENT eid="e1" class="OCCURRENCE">allocated</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PRESENT" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <NG><lex pos="NNS">funds</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e2" class="OCCURRENCE">help</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="VERB" eiid="ei2" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE> <lex pos="VB"><EVENT eid="e3" class="OCCURRENCE">build</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">a</lex> <lex pos="NN">museum</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="NN">honor</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Mikhail</lex> <lex pos="NNP">Kalashnikov</lex></NG> <lex pos=",">,</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Russian</lex></NG> <lex pos="WP">who</lex> <VG><lex pos="VBD"><EVENT eid="e4" class="OCCURRENCE">gave</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="VERB" eiid="ei4" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="PP$">his</lex> <NG><lex pos="NN">name</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">world</lex></NG> <lex pos="POS">'</lex> <lex pos="JJ">s</lex> <lex pos="RBS">most</lex> <lex pos="RB">widely</lex> <NG><lex pos="VBN">wielded</lex> <lex pos="NN">weapon</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBG"><EVENT eid="e5" class="OCCURRENCE">according</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="TO">to</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">news</lex> <lex pos="NN">agency</lex> <lex pos="NN">report</lex> <TIMEX3 tid="t1" TYPE="DATE" VAL="19980227"><lex pos="NNP">Friday</lex></TIMEX3></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Kalashnikov</lex></NG> <VG><lex pos="VBD"><EVENT eid="e6" class="OCCURRENCE">designed</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="JJ">AK-47</lex> <lex pos="JJ">automatic</lex> <lex pos="NN">rifle</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBN"><EVENT eid="e7" class="OCCURRENCE">famed</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">for</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN">reliability</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NN">effectiveness</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="RB">Together</lex> <lex pos="IN">with</lex> <lex pos="PP$">its</lex> <NG><lex pos="NNS">derivatives</lex></NG> <lex pos=",">,</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">Kalashnikov</lex> <lex pos="NN">rifle</lex></NG> <VG><lex pos="VBZ">has</lex> <lex pos="VBN">been</lex> <lex pos="VBN"><EVENT eid="e8" class="OCCURRENCE">used</EVENT></lex><MAKEINSTANCE eventID="e8" polarity="POS" pos="VERB" eiid="ei8" tense="PRESENT" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <lex pos="IN">by</lex> <NG><lex pos="DT">the</lex> <lex pos="NNS">police</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NNS">armies</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="CD">55</lex> <lex pos="NNS">countries</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="DT">an</lex> <lex pos="NN">assortment</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNS">guerrillas</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNS">terrorists</lex></NG> <lex pos="CC">and</lex> <lex pos="RB">just</lex> <NG><lex pos="JJ">plain</lex> <lex pos="NNS">thugs</lex></NG> <lex pos="IN">around</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">globe</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NN">Seventy-five</lex> <lex pos="CD">million</lex> <lex pos="NNS">copies</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">rifle</lex></NG> <VG><lex pos="VBP">have</lex> <lex pos="VBN">been</lex> <lex pos="VBN"><EVENT eid="e9" class="OCCURRENCE">built</EVENT></lex><MAKEINSTANCE eventID="e9" polarity="POS" pos="VERB" eiid="ei9" tense="PRESENT" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <lex pos="IN">since</lex> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD"><EVENT eid="e10" class="OCCURRENCE">entered</EVENT></lex><MAKEINSTANCE eventID="e10" polarity="POS" pos="VERB" eiid="ei10" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NN"><EVENT eid="e11" class="OCCURRENCE">production</EVENT></lex><MAKEINSTANCE eventID="e11" polarity="POS" pos="NOUN" eiid="ei11" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">in</lex> <NG><lex pos="NNP">February</lex></NG> <lex pos="CD">1947</lex> <lex pos=",">,</lex> <VG><lex pos="VBG"><EVENT eid="e12" class="OCCURRENCE">making</EVENT></lex><MAKEINSTANCE eventID="e12" polarity="POS" pos="VERB" eiid="ei12" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="PP">it</lex></NG> <NG><lex pos="NN">history</lex></NG> <lex pos="POS">'</lex> <lex pos="JJ">s</lex> <lex pos="RBS">most</lex> <lex pos="RB">widely</lex> <NG><lex pos="VBN">distributed</lex> <lex pos="NN">weapon</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">UR</lex> <lex pos="NNP">The</lex> <lex pos="NNP">ITAR-Tass</lex></NG> <lex pos=",">,</lex> <NG><lex pos="JJ">4th</lex> <lex pos="NNP">graf</lex> <lex pos="NNS">pvs</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNS">pvs</lex></NG> <lex pos="SYM">/</lex> <NG><lex pos="NN">ji</lex></NG> <lex pos=")">)</lex> </s> </TEXT>
+(PROFILE
+(WS SL:BC-Russia-Kalashnikov's Museum, 1st Ld; CT:i;
+(REG:EURO;)
+(REG:BRIT;)
+(REG:SCAN;)
+(REG:MEST;)
+(REG:AFRI;)
+(REG:INDI;)
+(REG:ENGL;)
+(REG:ASIA;)
+(LANG:ENGLISH;))
+)
+</BODY>
+<TRAILER>
+AP-NY-02-27-98 0756EST
+</TRAILER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

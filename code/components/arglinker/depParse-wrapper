@@ -1,0 +1,12 @@
+#!/bin/bash
+PROG=`dirname $0`/depParseDecode.native
+WORK=`mktemp -t -d`
+IN=$1
+OUT=$2
+MODEL=$3
+#echo IN:$IN OUT:$OUT MODEL:$MODEL
+#echo WORK:$WORK
+cp $IN $WORK/data && \
+$PROG -input $WORK/ -output $WORK/ -out-suffix .out -model $MODEL && \
+cp -f $WORK/data.out $OUT && \
+rm -rf $WORK

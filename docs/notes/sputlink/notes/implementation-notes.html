@@ -1,0 +1,159 @@
+<html>
+<head>
+<title>SputLink Implementation Notes</tile>
+</head>
+
+<body>
+
+<h1>SputLink Implementation Notes</h1>
+
+
+<h3>080201 - First prototype with closure only (no graph reduction)</h3>
+
+Some small speed benchmarks on APW19980322.0749, using the
+MacBook Pro (time in seconds):
+
+<blockquote>
+<table cellpadding="5pt" cellspacing="0pt" border="1">
+<tr>
+  <td>1
+  <td>Perl, no threshold
+  <td align="right">34
+<tr>
+  <td>2
+  <td>Perl, threshold of 0.95
+  <td align="right">9
+<tr>
+  <td>3
+  <td>Python, no threshold, adding inverted constraints 
+  <td align="right">29
+<tr>
+  <td>4
+  <td>Python, no threshold, no inverted constraints 
+  <td align="right">23
+</table>
+</blockquote>
+
+Perl test 1 is with no threshold filter on constraints (which means
+that all constraints are added, which takes much longer). For test 2,
+a threshold of 0.95 was used, which is the current standard for the
+toolkit. Python tests 3 and 4 are very similar. None of them uses a
+threshold. The only difference is in the method
+Graph._add_constraint_to_queue(): in 3 the inverted constraint is also
+added, in 4 it isn't. The results are the same, but 4 is faster. The
+Python code was not tested with the threshold.
+
+<p>
+
+It seems fair to say that the Python implementation is 15-30%
+faster. What's more, the Python version derives more links: 5050
+versus 3556 (perl test3). This is not yet explained.
+
+
+<h3>080207 - Running profiler</h3>
+
+Ran profiler on wsj_0128 both for
+the <a href="notes-closure-profile.txt">closure part</a> and
+the <a href="notes-reduction-profile.txt">reduction part</a>. It
+should be noted that reduction was not completely implemented
+yet. Also, the profiler should probably also run on a larger file.
+
+<p>
+
+The closure phase takes about ten times more time that the reduction
+phase, this may be even worse for larger documents. The optimizations
+suggested in the specifications stiil seem to make sense (although the
+gain on compiling out intersections is smaller than expected). In
+addition, the following things can be done (listed with the
+highest-impact changes first):
+
+<ol>
+<li>Remove all debugging code or make sure that the __str__ method is
+  only called when actually debugging by handing objects to the
+  debugger rather than strings.
+<li>Remove Edge.get_relset by introducing a relset attribute on Edge
+  and setting it each time a constraint is set. With this method gone,
+  Constraint.get_relset can be eliminated too. Also note that
+  Graph._compose is slow because of get_relset.
+<li>Graph._get_edge could possibly be much faster if it would use a
+  lookup in the table rather than trying get() on the nodes.
+<li>The get_node1 and get_node2 methods should be eliminated,
+  especially on the edges. Just use attributes for these.
+<li>Compile out all intersections once and use a lookup table.
+</ol>
+
+These fairly simple changes could speed up closure by 30-40%. Serious
+optimization of graph reduction will come from the following sources:
+
+<ol>
+<li>Optimizing closure will speed up one of the slowest closure
+  methods (Edge.get_relset)
+<li>Remove print statements
+<li>Replace the get() method in abbreviate_convex_relations
+</ol>
+
+In addition, when going through all edges and trying to decide whether
+they are derivable, we could for many of them simply check the source
+attribute of the constraint. Code optimization could speed up
+reduction by as much as 75%.
+
+
+<h3>080207 - Optimization</h3>
+
+Pretty large speed gains were achieved by removing debug/print
+statements (item 1) and by removing the get_relset methods (item 2):
+profiler CPU seconds went from 1.6 to 0.7. Improvements were
+negligable after simplifying get_edge. Items 4 and 5 are not done
+yet. Now let's look at the table presented before, with two new tests
+added:
+
+<blockquote>
+<table cellpadding="5pt" cellspacing="0pt" border="1">
+<tr>
+  <td>1
+  <td>Perl, no threshold
+  <td align="right">34
+<tr>
+  <td>2
+  <td>Perl, threshold of 0.95
+  <td align="right">9
+<tr>
+  <td>3
+  <td>Python, no threshold, adding inverted constraints 
+  <td align="right">29
+<tr>
+  <td>4
+  <td>Python, no threshold, no inverted constraints 
+  <td align="right">23
+<tr>
+  <td>5
+  <td>Python, like 4, but with some optimizations
+  <td align="right">7
+<tr>
+  <td>6
+  <td>Python, like 5, using a threshold of 0.95
+  <td align="right">1
+</table>
+</blockquote>
+
+Test 5 includes the optimizations just mentioned, test 6 adds a
+threshold on confidence on classifier links.  The speed improvement
+from test 4 to 5 is about 70%, more than bargained for (and more than
+reported by the profiler, which suggested a 55% improvement). Test 6
+took less than a second (0.54 in fact). The speedup there is much
+bigger than with the Perl version probably because the Perl version
+seemed to miss some derivations, which must have sped up the system,
+skewing speed test 1. It seems fair to say that the partially
+optimized Python version is more than 10 times faster than the Perl
+version. This needs to be checked on all of TimeBank.
+
+<p>
+
+For the reduction phase, the first two items above were implemented as
+well as the use of the source attribute for deciding when an edge is
+derivable. This gave very good speed improvements: the CPU time
+reported by the profiler went down from 0.160 to 0.030 (about 80%
+faster).
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891026-0016 </DOCNO>
+<DD> = 891026 </DD>
+<AN> 891026-0016. </AN>
+<HL> Dividend News:
+@  Oneida Ltd. </HL>
+<DD> 10/26/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> OCQ </CO>
+<IN> DIVIDENDS (DIV) </IN>
+<TEXT><s><NG><lex pos="NNP">ONEIDA</lex> <lex pos="NNP">Ltd</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD">declared</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="CD">10</lex> <lex pos="NN">%</lex> <lex pos="NN">stock</lex> <lex pos="NN">dividend</lex></NG> <lex pos=",">,</lex> <NG><lex pos="JJ">payable</lex> <lex pos="NNP">Dec</lex></NG> <lex pos=".">.</lex> <lex pos="CD">15</lex> <lex pos="TO">to</lex> <NG><lex pos="NN">stock</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NN">record</lex> <lex pos="NNP">Nov</lex></NG> <lex pos=".">.</lex> </s> <s><lex pos="CD">17</lex> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NNP">Oneida</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">N.Y.</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NN">maker</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NN">consumer</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NN">food-service</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="JJ">industrial</lex> <lex pos="NNS">products</lex></NG> <lex pos="RB">also</lex> <VG><lex pos="VBD">declared</lex></VG> <NG><lex pos="DT">a</lex> <lex pos="JJ">quarterly</lex> <lex pos="NN">cash</lex> <lex pos="NN">dividend</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="CD">12</lex> <lex pos="NNS">cents</lex></NG> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="IN">with</lex> <lex pos="DT">the</lex> <lex pos="JJ">same</lex> <lex pos="JJ">payable</lex> <lex pos="CC">and</lex> <NG><lex pos="NN">record</lex> <lex pos="NNS">dates</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">cash</lex> <lex pos="NN">dividend</lex></NG> <VG><lex pos="VBN">paid</lex></VG> <lex pos="IN">on</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">common</lex> <lex pos="NN">stock</lex></NG> <lex pos="RB">also</lex> <VG><lex pos="MD">will</lex> <lex pos="VB">apply</lex></VG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="JJ">new</lex> <lex pos="NNS">shares</lex></NG> <lex pos=",">,</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">move</lex></NG> <VG><lex pos="VBZ">rewards</lex></VG> <NG><lex pos="NNS">shareholders</lex></NG> <lex pos="CC">and</lex> <VG><lex pos="MD">should</lex> <lex pos="VB">improve</lex></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">stock</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NN">liquidity</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Oneida</lex></NG> <VG><lex pos="VBD">said</lex></VG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">company</lex></NG> <VG><lex pos="VBZ">has</lex></VG> <lex pos="RB">about</lex> <NG><lex pos="CD">8.8</lex> <lex pos="CD">million</lex> <lex pos="NNS">shares</lex></NG> <lex pos="JJ">outstanding</lex> <lex pos=".">.</lex> </s> <s><lex pos="IN">In</lex> <NG><lex pos="NNP">New</lex> <lex pos="NNP">York</lex> <lex pos="NNP">Stock</lex> <lex pos="NNP">Exchange</lex> <lex pos="JJ">composite</lex> <lex pos="NN">trading</lex> <lex pos="NN">yesterday</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Oneida</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNS">shares</lex></NG> <VG><lex pos="VBD">closed</lex></VG> <lex pos="IN">at</lex> <lex pos="$">$</lex> <lex pos="CD">18.375</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">share</lex></NG> <lex pos=",">,</lex> <lex pos="JJ">unchanged</lex> <lex pos=".">.</lex> </s> </TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

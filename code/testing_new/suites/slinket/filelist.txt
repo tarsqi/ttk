@@ -1,0 +1,98 @@
+
+<FILESET>
+
+<INFO module='slinket' mod_date='8-20-2008' />
+
+
+<SIMPLE-XML>
+
+<FILE name='georgia.xml' comment='' />
+<FILE name='gettysburg.xml' comment='' />
+<FILE name='godot.xml' comment='' />
+<FILE name='hurricane.xml' comment='' />
+<FILE name='nonsense.xml' comment='' />
+<FILE name='pakistan.xml' comment='' />
+<FILE name='stocks.xml' comment='' />
+<FILE name='test.xml' comment='' />
+
+</SIMPLE-XML>
+
+
+
+<TIMEBANK>
+
+<FILE name='ABC19980108.1830.0711.xml' comment='' />
+<FILE name='ABC19980114.1830.0611.xml' comment='' />
+<FILE name='ABC19980120.1830.0957.xml' comment='' />
+<FILE name='APW19980219.0476.xml' comment='' />
+<FILE name='APW19980227.0468.xml' comment='' />
+<FILE name='APW19980227.0476.xml' comment='' />
+<FILE name='APW19980626.0364.xml' comment='' />
+<FILE name='CNN19980126.1600.1104.xml' comment='' />
+<FILE name='CNN19980213.2130.0155.xml' comment='' />
+<FILE name='ea980120.1830.0071.xml' comment='' />
+<FILE name='ea980120.1830.0456.xml' comment='' />
+<FILE name='ed980111.1130.0089.xml' comment='' />
+<FILE name='NYT19980206.0460.xml' comment='' />
+<FILE name='NYT19980206.0466.xml' comment='' />
+<FILE name='NYT19980212.0019.xml' comment='' />
+<FILE name='VOA19980303.1600.2745.xml' comment='' />
+<FILE name='VOA19980305.1800.2603.xml' comment='' />
+<FILE name='VOA19980331.1700.1533.xml' comment='' />
+<FILE name='WSJ900813-0157.xml' comment='' />
+<FILE name='WSJ910225-0066.xml' comment='' />
+<FILE name='wsj_0073.xml' comment='' />
+<FILE name='wsj_0106.xml' comment='' />
+<FILE name='wsj_0122.xml' comment='' />
+<FILE name='wsj_0167.xml' comment='' />
+<FILE name='wsj_0168.xml' comment='' />
+<FILE name='wsj_0169.xml' comment='' />
+<FILE name='wsj_0583.xml' comment='' />
+<FILE name='wsj_0584.xml' comment='' />
+<FILE name='wsj_0585.xml' comment='' />
+<FILE name='wsj_0815.xml' comment='' />
+<FILE name='wsj_0816.xml' comment='' />
+<FILE name='wsj_0904.xml' comment='' />
+<FILE name='wsj_1011.xml' comment='' />
+<FILE name='wsj_1013.xml' comment='' />
+<FILE name='wsj_1014.xml' comment='' />
+<FILE name='wsj_1040.xml' comment='' />
+<FILE name='wsj_1042.xml' comment='' />
+<FILE name='wsj_1073.xml' comment='' />
+
+</TIMEBANK>
+
+
+
+<RTE3>
+
+<FILE name='rte3-001.xml' comment='' />
+<FILE name='rte3-002.xml' comment='' />
+<FILE name='rte3-003.xml' comment='' />
+<FILE name='rte3-004.xml' comment='' />
+<FILE name='rte3-005.xml' comment='' />
+<FILE name='rte3-006.xml' comment='' />
+<FILE name='rte3-007.xml' comment='' />
+<FILE name='rte3-008.xml' comment='' />
+<FILE name='rte3-009.xml' comment='' />
+<FILE name='rte3-010.xml' comment='' />
+<FILE name='rte3-011.xml' comment='' />
+<FILE name='rte3-012.xml' comment='' />
+<FILE name='rte3-013.xml' comment='' />
+<FILE name='rte3-014.xml' comment='' />
+<FILE name='rte3-015.xml' comment='' />
+<FILE name='rte3-016.xml' comment='' />
+<FILE name='rte3-017.xml' comment='' />
+<FILE name='rte3-018.xml' comment='' />
+<FILE name='rte3-019.xml' comment='' />
+<FILE name='rte3-020.xml' comment='' />
+<FILE name='rte3-021.xml' comment='' />
+<FILE name='rte3-022.xml' comment='' />
+<FILE name='rte3-023.xml' comment='' />
+<FILE name='rte3-024.xml' comment='' />
+<FILE name='rte3-025.xml' comment='' />
+
+</RTE3>
+
+
+</FILESET>

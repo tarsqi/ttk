@@ -1,0 +1,30 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> WSJ891025-0157 </DOCNO>
+<DD> = 891025 </DD>
+<AN> 891025-0157. </AN>
+<HL> Advanced Medical Makes Purchase </HL>
+<DD> 10/25/89 </DD>
+<SO> WALL STREET JOURNAL (J) </SO>
+<CO> AMA HENG </CO>
+<IN> TENDER OFFERS, MERGERS, ACQUISITIONS (TNM)
+MEDICAL AND BIOTECHNOLOGY (MTC) </IN>
+<DATELINE> SAN FRANCISCO  </DATELINE>
+<TEXT><s><NG><lex pos="NNP">Advanced</lex> <lex pos="NNP">Medical</lex></NG> <lex pos="NPS">Technologies</lex> <NG><lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> <VG><lex pos="VBD"><EVENT eid="e1" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="VBD"><EVENT eid="e2" class="OCCURRENCE">purchased</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="VERB" eiid="ei2" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="CD">93</lex> <lex pos="NN">%</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">unit</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Henley</lex> <lex pos="NNP">Group</lex> <lex pos="NNP">Inc</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Advanced</lex> <lex pos="NNP">Medical</lex></NG> <VG><lex pos="VBD"><EVENT eid="e3" class="OCCURRENCE">paid</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="$">$</lex> <lex pos="CD">106</lex> <lex pos="CD">million</lex> <lex pos="IN">in</lex> <NG><lex pos="NN">cash</lex></NG> <lex pos="IN">for</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN">share</lex></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="NN">unit</lex></NG> <lex pos="IN">of</lex> <NG><lex pos="NNP">Henley</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN">s</lex> <lex pos="NNP">Fisher</lex> <lex pos="NNP">Scientific</lex> <lex pos="NN">subsidiary</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN">unit</lex></NG> <VG><lex pos="VBZ"><EVENT eid="e4" class="OCCURRENCE">makes</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="VERB" eiid="ei4" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="JJ">intravenous</lex> <lex pos="NNS">pumps</lex></NG> <VG><lex pos="VBN"><EVENT eid="e5" class="OCCURRENCE">used</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">by</lex> <NG><lex pos="NNS">hospitals</lex></NG> <lex pos="CC">and</lex> <VG><lex pos="VBD"><EVENT eid="e6" class="OCCURRENCE">had</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="JJR">more</lex> <lex pos="IN">than</lex> <lex pos="$">$</lex> <lex pos="CD">110</lex> <lex pos="CD">million</lex> <lex pos="IN">in</lex> <NG><lex pos="NNS">sales</lex> <TIMEX3 tid="t1" TYPE="DATE" VAL="1988"><lex pos="JJ">last</lex> <lex pos="NN">year</lex></TIMEX3></NG> <lex pos=",">,</lex> <VG><lex pos="VBG"><EVENT eid="e7" class="OCCURRENCE">according</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="TO">to</lex> <NG><lex pos="NNP">Advanced</lex> <lex pos="NNP">Medical</lex></NG> <lex pos=".">.</lex> </s> <SLINK lid="l1" relType="EVIDENTIAL" eventInstanceID="ei1" subordinatedEventInstance="ei2" syntax="thatClause_NOT_that"></SLINK><TLINK lid="l2" relatedToEventInstance="ei2" relType="AFTER" eventInstanceID="ei1" origin="S2T Rule 3"></TLINK><TLINK lid="l3" relatedToEventInstance="ei2" relType="AFTER" eventInstanceID="ei1" origin="Blinker - Type 5 (rule 29)"></TLINK><TLINK lid="l4" relatedToEventInstance="ei3" relType="BEFORE" eventInstanceID="ei1" origin="Blinker - Type 3 (rule 19)"></TLINK><TLINK lid="l5" relatedToEventInstance="ei4" relType="BEFORE" eventInstanceID="ei3" origin="Blinker - Type 3 (rule 23)"></TLINK></TEXT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

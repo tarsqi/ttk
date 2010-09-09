@@ -1,0 +1,79 @@
+
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../dtd/timeml_1.2.1.xsd">
+
+<DOCNO> APW19980227.0476 </DOCNO>
+<DOCTYPE SOURCE="newswire"> NEWS STORY </DOCTYPE>
+<DATE_TIME> 02/27/1998 08:02:00 </DATE_TIME>
+<HEADER>
+w2381 Cx1f wstm-
+u i Cx13  Cx11  BC-WorldCourt-Lockerbie 5thLd   02-27 0169
+</HEADER>
+<BODY>
+ BC-World Court-Lockerbie, 5th Ld 
+<HEADLINE>
+World Court declares jurisdiction in Lockerbie dispute
+</HEADLINE>
+UR Eds: RECASTS lead to clarify; ADDS detail of U.S. and British
+objections in 3rd graf. QL
+UR AP Photo staffing QL
+UR By MIKE CORDER QC
+UR Associated Press Writer QC
+
+<TEXT><s><NG><lex pos="DT">THE</lex> <lex pos="NNP">HAGUE</lex></NG> <lex pos=",">,</lex> <NG><lex pos="NNP">Netherlands</lex></NG> <lex pos="(">(</lex> <NG><lex pos="NNP">AP</lex></NG> <lex pos=")">)</lex> <lex pos="SYM">_</lex> <NG><lex pos="DT">The</lex> <lex pos="NNP">World</lex> <lex pos="NNP">Court</lex> <TIMEX3 tid="t1" TYPE="DATE" VAL="19980227"><lex pos="NNP">Friday</lex></TIMEX3></NG> <VG><lex pos="VBD"><EVENT eid="e1" class="OCCURRENCE">rejected</EVENT></lex><MAKEINSTANCE eventID="e1" polarity="POS" pos="VERB" eiid="ei1" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNP">U.S.</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="JJ">British</lex> <lex pos="NNS"><EVENT eid="e2" class="OCCURRENCE">objections</EVENT></lex><MAKEINSTANCE eventID="e2" polarity="POS" pos="NOUN" eiid="ei2" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">Libyan</lex> <lex pos="NNP">World</lex> <lex pos="NNP">Court</lex> <lex pos="NN">case</lex></NG> <lex pos="WDT">that</lex> <VG><lex pos="VBZ">has</lex> <lex pos="VBN"><EVENT eid="e3" class="OCCURRENCE">blocked</EVENT></lex><MAKEINSTANCE eventID="e3" polarity="POS" pos="VERB" eiid="ei3" tense="PRESENT" aspect="PERFECTIVE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN"><EVENT eid="e4" class="OCCURRENCE">trial</EVENT></lex><MAKEINSTANCE eventID="e4" polarity="POS" pos="NOUN" eiid="ei4" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">of</lex> <lex pos="CD">two</lex> <lex pos="NPS">Libyans</lex> <VG><lex pos="VBN"><EVENT eid="e5" class="OCCURRENCE">suspected</EVENT></lex><MAKEINSTANCE eventID="e5" polarity="POS" pos="VERB" eiid="ei5" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">of</lex> <VG><lex pos="VBG"><EVENT eid="e6" class="OCCURRENCE">blowing</EVENT></lex><MAKEINSTANCE eventID="e6" polarity="POS" pos="VERB" eiid="ei6" tense="PRESPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="RP">up</lex> <NG><lex pos="DT">a</lex> <lex pos="NNP">Pan</lex> <lex pos="NNP">Am</lex> <lex pos="JJ">jumbo</lex> <lex pos="NN">jet</lex></NG> <lex pos="IN">over</lex> <NG><lex pos="NNP">Scotland</lex></NG> <lex pos="IN">in</lex> <TIMEX3 tid="t2" TYPE="DATE" VAL="1988"><lex pos="CD">1988</lex></TIMEX3> <lex pos=".">.</lex> </s> <s><NG><lex pos="NNP">Libya</lex></NG> <lex pos=",">,</lex> <lex pos="WDT">which</lex> <VG><lex pos="VBD"><EVENT eid="e7" class="OCCURRENCE">brought</EVENT></lex><MAKEINSTANCE eventID="e7" polarity="POS" pos="VERB" eiid="ei7" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN">case</lex></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">United</lex></NG> <lex pos="NPS">Nations</lex> <lex pos="POS">'</lex> <NG><lex pos="JJS">highest</lex> <lex pos="JJ">judicial</lex> <lex pos="NN">body</lex></NG> <lex pos="IN">in</lex> <lex pos="PP$">its</lex> <NG><lex pos="NN"><EVENT eid="e8" class="OCCURRENCE">dispute</EVENT></lex><MAKEINSTANCE eventID="e8" polarity="POS" pos="NOUN" eiid="ei8" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">with</lex> <NG><lex pos="DT">the</lex> <lex pos="NNP">United</lex></NG> <lex pos="NPS">States</lex> <lex pos="CC">and</lex> <NG><lex pos="NNP">Britain</lex></NG> <lex pos=",">,</lex> <VG><lex pos="VBD"><EVENT eid="e9" class="OCCURRENCE">hailed</EVENT></lex><MAKEINSTANCE eventID="e9" polarity="POS" pos="VERB" eiid="ei9" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NN"><EVENT eid="e10" class="OCCURRENCE">ruling</EVENT></lex><MAKEINSTANCE eventID="e10" polarity="POS" pos="NOUN" eiid="ei10" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="CC">and</lex> <VG><lex pos="VBD"><EVENT eid="e11" class="REPORTING">said</EVENT></lex><MAKEINSTANCE eventID="e11" polarity="POS" pos="VERB" eiid="ei11" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="PP">it</lex></NG> <VG><lex pos="MD">would</lex> <lex pos="VB"><EVENT eid="e12" class="OCCURRENCE">press</EVENT></lex><MAKEINSTANCE eventID="e12" polarity="POS" pos="VERB" eiid="ei12" tense="NONE" aspect="NONE" modality="would"></MAKEINSTANCE></VG> <lex pos="RB">anew</lex> <lex pos="IN">for</lex> <NG><lex pos="DT">a</lex> <lex pos="NN"><EVENT eid="e13" class="OCCURRENCE">trial</EVENT></lex><MAKEINSTANCE eventID="e13" polarity="POS" pos="NOUN" eiid="ei13" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="IN">in</lex> <NG><lex pos="DT">a</lex> <lex pos="JJ">third</lex> <lex pos="JJ">neutral</lex> <lex pos="NN">country</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">Both</lex> <lex pos="NNP">U.S.</lex></NG> <lex pos="CC">and</lex> <NG><lex pos="NNP">British</lex> <lex pos="NNS">officials</lex></NG> <VG><lex pos="VBD"><EVENT eid="e14" class="OCCURRENCE">filed</EVENT></lex><MAKEINSTANCE eventID="e14" polarity="POS" pos="VERB" eiid="ei14" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNS"><EVENT eid="e15" class="OCCURRENCE">objections</EVENT></lex><MAKEINSTANCE eventID="e15" polarity="POS" pos="NOUN" eiid="ei15" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos="TO">to</lex> <NG><lex pos="DT">the</lex> <lex pos="NN">court</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="JJ">s</lex> <lex pos="NN">jurisdiction</lex></NG> <lex pos="IN">in</lex> <TIMEX3 tid="t3" TYPE="DATE" VAL="1995"><lex pos="CD">1995</lex></TIMEX3> <lex pos=",">,</lex> <NG><lex pos="VBG">claiming</lex> <lex pos="NNP">Security</lex> <lex pos="NNP">Council</lex> <lex pos="NNS">resolutions</lex></NG> <VG><lex pos="VBN"><EVENT eid="e16" class="OCCURRENCE">imposed</EVENT></lex><MAKEINSTANCE eventID="e16" polarity="POS" pos="VERB" eiid="ei16" tense="PASTPART" aspect="NONE"></MAKEINSTANCE></VG> <lex pos="IN">on</lex> <NG><lex pos="NNP">Lybia</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e17" class="OCCURRENCE">force</EVENT></lex><MAKEINSTANCE eventID="e17" polarity="POS" pos="VERB" eiid="ei17" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">suspects</lex></NG> <lex pos="POS">'</lex> <NG><lex pos="NN"><EVENT eid="e18" class="OCCURRENCE">extradition</EVENT></lex><MAKEINSTANCE eventID="e18" polarity="POS" pos="NOUN" eiid="ei18" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <VG><lex pos="VBD"><EVENT eid="e19" class="OCCURRENCE">overruled</EVENT></lex><MAKEINSTANCE eventID="e19" polarity="POS" pos="VERB" eiid="ei19" tense="PAST" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">a</lex> <TIMEX3 tid="t4" TYPE="DATE" VAL="1971"><lex pos="CD">1971</lex></TIMEX3> <lex pos="NN">Convention</lex></NG> <lex pos="WDT">which</lex> <VG><lex pos="VBZ"><EVENT eid="e20" class="OCCURRENCE">gives</EVENT></lex><MAKEINSTANCE eventID="e20" polarity="POS" pos="VERB" eiid="ei20" tense="PRESENT" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="NNP">Libya</lex></NG> <NG><lex pos="DT">the</lex> <lex pos="NN">right</lex></NG> <VG><lex pos="TO">to</lex> <lex pos="VB"><EVENT eid="e21" class="I_ACTION">try</EVENT></lex><MAKEINSTANCE eventID="e21" polarity="POS" pos="VERB" eiid="ei21" tense="INFINITIVE" aspect="NONE"></MAKEINSTANCE></VG> <NG><lex pos="DT">the</lex> <lex pos="NNS">men</lex></NG> <lex pos=".">.</lex> </s> <s><NG><lex pos="DT">The</lex> <lex pos="NN"><EVENT eid="e22" class="OCCURRENCE">decision</EVENT></lex><MAKEINSTANCE eventID="e22" polarity="POS" pos="NOUN" eiid="ei22" tense="NONE" aspect="NONE"></MAKEINSTANCE></NG> <lex pos=",">,</lex> <NG><lex pos="JJ">3rd</lex> <lex pos="NNP">graf</lex> <lex pos="NNS">pvs</lex></NG> <lex pos=".">.</lex> </s> </TEXT>
+(PROFILE
+(WS SL:BC-World Court-Lockerbie, 5th Ld; CT:i;
+(REG:EURO;)
+(REG:BRIT;)
+(REG:SCAN;)
+(REG:ENGL;)
+(LANG:ENGLISH;))
+)
+</BODY>
+<TRAILER>
+AP-NY-02-27-98 0802EST
+</TRAILER>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</TimeML>

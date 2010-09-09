@@ -1,0 +1,185 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf420
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10820\viewh14800\viewkind0
+\deftab720
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b\fs32 \cf0 The Ways of GUTime\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0\fs20 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b\fs24 \cf0 GUTime-Evita.pl\
+
+\fs28 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0\fs24 \cf0 <inputfile>.tmp1	temporary file, $tmpfile1\
+<inputfile>.tmp2	temporary file, $tmpfile2\
+<inputfile>.tmp3	temporary file, $tmpfile3\
+<inputfile>.tmp4	temporary file, $tmpfile4\
+\
+1. Gets input file\
+\
+	Stores file in one variable named $line\
+	Expects there to be a DCT, in one of several formats\
+		searches $vfront, $line and $vback for DCT\
+			(see below for $vfront and $vback explanation)\
+		routine 
+\f2\i ExDateTime
+\f0\i0\b \
+
+\f1\b0 		insert empty timex t100 with DCT before TEXT tag\
+		exit if no DCT was found\
+	Expects there to be a TEXT tag\
+		tag name can be edited\
+		tag can be supplied by user\
+			(added, 070302)\
+		tag cannot have attributes\
+			(fixed this, 070301)\
+		the DCT has to be outside this tag\
+\
+2. Creates temporary file <inputfile>.tmp1\
+\
+	Contains the data between the TEXT opening and closing tag\
+		kept in $body variable\
+	Keep other data in two variables:\
+		$vfront  - opening tag and the material before it\
+		$vback  - closing tag and the material after it\
+\
+3. Creates temporary file <inputfile>.tmp2\
+	\
+	Takes the $body variable (material in TEXT tag)\
+	Removes all other tags inside <s> that are not <lex> tags\
+		Uses 
+\f2\i Cleanup
+\f1\i0  routine
+\f0\b \
+
+\f1\b0 		adapted for RTE3 data (MV 070302)\
+	Wraps document in <DOC> tag\
+	Adds as first element of <DOC> a <DATE_TIME> tag\
+\
+3. Calls TimeTag on <inputfile>.tmp2\
+\
+	Command: 
+\f0\b perl TimeTag.pl $name2 | perl postTempex.pl
+\f1\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 	
+\f0\b TimeTag.pl
+\f1\b0  is George Wilson's wrapper around Tempex\
+	p
+\f0\b ostTempex.pl
+\f1\b0  deals with temporal functions\
+	Removes DOC tag and DATE_TIME tag from result\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 4. Creates temporary file <inputfile>.tmp3\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 	Stores result of previous step (that is, the file tagged by Tempex)\
+\
+5. Merges results from tagging with saved text\
+	
+\f0\b \
+
+\f1\b0 	Command: 
+\f0\b perl merge-gutime.pl $tmpfile1 $tmpfile3\
+\
+
+\f1\b0 	Exits if merging failed	\
+	Swaps HEAD and TIMEX3 tags\
+	Moves MAKEINSTANCE tags to the back
+\f0\b \
+		
+\f1\b0 relies on having TimeML tag
+\f0\b \
+
+\f1\b0 		remove this?\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 6. Creates temporary file <inputfile>.tmp4\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 	Stores result of previous step\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 7. Deal with tag order issues
+\f0\b \
+
+\f1\b0 \
+	Command: 
+\f0\b perl TagOrder.pl $tmpfile4\
+
+\f1\b0 \
+8. Print final results to STDOUT and remove tmp files.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+
+\fs28 \
+TimeTag.pl and Tempex.pm
+\fs24 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 Geor
+\f0\b ge Wilson's original code\
+\
+
+\f1\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b\fs28 \cf0 postTempex.pl\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+Written to deal with TIMEX3 temporal functions.
+\f0\b \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\fs28 \cf0 merge-gutime.pl\
+
+\fs24 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 Merges GUTime tags into the source.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f0\b \cf0 \
+
+\fs28 TagOrder.pl\
+
+\fs24 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural
+
+\f1\b0 \cf0 Deals with putting tags in the right order.\
+\
+}
