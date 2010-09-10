@@ -79,12 +79,12 @@ class Evita (TarsqiComponent):
         each sentence and determine if the node contains an event."""
 
         for sentence in self.doctree:
-            print "<sentence>\n"
+            #print "<sentence>\n"
             logger.debug("> SENTENCE:" + str(getWordList(sentence)))
             for node in sentence:
-                print node
-                node.pretty_print()
-                print "  checked=" + str(node.flagCheckedForEvents)
-                print
+                #print node
+                #node.pretty_print()
+                #print "  checked=" + str(node.flagCheckedForEvents)
+                #print
                 if not node.flagCheckedForEvents:
                     node.createEvent()

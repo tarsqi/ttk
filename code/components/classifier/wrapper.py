@@ -54,7 +54,12 @@ class ClassifierWrapper(ComponentWrapper):
         ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
         self.component_name = CLASSIFIER
         self.DIR_CLASSIFIER = os.path.join(TTK_ROOT, 'components', 'classifier')
-
+        platform = tarsqi_instance.processing_options.get('platform')
+        if platform == 'Linux':
+            self.executable = 'mxtest.opt.linux'
+        elif platform == 'Darwin':
+            self.executable = 'mxtest.opt.osx'
+        
         
     def process(self):
 
@@ -82,10 +87,10 @@ class ClassifierWrapper(ComponentWrapper):
             vectors.create_vectors(xmldoc, ee_vectors, et_vectors)
 
             commands = [
-                "./mxtest.opt -input %s -model %s -output %s > class.log" %
-                (ee_vectors, ee_model, ee_results),
-                "./mxtest.opt -input %s -model %s -output %s > class.log" %
-                (et_vectors, et_model, et_results) ]
+                "./%s -input %s -model %s -output %s > class.log" %
+                (self.executable, ee_vectors, ee_model, ee_results),
+                "./%s -input %s -model %s -output %s > class.log" %
+                (self.executable, et_vectors, et_model, et_results) ]
             for command in commands:
                 os.system(command)
 

@@ -13,7 +13,7 @@ USAGE
    % python tarsqi.py test
    % python tarsqy.py <INPUT_TYPE> [PROCESSING_FLAGS] <INPUT> <OUTPUT>
 
-   The first way of invoking tarsqi,py runs all the Tarsqi unit
+   The first way of invoking tarsqi.py runs all the Tarsqi unit
    tests. The second way runs tarsqi over the supplied input.
    
    INPUT_TYPE.

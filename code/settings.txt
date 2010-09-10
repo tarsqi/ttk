@@ -1,3 +1,18 @@
-platform=linux2
-trap_errors=True
-perl=perl
+# This file contains configuration options. Option can be changed here on the command line
+# when calling the tarsqy.py script.
+
+
+# The platform, possible values are Linux and Darwin. 
+platform = Linux
+
+# Location of the IMS TreeTagger lives
+treetagger_dir = /home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
+
+# Location of the Stanford Parser
+stanford_dir = 
+
+# Errors are trapped by default
+trap_errors = True
+
+# 
+perl = perl
