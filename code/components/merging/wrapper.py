@@ -1,7 +1,11 @@
-"""Python wrapper around the merging code. This code now both works
-with the old perl merging and closure code as well as with the new
-Python version o fthat code. Which one is used is determined by the
-value of USE_HERITAGE_CODE."""
+"""
+
+Python wrapper around the merging code. This code now both works with the old perl merging
+and closure code as well as with the new Python version of that code. Which one is used is
+determined by the value of USE_HERITAGE_CODE.
+
+"""
+
 
 USE_HERITAGE_CODE = True
 #USE_HERITAGE_CODE = False
@@ -20,25 +24,24 @@ if USE_HERITAGE_CODE:
     from docmodel.xml_parser import Parser
 else:
     from components.merging.main import LinkMerger
-    
+
+
 
 class MergerWrapper(ComponentWrapper):
 
     """Wraps the merging code, which includes Sputlinks temporal closure code.
 
     Instance variables
-
-       DIR_LINK_MERGER - directory where the classifier executables live
+       DIR_LINK_MERGER - directory where the merging code lives
 
     See ComponentWrapper for other instance variables."""
 
 
     def __init__(self, tag, xmldoc, tarsqi_instance):
 
-        """Initialization depends on value of . If True, Calls __init__ on the
-        base class and then initializes some or all of the following
-        variables depending on the value of USE_HERITAGE_CODE:
-        component_name, DIR_LINK_MERGER, CREATION_EXTENSION,
+        """Initialization depends on value of . If True, Calls __init__ on the base class
+        and then initializes some or all of the following variables depending on the value
+        of USE_HERITAGE_CODE: component_name, DIR_LINK_MERGER, CREATION_EXTENSION,
         TMP_EXTENSION and RETRIEVAL_EXTENSION."""
 
         ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
@@ -50,15 +53,15 @@ class MergerWrapper(ComponentWrapper):
             self.DIR_LINK_MERGER = os.path.join(TTK_ROOT, 'components', 'merging')
             self.TMP_EXTENSION = 'mer.t.xml'
         else:
-            # using self.component here in stead of self.parser, perhaps
+            # using self.component here instead of self.parser, perhaps
             # do the same for the other components?
             self.component = LinkMerger()
             
 
     def process_fragments(self):
 
-        """Determines what version should run and then calls
-        process_fragments_old or process_fragments_new."""
+        """Determines what version should run and then calls process_fragments_old or
+        process_fragments_new."""
 
         if USE_HERITAGE_CODE:
             self.process_fragments_old()
@@ -81,8 +84,8 @@ class MergerWrapper(ComponentWrapper):
             
     def process_fragments_old(self):
 
-        """Set fragment names, call the perl merging script and insert the
-        results back into the data."""
+        """Set fragment names, call the perl merging script and insert the results back
+        into the data."""
 
         os.chdir(self.DIR_LINK_MERGER + os.sep + 'sputlink')
         perl = self.tarsqi_instance.getopt_perl()
@@ -109,9 +112,8 @@ class MergerWrapper(ComponentWrapper):
         
     def _add_tlinks_to_fragment(self, in_fragment, tmp_fragment, out_fragment):
 
-        """Take the links from the merged tlinks and add them into the
-        fragment. Based on the method with the same name in the
-        classifier wrapper."""
+        """Take the links from the merged tlinks and add them into the fragment. Based on
+        the method with the same name in the classifier wrapper."""
 
         xmldoc1 = Parser().parse_file(open(in_fragment,'r'))
         xmldoc2 = Parser().parse_file(open(tmp_fragment,'r'))
@@ -135,5 +137,3 @@ class MergerWrapper(ComponentWrapper):
             xmldoc1.add_tlink(reltype, id1, id2, origin)
 
         xmldoc1.save_to_file(out_fragment)
-        
-

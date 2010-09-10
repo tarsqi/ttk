@@ -1,18 +1,28 @@
-# This file contains configuration options. Option can be changed here on the command line
-# when calling the tarsqy.py script.
+## This file contains configuration options. Option can be changed here or on the command
+## line when calling the tarsqy.py script.
 
 
-# The platform, possible values are Linux and Darwin. 
-platform = Linux
+## The platform, possible values are 'linux2' and 'darwin'. This is the value of the python
+## sys.platform variable
 
-# Location of the IMS TreeTagger lives
+platform = linux2
+#platform = darwin
+
+## Location of the IMS TreeTagger lives
+
 treetagger_dir = /home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
+#treetagger_dir = /Users/marc/Documents/tools/treetagger
 
-# Location of the Stanford Parser
+## Location of the Stanford Parser
+
 stanford_dir = 
 
-# Errors are trapped by default
+## Errors are trapped by default
+
 trap_errors = True
 
-# 
+## Location of Perl, in case we need to override local perl with the ActiveState Perl,
+## which is the case for perl on OS 10.4
+
 perl = perl
+#perl = /usr/local/ActivePerl-5.8/bin/perl

@@ -1,11 +1,10 @@
 """Document model and meta data parser
 
-This module contains classes that implement the document model and the
-meta data parser. Document model and meta data parser are responsible
-for dealing with the document-specific aspects of a text, including
-location of fragments that need to be processed and meta data like the
-document creation time. The document model contains the code to read a
-document, typically using an XML parser.
+This module contains classes that implement the document model and the meta data
+parser. Document model and meta data parser are responsible for dealing with the
+document-specific aspects of a text, including location of fragments that need to be
+processed and meta data like the document creation time. The document model contains the
+code to read a document, typically using an XML parser.
 
 Local variables:
 
@@ -15,9 +14,8 @@ Local variables:
       
    DSI_DEFAULTS
 
-      Dictionary with all defaults for each declared data source
-      identifier. Now only used by the gui, should be used by the
-      initializer as well.
+      Dictionary with all defaults for each declared data source identifier. Now only used
+      by the gui, should be used by the initializer as well.
 
 """
 
@@ -118,10 +116,12 @@ class SimpleXmlModel(DocumentModel):
     
 
     def __init__(self, file):
-        """Here, self.content_tag is the beginning of what is called fragment ids in
-        the specifications. Should probably be a set of XPATH expressions. For now,
-        self.xml_document is the simple representation given by the xml_parser, we
-        could use a full DOM from python's minidom implementation."""
+
+        """Here, self.content_tag is the beginning of what is called fragment ids in the
+        specifications. Should probably be a set of XPATH expressions. For now,
+        self.xml_document is the simple representation given by the xml_parser, we could
+        use a full DOM from python's minidom implementation."""
+
         self.input_document = file
         self.xml_document = None
         self.content_tag = None
@@ -129,28 +129,37 @@ class SimpleXmlModel(DocumentModel):
         self.metadata_parser = None
         self.metadata = None
 
+        
     def read_document(self):
-        """Reads the input document by calling the xml parser and the
-        meta data parser. No return value."""
+
+        """Reads the input document by calling the xml parser and the meta data parser. No
+        return value."""
+
         self.parse_xml()
         self.parse_metadata()
 
+        
     def parse_xml(self):
-        """Use the expat parser to read in the document. Takes the
-        value of self.input_document and puts the result in
-        self.xml_document."""
+
+        """Use the expat parser to read in the document. Takes the value of
+        self.input_document and puts the result in self.xml_document."""
+
         # NOTES:
         # - Uses a new parser each time when reading a new document.
         #   Previously, this was done only once in an initialization
         #   method, but at some point segmentation faults showed up that
         #   could only be fixed by creating a new parser for each file.
         # - This method can probably be moved to the superclass.
+
         xmlfile = open(self.input_document, "r")
         self.xml_document = Parser().parse_file(xmlfile)
+
         
     def parse_metadata(self):
-        """Sets the metadat dictionary by calling the meta data parser. It
-        currently only sets the DCT."""
+
+        """Sets the metadat dictionary by calling the meta data parser. It currently only
+        sets the DCT."""
+
         self.metadata = {}
         self.metadata['dct'] = self.metadata_parser.parse_dct(self.xml_document)
 
@@ -171,9 +180,11 @@ class MetaDataParser_TimeBank(MetaDataParser):
 
     """The meta data parser for TimeBank documents."""
 
+    
     def parse_dct(self, xmldoc):
-        """Takes an XmlDocument, extracts the document creation time,
-        and returns it as a string of the form YYYYMMDD."""
+
+        """Takes an XmlDocument, extracts the document creation time, and returns it as a
+        string of the form YYYYMMDD."""
 
         # set DCT default
         dct = get_today()
@@ -244,7 +255,9 @@ class MetaDataParser_TimeBank(MetaDataParser):
 
     
     def _get_doc_source(self, xmldoc):
+        
         """Returns the name of the content provider."""
+
         tag_DOCNO = xmldoc.tags['DOCNO'][0]
         content = tag_DOCNO.collect_content().strip()
         # TimeBank has only these providers
@@ -255,14 +268,14 @@ class MetaDataParser_TimeBank(MetaDataParser):
         return 'GENERIC'
 
 
+    
 class MetaDataParser_SimpleXml(MetaDataParser):
 
     """The meta data parser for simple XML documents."""
     
     def parse_dct(self, xmldoc):
-        """For simple XML documents, just return the current data. May in the
-        future use some default processing to find dates in particular
-        tags."""
+        """For simple XML documents, just return the current data. May in the future use
+        some default processing to find dates in particular tags."""
         return get_today()
 
 
@@ -271,8 +284,8 @@ class MetaDataParser_RTE(MetaDataParser):
     """The meta data parser for RTE documents."""
     
     def parse_dct(self, xmldoc):
-        """For RTE documents, there really isn't a DCT, so just return the
-        current date."""
+        """For RTE documents, there really isn't a DCT, so just return the current
+        date."""
         return get_today()
 
 
@@ -291,35 +304,3 @@ class MetaDataParser_ATEE(MetaDataParser):
 def get_today():
     """Return today's date in YYYYMMDD format."""
     return time.strftime("%Y%m%d", time.localtime());
-
-
-    
-class SavedMethods:
-
-    """This class is not used at all. It is simply there to store some
-    functions taken from an older version and still kept lying around
-    because their functionality may need to be added."""
-    
-    def find_dct(self):
-        for fragment in self.fragments:
-            tag = fragment[1]
-            text = tag.collect_content()
-            match = re_DCT.search(text)
-            if match:
-                dct = match.group()
-                dct = dct.replace('tid="t100"', 'tid="t0"')
-                return dct
-        return None
-
-    def set_dct(self):
-        try:
-            first_data_tag = self.document.tags['Date'][0]
-            self.dct = first_data_tag.attrs['value']
-        except:
-            print "Warning: no DCT found in Date tag"
-            self.dct = '20000101'
-            
-    def insert_dct(self, dct_string):
-        if dct_string:
-            article_tag = self.document.tags['Article'][0]
-            article_tag.insert_string_after(dct_string)

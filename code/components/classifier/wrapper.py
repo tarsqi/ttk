@@ -4,20 +4,6 @@ Python wrapper around the MaxEnt Classifier
 
 CLASSES
    ClassifierWrapper
-
-
-11/30/08 Replaced old file-based approach with process_fragments with
-a new approach using the xmldoc slices (following similar changes
-elsewhere). In addition, the perl scripts prepareClassifier and
-collectClassifier were replaced with Python code. Time stamps for the
-old approach:
-
-     0.134 0.129, total classifier 0.450, total 0.511
-     (the total classifier time includes two perl scripts)
-        
-The new version took
-
-      0.137 0.130, total classifier 0.284, total 0.319
    
 """
 
@@ -54,10 +40,10 @@ class ClassifierWrapper(ComponentWrapper):
         ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
         self.component_name = CLASSIFIER
         self.DIR_CLASSIFIER = os.path.join(TTK_ROOT, 'components', 'classifier')
-        platform = tarsqi_instance.processing_options.get('platform')
-        if platform == 'Linux':
+        platform = tarsqi_instance.getopt_platform()
+        if platform == 'linux2':
             self.executable = 'mxtest.opt.linux'
-        elif platform == 'Darwin':
+        elif platform == 'darwin':
             self.executable = 'mxtest.opt.osx'
         
         

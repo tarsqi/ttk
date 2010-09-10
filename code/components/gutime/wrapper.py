@@ -4,7 +4,7 @@ Contains the GUTime wrapper.
 
 The wrapper contains an optional call to BTime, governed by the
 variable USE_BTIME. This variable is set to False by default. Set it
-to True if you want to apply BTime, see btime.py for reasons why #
+to True if you want to apply BTime, see btime.py for reasons why
 using BTime does not make sense right now.
 
 """
@@ -65,7 +65,6 @@ class GUTimeWrapper(ComponentWrapper):
             
             self._prepare_gutime_input(xmldoc, fin)
 
-            #command = "perl TimeTag.pl %s | perl postTempEx.pl > %s" % (fin, fout) 
             command = "perl TimeTag.pl %s > %s" % (fin, fout) 
             (fh_in, fh_out, fh_errors) = os.popen3(command)
             for line in fh_errors:
