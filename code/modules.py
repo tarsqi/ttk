@@ -9,7 +9,6 @@ scripts.
 """
 
 import tarsqi
-import setup
 import ttk_path
 
 import components.arglinker.wrapper
@@ -73,7 +72,6 @@ import utilities.sputlink.utils
 MODULES = [
     
     tarsqi,
-    setup,
     ttk_path,
 
     components.arglinker.wrapper,

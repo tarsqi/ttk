@@ -10,31 +10,23 @@ modules to do the real work.
 
 USAGE
 
-   % python tarsqi.py test
    % python tarsqy.py <INPUT_TYPE> [PROCESSING_FLAGS] <INPUT> <OUTPUT>
 
-   The first way of invoking tarsqi.py runs all the Tarsqi unit tests. The second way runs
-   tarsqi over the supplied input.
-   
    INPUT_TYPE
-
       A string that determines the type of the data source, it determines what document
       processor is used and sets a default processing chain.
 
    PROCESSING_FLAGS
-
       An optional set of parameters. Can be used to overrule default settings in the
       program as well as default settings given by the INPUT_TYPE. Currently defined flags
       are: trap_errors, log_level, content_tag, and extension. See the manual in
       docs/manual/ for more details on the parameters.
 
    INPUT/OUTPUT
-
       Input and output files or directories. If the input is a directory than the output
       directory needs to exist.
 
 Variables:
-
    USE_PROFILER - a boolean determining whether the profiler is used
    PROFILE_OUTPUT - file that profiler statistics are written to
 
@@ -48,15 +40,27 @@ from docmodel.initialize import DocumentModelInitializer
 from utilities import logger
 from utilities.file import read_settings
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET
-from library.tarsqi_constants import S2T, CLASSIFIER, BLINKER, LINK_MERGER
+from library.tarsqi_constants import S2T, CLASSIFIER, BLINKER, LINK_MERGER, ARGLINKER
+
+from components.preprocessing.wrapper import PreprocessorWrapper
+from components.gutime.wrapper import GUTimeWrapper
+from components.evita.wrapper import EvitaWrapper
+from components.slinket.wrapper import SlinketWrapper
+from components.s2t.wrapper import S2tWrapper
+from components.blinker.wrapper import BlinkerWrapper
+from components.classifier.wrapper import ClassifierWrapper
+from components.merging.wrapper import MergerWrapper
+from components.arglinker.wrapper import ArgLinkerWrapper
 
 logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'))
 
 USE_PROFILER = False
+#USE_PROFILER = True
 PROFILER_OUTPUT = 'profile.txt'
 
 
-class TarsqiControl:
+
+class Tarsqi:
 
     """Main Tarsqi class that drives all processing.
 
@@ -68,7 +72,6 @@ class TarsqiControl:
        output - absolute path
        basename - basename of input file
        document_model - instance of subclass of docmodel.model.DocumentModel 
-       processing_parameters - instance of docmodel.initialize.ProcessingParameters
        metadata - dictionary with metadata
        xml_document - instance of docmodel.xml_parser.XmlDocument
        document - instance of components.common_modules.document.Document
@@ -81,7 +84,7 @@ class TarsqiControl:
 
     def __init__(self, doctype, opts, input, output):
 
-        """Initialize TarsqiControl object conform the data source identifier and the
+        """Initialize Tarsqi object conform the data source identifier and the
         processing options. Does not set the instance variables related to the document
         model and the meta data.
 
@@ -114,13 +117,18 @@ class TarsqiControl:
         
         # to be filled in by document model and later processing
         self.document_model = None
-        self.processing_parameters = None
         self.metadata = None
         self.xml_document = None
         self.document = None
 
-        # directories and files, user has no control over where
-        # intermediate files go
+        self.init_files()
+        self.init_components()
+        
+
+
+    def init_files(self):
+        """Initialize directories and files, user has no control over where intermediate
+        files go."""
         self.DIR_GUTIME = TTK_ROOT + os.sep + 'gutime'
         self.DIR_DATA = TTK_ROOT + os.sep + 'data'
         self.DIR_DATA_TMP = self.DIR_DATA + os.sep + 'tmp'
@@ -135,18 +143,32 @@ class TarsqiControl:
         self.FILE_ARG = self.DIR_DATA_TMP + os.sep + self.basename + '.arg.xml'
 
 
+    def init_components(self):
+        """Initialize available components."""
+        self.components = {
+            PREPROCESSOR: (PreprocessorWrapper, self.FILE_PRE),
+            GUTIME: (GUTimeWrapper, self.FILE_GUT),
+            EVITA: (EvitaWrapper, self.FILE_EVI),
+            SLINKET: (SlinketWrapper, self.FILE_SLI),
+            S2T: (S2tWrapper, self.FILE_S2T),
+            BLINKER: (BlinkerWrapper, self.FILE_BLI),
+            CLASSIFIER: (ClassifierWrapper, self.FILE_CLA),
+            LINK_MERGER: (MergerWrapper, self.FILE_MER),
+            ARGLINKER: (ArgLinkerWrapper, self.FILE_ARG) }
+
+        
     def process(self):
 
         """Method called after initialization. Sets up the document model, reads the
-        input, applies all components, and writes the results to a file.  Only define
+        input, applies all components, and writes the results to a file. Only define
         high-level scaffolding for processing task, the actual processing itself is driven
         using the processing parameters set at initialization and the code that applies a
         component is responsible for determining whether the component is needed.
 
         This method takes no arguments and has no return value."""
 
-        # do nothing if file does not match specified extension, used
-        # when the script is given a directory as input
+        # do nothing if file does not match specified extension, used when the script is
+        # given a directory as input
         extension = self.getopt_extension()
         if not self.input.endswith(extension):
             return
@@ -154,8 +176,20 @@ class TarsqiControl:
         self.cleanup_directories()
         logger.info("Processing %s" % self.input)
         self.setup_docmodel()
+
+        # setting up the pipeline (move to init???)
+        pipeline = self.document_model.get_default_pipeline(self.data_source_identifier)
+        if self.getopt_pipeline():
+            pipeline = self.getopt_pipeline().split(',')
+        self.pipeline = []
+        component_input = self.input
+        for component in pipeline:
+            (wrapper, outfile) = self.components[component]
+            self.pipeline.append([component, wrapper, component_input, outfile])
+            component_input = outfile
+            
         self.read_input()
-        for pipeline_element in self.processing_parameters.pipeline:
+        for pipeline_element in self.pipeline:
             (name, wrapper, infile, outfile) = pipeline_element
             self.apply_component(name, wrapper, infile, outfile)
         os.chdir(TTK_ROOT)
@@ -260,28 +294,23 @@ class TarsqiControl:
         return self.processing_options.get('perl', 'perl')
 
     def write_output(self):
-        """Write the xml_document to the output file. First inserts the dct
-        from the docmodel into the XML documentNo arguments and no
-        return value."""
+        """Write the xml_document to the output file. First inserts the dct from the
+        docmodel into the XML document. No arguments, no return value."""
         #self.xml_document.insert_dct(self.document_model.get_dct(),
         #                             self.document_model.get_content_tag())
         self.xml_document.save_to_file(self.output)
 
-
     def pretty_print(self):
-        """Pretty printer that prints to the console. Example output:
-
-        <__main__.TarsqiControl instance at 0x6b40a8>
-           metadata     {'dct': u'19980108'}
-           parameters   <docmodel.initialize.ProcessingParameters instance at 0x6b4120>
-           content_tag  TEXT
-           document     <docmodel.xml_parser.XmlDocument instance at 0x6b4170>"""
-
         print self
         print '   metadata    ', self.metadata
-        print '   parameters  ', self.processing_parameters
         print '   content_tag ', self.content_tag
         print '   document    ', self.xml_document
+
+
+
+class TarsqiError(Exception):
+    """Tarsqi Exception class, so far only used in this file."""
+    pass
 
 
 def read_arguments(args):
@@ -291,18 +320,17 @@ def read_arguments(args):
     output path."""
 
     if len(args) < 3:
-        sys.exit('ERROR: missing arguments')
+        raise TarsqiError('missing arguments')
     data_source_identifier = args.pop(0)
     processing_options = {}
     while args and '=' in args[0]:
         flag = args.pop(0)
         (option, value) = flag.split('=', 2)
         processing_options[option] = value
-    # Use os.path.abspath here because some components change the
-    # working directory and when some component fails the cwd may
-    # not be reset to the root directory
+    # Use os.path.abspath here because some components change the working directory and
+    # when some component fails the cwd may not be reset to the root directory
     if len(args) < 2:
-        sys.exit('ERROR: missing arguments')
+        raise TarsqiError('missing arguments')
     input = os.path.abspath(args.pop(0))
     output = os.path.abspath(args.pop(0))
     return (data_source_identifier, processing_options, input, output)
@@ -323,7 +351,7 @@ def _transform_values(dict):
     
 def run_tarsqi(args):
 
-    """Main method that is called when the script is executed. It creates a TarsqiControl
+    """Main method that is called when the script is executed. It creates a Tarsqi
     instance and lets it process the input. If the input is a directory, this method will
     iterate over the contents, setting up TrasqiControlInstances for all files in the
     directory.
@@ -341,33 +369,36 @@ def run_tarsqi(args):
             outfile = output + os.sep + file
             if os.path.isfile(infile):
                 print infile
-                TarsqiControl(input_type, opts, infile, outfile).process()
+                Tarsqi(input_type, opts, infile, outfile).process()
 
     elif os.path.isfile(input):
         if os.path.exists(output):
-            sys.exit('ERROR: output file ' + output + ' already exists')
-        TarsqiControl(input_type, opts, input, output).process()
+            raise TarsqiError('output file ' + output + ' already exists')
+        Tarsqi(input_type, opts, input, output).process()
 
     else:
-        sys.exit('Invalid input and/or output parameters')
+        raise TarsqiError('Invalid input and/or output parameters')
 
     end_time = time.time()
     logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (end_time - begin_time))
 
 
 def run_profiler(args):
-    """Wrap running Tarsqi in the profiler. The problem is that this currently fails for
-     unknown reasons. It runs through all the tarsqi components but then it breaks."""
+
+    """Wrap running Tarsqi in the profiler."""
+
     import profile
-    args = ','.join( map(lambda x: '"'+x+'"',args) )
-    command = "run_tarsqi([%s])" % args
+    command = "run_tarsqi([%s])" % ','.join(['"'+x+'"' for x in args])
     print 'Running profiler on:', command
     profile.run(command, PROFILER_OUTPUT)
 
 
 
 if __name__ == '__main__':
-    if USE_PROFILER:
-        run_profiler(sys.argv[1:])
-    else:
-        run_tarsqi(sys.argv[1:])
+    try:
+        if USE_PROFILER:
+            run_profiler(sys.argv[1:])
+        else:
+            run_tarsqi(sys.argv[1:])
+    except TarsqiError:
+        sys.exit('ERROR: ' + str(sys.exc_value))

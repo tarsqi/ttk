@@ -13,9 +13,8 @@ import testing.test_evita
 
 class TarsqiTest:
 
-    """A TarsqiTest takes care of loading test cases from a TestCase and
-    collecting them into a TestSuite. It then uses a TextTestRunner to
-    run the loaded test cases.
+    """A TarsqiTest takes care of loading test cases from a TestCase and collecting them
+    into a TestSuite. It then uses a TextTestRunner to run the loaded test cases.
 
     Instance variables:
        name - a string
@@ -47,11 +46,10 @@ class TarsqiTest:
 
 def main(tarsqi_control_class):
     
-    """Run all Tarsqi test suites. It is called from tarsqi.py and
-    handed as its sole argument the TarsqiControl class, which in turn
-    is handed over to individual tests. The reson for this is that
-    importing TarsqiCOntrol into the test suite introduced import
-    errors for the analyse.py script."""
+    """Run all Tarsqi test suites. It is called from tarsqi.py and handed as its sole
+    argument the Tarsqi class, which in turn is handed over to individual tests. The reson
+    for this is that importing Tarsqi into the test suite introduced import errors for the
+    analyse.py script."""
 
     logger.set_stdout_printing(False)
     

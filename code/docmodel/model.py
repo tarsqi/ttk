@@ -110,7 +110,6 @@ class SimpleXmlModel(DocumentModel):
        input_document         - absolute path
        xml_document           - an XmlDocument
        content_tag            - string
-       processing_parameters  - dictionary
        metadata_parser        - a MetaDataParser
        metadata               - dictionary"""
     
@@ -125,7 +124,6 @@ class SimpleXmlModel(DocumentModel):
         self.input_document = file
         self.xml_document = None
         self.content_tag = None
-        #self.processing_parameters = None
         self.metadata_parser = None
         self.metadata = None
 

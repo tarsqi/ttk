@@ -15,7 +15,7 @@ import re
 import wx
 import wx.html
 
-from tarsqi import TarsqiControl
+from tarsqi import Tarsqi
 from ttk_path import TTK_ROOT
 from demo.display import HtmlGenerator
 from docmodel.model import DocumentModel
@@ -358,14 +358,14 @@ class ControlFrame(TarsqiFrame):
             print "    %s -> %s" % (option, val)
 
         print 'PROCESSING...'
-        tc = TarsqiControl(doc_type, options, self.file_path, self.file_out)
+        tc = Tarsqi(doc_type, options, self.file_path, self.file_out)
         tc.process()
         #self.text_Info.SetValue(file_contents(self.file_out))
         self.text_Info.SetValue(xml_tree(self.file_out))
         print 'CREATED:', self.file_out
 
         # Create display file using various intermediate files created
-        # by the TarsqiControl instance.
+        # by the Tarsqi instance.
         if os.path.exists(tc.FILE_CLA):
             generator_input_file = tc.FILE_CLA
         else:

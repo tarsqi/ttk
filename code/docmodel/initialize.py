@@ -3,7 +3,7 @@
 Initialization of the document model.
 
 This module is responsible for initializing the document module
-instance variables on a TarsqiControl instance, it also provides a way
+instance variables on a Tarsqi instance, it also provides a way
 to manage what components need to be applied.
 
 """
@@ -11,28 +11,15 @@ to manage what components need to be applied.
 import os
 
 from docmodel import model
-
-from components.preprocessing.wrapper import PreprocessorWrapper
-from components.gutime.wrapper import GUTimeWrapper
-from components.evita.wrapper import EvitaWrapper
-from components.slinket.wrapper import SlinketWrapper
-from components.s2t.wrapper import S2tWrapper
-from components.blinker.wrapper import BlinkerWrapper
-from components.classifier.wrapper import ClassifierWrapper
-from components.merging.wrapper import MergerWrapper
-from components.arglinker.wrapper import ArgLinkerWrapper
-
 from utilities import logger
 
-from library.tarsqi_constants import \
-    PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T, \
-    CLASSIFIER, BLINKER, LINK_MERGER, ARGLINKER
+
 
 
 class DocumentModelInitializer:
 
     """Class that is used solely to set up the document model instance variables on a
-    tarsqi instance. It takes a TarsqiControl instance and sets up the right docement
+    tarsqi instance. It takes a Tarsqi instance and sets up the right docement
     model functionality on it, given the data source and the processing options.
 
     Instance variables:
@@ -53,15 +40,14 @@ class DocumentModelInitializer:
 
     def setup_docmodel(self, tarsqi_instance):
 
-        """Initialize the document_model and processing_parameters instance variables of a
-        TarsqiControl instance, using its data source identifier and processing options.
+        """Initialize the document_model instance variable of a Tarsqi instance, using its
+        data source identifier and processing options.
         
         Arguments:
-           tarsqi_instance - a TarsqiControl instance
+           tarsqi_instance - a Tarsqi instance
         
         No return value."""
 
-        tarsqi_instance.processing_parameters = ProcessingParameters(tarsqi_instance)
         data_source_identifier = tarsqi_instance.data_source_identifier
 
         constructor = self.dsi_to_docmodelconstructor.get(data_source_identifier, None)
@@ -80,13 +66,13 @@ class DocumentModelInitializer:
 
     def _setup_docmodel_simple_xml(self, tarsqi_instance):
 
-        """Sets up the document model for the TarsqiControl instance if the data source is
+        """Sets up the document model for the Tarsqi instance if the data source is
         'simple-xml' or 'simple-xml-preprocessed'. Uses SimpleXmlModel and
         MetaDataParser_TimeBank and sets the content tag to 'TEXT'. Differences in
         preprocessing chains are handled when the pipeline is set. User options that can
         override default settings will be taken into consideration in sub methods. Is now
         identical to the timebank document model but will need to get a more default
-        MetaData Parser. Takes a TarsqiControl instance and has no return value."""
+        MetaData Parser. Takes a Tarsqi instance and has no return value."""
 
         self._setup_docmodel(tarsqi_instance,
                              model.SimpleXmlModel(tarsqi_instance.input),
@@ -96,10 +82,10 @@ class DocumentModelInitializer:
         
     def _setup_docmodel_timebank(self, tarsqi_instance):
 
-        """Sets up the document model for the TarsqiControl instance if the data source is
+        """Sets up the document model for the Tarsqi instance if the data source is
         'timebank-source' or 'timebank-preprocessed'. Uses SimpleXmlModel and
         MetaDataParser_TimeBank, and sets the content tag to 'TEXT'. Differences in
-        preprocessing chains are handled when the pipeline is set. Takes a TarsqiControl
+        preprocessing chains are handled when the pipeline is set. Takes a Tarsqi
         instance and has no return value."""
 
         self._setup_docmodel(tarsqi_instance,
@@ -110,9 +96,9 @@ class DocumentModelInitializer:
         
     def _setup_docmodel_rte(self, tarsqi_instance):
 
-        """Sets up the document model for the TarsqiControl instance if the data source is
+        """Sets up the document model for the Tarsqi instance if the data source is
         'RTE3'. Uses SimpleXmlModel and MetaDataParser_RTE, and sets the content tag to
-        'PAIR'. Takes a TarsqiControl instance and has no return value."""
+        'PAIR'. Takes a Tarsqi instance and has no return value."""
 
         self._setup_docmodel(tarsqi_instance,
                              model.SimpleXmlModel(tarsqi_instance.input),
@@ -122,9 +108,9 @@ class DocumentModelInitializer:
         
     def _setup_docmodel_atee(self, tarsqi_instance):
 
-        """Sets up the document model for the TarsqiControl instance if the data source is
+        """Sets up the document model for the Tarsqi instance if the data source is
         'ATEE'. Uses SimpleXmlModel and MetaDataParser_ATEE, and sets the content tag to
-        'TailParas'. Takes a TarsqiControl instance and has no return value."""
+        'TailParas'. Takes a Tarsqi instance and has no return value."""
 
         self._setup_docmodel(tarsqi_instance,
                              model.SimpleXmlModel(tarsqi_instance.input),
@@ -141,7 +127,6 @@ class DocumentModelInitializer:
         tarsqi_instance.document_model = docmodel
         tarsqi_instance.document_model.set_metadata_parser(metadata_parser)
         self._set_content_tag(content_tag, tarsqi_instance)
-        self._set_pipeline(tarsqi_instance)
 
         
     def _set_content_tag(self, default_tag, tarsqi_instance):
@@ -153,68 +138,3 @@ class DocumentModelInitializer:
         content_tag = tarsqi_instance.getopt_content_tag()
         if content_tag:
             tarsqi_instance.document_model.set_content_tag(content_tag)
-
-            
-    def _set_pipeline(self, tarsqi_instance):
-
-        """Retrieves the data source identifier and uses it to set a default
-        pipeline. Gives precedence to a user option if one was specified."""
-
-        dsi = tarsqi_instance.data_source_identifier
-        pipeline = tarsqi_instance.document_model.get_default_pipeline(dsi)
-        if tarsqi_instance.getopt_pipeline():
-            pipeline = tarsqi_instance.getopt_pipeline().split(',')
-        tarsqi_instance.processing_parameters.set_pipeline(pipeline)
-        
-
-
-
-class ProcessingParameters:
-
-    """Instances of this class can be used to determine what Tarsqi components need to be
-    applied The instance is created using a TarsqiControl instance.
-
-    Instance variables:
-
-       pipeline --
-          a list of components, each component is a tuple of component name, component
-          wrapper, input file and output file
-       input -- an absolute path
-       output -- an absolute path
-       tarsqi_components --
-          a dictionary, mapping each component name to a
-          wrapper-filename pair where the filename is the name of the
-          file created by the components"""
-
-    
-    def __init__(self, tarsqi_instance):
-        
-        """Initialize input, output and tarsqi_components instance variables. Takes a
-        TarsqiControl instance as the sole argument."""
-
-        self.pipeline = []
-        self.input = tarsqi_instance.input
-        self.output = tarsqi_instance.output
-        self.tarsqi_components = {
-            PREPROCESSOR: (PreprocessorWrapper, tarsqi_instance.FILE_PRE),
-            GUTIME: (GUTimeWrapper, tarsqi_instance.FILE_GUT),
-            EVITA: (EvitaWrapper, tarsqi_instance.FILE_EVI),
-            SLINKET: (SlinketWrapper, tarsqi_instance.FILE_SLI),
-            S2T: (S2tWrapper, tarsqi_instance.FILE_S2T),
-            BLINKER: (BlinkerWrapper, tarsqi_instance.FILE_BLI),
-            CLASSIFIER: (ClassifierWrapper, tarsqi_instance.FILE_CLA),
-            LINK_MERGER: (MergerWrapper, tarsqi_instance.FILE_MER),
-            ARGLINKER: (ArgLinkerWrapper, tarsqi_instance.FILE_ARG) }
-
-        
-    def set_pipeline(self, list):
-
-        """Takes a list with component names and sets the pipeline and component variables
-        conform that list."""
-
-        self.pipeline = []
-        component_input = self.input
-        for component in list:
-            (wrapper, outfile) = self.tarsqi_components[component]
-            self.pipeline.append([component, wrapper, component_input, outfile])
-            component_input = outfile

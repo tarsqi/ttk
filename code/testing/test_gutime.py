@@ -2,7 +2,7 @@ import os
 import sys
 import unittest
 
-#from tarsqi import TarsqiControl
+#from tarsqi import Tarsqi
 from testing.common import load_mappings
 from utilities.file import write_text_to_file
 from utilities.file import file_contents
@@ -37,7 +37,7 @@ class TestGutime(unittest.TestCase):
         write_text_to_file(test_input, infile_name)
 
         options = {'pipeline': 'GUTIME'}
-        #TarsqiControl('simple-xml', options, infile_name, outfile_name).process()
+        #Tarsqi('simple-xml', options, infile_name, outfile_name).process()
         tarsqi_class('simple-xml', options, infile_name, outfile_name).process()
         observed_output = file_contents(outfile_name)
 

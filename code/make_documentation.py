@@ -1,15 +1,14 @@
 """
 
-Create manual pages with the docstrings for modules, classes and
-functions. This latter functionality was added because pydoc breaks on
-some of the tarsqi modules, most notably those that import the
-treetagger.
+Create manual pages with the docstrings for modules, classes and functions. This latter
+functionality was added because pydoc breaks on some of the tarsqi modules, most notably
+those that import the treetagger.
 
 NOTES:
-- code creates potentially undesired documentation for the module
-  components.preprocessing.wrapper, adding a couple of module-level
-  functions that are not there in the code, but are imported
-  functions.
+
+    - code creates potentially undesired documentation for the module
+      components.preprocessing.wrapper, adding a couple of module-level functions that are
+      not in the code, but are imported functions.
 
 """
 
@@ -31,7 +30,7 @@ javascript_code = \
 
 function view_code(id) {
   var newurl = "../functions/" + id + ".html";
-  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes"); 
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
   w.xopener = window;
 }
 
@@ -232,11 +231,11 @@ def trim(docstring, linenum=1):
 
 if __name__ == '__main__':
 
-    # use this if user specified just a set of modules, only create
-    # documentation for those modules (this will by the way screw up
-    # the numbering for functions, so it should only be used to
-    # quickly check updated documentation for a module, documentation
-    # for other modules may be off)
+    # use this if user specified just a set of modules, only create documentation for
+    # those modules (this will by the way screw up the numbering for functions, so it
+    # should only be used to quickly check updated documentation for a module,
+    # documentation for other modules may be off)
+
     if sys.argv[1:]:
         for module_name in sys.argv[1:]:
             module = eval(module_name)
@@ -245,6 +244,7 @@ if __name__ == '__main__':
         sys.exit()
 
     # otherwise, do everything
+
     filename = os.path.join('..', 'docs', 'code', 'index.html')
     indexfile = open(filename,'w')
     indexfile.write("<html>\n<head>\n")

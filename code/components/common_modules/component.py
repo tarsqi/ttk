@@ -24,16 +24,15 @@ class TarsqiComponent:
     """Abstract class for the python components."""
     
     def process(self, infile, outfile):
-        """Ask the component to process a file fragment. This is the
-        method that is called from the component wrappers and it
-        should be overwritten on all subclasses. An error is written
-        to the log file if this method is ever executed."""
+        """Ask the component to process a file fragment. This is the method that is called
+        from the component wrappers and it should be overwritten on all subclasses. An
+        error is written to the log file if this method is ever executed."""
         logger.error("TarsqiComponent.process() not overridden")
 
     def pp_doctree(self, componentName):
-        """Print the result of the document tree created by the
-        converter utility. Assumes there is a doctree instance
-        variable that contains a Document object."""
+        """Print the result of the document tree created by the converter utility. Assumes
+        there is a doctree instance variable that contains a Document object."""
+
         print "\n--------- DOCUMENT TREE for %s ----------" % componentName
         self.doctree.pretty_print()
 
@@ -46,21 +45,19 @@ class TarsqiComponent:
 
 class ComponentWrapper:
 
-    """Abstract class that contains some common functionality for all
-    tarsqi component wrappers. Each Tarsqi component has a Python
-    ComponentWrapper. Wrappers are responsible for (i) extracting from
-    the XML document those fragments that need to be processed, (ii)
-    asking the component to process each fragment and (iii) inserting
-    the processed fragments back into the XML document. The parsed XML
-    document lives in the document instance variable and results are
-    inserted into that same document. The wrapper does not know where
-    the input and output files are. However, each wrapper does keep
-    track of where the input and output fragments are for its
-    component (in the DIR_DATA directory with fixed extensions).
+    """Abstract class that contains some common functionality for all tarsqi component
+    wrappers. Each Tarsqi component has a Python ComponentWrapper. Wrappers are
+    responsible for (i) extracting from the XML document those fragments that need to be
+    processed, (ii) asking the component to process each fragment and (iii) inserting the
+    processed fragments back into the XML document. The parsed XML document lives in the
+    document instance variable and results are inserted into that same document. The
+    wrapper does not know where the input and output files are. However, each wrapper does
+    keep track of where the input and output fragments are for its component (in the
+    DIR_DATA directory with fixed extensions).
 
     Instance variables for all subclasses of ComponentWrapper:
 
-       tarsqi_instance - a TarsqiControl instance
+       tarsqi_instance - a Tarsqi instance
        tag - a string indicating the content tag used to create
              fragments
        document - the XML document of the input file
@@ -76,11 +73,10 @@ class ComponentWrapper:
                              of the wrapped component
        TMP_EXTENSION - extension of intermediate files, if used
 
-    The last four variables are instantiated by the __init__ methods
-    defined on the subclasses of ComponentWrapper. In addition, those
-    subclasses may initialise (1) a directory where the executables for
-    the wrapped components are, which is needed for the non-Python
-    components, and (2) an instance of the component parser."""
+    The last four variables are instantiated by the __init__ methods defined on the
+    subclasses of ComponentWrapper. In addition, those subclasses may initialise (1) a
+    directory where the executables for the wrapped components are, which is needed for
+    the non-Python components, and (2) an instance of the component parser."""
        
     # NOTES: 
     # - wrappers now use files as input and output, this may be changed
@@ -103,10 +99,9 @@ class ComponentWrapper:
 
     def process(self):
 
-        """This is the method that is called from the TarsqiControl
-        class. Fragments are created, processed and retrieved. The
-        method that processes fragments (process_fragment) should be
-        defined for each wrapper individually.
+        """This is the method that is called from the Tarsqi class. Fragments are created,
+        processed and retrieved. The method that processes fragments (process_fragment)
+        should be defined for each wrapper individually.
 
         No arguments and no return value."""
 
@@ -122,30 +117,26 @@ class ComponentWrapper:
 
     def create_fragments(self, tagname, wrapping_tag=None, remove_tags=False):
 
-        """ Fragments are pairs of a file basename and a DocElement that
-        contains an opening tag. The file basename points to a fragment file
-        in the temporary data directory. The DocElement points to the tag in
-        the document in which the fragment is contained and it can be used to
-        update the content of that tag. The DocElement instance knows how to
-        get the content between opening and closing tags. For each tag named
-        'tagname', the elements between the opening and closing tags are
-        extracted and put in a separate fragment file. 
+        """ Fragments are pairs of a file basename and a DocElement that contains an
+        opening tag. The file basename points to a fragment file in the temporary data
+        directory. The DocElement points to the tag in the document in which the fragment
+        is contained and it can be used to update the content of that tag. The DocElement
+        instance knows how to get the content between opening and closing tags. For each
+        tag named 'tagname', the elements between the opening and closing tags are
+        extracted and put in a separate fragment file.
 
         Arguments: 
            tagname -
-              name of the tag that contains the fragments from input file
-              that need to be processed
+              name of the tag that contains the fragments from input file that need to be
+              processed
            wrapping_tag -
-              name of the tag that is used to wrap the content of the
-              fragment file
+              name of the tag that is used to wrap the content of the fragment file
            remove_tags -
-              a boolean that indicates whether tags are allowed to be
-              removed from the content of the fragment if the
-              remove_tags processing option is set to True; this only
-              makes sense for the source file, in fact, if this
-              parameter is set to True for any other component but the
-              preprocessor, all tags including the ones generated by
-              eg Evita will be removed
+              a boolean that indicates whether tags are allowed to be removed from the
+              content of the fragment if the remove_tags processing option is set to True;
+              this only makes sense for the source file, in fact, if this parameter is set
+              to True for any other component but the preprocessor, all tags including the
+              ones generated by eg Evita will be removed
 
         Return value: None """
 
@@ -183,17 +174,17 @@ class ComponentWrapper:
 
     def retrieve_fragments(self, wrapping_tag=None):
 
-        """Retrieve fragments and insert them into the tags that the fragments
-        were extracted from.
+        """Retrieve fragments and insert them into the tags that the fragments were
+        extracted from.
 
         Arguments:
-           wrapping_tag - name of the tag (if any) that was used by
-                          create_fragments to wrap the content of the
-                          fragment file, it needs to be removed in this method
+           wrapping_tag - name of the tag (if any) that was used by create_fragments to
+                          wrap the content of the fragment file, it needs to be removed in
+                          this method
 
-        Unlike with create_fragments, there is no tag argument. This
-        argument is not needed here because a fragment is a pair of a
-        file base name tag and a DocElement that contains the tag."""
+        Unlike with create_fragments, there is no tag argument. This argument is not
+        needed here because a fragment is a pair of a file base name tag and a DocElement
+        that contains the tag."""
 
         for fragment in self.fragments:
             (base, tag) = fragment

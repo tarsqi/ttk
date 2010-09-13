@@ -355,7 +355,7 @@ class Document:
             sentence.pretty_print()
         print "\n"
 
-        
+
 def protectNode(node):
     """Make sure that the node remains well-formed XML"""
 
@@ -383,12 +383,12 @@ def protectNode(node):
             node = node.replace(' "Tookie" ',' &quot;Tookie&quot; ')
         return node
 
+    
 def _isTag(token):
     """Return True if the sting argument is a tag. Cannot simply check for
     final > because sometimes python expat leaves trailing newline as part
     of token."""
     return token[0] == '<' and token.find('>') > -1
-
 
 
 def endElementString(name):

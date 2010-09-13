@@ -1,3 +1,23 @@
+"""
+
+View a profile:
+
+    % python seeProfile 'profile'
+
+
+The Tarsqi toolkit profile in 'profile' can be created as follows:
+    
+    % cd ..
+    % python
+    >>> import tarsqi, profile
+    >>> infile = 'data/in/simple-xml/test.xml'
+    >>> infile = 'out.xml'
+    >>> command = "tarsqi.run_tarsqi(['simple-xml', '%s' , '%s'])" % (infile, outfile)
+    profile.run(command, 'profile')
+
+"""
+
+
 import pstats
 import sys
 
@@ -15,4 +35,5 @@ p.sort_stats('cumulative').print_stats(40)
 # If you were looking to see what functions were looping a lot, and
 # taking a lot of time, you would do:
 #p.sort_stats('time').print_stats(25)
+
 

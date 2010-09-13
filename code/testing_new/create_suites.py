@@ -64,7 +64,7 @@ def run_tarsqi(module, case_name, dir_in, dir_out):
     options = {'trap_errors': 'False', 'pipeline': module}
     infile = "%s/%s" % (dir_in, case_name)
     outfile = "%s/%s" % (dir_out, case_name)
-    tarsqi.TarsqiControl('simple-xml', options, infile, outfile).process()
+    tarsqi.Tarsqi('simple-xml', options, infile, outfile).process()
     
 
 def create_suites(file, base_dir):
