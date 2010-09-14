@@ -195,7 +195,7 @@ class SourceDoc:
 
     def print_xml(self):
 
-        xml_string = ''
+        xml_string = u''
         offset = 0
         for char in self.source:
             opening_tag = self.opening_tags.get(offset)
