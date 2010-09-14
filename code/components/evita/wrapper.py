@@ -13,8 +13,8 @@ from utilities import logger
 
 class EvitaWrapper(ComponentWrapper):
 
-    """Wrapper for Evita. See ComponentWrapper for more details on how
-    component wrappers work."""
+    """Wrapper for Evita. See ComponentWrapper for more details on how component wrappers
+    work."""
 
 
     def __init__(self, tag, xmldoc, tarsqi_instance):
@@ -27,10 +27,9 @@ class EvitaWrapper(ComponentWrapper):
         
     def process(self):
 
-        """Retrieve the slices from the XmlDocument and hand these
-        slice to Evita for processing. Evita processing will update
-        the slices when events are added. No arguments and no return
-        value."""
+        """Retrieve the slices from the XmlDocument and hand these slice to Evita for
+        processing. Evita processing will update the slices when events are added. No
+        arguments and no return value."""
 
         begin_time = time()
         xmldocs = self.document.get_tag_contents_as_xmldocs(self.tag)

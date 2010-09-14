@@ -158,12 +158,13 @@ class Tarsqi:
 
         
     def process(self):
-
-        """Method called after initialization. Sets up the document model, reads the
-        input, applies all components, and writes the results to a file. Only define
-        high-level scaffolding for processing task, the actual processing itself is driven
-        using the processing parameters set at initialization and the code that applies a
-        component is responsible for determining whether the component is needed.
+        
+        """
+        Set up the document model, read the input, apply all components, and write the
+        results to a file. Only define high-level scaffolding for processing task, the
+        actual processing itself is driven using the processing parameters set at
+        initialization and the code that applies a component is responsible for
+        determining whether the component is needed.
 
         This method takes no arguments and has no return value."""
 
