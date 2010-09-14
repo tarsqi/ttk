@@ -1,0 +1,16 @@
+<DOC id='34'>
+<DOCID>Simple Test</DOCID>
+<TEXT>
+Mr. Vinken got the <THING><MED>flue</MED></THING> on <TIME>Nov. 29th.</TIME>  
+John fell after Mary pushed him.  They heard an explosion on Monday, 
+but not in 2007. John (dork amp; @#$) does not leave today.
+
+Adding some non-ascii:
+
+   U+0182 ¶
+   U+0416 Ж
+
+And some more <ENTITY number='plural'>things</ENTITY>.
+
+</TEXT>
+</DOC>

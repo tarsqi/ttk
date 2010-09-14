@@ -396,6 +396,7 @@ def run_profiler(args):
 
 
 if __name__ == '__main__':
+
     try:
         if USE_PROFILER:
             run_profiler(sys.argv[1:])
