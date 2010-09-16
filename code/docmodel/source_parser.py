@@ -121,16 +121,14 @@ class SourceDoc:
 
         """Add an opening tag."""
 
-        #self.opening_tags[self.offset] = (name, attrs)
         self.opening_tags.setdefault(self.offset, []).append((name, attrs))
         self.tags.append( ('OPEN', name, attrs, self.offset) )
 
         
     def add_closing_tag(self, name):
 
-        """Add an closing tag."""
+        """Add a closing tag."""
 
-        #self.closing_tags[self.offset] = (name,)
         self.closing_tags.setdefault(self.offset, []).append((name,))
         self.tags.append( ('CLOSE', name, self.offset) )
 

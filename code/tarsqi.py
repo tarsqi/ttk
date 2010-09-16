@@ -84,9 +84,9 @@ class Tarsqi:
 
     def __init__(self, doctype, opts, input, output):
 
-        """Initialize Tarsqi object conform the data source identifier and the
-        processing options. Does not set the instance variables related to the document
-        model and the meta data.
+        """Initialize Tarsqi object conform the data source identifier and the processing
+        options. Does not set the instance variables related to the document model and the
+        meta data.
 
         Arguments:
            doctype - data source identifier (string)
@@ -98,11 +98,8 @@ class Tarsqi:
         # file it may end up being in a different directory.
         os.chdir(TTK_ROOT)
         
-        # initialize options from the settings file and the opts parameter
-        self.processing_options = read_settings('settings.txt')
-        self.processing_options.update(opts)
-        _transform_values(self.processing_options)
-        
+        self.set_processing_options(opts)
+            
         # user provided options
         self.data_source_identifier = doctype
         self.input = input
@@ -125,6 +122,23 @@ class Tarsqi:
         self.init_components()
         
 
+
+    def set_processing_options(self, opts):
+
+        """Initialize options from the settings file and the opts parameter.  Also loop through
+        the options dictionary and replace some of the strings with other
+        objects. Replaces 'True' with True, 'False' with False, and strings indicating an
+        integer with that integer."""
+        
+        self.processing_options = read_settings('settings.txt')
+        self.processing_options.update(opts)
+        for (attr, value) in self.processing_options.items():
+            if type(value) != types.StringType:
+                continue
+            if value == 'True'or value == 'False' or value.isdigit():
+                self.processing_options[attr] = eval(value)
+
+            
 
     def init_files(self):
         """Initialize directories and files, user has no control over where intermediate
@@ -159,12 +173,11 @@ class Tarsqi:
         
     def process(self):
         
-        """
-        Set up the document model, read the input, apply all components, and write the
-        results to a file. Only define high-level scaffolding for processing task, the
-        actual processing itself is driven using the processing parameters set at
-        initialization and the code that applies a component is responsible for
-        determining whether the component is needed.
+        """Set up the document model, read the input, apply all components, and write the
+        results to a file. Only define high-level scaffolding for processing task, the 
+        actual processing itself is driven using the processing parameters set at 
+        initialization and the code that applies a component is responsible for determining
+        whether the component is needed.
 
         This method takes no arguments and has no return value."""
 

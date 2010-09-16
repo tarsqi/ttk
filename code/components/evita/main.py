@@ -1,10 +1,8 @@
-"""Main module for Evita, the event recognition  component.
+"""Main module for Evita, the event recognition component.
 
 Responsible for the top-level processing of Evita.
 
 """
-
-import time
 
 from components.evita.gramChunk import getWordList, getPOSList
 from components.common_modules.component import TarsqiComponent
@@ -48,8 +46,7 @@ class Evita (TarsqiComponent):
         
     def process_xmldoc(self, xmldoc):
 
-        """Process an XmlDocument fragment and return one
-        with EVENT tags
+        """Process an XmlDocument fragment and return one with EVENT tags
 
         Arguments:
             xmldoc - an instance of an XmlDocument object"""
@@ -75,8 +72,8 @@ class Evita (TarsqiComponent):
     
     def extractEvents(self):
 
-        """Loop through all sentences in self.doctree and through all nodes in
-        each sentence and determine if the node contains an event."""
+        """Loop through all sentences in self.doctree and through all nodes in each sentence and
+        determine if the node contains an event."""
 
         for sentence in self.doctree:
             #print "<sentence>\n"
