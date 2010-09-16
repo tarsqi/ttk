@@ -188,21 +188,38 @@ class SourceDoc:
         used. There are no provisions for crossing tags. It is also not set up to deal
         with tags added to the tags repository."""
 
+        def matching_closing_tags(stack, closing_tags):
+            stack_copy = list(stack)
+            answer = []
+            while stack_copy:
+                last_opened = stack_copy.pop()
+                print '  last', last_opened
+                for t in closing_tags:
+                    if t[0] == last_opened[0]:
+                        answer.append(t)
+                        closing_tags.remove(t)
+                        continue
+            return answer
+        
         xml_string = u''
         offset = 0
+        stack = []
         for char in self.source:
-            opening_tags = self.opening_tags.get(offset)
-            closing_tags = self.closing_tags.get(offset)
-            if closing_tags:
-                for t in closing_tags:
-                    xml_string += "</%s>" % t[0]
-            if opening_tags:
-                for t in opening_tags:
-                    attrs = attributes_as_string(t[1])
-                    xml_string += "<%s%s>" % (t[0], attrs)
+            opening_tags = self.opening_tags.get(offset,[])
+            closing_tags = self.closing_tags.get(offset,[])
+            print '>>', stack
+            print '    ', opening_tags, closing_tags
+            matching_closing_tags(stack, closing_tags)
+            for t in closing_tags:
+                stack.pop()
+                xml_string += "</%s>" % t[0]
+            for t in opening_tags:
+                stack.append(t)
+                attrs = attributes_as_string(t[1])
+                xml_string += "<%s%s>" % (t[0], attrs)
             xml_string += char
             offset += 1
-        print xml_string
+        #print xml_string
         fh = open(filename, 'w')
         fh.write(xml_string.encode('utf-8'))
 
