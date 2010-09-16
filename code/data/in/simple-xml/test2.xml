@@ -1,4 +1,4 @@
-<DOC id='34'>
+<DOC id='34' source="test2.xml"><DOC2>
 <DOCID>Simple Test</DOCID>
 <TEXT>
 Mr. Vinken got the <THING><MED>flue</MED></THING> on <TIME>Nov. 29th.</TIME>  
@@ -10,7 +10,10 @@ Adding some non-ascii:
    U+0182 ¶
    U+0416 Ж
 
+<OUT><IN>double</IN></OUT>
+
 And some more <ENTITY number='plural'>things</ENTITY>.
 
 </TEXT>
+</DOC2>
 </DOC>

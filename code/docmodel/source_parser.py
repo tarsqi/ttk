@@ -14,18 +14,16 @@ TODO: we know assume that the input is valid XML and has at least a root, should
 this and make a distinction between XML and non-XML, which will simply be treated by
 adding the entire file content to DocSource.source while leaving DocSource.tags empty.
 
-TODO: the tags variable on SourceDoc is simply a list, may need to be enhanced.
-
 """
 
 import sys
 import xml.parsers.expat
-
+import pprint
 
 
 class Parser:
 
-    """Implements the XML parser, using the Expat parser. 
+    """Simple XML parser, using the Expat parser. 
 
     Instance variables
        doc - an XmlDocument
@@ -115,22 +113,23 @@ class SourceDoc:
         self.opening_tags = {}
         self.closing_tags = {}
         self.offset = 0
-
+        self.tag_number = 0
+        
         
     def add_opening_tag(self, name, attrs):
 
         """Add an opening tag."""
 
-        self.opening_tags.setdefault(self.offset, []).append((name, attrs))
-        self.tags.append( ('OPEN', name, attrs, self.offset) )
+        self.tag_number += 1
+        self.tags.append( ('OPEN', self.tag_number, name, self.offset, attrs) )
 
         
     def add_closing_tag(self, name):
 
         """Add a closing tag."""
 
-        self.closing_tags.setdefault(self.offset, []).append((name,))
-        self.tags.append( ('CLOSE', name, self.offset) )
+        self.tag_number += 1
+        self.tags.append( ('CLOSE', self.tag_number, name, self.offset) )
 
         
     def add_characters(self, string):
@@ -143,8 +142,8 @@ class SourceDoc:
 
     def finish(self):
 
-        """Transform the source list into a string and merge the begin and end
-        tags. Print warnings if tags do not match."""
+        """Transform the source list into a string and merge the begin and end tags. Print
+        warnings if tags do not match. Also populate opening_tags and closing_tags."""
         
         self.source = ''.join(self.source)
 
@@ -153,19 +152,28 @@ class SourceDoc:
         for t in self.tags:
             if t[0] == 'OPEN':
                 stack.append(t)
-            elif t[1] == stack[-1][1]:
+            elif t[2] == stack[-1][2]:
                 t1 = stack.pop()
-                merged_tags.append( (t1[3], t[2], t1[1], t1[2]) )
+                # Tag requires id, name, begin offset, end offset and attributes
+                merged_tag = Tag( t1[1], t1[2], t1[3], t[3], t1[4] )
+                merged_tags.append(merged_tag)
             else:
-                raise tarsqiInputError("non-matching tag %s" % t)
+                raise TarsqiInputError("non-matching tag %s" % t)
         if stack:
-            raise tarsqiInputError("no closing tag for %s" % stack[-1])
+            raise TarsqiInputError("no closing tag for %s" % stack[-1])
 
         merged_tags.sort()
         self.tags = merged_tags
 
+        for tag in self.tags:
+            self.opening_tags.setdefault(tag.begin,[]).append(tag)
+            self.closing_tags.setdefault(tag.end,{}).setdefault(tag.begin,{})[tag.name] = True
+        for (k,v) in self.opening_tags.items():
+            self.opening_tags[k].sort()
+            
 
-    def pretty_print(self):
+
+    def pp(self):
 
         """Print source and tags."""
 
@@ -174,65 +182,126 @@ class SourceDoc:
         print '-' * 80
         print self.source
         print '-' * 80
-        for t in self.tags:
-            print "%-4d  %-4d  %-10s  %s" % t
-        print '-' * 80
-        print "\n\n"
-        
+        for t in self.tags: print t
+        print '-' * 80, "\n"
 
+
+    def pp_opening(self):
+
+        """Pretty print self.opening_tags."""
+        
+        print "OPENING:"
+        offsets = self.opening_tags.keys()
+        offsets.sort()
+        for offset in offsets:
+            print '  ', offset, '=>'
+            for tag in self.opening_tags[offset]:
+                print '   ', tag
+        print
+
+        
+    def pp_closing(self):
+
+        """Pretty print self.closing_tags."""
+
+        pp = pprint.PrettyPrinter(indent=3)
+        pp.pprint(self.closing_tags)
+        print
+        
+        
     def print_xml(self, filename):
 
         """Print self as an inline XML file. This should work on all input that did not
         generate a warning while parsing. The output file is identical to the input file
         modulo the order of attributes in an opening tag and the kind of quotes
-        used. There are no provisions for crossing tags. It is also not set up to deal
-        with tags added to the tags repository."""
+        used. Also, tags that were printed as <SOME_TAG/> will be printed as two
+        tags. There are no provisions for crossing tags. Therefore, the code is also not
+        set up to deal with tags added to the tags repository since those may have
+        introduced crossing tags."""
 
-        def matching_closing_tags(stack, closing_tags):
-            stack_copy = list(stack)
-            answer = []
-            while stack_copy:
-                last_opened = stack_copy.pop()
-                print '  last', last_opened
-                for t in closing_tags:
-                    if t[0] == last_opened[0]:
-                        answer.append(t)
-                        closing_tags.remove(t)
-                        continue
-            return answer
-        
         xml_string = u''
         offset = 0
         stack = []
+        
         for char in self.source:
-            opening_tags = self.opening_tags.get(offset,[])
-            closing_tags = self.closing_tags.get(offset,[])
-            print '>>', stack
-            print '    ', opening_tags, closing_tags
-            matching_closing_tags(stack, closing_tags)
-            for t in closing_tags:
-                stack.pop()
-                xml_string += "</%s>" % t[0]
-            for t in opening_tags:
+            
+            # any tags on the stack that can be closed?
+            (stack, matching) = self._matching_closing_tags(offset, stack, [])
+            for t in matching: 
+                xml_string += "</%s>" % t.name
+
+            # any new opening tags?
+            for t in self.opening_tags.get(offset,[]):
                 stack.append(t)
-                attrs = attributes_as_string(t[1])
-                xml_string += "<%s%s>" % (t[0], attrs)
+                xml_string += "<%s%s>" % (t.name, t.attributes_as_string())
+
+            # any of those need to be closed immediately (non-consuming tags)?
+            (stack, matching) = self._matching_closing_tags(offset, stack, [])
+            for t in matching: 
+                xml_string += "</%s>" % t.name
+                
             xml_string += char
             offset += 1
-        #print xml_string
+
         fh = open(filename, 'w')
         fh.write(xml_string.encode('utf-8'))
 
 
+    def _matching_closing_tags(self, offset, stack, matching):
 
-def attributes_as_string(attrs):
+        """Recursively return the closing tags that match the tail of the stack of opening
+        tags."""
+        
+        if not stack:
+            return (stack, matching)
 
-    """Takes a dictionary of attributes and returns a string representation of it."""
+        last = stack[-1]
+        if self.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
+            stack.pop()
+            matching.append(last)
+            return self._matching_closing_tags(offset, stack, matching)
+        else:
+            return (stack, matching)
+            
+        
+        
+        
+class Tag:
 
-    tagstr = ''
-    for key in attrs.keys():
-        tagstr = tagstr + ' ' + key + '="' + attrs[key] + '"'
-    return tagstr
+    """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
+    attributes. The id is a number generated when the text was parsed, so tags that occur
+    earlier in the text have a lower id."""
+    
+    def __init__(self, id, name, o1, o2, attrs):
+
+        """Initialize id, name, begin, end and attrs instance variables."""
+        
+        self.id = id
+        self.name = name
+        self.begin = o1
+        self.end = o2
+        self.attrs = attrs
+        
+
+    def __str__(self):
+
+        return "<Tag %d %s %d %d %s>" % \
+               (self.id, self.name, self.begin, self.end, str(self.attrs))
+    
+
+    def __cmp__(self, other):
+
+        """Order two Tags based on their id. The id is based on the text position of the
+        opening tag."""
+
+        return cmp(self.id, other.id)
+
+        
+    def attributes_as_string(self):
+
+        """Return a string representation of the attributes dictionary."""
+
+        return ' ' + ' '.join(["%s=\"%s\"" % (k,v) for (k,v) in self.attrs.items()])
 
 
 
@@ -246,5 +315,5 @@ if __name__ == '__main__':
     IN = sys.argv[1]
     OUT = sys.argv[2]
     doc = Parser().parse_file(open(IN))
-    #doc.pretty_print()
+    doc.pp()
     doc.print_xml(OUT)
