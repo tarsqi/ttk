@@ -31,9 +31,7 @@ class Parser:
 
 
     def __init__(self, encoding='utf-8'):
-
         """Set up the Expat parser."""
-
         self.encoding = encoding
         self.parser = xml.parsers.expat.ParserCreate(encoding=encoding)
         self.parser.buffer_text = 1
@@ -42,55 +40,38 @@ class Parser:
         self.parser.CharacterDataHandler = self._handle_characters
         self.parser.DefaultHandler = self._handle_default
         
-        
     def parse_file(self, file):
-
         """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
         file object as its single argument and returns the SourceDoc. """
-
         self.sourcedoc = SourceDoc(file.name)
         self.parser.ParseFile(file)
         self.sourcedoc.finish()
         return self.sourcedoc
     
-    
     def parse_string(self, string):
-
         """Parse a string, forwards to the Parse routine of the expat parser. Takes a
         string as its single argument and returns the value of the doc variable. """
-
         self.parser.Parse(string)
         return self.doc
-
     
     def _handle_start(self, name, attrs):
-
         """Handle opening tags. Takes two arguments: a tag name and a dictionary of
         attributes. Asks the SourceDoc instance in the sourcedoc variable to add an
         opening tag."""
-
         self.sourcedoc.add_opening_tag(name, attrs)
-
         
     def _handle_end(self, name):
-
         """Add closing tags to the SourceDoc."""
-
         self.sourcedoc.add_closing_tag(name)
-
         
     def _handle_characters(self, string):
-
         """Handle character data by asking the SourceDocument to add the data. This will
         not necesarily add a contiguous string of character data as one data element."""
-
         self.sourcedoc.add_characters(string)
         
         
     def _handle_default(self, string):
-
         """Handle default data by asking the SourceDoc to add it as characters."""
-
         self.sourcedoc.add_characters(string)
         
         
@@ -104,9 +85,7 @@ class SourceDoc:
     contain begin and end positions in the source."""
 
     def __init__(self, filename='<STRING>'):
-
         """Initialize a SourceDoc on a filename or a string."""
-
         self.filename = filename
         self.source = []
         self.tags = []
@@ -115,27 +94,19 @@ class SourceDoc:
         self.offset = 0
         self.tag_number = 0
         
-        
     def add_opening_tag(self, name, attrs):
-
         """Add an opening tag."""
-
         self.tag_number += 1
-        self.tags.append( ('OPEN', self.tag_number, name, self.offset, attrs) )
+        self.tags.append( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
         
     def add_closing_tag(self, name):
-
         """Add a closing tag."""
-
         self.tag_number += 1
-        self.tags.append( ('CLOSE', self.tag_number, name, self.offset) )
-
+        self.tags.append( ClosingTag(self.tag_number, name, self.offset) )
         
     def add_characters(self, string):
-
         """Add a character string to the source and increment the current offset."""
-
         self.source.append(string) # this is already unicode
         self.offset += len(string)        
 
@@ -150,13 +121,11 @@ class SourceDoc:
         stack = []
         merged_tags = []
         for t in self.tags:
-            if t[0] == 'OPEN':
+            if t.is_opening_tag():
                 stack.append(t)
-            elif t[2] == stack[-1][2]:
+            elif t.name == stack[-1].name:
                 t1 = stack.pop()
-                # Tag requires id, name, begin offset, end offset and attributes
-                merged_tag = Tag( t1[1], t1[2], t1[3], t[3], t1[4] )
-                merged_tags.append(merged_tag)
+                merged_tags.append(Tag( t1.id, t1.name, t1.begin, t.end, t1.attrs ))
             else:
                 raise TarsqiInputError("non-matching tag %s" % t)
         if stack:
@@ -172,24 +141,18 @@ class SourceDoc:
             self.opening_tags[k].sort()
             
 
-
     def pp(self):
-
         """Print source and tags."""
-
         print '-' * 80
         print "<SourceDoc on '%s'>" % self.filename
         print '-' * 80
-        print self.source
+        print self.source.encode('utf-8')
         print '-' * 80
         for t in self.tags: print t
         print '-' * 80, "\n"
 
-
     def pp_opening(self):
-
         """Pretty print self.opening_tags."""
-        
         print "OPENING:"
         offsets = self.opening_tags.keys()
         offsets.sort()
@@ -198,12 +161,9 @@ class SourceDoc:
             for tag in self.opening_tags[offset]:
                 print '   ', tag
         print
-
         
     def pp_closing(self):
-
         """Pretty print self.closing_tags."""
-
         pp = pprint.PrettyPrinter(indent=3)
         pp.pprint(self.closing_tags)
         print
@@ -265,48 +225,71 @@ class SourceDoc:
             
         
         
-        
 class Tag:
 
     """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
     attributes. The id is a number generated when the text was parsed, so tags that occur
     earlier in the text have a lower id."""
-    
-    def __init__(self, id, name, o1, o2, attrs):
 
+    def __init__(self, id, name, o1, o2, attrs):
         """Initialize id, name, begin, end and attrs instance variables."""
-        
         self.id = id
         self.name = name
         self.begin = o1
         self.end = o2
         self.attrs = attrs
         
-
     def __str__(self):
 
         return "<Tag %d %s %d %d %s>" % \
                (self.id, self.name, self.begin, self.end, str(self.attrs))
-    
 
     def __cmp__(self, other):
-
         """Order two Tags based on their id. The id is based on the text position of the
         opening tag."""
-
         return cmp(self.id, other.id)
-
         
+    def is_opening_tag(self): return False
+
+    def is_closing_tag(self): return False
+    
     def attributes_as_string(self):
-
         """Return a string representation of the attributes dictionary."""
-
         return ' ' + ' '.join(["%s=\"%s\"" % (k,v) for (k,v) in self.attrs.items()])
 
 
+class OpeningTag(Tag):
 
+    "Like Tag, but self.end is always None."""
+    
+    def __init__(self, id, name, offset, attrs):
+        Tag.__init__(self, id, name, offset, None, attrs)
+
+    def __str__(self):
+        return "<OpeningTag %d %s %d %s>" % \
+            (self.id, self.name, self.begin, str(self.attrs))
+
+    def is_opening_tag(self):
+        return True
+
+
+class ClosingTag(Tag):
+
+    "Like Tag, but self.begin and self.attrs are always None."""
+    
+    def __init__(self, id, name, offset):
+        Tag.__init__(self, id, name, None, offset, None)
+
+    def __str__(self):
+        return "<ClosingTag %d %s %d>" % \
+            (self.id, self.name, self.end)
+
+    def is_closing_tag(self):
+        return True
+
+
+                 
 class TarsqiInputError(Exception): pass
-
 
 
         

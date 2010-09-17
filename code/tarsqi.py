@@ -32,7 +32,6 @@ Variables:
 
 """
 
-
 import sys, os, shutil, time, types
 
 from ttk_path import TTK_ROOT
@@ -143,7 +142,7 @@ class Tarsqi:
     def init_files(self):
         """Initialize directories and files, user has no control over where intermediate
         files go."""
-        self.DIR_GUTIME = TTK_ROOT + os.sep + 'gutime'
+        #self.DIR_GUTIME = TTK_ROOT + os.sep + 'gutime'
         self.DIR_DATA = TTK_ROOT + os.sep + 'data'
         self.DIR_DATA_TMP = self.DIR_DATA + os.sep + 'tmp'
         self.FILE_PRE = self.DIR_DATA_TMP + os.sep + self.basename + '.pre.xml'
