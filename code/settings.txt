@@ -10,16 +10,16 @@ platform = linux2
 
 ## Location of the IMS TreeTagger lives
 
-treetagger_dir = /home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
-#treetagger_dir = /Users/marc/Documents/tools/treetagger
+treetagger = /home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
+#treetagger = /Users/marc/Documents/tools/treetagger
 
 ## Location of the Stanford Parser
 
-stanford_dir = 
+stanford-parser = 
 
 ## Errors are trapped by default
 
-trap_errors = True
+trap-errors = True
 
 ## Location of Perl, in case we need to override local perl with the ActiveState Perl,
 ## which is the case for perl on OS 10.4

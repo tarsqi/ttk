@@ -12,7 +12,8 @@ This class will likely be embedded in a Document instance or a DocumentModel ins
 
 TODO: we know assume that the input is valid XML and has at least a root, should change
 this and make a distinction between XML and non-XML, which will simply be treated by
-adding the entire file content to DocSource.source while leaving DocSource.tags empty.
+adding the entire file content to DocSource.source while leaving DocSource.tags
+empty. Implement this by adding ExPat error trapping to SourceParser.parse_file().
 
 """
 
@@ -21,7 +22,7 @@ import xml.parsers.expat
 import pprint
 
 
-class Parser:
+class SourceParser:
 
     """Simple XML parser, using the Expat parser. 
 
@@ -40,10 +41,11 @@ class Parser:
         self.parser.CharacterDataHandler = self._handle_characters
         self.parser.DefaultHandler = self._handle_default
         
-    def parse_file(self, file):
+    def parse_file(self, filename):
+        file = open(filename)
         """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
         file object as its single argument and returns the SourceDoc. """
-        self.sourcedoc = SourceDoc(file.name)
+        self.sourcedoc = SourceDoc(filename)
         self.parser.ParseFile(file)
         self.sourcedoc.finish()
         return self.sourcedoc
@@ -297,6 +299,6 @@ if __name__ == '__main__':
     
     IN = sys.argv[1]
     OUT = sys.argv[2]
-    doc = Parser().parse_file(open(IN))
+    doc = SourceParser().parse_file(IN)
     doc.pp()
     doc.print_xml(OUT)

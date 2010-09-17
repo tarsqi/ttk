@@ -33,3 +33,6 @@ TTK_ROOT = os.path.dirname(scriptPath)
 # need to get rid of this by recompiling all FSA's
 sys.path[1:1] = [ os.path.join(TTK_ROOT,'utilities') ]
 
+# may use this instead of always importing TTK_ROOT from ttk_path, the documentation has
+# memory leak warnings though
+#os.environ['TTK_ROOT'] = TTK_ROOT

@@ -21,11 +21,10 @@ from library.tarsqi_constants import GUTIME
 from utilities.xml_utils import merge_tags_from_files, merge_tags_from_xmldocs
 from utilities import logger
 from docmodel.xml_parser import Parser, XmlDocument, XmlDocElement
-from components.common_modules.component import ComponentWrapper
 from components.gutime.btime import BTime
 
 
-class GUTimeWrapper(ComponentWrapper):
+class GUTimeWrapper:
 
     """Wrapper for GUTime. See ComponentWrapper for more details on how
     component wrappers work.
@@ -35,15 +34,18 @@ class GUTimeWrapper(ComponentWrapper):
        see ComponentWrapper for other variables."""
 
 
-    def __init__(self, tag, xmldoc, tarsqi_instance):
+    def __init__(self, document, tarsqi_instance):
 
         """Calls __init__ of the base class and sets component_name,
         and DIR_GUTIME."""
 
-        ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
+        self.tarsqi_instance = tarsqi_instance
+        self.metadata = document.metadata
+        self.xmldoc = document.xmldoc
         self.component_name = GUTIME
         self.DIR_GUTIME = TTK_ROOT + os.sep + 'components' + os.sep + 'gutime'
-
+        self.DIR_DATA = tarsqi_instance.DIR_DATA_TMP
+        
         
     def process(self):
 
@@ -53,8 +55,9 @@ class GUTimeWrapper(ComponentWrapper):
         
         os.chdir(self.DIR_GUTIME)
         begin_time = time()
-        xmldocs = self.document.get_tag_contents_as_xmldocs(self.tag)
-        self.dct = self.tarsqi_instance.metadata['dct']
+        self.dct = self.metadata['dct']
+
+        xmldocs = [self.xmldoc]
         count = 0
 
         for xmldoc in xmldocs:
@@ -98,7 +101,8 @@ class GUTimeWrapper(ComponentWrapper):
         new_xmldoc.populate_doc_from_list(new_elements)
 
         # remove all tags from the body except <s>, <lex> and the content tag
-        content_tag = self.tarsqi_instance.content_tag
+        #content_tag = self.tarsqi_instance.content_tag
+        content_tag = 'TEXT'
         for el in new_xmldoc.elements:
             if el.is_opening_tag():
                 if not el.tag in ['s', 'lex', content_tag]:

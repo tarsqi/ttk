@@ -11,7 +11,6 @@ from types import StringType, TupleType
 from ttk_path import TTK_ROOT
 from docmodel.xml_parser import XmlDocElement
 from library.tarsqi_constants import PREPROCESSOR
-from components.common_modules.component import ComponentWrapper
 from components.preprocessing.tokenizer import tokenize_file
 from components.preprocessing.tokenizer import tokenize_string
 from components.preprocessing.chunker import chunk_sentences
@@ -24,23 +23,18 @@ from formatConversor import normalizePOS
 
 
 
-class PreprocessorWrapper(ComponentWrapper):
+class PreprocessorWrapper:
     
-    """Wrapper for the preprocessing components. See ComponentWrapper for more details on
-    how component wrappers work.
+    """Wrapper for the preprocessing components."""
+    
 
-    Instance variables
-       DIR_PRE - directory where the preprocessor code lives
-       see ComponentWrapper for other variables."""
-
-    def __init__(self, tag, xmldoc, tarsqi_instance):
+    def __init__(self, document, tarsqi_instance):
 
         """Calls __init__ of the base class and sets component_name."""
 
-        ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
         self.component_name = PREPROCESSOR
-        #print tarsqi_instance.processing_options
-        self.treetagger_dir = tarsqi_instance.processing_options.get('treetagger_dir')
+        self.xmldoc = document.xmldoc
+        self.treetagger_dir = tarsqi_instance.parameters.get('treetagger')
         self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
 
         
@@ -53,13 +47,11 @@ class PreprocessorWrapper(ComponentWrapper):
         disappear."""
 
         begin_time = time()
-        xmldocs = self.document.get_tag_contents_as_xmldocs(self.tag)
-        for xmldoc in xmldocs:
-            text = xmldoc[0].collect_text_content()
-            text = self.tokenize_text(text)
-            text = self.tag_text(text)
-            text = self.chunk_text(text)
-            update_xmldoc(xmldoc, text)
+        text = self.xmldoc[0].collect_text_content()
+        text = self.tokenize_text(text)
+        text = self.tag_text(text)
+        text = self.chunk_text(text)
+        update_xmldoc(self.xmldoc, text)
         logger.info("%s DONE, processing time was %.3f seconds" %
                     (self.component_name, time() - begin_time))
 
@@ -111,6 +103,8 @@ class PreprocessorWrapper(ComponentWrapper):
         chunked_text = chunk_sentences(text)
         logger.info("chunker processing time: %.3f seconds" % (time() - btime))
         return chunked_text
+
+
 
 
 def update_xmldoc(xmldoc, text):
