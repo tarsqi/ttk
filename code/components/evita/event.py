@@ -1,4 +1,4 @@
-from components.common_modules.document import startElementString, endElementString, emptyContentString
+from utilities.xml_utils import startElementString, endElementString, emptyContentString
 from docmodel.xml_parser import XmlDocElement
 
 class Event:

@@ -13,7 +13,7 @@ USAGE
    % python tarsqy.py [OPTIONS] INPUT OUTPUT
 
    INPUT/OUTPUT
-   
+
       Input and output files or directories. If the input is a directory than the output
       directory needs to exist.
 
@@ -58,7 +58,6 @@ VARIABLES:
 import sys, os, shutil, time, types, getopt
 
 from ttk_path import TTK_ROOT
-#from docmodel.initialize import DocumentModelInitializer
 from docmodel.source_parser import SourceParser
 from docmodel.initialize import create_parser, get_default_pipeline
 from utilities import logger

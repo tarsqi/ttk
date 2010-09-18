@@ -9,6 +9,7 @@ character data).
 
 import sys
 import xml.parsers.expat
+
 from components.common_modules.document import protectNode
 
 

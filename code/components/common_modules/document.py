@@ -3,6 +3,7 @@
 import sys
 import re
 
+from utilities.xml_utils import emptyContentString
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import ALINK, SLINK, TLINK
@@ -35,22 +36,19 @@ class Document:
         linkCount - an integer
         positionCount - an integer
 
-    The taggedEventsDicts is used by Slinket, storing events indexed
-    on event IDs, its function can probably be taken over by the
-    event_dict variable. The insertDict variable is used by Evita. It
-    keeps track of event and instance tags that need to be inserted
-    and indexes them on the index in the nodeList where they need to
-    be inserted.
+    The taggedEventsDicts is used by Slinket, storing events indexed on event IDs, its
+    function can probably be taken over by the event_dict variable. The insertDict
+    variable is used by Evita. It keeps track of event and instance tags that need to be
+    inserted and indexes them on the index in the nodeList where they need to be inserted.
 
-    The variables event_dict, instance_dict, alink_list, slink_list
-    and tlink_list are filled in by the FragmentConverter.
+    The variables event_dict, instance_dict, alink_list, slink_list and tlink_list are
+    filled in by the FragmentConverter.
 
-    The counters are incremented when elements are added, most
-    counters are used to create unique ids for newly created tags. The
-    positionCount is incremented when a sentence or a timex is added
-    to the document (using addSentence or addTimex). It is used so the
-    position variable can be set on Sentences (that is, the Sentence
-    knows at what position in the document it occurrs)."""
+    The counters are incremented when elements are added, most counters are used to create
+    unique ids for newly created tags. The positionCount is incremented when a sentence or
+    a timex is added to the document (using addSentence or addTimex). It is used so the
+    position variable can be set on Sentences (that is, the Sentence knows at what
+    position in the document it occurrs)."""
 
 
     def __init__(self, fileName):
@@ -96,12 +94,11 @@ class Document:
         self.nodeCounter = self.nodeCounter + 1 
 
     def addDocLink(self, loc, string):
-        """Add a node to the document's nodeList. Inserts it at the specified
-        location and not at the ned of the document (as indicated by
-        noedeCounter. Still increments the nodeCounter becasue the
-        document grows by one element. This is much like addDocNode,
-        but it used for adding nodes that were not in the input but
-        that were created by a Tarsqi component.
+        """Add a node to the document's nodeList. Inserts it at the specified location and not at
+        the ned of the document (as indicated by noedeCounter. Still increments the
+        nodeCounter becasue the document grows by one element. This is much like
+        addDocNode, but it used for adding nodes that were not in the input but that were
+        created by a Tarsqi component.
         Arguments
            loc - an integer, iundicating the location of the insert point
            string - a string representing a tag or text"""
@@ -109,56 +106,32 @@ class Document:
         self.nodeCounter = self.nodeCounter + 1
                 
     def addSentence(self, sentence):
-        """Append a Sentence to the sentenceList and sets the parent feature
-        of the sentence to the document. Also increments the
-        positionCount."""
+        """Append a Sentence to the sentenceList and sets the parent feature of the sentence to
+        the document. Also increments the positionCount."""
         sentence.setParent(self)
         self.sentenceList.append(sentence)
         self.positionCount += 1
 
     def addTimex(self, timex):
-        """Applied when a timex cannot be added to a Chunk or a Sentence,
-        probably intended for the DCT."""
+        """Applied when a timex cannot be added to a Chunk or a Sentence, probably intended for
+        the DCT."""
         # NOTE: this is probably wrong, test it with a document where
         # the DCT will not end up in a sentence tag
         timex.setParent(self)
         self.positionCount += 1
     
     def hasEventWithAttribute(self, eid, att):
-        """Returns the attribute value if the taggedEventsDict has an event
-        with the given id that has a value for the given attribute,
-        returns False otherwise
+        """Returns the attribute value if the taggedEventsDict has an event with the given id that
+        has a value for the given attribute, returns False otherwise
         Arguments
            eid - a string indicating the eid of the event
            att - a string indicating the attribute"""
         return self.taggedEventsDict.get(eid,{}).get(att,False)
 
-    def _OLD_storeEventValues(self, pairs):
-        print "PAIRS:", pairs
-        try: eid = pairs[EID]
-        except: eid = pairs[EVENTID]
-        try:
-            eventInfo = self.taggedEventsDict[eid]
-            # There is already info for that event, therefore, tag is
-            # an INSTANCE tag or STRING data
-            for (att, val) in pairs.items():
-                self.taggedEventsDict[eid][att] = val
-        except:
-            # tag is an EVENT tag
-            evInfo = {}
-            for att in pairs.keys():
-                #evInfo = {}
-                evInfo[att] = pairs[att]
-                #if att == EID: pass
-                #else: evInfo[att] = pairs[att]
-                self.taggedEventsDict[eid] = evInfo
-            print 'EVINFO', evInfo
-    
     def storeEventValues(self, pairs):
-        """Store attributes associated to an event (that is, they live on an
-        event or makeinstance tag) in the taggedEventsDictionary.
-        Arguments
-           pairs - a dcitionary of attributes"""
+        """Store attributes associated with an event (that is, they live on an event or
+        makeinstance tag) in the taggedEventsDictionary. The pairs argument is a
+        dcitionary of attributes"""
         # get eid from event or instance
         try: eid = pairs[EID]
         except KeyError: eid = pairs[EVENTID]
@@ -173,25 +146,8 @@ class Document:
         """Returns the document itself."""
         return self
 
-    def addTimexTag(self, timex):
-        """Adds a timex tag to the document. Works similarly to the
-        addEvent method. This method is used by post-GUTime
-        processing, filling in some gaps. Should not be confused with
-        addTimex, which is used when the document if first created.
-        Arguments
-           timex - a TimexTag"""
-        timex.attrs["tid"] = self._getNextTimexID()
-        startLoc = timex.dtrs[0].textIdx - 1
-        endLoc = timex.dtrs[-1].textIdx + 2
-        # now it gets tricky, the insertDict isn't used anymore so we
-        # have to do it differently
-        #self._insertNode(startLoc, startElementString("TIMEX3", timex.attrs))
-        #self._insertNode(endLoc, endElementString("TIMEX3"))
-    
     def addEvent(self, event):
-        """Adds an event to the document. 
-        Arguments
-           event - an Event"""
+        """Adds an Event to the document."""
         eventID = self._getNextEventID()
         event.attrs["eid"] = eventID 
         for instance in event.instanceList:
@@ -202,23 +158,20 @@ class Document:
         
     def addLink(self, linkAttrs, linkType):
 
-        """Add an Alink or Slink to the document. Adds it at the end of the
-        document, that is, at the position indicated by the instance
-        variable nodeCount. This means that the resulting file is not
-        valid XML, but this is not problematic since the file is a
-        fragment that is inserted back into the whole file. This will
-        break down though is the fragment happens to be the outermost
-        tag of the input file. This method should probably use
-        addDocLink instead of addDocNode.
+        """Add an Alink or Slink to the document. Adds it at the end of the document, that is, at
+        the position indicated by the instance variable nodeCount. This means that the
+        resulting file is not valid XML, but this is not problematic since the file is a
+        fragment that is inserted back into the whole file. This will break down though is
+        the fragment happens to be the outermost tag of the input file. This method should
+        probably use addDocLink instead of addDocNode.
 
-        Also adds alinks, slinks and tlinks to the link lists. This is
-        to make sure that for example the main function of Slinket can
-        easily access newly created links in the Document and insert
-        them in the XmlDocument.
+        Also adds alinks, slinks and tlinks to the link lists. This is to make sure that
+        for example the main function of Slinket can easily access newly created links in
+        the Document and insert them in the XmlDocument.
         
-        Note that TLinks are added directly to the xml document and
-        not to the Document. Evita and Slinket are not yet updated to
-        add to the xmldoc and hence need this method.
+        Note that TLinks are added directly to the xml document and not to the
+        Document. Evita and Slinket are not yet updated to add to the xmldoc and hence
+        need this method.
 
         Arguments
            linkAttrs - dictionary of attributes
@@ -252,27 +205,23 @@ class Document:
         return "t%d" % next_id
 
     def _getNextEventID(self):
-        """Increment eventCount and return a new unique eid. Assumes that all
-        events are added using this method, otherwise, non-unique eids could
-        be assigned."""
+        """Increment eventCount and return a new unique eid. Assumes that all events are added
+        using this method, otherwise, non-unique eids could be assigned."""
         self.eventCount += 1
         return "e"+str(self.eventCount) 
         
     def _getNextInstanceID(self):
-        """Increment eventCount and return a new unique eiid. Assumes that all
-        instances are added using this method, otherwise, non-unique
-        eiids could be assigned."""
+        """Increment eventCount and return a new unique eiid. Assumes that all instances are added
+        using this method, otherwise, non-unique eiids could be assigned."""
         self.instanceCounter += 1
         return "ei"+str(self.instanceCounter)
 
     def _getNextLinkID(self, linkType):
-        """Return a unique lid. The linkType argument has no influence over
-        the lid that is returned but determines what link counter is
-        incremented. Assumes that all links are added using the link
-        counters in the document. Breaks down if there are already
-        links added without using those counters.
-        Arguments
-           linkType = ALINK|SLINK|TLINK """
+        """Return a unique lid. The linkType argument is one of {ALINK,SLINK,TLINK} and has no
+        influence over the lid that is returned but determines what link counter is
+        incremented. Assumes that all links are added using the link counters in the
+        document. Breaks down if there are already links added without using those
+        counters. """
         if linkType == ALINK:
             return self._getNextAlinkID()
         elif linkType == SLINK:
@@ -313,8 +262,8 @@ class Document:
             file.write(node)
 
     def toString(self):
-        """Return a string representation of the document that matches how the document would be printed.
-           """
+        """Return a string representation of the document that matches how the document would be
+        printed.  """
         docString = ''
         # loop through document
         for i in range(len(self.nodeList)):
@@ -327,8 +276,8 @@ class Document:
         return docString
             
     def pretty_print(self):
-        """Pretty printer that prints all instance variables and a neat
-        representation of the sentence list."""
+        """Pretty printer that prints all instance variables and a neat representation of the
+        sentence list."""
         print "\n<<Document %s>>\n" % self.sourceFileName
         print 'nodeCounter', self.nodeCounter
         print 'taggedEventsDict'
@@ -361,15 +310,14 @@ def protectNode(node):
 
     # NOTE: should move this to other module
 
-    # this test for <?xml seemed to be necessary for Slinket
-    # and S2T, but not for Evita, probably because the xml
-    # parsers are different
+    # this test for <?xml seemed to be necessary for Slinket and S2T, but not for Evita,
+    # probably because the xml parsers are different
     if  node[0:5] == '<?xml':
         return node
     else:
-        # The XML parser replaces &amp; etc with the one-character
-        # equivalents, which means that the result is not XML.
-        # Protect &, < and >. A hack, needs to be done more elegantly
+        # The XML parser replaces &amp; etc with the one-character equivalents, which
+        # means that the result is not XML.  Protect &, < and >. A hack, needs to be done
+        # more elegantly
         if not _isTag(node):
             node = node.replace('&','&amp;')
             node = node.replace('"','&quot;')
@@ -385,38 +333,10 @@ def protectNode(node):
 
     
 def _isTag(token):
-    """Return True if the sting argument is a tag. Cannot simply check for
-    final > because sometimes python expat leaves trailing newline as part
-    of token."""
+    """Return True if the sting argument is a tag. Cannot simply check for final > because
+    sometimes python expat leaves trailing newline as part of token."""
     return token[0] == '<' and token.find('>') > -1
 
 
-def endElementString(name):
-    """Return the string representation of a closing tag.
-    Arguments
-       name - the name of a tag"""
-    return '</'+name+'>'
-
-def startElementString(name, attrs):
-    """Return the string representation of an opening tag.
-    Arguments
-       name - the name of a tag
-       attrs - a dictionary of attributes"""
-    string = '<'+name
-    for att in attrs.items():
-        name = att[0]
-        value = att[1]
-        if not (name is None or value is None):
-            string = string+' '+name+'="'+value+'"'
-    string = string+'>'
-    return string
-
-def emptyContentString(name, attrs):
-    """Return the string representation of a non-consuming tag.
-    Arguments
-       name - the name of a tag
-       attrs - a dictionary of attributes"""
-    string_as_opening_string = startElementString(name, attrs)
-    return string_as_opening_string[:-1] + '/>'
 
 
