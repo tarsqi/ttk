@@ -62,6 +62,20 @@ class GUTimeWrapper:
 
         for xmldoc in xmldocs:
 
+            """ There is a problem here. When you pretty print the xmldoc, all seems fine, but when
+            you print its length, it is way too short.
+            
+            xmldoc.pretty_print()
+            print 
+            print 'LENGHT:', len(xmldoc.elements)
+            print
+
+            Now it happens that merge_tags_from_xmldocs() relies on _create_lexid_index()
+            in xml_utils. But the index is created by looping over the elements variable,
+            rather than by using element.next_element (as pretty_print does). Need to
+            update that method or add a reset() method to XmlDocument (where resetting
+            updates the elements variable)."""
+            
             count += 1
             fin = os.path.join(self.DIR_DATA, "frag%03d.gut.t1.xml" % count)
             fout = os.path.join(self.DIR_DATA, "frag%03d.gut.t2.xml" % count)

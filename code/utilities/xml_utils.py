@@ -11,9 +11,9 @@ re_protect1 = re.compile('&(?!amp;)')
 
 def protect_text(text):
 
-    """Take a text string and protect XML special characters. Should also
-    do something with non-ascii characters as well as with things like
-    &#2435; and &quote;. Should use xml.sax.saxutils methods."""
+    """Take a text string and protect XML special characters. Should also do something with
+    non-ascii characters as well as with things like &#2435; and &quote;. Should use
+    xml.sax.saxutils methods."""
 
     text = re_protect1.sub('&amp;', text)
     text = text.replace('<', '&lt')
@@ -23,10 +23,9 @@ def protect_text(text):
 
 def merge_tags_from_files(infile1, infile2, merged_file):
 
-    """Merge the tags from infile1, which has all tags from the input,
-    with tags from infile2, which has only s, lex and TIMEX3 tags. The
-    lex tags are used as the pivots and it is assumed that both files
-    contain the same amount of lex tags."""
+    """Merge the tags from infile1, which has all tags from the input, with tags from infile2,
+    which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is
+    assumed that both files contain the same amount of lex tags."""
 
     doc1 = Parser().parse_file(open(infile1,"r"))
     doc2 = Parser().parse_file(open(infile2,"r"))
@@ -37,10 +36,9 @@ def merge_tags_from_files(infile1, infile2, merged_file):
 
 def merge_tags_from_xmldocs(doc1, doc2):
 
-    """Merge the tags from doc1, which has all tags from the input, with
-    tags from doc2, which has only s, lex and TIMEX3 tags. The lex
-    tags are used as the pivots and it is assumed that both files
-    contain the same amount of lex tags. The TIMEX3 tags from doc2 are
+    """Merge the tags from doc1, which has all tags from the input, with tags from doc2, which
+    has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is assumed
+    that both files contain the same amount of lex tags. The TIMEX3 tags from doc2 are
     merged into doc1."""
 
     # add lex_id values to the lex tags
@@ -97,8 +95,8 @@ def _mark_lex_tags(doc):
 
 def _get_timextags_with_contained_lextags(doc):
 
-    """Get all TIMEX3 tags, and associated them with the lex tags that are
-    included in them."""
+    """Get all TIMEX3 tags, and associated them with the lex tags that are included in
+    them."""
 
     timextags_with_lextags = []
     for timextag in doc.tags.get('TIMEX3',[]):
@@ -117,6 +115,7 @@ def _create_lexid_index(doc):
 
     index = {}
     for element in doc:
+        print element
         if element.is_opening_tag() and element.tag == 'lex':
             id = element.lex_id
             index[id] = element
@@ -125,10 +124,9 @@ def _create_lexid_index(doc):
 
 def _extent_sequence(first_element, last_element, sequence):
 
-    """Extent the sequence with one to the leftor right if the number of
-    opening and closing tags in the sequence are not equal. Returns
-    the first and last element of the new sequence and changes the
-    sequence as side effect."""
+    """Extent the sequence with one to the leftor right if the number of opening and closing
+    tags in the sequence are not equal. Returns the first and last element of the new
+    sequence and changes the sequence as side effect."""
 
     opening_tags = [el for el in sequence if el.is_opening_tag()]
     closing_tags = [el for el in sequence if el.is_closing_tag()]
@@ -141,10 +139,9 @@ def _extent_sequence(first_element, last_element, sequence):
 
 def _extent_sequence_left(sequence):
 
-    """Extent the sequence with one element to the left, but only if that
-    element is an opening tag. Takes a sequence of XmlDocElements,
-    potentially adding an element at the front. Returns the element
-    added."""
+    """Extent the sequence with one element to the left, but only if that element is an
+    opening tag. Takes a sequence of XmlDocElements, potentially adding an element at the
+    front. Returns the element added."""
 
     first = sequence[0]
     previous = first.get_previous()
@@ -157,10 +154,9 @@ def _extent_sequence_left(sequence):
     
 def _extent_sequence_right(sequence):
 
-    """Extent the sequence with one element to the right, but only if that
-    element is an closing tag. Takes a sequence of XmlDocElements,
-    potentially adding an element at the end. Returns the element
-    added."""
+    """Extent the sequence with one element to the right, but only if that element is an
+    closing tag. Takes a sequence of XmlDocElements, potentially adding an element at the
+    end. Returns the element added."""
 
     last = sequence[-1]
     next = last.get_next()

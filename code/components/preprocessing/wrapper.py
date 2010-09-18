@@ -33,6 +33,7 @@ class PreprocessorWrapper:
         """Calls __init__ of the base class and sets component_name."""
 
         self.component_name = PREPROCESSOR
+        self.document = document
         self.xmldoc = document.xmldoc
         self.treetagger_dir = tarsqi_instance.parameters.get('treetagger')
         self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
@@ -52,6 +53,7 @@ class PreprocessorWrapper:
         text = self.tag_text(text)
         text = self.chunk_text(text)
         update_xmldoc(self.xmldoc, text)
+        #self.document.xmldoc = self.xmldoc
         logger.info("%s DONE, processing time was %.3f seconds" %
                     (self.component_name, time() - begin_time))
 
