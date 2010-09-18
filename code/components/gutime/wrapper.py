@@ -28,13 +28,12 @@ class GUTimeWrapper:
     """Wrapper for GUTime."""
     
 
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
-        self.tarsqi_instance = tarsqi_instance
         self.document = document
         self.component_name = GUTIME
-        self.DIR_GUTIME = TTK_ROOT + os.sep + 'components' + os.sep + 'gutime'
-        self.DIR_DATA = tarsqi_instance.DIR_TMP_DATA
+        self.DIR_GUTIME = os.path.join(TTK_ROOT, 'components', 'gutime')
+        self.DIR_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
         
         
     def process(self):

@@ -15,7 +15,7 @@ class SlinketWrapper:
     """Wrapper for Slinket. """
 
 
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         self.component_name = SLINKET
         self.document = document

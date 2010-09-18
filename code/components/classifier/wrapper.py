@@ -24,14 +24,13 @@ class ClassifierWrapper:
     """Wraps the maxent link classifier."""
 
 
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         self.component_name = CLASSIFIER
         self.document = document
-        self.tarsqi_instance = tarsqi_instance
-        self.DIR_DATA = self.tarsqi_instance.DIR_TMP_DATA
         self.DIR_CLASSIFIER = os.path.join(TTK_ROOT, 'components', 'classifier')
-        platform = tarsqi_instance.getopt_platform()
+        self.DIR_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
+        platform = self.document.parameters.get('platform')
         if platform == 'linux2':
             self.executable = 'mxtest.opt.linux'
         elif platform == 'darwin':
@@ -44,7 +43,7 @@ class ClassifierWrapper:
         update this slice when tlinks are added."""
 
         os.chdir(self.DIR_CLASSIFIER)
-        perl = self.tarsqi_instance.getopt_perl()
+        perl = self.document.parameters.get('perl')
         ee_model = os.path.join('data', 'op.e-e.model')
         et_model = os.path.join('data', 'op.e-t.model')
 

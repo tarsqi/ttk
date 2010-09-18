@@ -12,10 +12,10 @@ USE_HERITAGE_CODE = True
 
 import os
 
+from ttk_path import TTK_ROOT
 from library.tarsqi_constants import LINK_MERGER
 
 if USE_HERITAGE_CODE:
-    from ttk_path import TTK_ROOT
     from library.timeMLspec import TLINK
     from library.timeMLspec import RELTYPE, EVENT_INSTANCE_ID, TIME_ID
     from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME, CONFIDENCE
@@ -31,7 +31,7 @@ class MergerWrapper:
     """Wraps the merging code, which includes Sputlinks temporal closure code."""
 
 
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         """Initialization depends on value of USE_HERITAGE_CODE. Initialize some or all of the
         following variables depending on the value: component_name, DIR_LINK_MERGER,
@@ -39,17 +39,16 @@ class MergerWrapper:
 
         self.component_name = LINK_MERGER
         self.document = document
-        self.tarsqi_instance = tarsqi_instance
 
-        self.DIR_DATA = self.tarsqi_instance.DIR_TMP_DATA
+        self.DIR_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
         self.CREATION_EXTENSION = 'mer.i.xml'
         self.RETRIEVAL_EXTENSION = 'mer.o.xml'
         if USE_HERITAGE_CODE:
             self.DIR_LINK_MERGER = os.path.join(TTK_ROOT, 'components', 'merging')
             self.TMP_EXTENSION = 'mer.t.xml'
         else:
-            # using self.component here instead of self.parser, perhaps
-            # do the same for the other components?
+            # using self.component here instead of self.parser, perhaps do the same for
+            # the other components?
             self.component = LinkMerger()
             
 
@@ -86,7 +85,7 @@ class MergerWrapper:
         into the data."""
 
         os.chdir(self.DIR_LINK_MERGER + os.sep + 'sputlink')
-        perl = self.tarsqi_instance.getopt_perl()
+        perl = self.document.parameters.get('perl')
 
         ## A fragment is a list with fragment name (fragment_001) and the first element of
         ## the xmldoc (the <TEXT> tag). The code relies on there being a file named

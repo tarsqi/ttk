@@ -2,7 +2,7 @@
 import time
 
 from docmodel.xml_parser import Parser
-from docmodel.document import SuperDoc
+from docmodel.document import TarsqiDocument
 
 
     
@@ -25,14 +25,14 @@ class DefaultParser:
 
         """Get the TEXT tag and the associated source string. Then create an XmlDocument
         for that string and simple metadata for the document by setting the DCT to
-        today. Return an instance of SuperDoc."""
+        today. Return an instance of TarsqiDocument."""
             
         target_tag = self._find_target_tag(docsource)
         text = docsource.source[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % text)
         dct = get_today()
         metadata = { 'dct': dct }
-        return SuperDoc(docsource, xmldoc, metadata)
+        return TarsqiDocument(docsource, xmldoc, metadata)
 
 
     def _find_target_tag(self, docsource):
@@ -61,14 +61,14 @@ class TimebankParser:
 
         """Get the TEXT tag and the associated source string. Then create an XmlDocument
         for that string and simple metadata for the document by setting the DCT to
-        today. Return an instance of SuperDoc."""
+        today. Return an instance of TarsqiDocument."""
 
         target_tag = self._find_target_tag(docsource)
         text = docsource.source[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % text)
         dct = self.parse_dct()
         metadata = { 'dct': dct }
-        return SuperDoc(docsource, xmldoc, metadata)
+        return TarsqiDocument(docsource, xmldoc, metadata)
 
 
     def _find_target_tag(self, docsource):

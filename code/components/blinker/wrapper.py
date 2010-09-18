@@ -15,7 +15,7 @@ class BlinkerWrapper:
     """Wrapper for Blinker."""
 
     
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         self.component_name = BLINKER
         self.document = document

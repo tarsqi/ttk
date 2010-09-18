@@ -16,7 +16,7 @@ class S2tWrapper:
     """Wraps the S2T components. See ComponentWrapper for the instance variables."""
 
     
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         self.component_name = S2T
         self.document = document

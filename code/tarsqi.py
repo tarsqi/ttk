@@ -110,7 +110,7 @@ class Tarsqi:
        components - dictionary of components
 
        docsource - instance of DocSource
-       document - instance of SuperDoc
+       document - instance of TarsqiDocument
        
        DIR_TMP_DATA - path
        
@@ -153,7 +153,6 @@ class Tarsqi:
         if self.getopt_pipeline():
             component_names = self.getopt_pipeline().split(',')
         return [(name, self.components[name]) for name in component_names]
-        
 
     def _read_parameters(self, opts):
         """Initialize options from the settings file and the opts parameter. Loop through
@@ -168,7 +167,6 @@ class Tarsqi:
                 parameters[attr] = eval(value)
         return parameters
 
-
         
     def process(self):
         
@@ -182,7 +180,8 @@ class Tarsqi:
         
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
-
+        self.document.add_parameters(self.parameters)
+        
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
 
@@ -221,30 +220,25 @@ class Tarsqi:
         Arguments:
            name - string, the name of the component
            wrapper - instance of one of the wrapper classes
-           infile - string
-           outfile - string
+           document - instance of TarsqiDocument
+        Return value: None
 
-        Return value: None"""
-
-        # NOTE. The wrappers use the xml document and the content tag and then (i) create
-        # fragments from the xml doc, (ii) process the fragments, (iii) reinsert the
-        # fragments in the xml doc. The code below then writes the xml doc to a file. Most
-        # wrappers write the fragments to disk and call the components code on that file,
-        # creating a processed fragment again as a disk file. This should be streamlined,
-        # too much IO (but alwyas keep the option of printing the file for debugging.
+        Wrappers are now only given a TarsqiDocument, which includes the parameters from
+        teh Tarsqi instance. May in the future need to add some kind of dictionary with
+        other needed info."""
 
         logger.info("RUNNING " + name)
         print "RUNNING " + name
         if self.getopt_trap_errors():
             try:
-                wrapper(document, self).process()
+                wrapper(document).process()
             except:
                 logger.error(name + " error on " + infile + "\n\t"
                              + str(sys.exc_type) + "\n\t"
                              + str(sys.exc_value) + "\n")
                 shutil.copy(infile, outfile)
         else:
-            wrapper(document, self).process()
+            wrapper(document).process()
 
 
     def getopt_genre(self):

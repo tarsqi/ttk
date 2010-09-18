@@ -15,7 +15,7 @@ class EvitaWrapper:
     """Wrapper for Evita. """
     
 
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         """Sets instance variables."""
 

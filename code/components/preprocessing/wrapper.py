@@ -28,14 +28,14 @@ class PreprocessorWrapper:
     """Wrapper for the preprocessing components."""
     
 
-    def __init__(self, document, tarsqi_instance):
+    def __init__(self, document):
 
         """Calls __init__ of the base class and sets component_name."""
 
         self.component_name = PREPROCESSOR
         self.document = document
         self.xmldoc = document.xmldoc
-        self.treetagger_dir = tarsqi_instance.parameters.get('treetagger')
+        self.treetagger_dir = self.document.parameters.get('treetagger')
         self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
 
         
