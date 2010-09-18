@@ -138,6 +138,24 @@ class XmlDocument:
 
         self.elements[i] = val
 
+
+    def reset(self):
+
+        """Reset the elements variable so that it correctyl reflects the current linked list
+        starting at elements[0]. Also rebuild the tags dictionary."""
+        
+        element = self.elements[0]
+        elements = [element]
+        while element:
+            elements.append(element)
+            element = element.get_next()
+        self.elements = elements
+
+        self.tags = {}
+        for element in self.elements:
+            if element.is_opening_tag():
+                self.add_to_tags_dictionary(element.tag, element)
+
         
     def get_tags(self, tagname):
 
@@ -187,24 +205,15 @@ class XmlDocument:
                 
     def add_to_tags_dictionary(self, tagname, tag):
 
-        """Add a tag to the tag dictionary.
-        Arguments
-           tagname - a string
-           tag - an XmlDocElement
-        No return value."""
+        """Add a tag with name tagname to the tag dictionary."""
 
-        if not self.tags.has_key(tagname):
-            self.tags[tagname] = []
-        self.tags[tagname].append(tag)
+        self.tags.setdefault(tagname,[]).append(tag)
 
         
     def add_opening_tag_element(self, tagname, attrs, string):
 
-        """Append a XmlDocElement to the elements list. 
-        Arguments
-           tagname - a string
-           attrs - a dictionary
-           string - a string that represents the entire tag"""
+        """Append a XmlDocElement to the elements list, using the tagname, a dictionary of
+        attributes and a string that represents the entire tag"""
 
         element = XmlDocElement(string, tag=tagname, attrs=attrs)
         self.add_to_tags_dictionary(tagname, element)

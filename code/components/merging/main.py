@@ -1,4 +1,6 @@
-"""Main module for the TLink merging component.
+"""
+
+Main module for the TLink merging component.
 
 """
 
@@ -16,7 +18,7 @@ DEBUGGING = False
 
 class LinkMerger (TarsqiComponent):
 
-    """Class that implements Evita'The LinkMerger.
+    """Class that implements the LinkMerger.
 
     Instance variables:
        NAME - a string

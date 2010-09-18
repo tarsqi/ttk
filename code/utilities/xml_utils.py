@@ -84,14 +84,20 @@ def merge_tags_from_xmldocs(doc1, doc2):
         
 def _mark_lex_tags(doc):
 
-    """Add a unique id to each lex tag."""
+    """Add a unique id to each lex tag. """
 
     lex_id = 0
-    for element in doc:
+
+    # This used to loop over doc.elements, but it is more robust to use get_next() for
+    # those case where the xmldoc has been updated.
+    element = doc.elements[0]
+    while element:
         if element.is_opening_tag() and element.tag == 'lex':
             lex_id = lex_id + 1
             element.lex_id = lex_id
+        element = element.get_next()
 
+            
 
 def _get_timextags_with_contained_lextags(doc):
 
@@ -114,11 +120,15 @@ def _create_lexid_index(doc):
     """Index all opening lex tags."""
 
     index = {}
-    for element in doc:
-        print element
+
+    # This used to loop over doc.elements, but it is more robust to use get_next() for
+    # those case where the xmldoc has been updated.
+    element = doc.elements[0]
+    while element:
         if element.is_opening_tag() and element.tag == 'lex':
-            id = element.lex_id
-            index[id] = element
+            index[element.lex_id] = element
+        element = element.get_next()
+
     return index
 
 

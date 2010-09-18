@@ -9,7 +9,6 @@ import os, os.path
 from ttk_path import TTK_ROOT
 
 from library.tarsqi_constants import ARGLINKER
-from components.common_modules.component import ComponentWrapper
 from components.arglinker.main import ArgLinker
 
 from docmodel.xml_parser import Parser
@@ -21,20 +20,14 @@ USE_SIMPLE_LINKER = False
 #USE_SIMPLE_LINKER = True
 
 
-class ArgLinkerWrapper(ComponentWrapper):
+class ArgLinkerWrapper:
 
-    """Wrapper for ArgLinker. See ComponentWrapper for more details on how
-    component wrappers work.
-
-    Instance variables
-       parser - an instance of the ArgLinker parser
-       see ComponentWrapper for other variables."""
+    """Wrapper for ArgLinker."""
 
 
     def __init__(self, tag, xmldoc, tarsqi_instance):
-        """Calls __init__ of the base class and sets component_name,
-        parser, CREATION_EXTENSION and RETRIEVAL_EXTENSION."""
-        ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
+        """Calls __init__ of the base class and sets component_name, parser, CREATION_EXTENSION
+        and RETRIEVAL_EXTENSION."""
         self.component_name = ARGLINKER
         self.parser = ArgLinker()
         self.CREATION_EXTENSION = 'arg.i.xml'
@@ -43,8 +36,7 @@ class ArgLinkerWrapper(ComponentWrapper):
         self.RETRIEVAL_EXTENSION = 'arg.o.xml'
 
     def process_fragments(self):
-        """Apply the Slinket parser to each fragment. No arguments and no
-        return value."""
+        """Apply the Slinket parser to each fragment. No arguments and no return value."""
         for fragment in self.fragments:
             base = fragment[0]
             infile = "%s%s%s.%s" % \
@@ -76,8 +68,7 @@ class ArgLinkerWrapper(ComponentWrapper):
             
 
     def create_arglinker_input(self, tmp1file):
-        """Take the xmldoc variable and create the input needed for the
-        arglinker."""
+        """Take the xmldoc variable and create the input needed for the arglinker."""
         fh = open(tmp1file,'w')
         fh.write("<DOC>\n")
         for element in self.xmldoc.elements:
@@ -102,24 +93,19 @@ class ArgLinkerWrapper(ComponentWrapper):
 
     def import_arglinker_output(self, tmp2file, outfile):
 
-        """Takes a file with the results of the dependency parse (tmp2file),
-        finds the arguments in there, adds them to the xmldoc, and
-        saves the xmldoc (to outfile)."""
+        """Takes a file with the results of the dependency parse (tmp2file), finds the arguments
+        in there, adds them to the xmldoc, and saves the xmldoc (to outfile)."""
     
-        # this is how to get the shallow tree, probably of limited use
-        # because the dep_parse will not be part of the tree
+        # this is how to get the shallow tree, probably of limited use because the
+        # dep_parse will not be part of the tree
         doctree = FragmentConverter(self.xmldoc, tmp2file).convert(user=ARGLINKER)
         doctree.pretty_print()
         
-        # code to deal with the contents of dep_parse, link the ids
-        # there to the lexids and to create a list of arglinks (this
-        # could even be more general, creating a list of all
-        # dependencies, but subtyping some of them as arglinks)
-        # ...
+        # code to deal with the contents of dep_parse, link the ids there to the lexids
+        # and to create a list of arglinks (this could even be more general, creating a
+        # list of all dependencies, but subtyping some of them as arglinks)
 
-        # supposing we have a list of arglinks, here we add them to
-        # the xmldoc
-        # ...
+        # supposing we have a list of arglinks, here we add them to the xmldoc
 
         # finally, save the updated xmldoc
         self.xmldoc.save_to_file(outfile)

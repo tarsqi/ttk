@@ -13,7 +13,6 @@ USE_HERITAGE_CODE = True
 import os
 
 from library.tarsqi_constants import LINK_MERGER
-from components.common_modules.component import ComponentWrapper
 
 if USE_HERITAGE_CODE:
     from ttk_path import TTK_ROOT
@@ -27,26 +26,22 @@ else:
 
 
 
-class MergerWrapper(ComponentWrapper):
+class MergerWrapper:
 
-    """Wraps the merging code, which includes Sputlinks temporal closure code.
-
-    Instance variables
-       DIR_LINK_MERGER - directory where the merging code lives
-
-    See ComponentWrapper for other instance variables."""
+    """Wraps the merging code, which includes Sputlinks temporal closure code."""
 
 
-    def __init__(self, tag, xmldoc, tarsqi_instance):
+    def __init__(self, document, tarsqi_instance):
 
-        """Initialization depends on value of . If True, Calls __init__ on the base class
-        and then initializes some or all of the following variables depending on the value
-        of USE_HERITAGE_CODE: component_name, DIR_LINK_MERGER, CREATION_EXTENSION,
-        TMP_EXTENSION and RETRIEVAL_EXTENSION."""
+        """Initialization depends on value of USE_HERITAGE_CODE. Initialize some or all of the
+        following variables depending on the value: component_name, DIR_LINK_MERGER,
+        CREATION_EXTENSION, TMP_EXTENSION and RETRIEVAL_EXTENSION."""
 
-        ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
         self.component_name = LINK_MERGER
+        self.document = document
+        self.tarsqi_instance = tarsqi_instance
 
+        self.DIR_DATA = self.tarsqi_instance.DIR_DATA_TMP
         self.CREATION_EXTENSION = 'mer.i.xml'
         self.RETRIEVAL_EXTENSION = 'mer.o.xml'
         if USE_HERITAGE_CODE:
@@ -58,6 +53,10 @@ class MergerWrapper(ComponentWrapper):
             self.component = LinkMerger()
             
 
+    def process(self):
+        self.process_fragments()
+
+        
     def process_fragments(self):
 
         """Determines what version should run and then calls process_fragments_old or
@@ -71,8 +70,7 @@ class MergerWrapper(ComponentWrapper):
 
     def process_fragments_new(self):
 
-        """Set fragment names and ask the link merger component to process the
-        fragments."""
+        """Set fragment names and ask the link merger component to process the fragments."""
 
         for fragment in self.fragments:
             # set fragment names
@@ -90,12 +88,23 @@ class MergerWrapper(ComponentWrapper):
         os.chdir(self.DIR_LINK_MERGER + os.sep + 'sputlink')
         perl = self.tarsqi_instance.getopt_perl()
 
+        ## A fragment is a list with fragment name (fragment_001) and the first element of
+        ## the xmldoc (the <TEXT> tag). The code relies on there being a file named
+        ## fragment_001.mer.i.xml in the TMP directory. This file is an XML file with the
+        ## <fragment> tag as a root, where this tag replaces the <TEXT> tag (not usre
+        ## whether this replacement is essential).
+
+        self.document.xmldoc.elements[0].tag = 'fragment'
+        self.document.xmldoc.elements[-1].tag = 'fragment'
+        self.fragments = [('fragment_001', self.document.xmldoc)]
+
         for fragment in self.fragments:
             # set fragment names
             base = fragment[0]
             in_fragment = os.path.join(self.DIR_DATA, base+'.'+self.CREATION_EXTENSION)
             tmp_fragment = os.path.join(self.DIR_DATA, base+'.'+self.TMP_EXTENSION)
             out_fragment = os.path.join(self.DIR_DATA, base+'.'+self.RETRIEVAL_EXTENSION)
+            self.document.xmldoc.save_to_file(in_fragment)
             # process them
             command = "%s merge.pl %s %s" % (perl, in_fragment, tmp_fragment)
             (i, o, e) = os.popen3(command)
@@ -115,10 +124,14 @@ class MergerWrapper(ComponentWrapper):
         """Take the links from the merged tlinks and add them into the fragment. Based on
         the method with the same name in the classifier wrapper."""
 
+        ### The use of self.document.xmldoc here is a bit of a hack. In fact, the
+        ### out_fragment is not needed anymore.
+        
         xmldoc1 = Parser().parse_file(open(in_fragment,'r'))
         xmldoc2 = Parser().parse_file(open(tmp_fragment,'r'))
 
         xmldoc1.remove_tags(TLINK)
+        self.document.xmldoc.remove_tags(TLINK)
         
         for tlink in xmldoc2.get_tags(TLINK):
             reltype = tlink.attrs[RELTYPE]
@@ -135,5 +148,6 @@ class MergerWrapper(ComponentWrapper):
             #origin = CLASSIFIER + ' ' + tlink.attrs.get(CONFIDENCE,'')
             origin = tlink.attrs.get('origin','')
             xmldoc1.add_tlink(reltype, id1, id2, origin)
+            self.document.xmldoc.add_tlink(reltype, id1, id2, origin)
 
         xmldoc1.save_to_file(out_fragment)

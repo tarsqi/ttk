@@ -2,10 +2,9 @@
 
 Contains the GUTime wrapper.
 
-The wrapper contains an optional call to BTime, governed by the
-variable USE_BTIME. This variable is set to False by default. Set it
-to True if you want to apply BTime, see btime.py for reasons why
-using BTime does not make sense right now.
+The wrapper contains an optional call to BTime, governed by the variable USE_BTIME. This
+variable is set to False by default. Set it to True if you want to apply BTime, see
+btime.py for reasons why using BTime does not make sense right now.
 
 """
 
@@ -26,22 +25,13 @@ from components.gutime.btime import BTime
 
 class GUTimeWrapper:
 
-    """Wrapper for GUTime. See ComponentWrapper for more details on how
-    component wrappers work.
-
-    Instance variables
-       DIR_GUTIME - directry where the GUTime code lives
-       see ComponentWrapper for other variables."""
-
+    """Wrapper for GUTime."""
+    
 
     def __init__(self, document, tarsqi_instance):
 
-        """Calls __init__ of the base class and sets component_name,
-        and DIR_GUTIME."""
-
         self.tarsqi_instance = tarsqi_instance
-        self.metadata = document.metadata
-        self.xmldoc = document.xmldoc
+        self.document = document
         self.component_name = GUTIME
         self.DIR_GUTIME = TTK_ROOT + os.sep + 'components' + os.sep + 'gutime'
         self.DIR_DATA = tarsqi_instance.DIR_DATA_TMP
@@ -49,33 +39,17 @@ class GUTimeWrapper:
         
     def process(self):
 
-        """Loop through all slices and call the Perl scripts that
-        implement TempEx and GUTime. The GUTime scripts are gradually
-        being replaced with Python code."""
+        """Get the XmlDOcument and call the Perl scripts that implement TempEx and GUTime. The
+        GUTime scripts are gradually being replaced with Python code."""
         
         os.chdir(self.DIR_GUTIME)
         begin_time = time()
-        self.dct = self.metadata['dct']
 
-        xmldocs = [self.xmldoc]
+        xmldocs = [self.document.xmldoc]
         count = 0
 
         for xmldoc in xmldocs:
 
-            """ There is a problem here. When you pretty print the xmldoc, all seems fine, but when
-            you print its length, it is way too short.
-            
-            xmldoc.pretty_print()
-            print 
-            print 'LENGHT:', len(xmldoc.elements)
-            print
-
-            Now it happens that merge_tags_from_xmldocs() relies on _create_lexid_index()
-            in xml_utils. But the index is created by looping over the elements variable,
-            rather than by using element.next_element (as pretty_print does). Need to
-            update that method or add a reset() method to XmlDocument (where resetting
-            updates the elements variable)."""
-            
             count += 1
             fin = os.path.join(self.DIR_DATA, "frag%03d.gut.t1.xml" % count)
             fout = os.path.join(self.DIR_DATA, "frag%03d.gut.t2.xml" % count)
@@ -102,8 +76,8 @@ class GUTimeWrapper:
 
     def _prepare_gutime_input(self, xmldoc, filename):
 
-        """Takes an xmldoc (a slice of the entire document) and creates the
-        input file for GUTime."""
+        """Takes an xmldoc (a slice of the entire document) and creates the input file for
+        GUTime."""
 
         # assume that the first element is an opening tag
         opentag = xmldoc.elements[0]
@@ -122,12 +96,11 @@ class GUTimeWrapper:
                 if not el.tag in ['s', 'lex', content_tag]:
                     el.remove()
                 
-        # change root tag
         change_root_tag(new_xmldoc, content_tag, 'DOC')
     
         # add a DATE_TIME tag with the DCT
         el1 = XmlDocElement('<DATE_TIME>', tag='DATE_TIME', attrs={})
-        el2 = XmlDocElement(self.dct)
+        el2 = XmlDocElement(self.document.get_dct())
         el2.data = True
         el3 = XmlDocElement('</DATE_TIME>', tag='DATE_TIME')
         new_xmldoc.elements[0].insert_element_after(el3)
@@ -140,9 +113,8 @@ class GUTimeWrapper:
 
     def _remove_datetime(self, xmldoc):
 
-        """Removes the DATE_TIME tag and its contents from
-        xmldoc. Removes the slice from the linked list and the
-        embedded TIMEX3 from the timex tags list."""
+        """Removes the DATE_TIME tag and its contents from xmldoc. Removes the slice from the
+        linked list and the embedded TIMEX3 from the timex tags list."""
         
         open_datetime = xmldoc.get_tags('DATE_TIME')[0]
         datetime_slice = open_datetime.get_slice()

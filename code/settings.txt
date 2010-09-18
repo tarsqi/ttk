@@ -6,7 +6,7 @@
 ## sys.platform variable
 
 platform = linux2
-#platform = darwin
+platform = darwin
 
 ## Location of the IMS TreeTagger lives
 

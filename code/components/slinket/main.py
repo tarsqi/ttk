@@ -26,12 +26,10 @@ class Slinket (TarsqiComponent):
 
     Only lexical alinks and slinks are found.
 
-    Purpose clause are not
-    yet implemented. But note that some purpose clause SLINKS are
-    already introduced in the lexically-triggered process. This is so
-    for those events that discoursively tend to appear modified by a
-    Purpose Clause (e.g., 'address'). The data are based on
-    TimeBank.
+    Purpose clause are not yet implemented. But note that some purpose clause SLINKS are
+    already introduced in the lexically-triggered process. This is so for those events
+    that discoursively tend to appear modified by a Purpose Clause (e.g., 'address'). The
+    data are based on TimeBank.
 
     Conditionals are not implemented either.
 
@@ -51,10 +49,9 @@ class Slinket (TarsqiComponent):
         
     def process_file(self, infile, outfile):
 
-        """Run Slinket on the input file and write the results to the output
-        file. Both input an doutput file are fragments. Uses the xml
-        parser as well as the fragment converter to prepare the input
-        and create the shallow tree that Slinket requires.
+        """Run Slinket on the input file and write the results to the output file. Both input an
+        doutput file are fragments. Uses the xml parser as well as the fragment converter
+        to prepare the input and create the shallow tree that Slinket requires.
 
         Arguments:
            infile - an absolute path
@@ -98,8 +95,8 @@ class Slinket (TarsqiComponent):
         
     def _build_event_dictionary(self):
 
-        """Creates a dictionary with events on the self.doctree variable and
-        adds event lists to all sentences in self.doctree."""
+        """Creates a dictionary with events on the self.doctree variable and adds event lists to
+        all sentences in self.doctree."""
 
         instances = {}
         for instance in self.xmldoc.get_tags(INSTANCE):
@@ -109,10 +106,9 @@ class Slinket (TarsqiComponent):
             eid = event.attrs[EID]
             self.doctree.taggedEventsDict[eid] = event.attrs
             self.doctree.taggedEventsDict[eid].update(instances[eid])
-            # Now get the form and the part of speech. This is a bit
-            # tricky since it relies on the fact that an opening event
-            # tag is is always followed by an opening lex tag, which
-            # is then followed by plain text.
+            # Now get the form and the part of speech. This is a bit tricky since it
+            # relies on the fact that an opening event tag is is always followed by an
+            # opening lex tag, which is then followed by plain text.
             pos = event.next.attrs[POS]
             #perhaps lex tag should know its form?
             form = event.next.next.content
@@ -126,8 +122,8 @@ class Slinket (TarsqiComponent):
         
     def _find_links(self, doc, sentence):
 
-        """For each event in the sentence, check whether an Alink or Slink can
-        be created for it."""
+        """For each event in the sentence, check whether an Alink or Slink can be created for
+        it."""
 
         self.currSent = sentence
         eventNum = -1
@@ -145,8 +141,8 @@ class Slinket (TarsqiComponent):
 
     def _find_alink(self, event_expr):
 
-        """Try to find an alink with event_expr as the trigger, alinks
-        are created as a side effect."""
+        """Try to find an alink with event_expr as the trigger, alinks are created as a side
+        effect."""
 
         evNode = self.currSent[event_expr.locInSent]
         if evNode is None:
@@ -165,10 +161,9 @@ class Slinket (TarsqiComponent):
                 
     def _find_lexically_based_slink(self, event_expr):
 
-        """Try to find lexically based Slinks using forward, backward and
-        reporting FSA paterns. No return value, if an Slink is found,
-        it will be created by the chunk that embeds the Slink
-        triggering event.
+        """Try to find lexically based Slinks using forward, backward and reporting FSA
+        paterns. No return value, if an Slink is found, it will be created by the chunk
+        that embeds the Slink triggering event.
 
         Arguments:
            event_expr - an EventExpression"""

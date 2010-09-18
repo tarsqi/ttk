@@ -16,29 +16,20 @@ from library.timeMLspec import TLINK, EIID, TID
 from library.timeMLspec import RELTYPE, EVENT_INSTANCE_ID, TIME_ID
 from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME, CONFIDENCE
 from utilities import logger
-from components.common_modules.component import ComponentWrapper
 from components.classifier import vectors
 
 
-class ClassifierWrapper(ComponentWrapper):
+class ClassifierWrapper:
 
-    """Wraps the maxent link classifier. See ComponentWrapper for details
-    on how wrappers work.
-
-    Instance variables
-
-       DIR_CLASSIFIER - directory where the classifier executables live
-
-    See ComponentWrapper for other instance variables."""
+    """Wraps the maxent link classifier."""
 
 
-    def __init__(self, tag, xmldoc, tarsqi_instance):
+    def __init__(self, document, tarsqi_instance):
 
-        """Calls __init__ on the base class and initializes component_name,
-        and DIR_CLASSIFIER."""
-
-        ComponentWrapper.__init__(self, tag, xmldoc, tarsqi_instance)
         self.component_name = CLASSIFIER
+        self.document = document
+        self.tarsqi_instance = tarsqi_instance
+        self.DIR_DATA = self.tarsqi_instance.DIR_DATA_TMP
         self.DIR_CLASSIFIER = os.path.join(TTK_ROOT, 'components', 'classifier')
         platform = tarsqi_instance.getopt_platform()
         if platform == 'linux2':
@@ -49,9 +40,8 @@ class ClassifierWrapper(ComponentWrapper):
         
     def process(self):
 
-        """Retrieve the slice from the XmlDocument and hand this slice to
-        the classifier for processing. Processing will update this slice
-        when tlinks are added. No arguments and no return value."""
+        """Retrieve the XmlDocument and hand it to the classifier for processing. Processing will
+        update this slice when tlinks are added."""
 
         os.chdir(self.DIR_CLASSIFIER)
         perl = self.tarsqi_instance.getopt_perl()
@@ -59,7 +49,8 @@ class ClassifierWrapper(ComponentWrapper):
         et_model = os.path.join('data', 'op.e-t.model')
 
         begin_time = time()
-        xmldocs = self.document.get_tag_contents_as_xmldocs(self.tag)
+        #xmldocs = self.document.get_tag_contents_as_xmldocs(self.tag)
+        xmldocs = [self.document.xmldoc]
         fragment_count = 0
 
         for xmldoc in xmldocs:

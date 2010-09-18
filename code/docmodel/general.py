@@ -48,12 +48,14 @@ class SuperDoc:
     easier with the old approach. Should live in its own module. """
     
     def __init__(self, docsource, xmldoc, metadata):
-
         self.docsource = docsource
         self.xmldoc = xmldoc
         self.elements = []
         self.metadata = metadata
-        
+
+    def get_dct(self):
+        return self.metadata.get('dct')
+    
 
 def get_today():
     """Return today's date in YYYYMMDD format."""

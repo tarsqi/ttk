@@ -193,11 +193,9 @@ class Tarsqi:
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
 
-        for (name, wrapper) in self.pipeline[:2]:
+        for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
 
-        self.document.xmldoc.pretty_print()
-        
         os.chdir(TTK_ROOT)
         self.write_output()
 
@@ -232,7 +230,7 @@ class Tarsqi:
 
         Arguments:
            name - string, the name of the component
-           wrapper - instance of a subclass of ComponentWrapper
+           wrapper - instance of one of the wrapper classes
            infile - string
            outfile - string
 
@@ -250,7 +248,6 @@ class Tarsqi:
         if self.getopt_trap_errors():
             try:
                 wrapper(document, self).process()
-                #self.xml_document.save_to_file(outfile)
             except:
                 logger.error(name + " error on " + infile + "\n\t"
                              + str(sys.exc_type) + "\n\t"
@@ -258,7 +255,6 @@ class Tarsqi:
                 shutil.copy(infile, outfile)
         else:
             wrapper(document, self).process()
-            #document.xml_document.save_to_file(outfile)
 
 
     def getopt_genre(self):
