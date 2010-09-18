@@ -29,7 +29,7 @@ class ClassifierWrapper:
         self.component_name = CLASSIFIER
         self.document = document
         self.tarsqi_instance = tarsqi_instance
-        self.DIR_DATA = self.tarsqi_instance.DIR_DATA_TMP
+        self.DIR_DATA = self.tarsqi_instance.DIR_TMP_DATA
         self.DIR_CLASSIFIER = os.path.join(TTK_ROOT, 'components', 'classifier')
         platform = tarsqi_instance.getopt_platform()
         if platform == 'linux2':

@@ -41,7 +41,7 @@ class MergerWrapper:
         self.document = document
         self.tarsqi_instance = tarsqi_instance
 
-        self.DIR_DATA = self.tarsqi_instance.DIR_DATA_TMP
+        self.DIR_DATA = self.tarsqi_instance.DIR_TMP_DATA
         self.CREATION_EXTENSION = 'mer.i.xml'
         self.RETRIEVAL_EXTENSION = 'mer.o.xml'
         if USE_HERITAGE_CODE:

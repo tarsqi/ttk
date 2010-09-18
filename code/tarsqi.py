@@ -59,7 +59,7 @@ import sys, os, shutil, time, types, getopt
 
 from ttk_path import TTK_ROOT
 from docmodel.source_parser import SourceParser
-from docmodel.initialize import create_parser, get_default_pipeline
+from docmodel.main import create_parser, get_default_pipeline
 from utilities import logger
 from utilities.file import read_settings
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET
@@ -100,30 +100,22 @@ class Tarsqi:
 
     Instance variables:
         
-       parameters - dictionary with processing options
        input - absolute path
        output - absolute path
        basename - basename of input file
+       parameters - dictionary with processing options
 
-       parser
-       pipeline
-       components
+       parser - a genre-specific document parsers
+       pipeline - list of name-wrapper pairs
+       components - dictionary of components
 
-       docsource
-       document
+       docsource - instance of DocSource
+       document - instance of SuperDoc
        
-       DIR_DATA
-       DIR_DATA_TMP
+       DIR_TMP_DATA - path
        
-       document_model - instance of subclass of docmodel.model.DocumentModel 
-       metadata - dictionary with metadata
-       xml_document - instance of docmodel.xml_parser.XmlDocument
-       document - instance of components.common_modules.document.Document
-
-    The first five instance variables are taken from the arguments provided by the user,
-    the others are filled in by the document model and later processing. In addition,
-    there is a set of instance variables that store directory names and file names for
-    intermediate storage of the results of processing components."""
+    The first seven instance variables are initialized using the arguments provided by the
+    user, docsource and document are filled in during processing."""
 
 
     def __init__(self, opts, input, output):
@@ -148,8 +140,7 @@ class Tarsqi:
         if self.parameters.has_key('loglevel'):
             logger.set_level(self.parameters['loglevel'])
         
-        self.DIR_DATA = TTK_ROOT + os.sep + 'data'
-        self.DIR_DATA_TMP = self.DIR_DATA + os.sep + 'tmp'
+        self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
 
         self.components = COMPONENTS
         self.parser = create_parser(self.getopt_genre())
@@ -208,12 +199,12 @@ class Tarsqi:
 
     def _cleanup_directories(self):
         """Remove all fragments from the temporary data directory."""
-        for file in os.listdir(self.DIR_DATA_TMP):
-            if os.path.isfile(self.DIR_DATA_TMP + os.sep + file):
+        for file in os.listdir(self.DIR_TMP_DATA):
+            if os.path.isfile(self.DIR_TMP_DATA + os.sep + file):
                 # sometimes, on linux, weird files show up here, do not delete them
                 # should trap these here with an OSError
                 if not file.startswith('.'):
-                    os.remove(self.DIR_DATA_TMP + os.sep + file)
+                    os.remove(self.DIR_TMP_DATA + os.sep + file)
         
 
     def apply_component(self, name, wrapper, document):

@@ -2,9 +2,8 @@
 
 Nothing but a listing of all Tarsqi Python modules.
 
-Provides a variable named MODULES that contains all Tarsqi modules
-that are needed as input to the analysis and documentation creation
-scripts.
+Provides a variable named MODULES that contains all Tarsqi modules that are needed as
+input to the analysis and documentation creation scripts.
 
 """
 
@@ -54,9 +53,10 @@ import components.slinket.wrapper
 
 import demo.display
 
-import docmodel.initialize
-import docmodel.model
+import docmodel.main
+import docmodel.parsers
 import docmodel.xml_parser
+import docmodel.source_parser
 
 import utilities.binsearch
 import utilities.converter
@@ -117,9 +117,10 @@ MODULES = [
 
     demo.display,
     
-    docmodel.initialize,
-    docmodel.model,
+    docmodel.main,
+    docmodel.parsers,
     docmodel.xml_parser,
+    docmodel.source_parser,
 
     utilities.binsearch,
     utilities.converter,

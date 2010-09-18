@@ -5,6 +5,12 @@ XML parser takes an XML document and creates an instance of XmlDocument which co
 linked list of all XML elements (concentrating on opening tags, closing tags, and
 character data).
 
+WARNING:
+   It is safer to use a new Parser instance each time when reading a new document. In the
+   past, I would initialize the Parser only once and use its parse_file and parse_string
+   methods repeatedly. But at some point segmentation faults showed up that could only be
+   fixed by creating a new parser for each file.
+        
 """
 
 import sys

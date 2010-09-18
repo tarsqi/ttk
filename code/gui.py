@@ -6,11 +6,7 @@ Graphical User Interface for the Tarsqi Toolkit
 
 """
 
-import os
-import sys
-import popen2
-import time
-import re
+import os, sys, popen2, time, re
 
 import wx
 import wx.html
@@ -25,9 +21,9 @@ from library.tarsqi_constants import CLASSIFIER, BLINKER, CLASSIFIER, LINK_MERGE
 from utilities.xml_utils import protect_text
 
 
-# User choices for the document type and other processing options.
-# Note: need to use strings here, wxPython on OSX is forgiving if we
-# use True instead of 'True' but wxPython on RHEL5 chokes on it.
+# User choices for the document type and other processing options.  Note: need to use
+# strings here, wxPython on OSX is forgiving if we use True instead of 'True' but wxPython
+# on RHEL5 chokes on it.
 CHOICES_DOCUMENT_TYPE = [ 'simple-xml', 'timebank', 'rte3', 'atee', ]
 CHOICES_TRAP_ERRORS = ['True', 'False']
 
@@ -41,9 +37,9 @@ TITLE_CONTROL_WINDOW = 'Tarsqi Control Panel'
 
 class TarsqiApp(wx.App):
 
-    """The Tarsqi Application consists, on startup, of one frame. That
-    frame is either a splash screen or the control panel, this can be
-    changed easily in the OnInit method."""
+    """The Tarsqi Application consists, on startup, of one frame. That frame is either a
+    splash screen or the control panel, this can be changed easily in the OnInit
+    method."""
     
     def OnInit(self):
         #self.frame = SplashFrame()
@@ -55,8 +51,8 @@ class TarsqiApp(wx.App):
 
 class TarsqiFrame(wx.Frame):
 
-    """Abstract class that contains common functionality for the windows
-    in the Tarsqi application. It is not supposed to have any instances."""
+    """Abstract class that contains common functionality for the windows in the Tarsqi
+    application. It is not supposed to have any instances."""
 
     def __init__(self, parent, id, title, size=(800,800), pos=(50,50),
                  style=wx.DEFAULT_FRAME_STYLE|wx.NO_FULL_REPAINT_ON_RESIZE):
@@ -73,8 +69,8 @@ class TarsqiFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, handler_function, menu_item)
 
     def AddButton(self, panel, label, handler, boxsizer=None, proportion=0, style=wx.ALL, border=5):
-        """Creates a Button and adds it to a Panel and to a BoxSizer if one is
-        specified. Returns the Button."""
+        """Creates a Button and adds it to a Panel and to a BoxSizer if one is specified. Returns
+        the Button."""
         button = wx.Button(panel, label=label)
         self.Bind(wx.EVT_BUTTON, handler, button)
         if boxsizer:
@@ -82,10 +78,9 @@ class TarsqiFrame(wx.Frame):
         return button
         
     def DisplayFile(self, filename, tag=False):
-        """Display an HTML file. Assumes there is a document instance variable
-        so this method is only useful for instances of SplashWindow
-        and ResultsWindow. TableWindow has its own version of this
-        method, those two should be merged."""
+        """Display an HTML file. Assumes there is a document instance variable so this method is
+        only useful for instances of SplashWindow and ResultsWindow. TableWindow has its
+        own version of this method, those two should be merged."""
         opentag = ''
         closetag = ''
         if tag:
@@ -118,8 +113,8 @@ class TarsqiFrame(wx.Frame):
         
 class SplashFrame(TarsqiFrame):
 
-    """Just a splash window with nothing but a nice picture in it, should
-    use a SplashWindow for this."""
+    """Just a splash window with nothing but a nice picture in it, should use a SplashWindow
+    for this."""
 
     def __init__(self):
         TarsqiFrame.__init__(self, None , wx.ID_ANY, title=TITLE_SPLASH_WINDOW,
@@ -215,8 +210,8 @@ class ControlFrame(TarsqiFrame):
         return box
     
     def CreateLabeledTextField(self, panel, label):
-        """Creates a pair of a StaticText and a TextCtrl, and puts them in a
-        BoxSizer, returns a tuple of the BoxSizer and the TextCtrl."""
+        """Creates a pair of a StaticText and a TextCtrl, and puts them in a BoxSizer, returns a
+        tuple of the BoxSizer and the TextCtrl."""
         label = wx.StaticText(panel, wx.ID_ANY, label)
         text = wx.TextCtrl(panel, wx.ID_ANY)
         box = wx.BoxSizer(wx.HORIZONTAL)
@@ -225,8 +220,8 @@ class ControlFrame(TarsqiFrame):
         return (box, text)
 
     def CreateLabeledChoiceField(self, panel, label, choices, selection=-1):
-        """Creates a pair of a StaticText and a Choice, and puts them in a
-        BoxSizer, returns a tuple of the BoxSizer and the Choice."""
+        """Creates a pair of a StaticText and a Choice, and puts them in a BoxSizer, returns a
+        tuple of the BoxSizer and the Choice."""
         label = wx.StaticText(panel, wx.ID_ANY, label)
         choice = wx.Choice(panel, wx.ID_ANY, choices=choices)
         if selection > -1:
@@ -274,9 +269,9 @@ class ControlFrame(TarsqiFrame):
         dlg.Destroy()
 
     def LoadText(self,e):
-        """The problem with this method is that it uses a TextEntryDialog
-        which cannot be sized so a rather small text entry windows
-        comes up. See test_textdialog.py for a first attempt."""
+        """The problem with this method is that it uses a TextEntryDialog which cannot be sized so
+        a rather small text entry windows comes up. See test_textdialog.py for a first
+        attempt."""
         dlg = wx.TextEntryDialog(None, "Enter text for temporal parsing", 'Text Input', '', 
                                  style=wx.TE_MULTILINE|wx.CANCEL|wx.OK)
         if dlg.ShowModal() == wx.ID_OK:
@@ -305,8 +300,7 @@ class ControlFrame(TarsqiFrame):
 
 
     def GetOption_DocType(self):
-        """Return the selected document type, returns None if nothing was
-        selected."""
+        """Return the selected document type, returns None if nothing was selected."""
         selection = self.choice_InputType.GetSelection()
         if selection > -1:
             return CHOICES_DOCUMENT_TYPE[selection]
@@ -324,8 +318,7 @@ class ControlFrame(TarsqiFrame):
 
 
     def OnChangedInputType(self, e):
-        """Change the content_tag and the selected components when the
-        document type changes."""
+        """Change the content_tag and the selected components when the document type changes."""
         self.SetDefaultContentTag()
         self.components.UpdateComponentSelection(self)
 

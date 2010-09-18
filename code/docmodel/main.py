@@ -11,11 +11,8 @@ renamed into Text).
 
 import os
 
-from docmodel import model
 from utilities import logger
-
-from docmodel.general import DefaultParser
-
+from docmodel.parsers import DefaultParser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER, ARGLINKER
 

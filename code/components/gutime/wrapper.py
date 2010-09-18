@@ -34,7 +34,7 @@ class GUTimeWrapper:
         self.document = document
         self.component_name = GUTIME
         self.DIR_GUTIME = TTK_ROOT + os.sep + 'components' + os.sep + 'gutime'
-        self.DIR_DATA = tarsqi_instance.DIR_DATA_TMP
+        self.DIR_DATA = tarsqi_instance.DIR_TMP_DATA
         
         
     def process(self):
