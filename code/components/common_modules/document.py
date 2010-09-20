@@ -3,7 +3,7 @@
 import sys
 import re
 
-from utilities.xml_utils import emptyContentString
+from utilities.xml_utils import emptyContentString, protectNode
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import ALINK, SLINK, TLINK
@@ -303,40 +303,5 @@ class Document:
             print "\nSENTENCE " + str(count) + "\n"
             sentence.pretty_print()
         print "\n"
-
-
-def protectNode(node):
-    """Make sure that the node remains well-formed XML"""
-
-    # NOTE: should move this to other module
-
-    # this test for <?xml seemed to be necessary for Slinket and S2T, but not for Evita,
-    # probably because the xml parsers are different
-    if  node[0:5] == '<?xml':
-        return node
-    else:
-        # The XML parser replaces &amp; etc with the one-character equivalents, which
-        # means that the result is not XML.  Protect &, < and >. A hack, needs to be done
-        # more elegantly
-        if not _isTag(node):
-            node = node.replace('&','&amp;')
-            node = node.replace('"','&quot;')
-            node = node.replace('<','&lt;')
-            node = node.replace('>','&gt;')
-        elif node[0:4] == '<lex':
-            node = node.replace('&','&amp;')
-            node = node.replace('"""','"&quot;"')
-            # this is a total hack, just here for the RTE data
-            node = node.replace(' "Gus" ',' &quot;Gus&quot; ')
-            node = node.replace(' "Tookie" ',' &quot;Tookie&quot; ')
-        return node
-
-    
-def _isTag(token):
-    """Return True if the sting argument is a tag. Cannot simply check for final > because
-    sometimes python expat leaves trailing newline as part of token."""
-    return token[0] == '<' and token.find('>') > -1
-
-
 
 

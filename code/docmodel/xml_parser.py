@@ -15,8 +15,9 @@ WARNING:
 
 import sys
 import xml.parsers.expat
+from xml.sax.saxutils import escape
 
-from components.common_modules.document import protectNode
+from utilities.xml_utils import protectNode
 
 
 # variable used for assigning unique IDs to XmlDocElements
@@ -33,9 +34,7 @@ class Parser:
 
 
     def __init__(self):
-
         """Sets the doc variable to an empty XmlDocument and sets up the Expat parser."""
-
         self.doc = XmlDocument()        
         self.parser = xml.parsers.expat.ParserCreate()
         self.parser.buffer_text = 1
@@ -43,64 +42,43 @@ class Parser:
         self.parser.EndElementHandler = self._handle_end
         self.parser.CharacterDataHandler = self._handle_characters
         self.parser.DefaultHandler = self._handle_default
-
         
     def parse_file(self, file):
-
         """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a file
         object as its single argument and returns the value of the doc variable. """
-
         self.parser.ParseFile(file)
         return self.doc
-
     
     def parse_string(self, string):
-
         """Parse a string, forwards to the Parse routine of the expat parser. Takes a string as
         its single argument and returns the value of the doc variable. """
-
         self.parser.Parse(string)
         return self.doc
-
-    
+   
     def _handle_start(self, name, attrs):
-
         """Handle opening tags. Takes two arguments: a tag name and a dictionary of
         attributes. Asks the XmlDocument in the doc variable to add an opening element."""
-
         tagstring = '<' + name + self._attributes(attrs) + '>'
         self.doc.add_opening_tag_element(name, attrs, tagstring)
-
         
     def _handle_end(self, name):
-
         """Handle closing tags by asking the XmlDocument to add it. Takes the tag name as the
         argument."""
-
         self.doc.add_closing_tag_element(name, "</" + name + ">")
-
-        
+       
     def _handle_characters(self, string):
-
         """Handles character data bu asking the XmlDocument to add a data element. This will not
         necesarily add a contiguous string of character data as one data element. Takes
         the character string as the argument."""
-
         self.doc.add_data_element(string)
-
         
     def _handle_default(self, string):
-
         """Handles default data by asking the XmlDocument to add a default element. Takes a string
         as an argument."""
-
         self.doc.add_default_element(string)
-
         
     def _attributes(self, attrs):
-
         """Takes a dictionary of attributes and returns a string representation of it."""
-
         tagstr = ''
         for key in attrs.keys():
             tagstr = tagstr + ' ' + key + '="' + attrs[key] + '"'
@@ -123,29 +101,21 @@ class XmlDocument:
 
 
     def __init__(self):
-
         """Set the elements and tags variables to an empty list and an empty dictionary and set
         last_index to -1, indicating that no elements have been added yet."""
-
         self.elements = []
         self.tags = {}
         self.last_index = -1
-
         
     def __getitem__(self,i):
-
         """Get item from the elements variable."""
-
         return self.elements[i]
-
     
     def __setitem__(self, i, val):
-
         """Set item in the elements variable."""
-
         self.elements[i] = val
 
-
+        
     def reset(self):
 
         """Reset the elements variable so that it correctyl reflects the current linked list
@@ -165,17 +135,12 @@ class XmlDocument:
 
         
     def get_tags(self, tagname):
-
         """Return the list of tags from the tag dictionary, takes a tag name as an argument."""
-
         return self.tags.get(tagname, [])
-
     
     def remove_tags(self, tagname):
-
         """Remove tags from the linked list, takes a tag name as an argument. This is a dangerous
         method because it relies on the tag dictionary being up-to-date."""
-
         tags = self.tags.get(tagname, [])
         for tag in tags:
             tag.remove()
@@ -199,36 +164,26 @@ class XmlDocument:
 
             
     def set_element_list(self, xmlDocElements):
-
         """Set the contents of the XmlDocument, both self.elements and self.tags. This works if
         xmlDocElements is properly linked."""
-
         self.elements = xmlDocElements
         self.tags = {}
         for xmlDocElement in xmlDocElements:
             if xmlDocElement.is_opening_tag():
                 self.add_to_tags_dictionary(xmlDocElement.tag, xmlDocElement)
-
                 
     def add_to_tags_dictionary(self, tagname, tag):
-
         """Add a tag with name tagname to the tag dictionary."""
-
         self.tags.setdefault(tagname,[]).append(tag)
-
         
     def add_opening_tag_element(self, tagname, attrs, string):
-
         """Append a XmlDocElement to the elements list, using the tagname, a dictionary of
         attributes and a string that represents the entire tag"""
-
         element = XmlDocElement(string, tag=tagname, attrs=attrs)
         self.add_to_tags_dictionary(tagname, element)
         self._add_doc_element(element)
-
         
     def add_closing_tag_element(self, tagname, string):
-
         """Append an XmlDocElement to the elements list.
 
         Arguments
@@ -257,26 +212,20 @@ class XmlDocument:
                     # this return statement, but it should not have
                     return
         new_element = XmlDocElement(chardata)
-        new_element.data = True
         self._add_doc_element(new_element)
 
         
     def add_default_element(self, string):
-
         """Append an XmlDocElement to the elements list.
 
         Arguments
            string - a string that represents the default element"""
-
         self._add_doc_element( XmlDocElement(string) )
-
         
     def _add_doc_element(self, current_element):
-
         """Append an XmlDocElement to the elements variable. Sets the previous field of the added
         element and the next field of the previous element is there was one. Also
         increments the last_index variable."""
-
         previous_element = None
         last_index = self._get_last_index()
         if last_index > -1:
@@ -285,15 +234,11 @@ class XmlDocument:
         current_element.set_previous(previous_element)
         self.elements.append(current_element)
         self._increment_last_index()
-
         
     def _get_last_index(self):
-
         return self.last_index
-
     
     def _increment_last_index(self):
-
         self.last_index = self.last_index + 1
 
         
@@ -333,10 +278,8 @@ class XmlDocument:
 
                 
     def get_closing_tag(self):
-
         """Return the closing tag, which is not necessarily the last element
         of the xml document. Returns None if no closing tag was found."""
-
         index = -1
         while True:
             try:
@@ -349,7 +292,6 @@ class XmlDocument:
 
             
     def add_tlink(self, reltype, id1, id2, origin):
-
         """Insert a tlink tag just before the closing tag of the document.
 
         Arguments
@@ -357,7 +299,6 @@ class XmlDocument:
            id1 - an eiid or a tid
            id2 - an eiid or a tid
            origin - a string"""
-
         attrs = create_tlink_attributes(reltype, id1, id2, self.new_link_id(), origin)
         string = create_content_string('TLINK', attrs)
         new_opening_element = XmlDocElement(string, tag='TLINK', attrs=attrs)
@@ -408,15 +349,17 @@ class XmlDocument:
 
         """ Print all document elements to a file with the given filename."""
 
-        # NOTE: Cannot use a simple loop over the self.elements field
-        # because it only has the original sequence of tags and
-        # insertions and deletions are not maintained on it. Assumes
-        # that the first element of self.elements is always the first
-        # element of the XML file, even if the file has been changed.
+        # NOTE: Cannot use a simple loop over the self.elements field because it only has
+        # the original sequence of tags and insertions and deletions are not maintained on
+        # it. Assumes that the first element of self.elements is always the first element
+        # of the XML file, even if the file has been changed.
         outfile = open(filename, "w")
         element = self.elements[0]
         while element:
             string = element.get_content()
+            if element.is_text_element():
+                string = escape(string)
+            # TODO: get the encoding from the TarsqiDocument
             string = string.encode('ascii', 'replace')
             string = protectNode(string)
             outfile.write(string)
@@ -484,7 +427,6 @@ class XmlDocElement:
         elementID = elementID + 1
         self.content = string
         self.tag = tag
-        self.data = data
         self.attrs = attrs
         self.previous = None
         self.next = None
@@ -521,89 +463,54 @@ class XmlDocElement:
     
     
     def get_previous(self):
-
         """Return the value of previous"""
-
         return self.previous
-
     
     def get_next(self):
-
         """Return the value of next"""
-
         return self.next
-
     
     def get_content(self):
-
         """Return the value of content"""
-
         return self.content
-
     
     def get_tag(self):
-
         """Return the value of tag"""
-
         return self.tag
-
     
     def is_tag(self):
-
         """Return None (False) or a non-empty string (True)."""
-
         return self.tag
-
     
     def is_opening_tag(self):
-
         """Return True if the XmlDocElement is an opening tag, return False otherwise."""
-
         return self.tag and self.content[1] != '/'
-
     
     def is_closing_tag(self):
-
         """Return True if the XmlDocElement is a closing tag, return False otherwise."""
-
         return self.tag and self.content[1] == '/'
 
-
     def is_text_element(self):
-
         """Return True if the element is a text element."""
-
-        return self.data
-    
+        return not self.is_tag()
 
     def set_next(self, doc_element):
-
         """Set the value of next to the given XmlDocElement."""
-
         self.next = doc_element
-
         
     def set_previous(self, doc_element):
-
         """Set the value of previous to the given XmlDocElement."""
-
         self.previous = doc_element
-
         
     def collect_content(self):
-
         """Return the content of a tag. Result is undefined if called on XmlDocElements that
         aren't tags. """
-
         list = self.collect_content_list()
         return ''.join(list)
-
         
     def collect_text_content(self):
-
         """Return the text content of a tag. Result is undefined if called on XmlDocElements that
         aren't tags. """
-
         list = self.collect_content_list()
         list = [item for item in list if item.is_text_node()]
         return ''.join(list)

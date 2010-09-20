@@ -181,7 +181,10 @@ class Tarsqi:
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-        
+
+        #self.docsource.pp()
+        self.docsource.print_xml('tmp.xml')
+
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
 

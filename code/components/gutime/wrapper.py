@@ -100,7 +100,6 @@ class GUTimeWrapper:
         # add a DATE_TIME tag with the DCT
         el1 = XmlDocElement('<DATE_TIME>', tag='DATE_TIME', attrs={})
         el2 = XmlDocElement(self.document.get_dct())
-        el2.data = True
         el3 = XmlDocElement('</DATE_TIME>', tag='DATE_TIME')
         new_xmldoc.elements[0].insert_element_after(el3)
         new_xmldoc.elements[0].insert_element_after(el2)

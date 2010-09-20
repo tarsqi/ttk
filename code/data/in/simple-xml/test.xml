@@ -1,12 +1,14 @@
+<?xml version="1.0" ?>
+<?php echo "hopsasa" ?>
 <DOC id='34'>
 <DOCID>Simple Test</DOCID>
 <TEXT>
-Mr. Vinken got the flue on Nov. 29th.  John fell after Mary pushed
-him.  They heard an explosion on Monday, but not in 2007.  This
-reminded them of the 1968 war, which ravaged the countryside in 1969.
-He slept on Friday night.  He began to sleep.  He is eager to sleep.
-The transaction has been completed.  She hopes to succeed before noon.
-Gonzalez said he would resign on Tuesday.  He thought it was a great
-deal.  John leaves today.  John (dork amp; @#$) does not leave today.
+Mr. Vinken got the flue on Nov. 29th. John fell after Mary pushed him. They heard an
+explosion on Monday, but not in 2007. This reminded them of the 1968 war, which ravaged
+the countryside in 1969. He slept on Friday night. He began to sleep. He is eager to
+sleep. The transaction has been completed. She hopes to succeed before noon. Gonzalez said
+he would resign on Tuesday. He thought it was a great deal. John leaves today. John
+<CRAP>(&lt;dork&gt; &amp; @#$)</CRAP> does not leave today.
 </TEXT>
+<!-- comment -->
 </DOC>

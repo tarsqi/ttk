@@ -1,5 +1,6 @@
 import re
 from xml.parsers.expat import ExpatError
+from xml.sax.saxutils import escape
 
 from utilities import logger
 import docmodel.xml_parser
@@ -44,6 +45,34 @@ def protect_text(text):
     text = text.replace('>', '&gt')
     return text.encode('ascii', 'xmlcharrefreplace')
 
+
+def protectNode(node):
+    """Make sure that the node remains well-formed XML"""
+
+    def is_tag(token):
+        """Return True if the sting argument is a tag. Cannot simply check for final >
+        because sometimes python expat leaves trailing newline as part of token."""
+        tok = token.strip()
+        return tok and tok[0] == '<' and tok[-1] == '>'
+
+    # this test for <?xml seemed to be necessary for Slinket and S2T, but not for Evita,
+    # probably because the xml parsers are different
+    if  node[0:5] == '<?xml':
+        return node
+
+    # The XML parser replaces &amp; etc with the one-character equivalents, which means
+    # that the result is not XML.  Protect &, < and >. 
+    if not is_tag(node):
+        node = escape(node, {'"': '&quot;'})
+    elif node[0:4] == '<lex':
+        # this is a shameless hack, just here for the RTE data, shoudl do this differently
+        node = escape(node[1:-1], { '"""': '"&quot;"',
+                                    ' "Gus" ': ' &quot;Gus&quot; ',
+                                    ' "Tookie" ': ' &quot;Tookie&quot; '})
+        node = '<'+node+'>'
+    return node
+
+    
 def merge_tags_from_files(infile1, infile2, merged_file):
     """Merge the tags from infile1, which has all tags from the input, with tags from infile2,
     which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is

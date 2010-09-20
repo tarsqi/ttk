@@ -1,5 +1,6 @@
 
 import time
+from xml.sax.saxutils import escape
 
 from docmodel.xml_parser import Parser
 from docmodel.document import TarsqiDocument
@@ -29,7 +30,7 @@ class DefaultParser:
             
         target_tag = self._find_target_tag(docsource)
         text = docsource.source[target_tag.begin:target_tag.end]
-        xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % text)
+        xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
         dct = get_today()
         metadata = { 'dct': dct }
         return TarsqiDocument(docsource, xmldoc, metadata)

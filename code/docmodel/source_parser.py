@@ -19,6 +19,7 @@ empty. Implement this by adding ExPat error trapping to SourceParser.parse_file(
 
 import sys
 import xml.parsers.expat
+import xml.sax.saxutils
 import pprint
 
 
@@ -30,12 +31,18 @@ class SourceParser:
        doc - an XmlDocument
        parser - an Expat parser """
 
+    # TODO: ad other handlers
+    # SEE: http://docs.python.org/library/pyexpat.html
 
+    
     def __init__(self, encoding='utf-8'):
         """Set up the Expat parser."""
         self.encoding = encoding
         self.parser = xml.parsers.expat.ParserCreate(encoding=encoding)
         self.parser.buffer_text = 1
+        self.parser.XmlDeclHandler = self._handle_xmldecl
+        self.parser.ProcessingInstructionHandler = self._handle_processing_instruction
+        self.parser.CommentHandler = self._handle_comment
         self.parser.StartElementHandler = self._handle_start
         self.parser.EndElementHandler = self._handle_end
         self.parser.CharacterDataHandler = self._handle_characters
@@ -55,7 +62,19 @@ class SourceParser:
         string as its single argument and returns the value of the doc variable. """
         self.parser.Parse(string)
         return self.doc
-    
+
+    def _handle_xmldecl(self, version, encoding, standalone):
+        """Store the XML declaration."""
+        self.sourcedoc.xmldecl = (version, encoding, standalone)
+
+    def _handle_processing_instruction(self, target, data):
+        """Store processing instructions"""
+        self.sourcedoc.add_processing_instruction(target, data)
+
+    def _handle_comment(self, data):
+        """Store comments."""
+        self.sourcedoc.add_comment(data)
+        
     def _handle_start(self, name, attrs):
         """Handle opening tags. Takes two arguments: a tag name and a dictionary of
         attributes. Asks the SourceDoc instance in the sourcedoc variable to add an
@@ -70,10 +89,10 @@ class SourceParser:
         """Handle character data by asking the SourceDocument to add the data. This will
         not necesarily add a contiguous string of character data as one data element."""
         self.sourcedoc.add_characters(string)
-        
-        
+               
     def _handle_default(self, string):
-        """Handle default data by asking the SourceDoc to add it as characters."""
+        """Handle default data by asking the SourceDoc to add it as characters. This is
+        here to get the 'ignoreable whitespace, which I do not want to ignore."""
         self.sourcedoc.add_characters(string)
         
         
@@ -89,7 +108,10 @@ class SourceDoc:
     def __init__(self, filename='<STRING>'):
         """Initialize a SourceDoc on a filename or a string."""
         self.filename = filename
+        self.xmldecl = None
         self.source = []
+        self.comments = {}
+        self.processing_instructions = {}
         self.tags = []
         self.opening_tags = {}
         self.closing_tags = {}
@@ -101,7 +123,6 @@ class SourceDoc:
         self.tag_number += 1
         self.tags.append( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
-        
     def add_closing_tag(self, name):
         """Add a closing tag."""
         self.tag_number += 1
@@ -112,6 +133,12 @@ class SourceDoc:
         self.source.append(string) # this is already unicode
         self.offset += len(string)        
 
+    def add_comment(self, string):
+        self.comments.setdefault(self.offset,[]).append(string)
+        
+    def add_processing_instruction(self, target, data):
+        self.processing_instructions.setdefault(self.offset,[]).append((target, data))
+        
 
     def finish(self):
 
@@ -181,12 +208,14 @@ class SourceDoc:
         set up to deal with tags added to the tags repository since those may have
         introduced crossing tags."""
 
+        # TODO: add xmldec, processing instructions and comments
+        
         xml_string = u''
         offset = 0
         stack = []
         
         for char in self.source:
-            
+
             # any tags on the stack that can be closed?
             (stack, matching) = self._matching_closing_tags(offset, stack, [])
             for t in matching: 
@@ -201,8 +230,8 @@ class SourceDoc:
             (stack, matching) = self._matching_closing_tags(offset, stack, [])
             for t in matching: 
                 xml_string += "</%s>" % t.name
-                
-            xml_string += char
+
+            xml_string += xml.sax.saxutils.escape(char)
             offset += 1
 
         fh = open(filename, 'w')
@@ -257,6 +286,8 @@ class Tag:
     
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
+        if not self.attrs:
+            return ''
         return ' ' + ' '.join(["%s=\"%s\"" % (k,v) for (k,v) in self.attrs.items()])
 
 
