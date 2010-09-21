@@ -34,6 +34,7 @@ class PreprocessorWrapper:
         self.component_name = PREPROCESSOR
         self.document = document
         self.xmldoc = document.xmldoc
+        self.xmldoc.pretty_print()
         self.treetagger_dir = self.document.parameters.get('treetagger')
         self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
 
