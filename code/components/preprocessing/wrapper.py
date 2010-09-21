@@ -11,8 +11,7 @@ from types import StringType, TupleType
 from ttk_path import TTK_ROOT
 from docmodel.xml_parser import XmlDocElement
 from library.tarsqi_constants import PREPROCESSOR
-from components.preprocessing.tokenizer import tokenize_file
-from components.preprocessing.tokenizer import tokenize_string
+from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
 
@@ -53,7 +52,6 @@ class PreprocessorWrapper:
         text = self.tag_text(text)
         text = self.chunk_text(text)
         update_xmldoc(self.xmldoc, text)
-        #self.document.xmldoc = self.xmldoc
         logger.info("%s DONE, processing time was %.3f seconds" %
                     (self.component_name, time() - begin_time))
 
@@ -64,7 +62,8 @@ class PreprocessorWrapper:
         format."""
 
         btime = time()
-        tokenized_string = tokenize_string(string, format='text')
+        tokenizer = Tokenizer(string)
+        tokenized_string = tokenizer.tokenize_text(output='string')
         logger.info("tokenizer processing time: %.3f seconds" % (time() - btime))
         return tokenized_string
 
@@ -76,7 +75,9 @@ class PreprocessorWrapper:
     
         btime = time()
         vertical_string = verticalize_text(string)
-        taggedItems = self.treetagger.TagText(text=vertical_string,tagonly=True)
+        taggedItems = self.treetagger.TagText(text=vertical_string,tagonly=True,
+                                              notagurl=True, notagemail=True,
+                                              notagip=False,notagdns=False)
         text = []
         current_sentence = []
         for item in taggedItems:
