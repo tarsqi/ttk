@@ -1,0 +1,169 @@
+1: <aren't> 	 are not
+1: <can't> 	 cannot
+1: <couldn't> 	 could not
+1: <didn't> 	 did not
+1: <doesn't> 	 does not
+1: <don't> 	 do not
+1: <hadn't> 	 had not
+1: <hasn't> 	 has not
+1: <haven't> 	 have not
+1: <he'd> 	 he had; he would
+1: <he'll> 	 he will; he shall
+1: <he's> 	 he is; he has
+1: <I'd> 	 I had; I would
+1: <I'll> 	 I will; I shall
+1: <I'm> 	 I am
+1: <I've> 	 I have
+1: <isn't> 	 is not
+1: <let's> 	 let us
+1: <mightn't> 	 might not
+1: <mustn't> 	 must not
+1: <shan't> 	 shall not
+1: <she'd> 	 she had; she would
+1: <she'll> 	 she will; she shall
+1: <she's> 	 she is; she has
+1: <shouldn't> 	 should not
+1: <that's> 	 that is; that has
+1: <there's> 	 there is; there has
+1: <they'd> 	 they had; they would
+1: <they'll> 	 they will; they shall
+1: <they're> 	 they are
+1: <they've> 	 they have
+1: <we'd> 	 we had; we would
+1: <we're> 	 we are
+1: <we've> 	 we have
+1: <weren't> 	 were not
+1: <what'll> 	 what will; what shall
+1: <what're> 	 what are
+1: <what's> 	 what is; what has
+1: <what've> 	 what have
+1: <where's> 	 where is; where has
+1: <who's> 	 who had; who would
+1: <who'll> 	 who will; who shall
+1: <who're> 	 who are
+1: <who's> 	 who is; who has
+1: <who've> 	 who have
+1: <won't> 	 will not
+1: <wouldn't> 	 would not
+1: <you'd> 	 you had; you would
+1: <you'll> 	 you will; you shall
+1: <you're> 	 you are
+1: <you've> 	 you have
+2: <It's>	 It is / has
+2: <It'll>	 It will
+2: <It'd>	 It would / had
+2: <We'll>	 We will
+2: <There'll>	 There will
+2: <There'd>	 There had / would
+2: <That'll>	 That will
+2: <That'd>	 That had / would
+2: <needn't>	 need not
+2: <wasn't>	 was not
+3: <'tis>
+3: <'twas>
+3: <ain't>
+3: <could've>
+3: <how'd>
+3: <how'll>
+3: <how's>
+3: <might've>
+3: <must've>
+3: <should've>
+3: <what'd>
+3: <when>
+3: <when'd>
+3: <when'll>
+3: <when's>
+3: <where'd>
+3: <where'll>
+3: <who'd>
+3: <why'd>
+3: <why'll>
+3: <why's>
+3: <would've>
+
+
+<'tis> 	 [1]
+<'twas> 	 [1]
+<could've> 	 [1]
+<he'd> 	 [he had; he would]
+<he'll> 	 [he will; he shall]
+<he's> 	 [he is; he has]
+<how'd> 	 [1]
+<how'll> 	 [1]
+<how's> 	 [1]
+<i'd> 	 [I had; I would]
+<i'll> 	 [I will; I shall]
+<i'm> 	 [I am]
+<i've> 	 [I have]
+<it'd> 	 [It would / had]
+<it'll> 	 [It will]
+<it's> 	 [It is / has]
+<let's> 	 [let us]
+<might've> 	 [1]
+<must've> 	 [1]
+<she'd> 	 [she had; she would]
+<she'll> 	 [she will; she shall]
+<she's> 	 [she is; she has]
+<should've> 	 [1]
+<that'd> 	 [That had / would]
+<that'll> 	 [That will]
+<that's> 	 [that is; that has]
+<there'd> 	 [There had / would]
+<there'll> 	 [There will]
+<there's> 	 [there is; there has]
+<they'd> 	 [they had; they would]
+<they'll> 	 [they will; they shall]
+<they're> 	 [they are]
+<they've> 	 [they have]
+<we'd> 	 [we had; we would]
+<we'll> 	 [We will]
+<we're> 	 [we are]
+<we've> 	 [we have]
+<what'd> 	 [1]
+<what'll> 	 [what will; what shall]
+<what're> 	 [what are]
+<what's> 	 [what is; what has]
+<what've> 	 [what have]
+<when> 	 [1]
+<when'd> 	 [1]
+<when'll> 	 [1]
+<when's> 	 [1]
+<where'd> 	 [1]
+<where'll> 	 [1]
+<where's> 	 [where is; where has]
+<who'd> 	 [1]
+<who'll> 	 [who will; who shall]
+<who're> 	 [who are]
+<who's> 	 [who is; who has]
+<who've> 	 [who have]
+<why'd> 	 [1]
+<why'll> 	 [1]
+<why's> 	 [1]
+<would've> 	 [1]
+<you'd> 	 [you had; you would]
+<you'll> 	 [you will; you shall]
+<you're> 	 [you are]
+<you've> 	 [you have]
+
+
+<ain't> 	 [1]
+<aren't> 	 [are not]
+<can't> 	 [cannot]
+<couldn't> 	 [could not]
+<didn't> 	 [did not]
+<doesn't> 	 [does not]
+<don't> 	 [do not]
+<hadn't> 	 [had not]
+<hasn't> 	 [has not]
+<haven't> 	 [have not]
+<isn't> 	 [is not]
+<mightn't> 	 [might not]
+<mustn't> 	 [must not]
+<needn't> 	 [need not]
+<shan't> 	 [shall not]
+<shouldn't> 	 [should not]
+<wasn't> 	 [was not]
+<weren't> 	 [were not]
+<won't> 	 [will not]
+<wouldn't> 	 [would not]

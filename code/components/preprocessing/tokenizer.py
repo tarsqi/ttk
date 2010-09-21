@@ -33,6 +33,8 @@ tags and <s> tags but nothing else.
 """
 
 import re
+from xml.sax.saxutils import escape
+
 from abbreviation import dict_abbrevs
 from abbreviation import dict_end_abbrevs
 from abbreviation import dict_initial_tokens
@@ -175,8 +177,8 @@ abbrev_pattern = re.compile(r'^([A-Z]\.)+$')
 
 punctuation_pattern = re.compile(r'[.,!?\'\`\";:\]\[\(\){}\<\>]')
 
-# may want to use an exaustive list instead, but note that this pattern also covers
-# possessives
+# may want to use an exaustive list instead (see contractions.txt), but note that this
+# pattern also covers possessives
 contraction_pattern = re.compile(r"(\w+)'(t|d|s|m|re|ll|ve|s)$", re.IGNORECASE)
 
 
@@ -185,165 +187,228 @@ def _test_space(char):
 
 def _test_nonspace(char):
     return not char.isspace()
+
+
+class Tokenizer:
+
+    def __init__(self, text):
+        self.text = text
+        self.length = len(text)
+        self.lexes = []
+        self.sentences = []
         
-def _slurp(string, offset, test):
-    begin = offset
-    end = offset
-    length = len(string)
-    while offset < length:
-        char = string[offset]
-        if test(char):
-            offset += 1
-            end = offset
-        else:
-            return (begin, end, string[begin:end])
-    return (begin, end, string[begin:end])
+        
+    def tokenize_text(self):
 
-def slurp_token(string, offset):
-    """Given a string and an offset in the string, return two tuples, one for whitespace after
-    the offset and one for a sequence of non-whitespace immdediately after the whitespace. A
-    tuple consists of an begin offset, an end offset and a string."""
-    (o1, o2, space) = _slurp(string, offset, _test_space)
-    (o3, o4, token) = _slurp(string, o2, _test_nonspace)
-    return ((o1, o2, space), (o3, o4, token))
+        """Tokenize a text and return a set of tokens and a set of sentences. Each token and each
+        sentence is a pair of a begin position and end position."""
 
+        offset = 0
+        self.lexes = []
+        self.sentences = []
+        
+        all_tokens = []
+        while offset < self.length:
+            (space, word) = self.slurp_token(offset)
+            if word[2]:
+                tokens = self._split_word(word)
+                all_tokens.append(tokens)
+            offset = word[1]
 
-def tokenize_text(text):
-
-    """Tokenize a text and return a set of tokens and a set of sentences. Each token and each
-    sentence is a pair of a begin position and end position."""
-
-    offset = 0
-    length = len(text)
-
-    all_tokens = []
-    while offset < length:
-        (space, word) = slurp_token(text, offset)
-        if word[2]:
-            tokens = _split_word(word, text)
-            all_tokens.append(tokens)
-        offset = word[1]
-
-    sentences = _get_sentences(all_tokens, text)
-    all_tokens = _split_contractions(all_tokens)
-    lexes = _get_lexes(all_tokens)
+        self._set_sentences(all_tokens)
+        all_tokens = self._split_contractions(all_tokens)
+        self._set_lexes(all_tokens)
     
-    return (sentences, lexes)
+        return (self.sentences, self.lexes)        
 
 
+    def slurp_token(self, offset):
+        """Given a string and an offset in the string, return two tuples, one for whitespace after
+        the offset and one for a sequence of non-whitespace immdediately after the
+        whitespace. A tuple consists of an begin offset, an end offset and a string."""
+        (o1, o2, space) = self._slurp(offset, _test_space)
+        (o3, o4, token) = self._slurp(o2, _test_nonspace)
+        return ((o1, o2, space), (o3, o4, token))
 
-def _get_lexes(all_tokens):
-    """Return all lexes in all_tokens as a flat list."""
-    all_lexes = []
-    for (p1, ct, p2) in all_tokens:
-        all_lexes += p1 + ct + p2
-    return all_lexes
-
-
-def _get_sentences(all_tokens, text):
-
-    def is_sentence_final_abbrev(tok, puncts2, text):
-        if not puncts2 and tok[2] in dict_end_abbrevs:
-            (space, next_token) = slurp_token(text, tok[1])
-            return next_token[2] in dict_initial_tokens
-        return False
-
-    def is_eos(puncts2):
-        if puncts2:
-            for p in puncts2:
-                if p[2] in ('.', '?', '!'):
-                    return True
-        return False
+    def _slurp(self, offset, test):
+        begin = offset
+        end = offset
+        while offset < self.length:
+            char = self.text[offset]
+            if test(char):
+                offset += 1
+                end = offset
+            else:
+                return (begin, end, self.text[begin:end])
+        return (begin, end, self.text[begin:end])
     
-    sentences = []
-    if not all_tokens:
-        return sentences
-    first = all_tokens[0][0][0][0]
-    for (puncts1, tok, puncts2) in all_tokens:
-        if first is None:
-            first = tok[0]
-        if is_sentence_final_abbrev(tok, puncts2, text) or is_eos(puncts2):
-            sentences.append( [first, tok[1]])
-            first = None
-    return sentences
+    def _set_lexes(self, all_tokens):
+        """Set lexes list by flattening all_tokens. Sometimes empty core tokens are created,
+        filter those out at this step."""
+        for (p1, ct, p2) in all_tokens:
+            self.lexes += p1
+            for tok in ct:
+                if tok[0] != tok[1]:
+                    self.lexes.append(tok)
+            self.lexes += p2
+
+            
+    def _set_sentences(self, all_tokens):
+
+        def is_sentence_final_abbrev(tok, puncts2):
+            if not puncts2 and tok[2] in dict_end_abbrevs:
+                (space, next_token) = self.slurp_token(tok[1])
+                return next_token[2] in dict_initial_tokens
+            return False
+
+        def token_has_eos(token):
+            return token[2] in ('.', '?', '!')
+        
+        def has_eos(puncts):
+            return filter( token_has_eos, puncts)
+            
+        if all_tokens:
+            first = all_tokens[0][0][0][0]
+            for (puncts1, tok, puncts2) in all_tokens:
+                if first is None:
+                    first = tok[0]
+                if is_sentence_final_abbrev(tok, puncts2) or has_eos(puncts2):
+                    last = tok[1]
+                    if puncts2:
+                        last = puncts2[-1][1]
+                    self.sentences.append( [first, last])
+                    first = None
 
 
-def _split_word(word, text):
-    """Split a word into it's constitutent parts. A word is a tuple of begin offset, end
-    offset and a sequence of non-whitespace characters."""
-    (opening_puncts, core_token, closing_puncts) = _split_punctuation(word)
-    if closing_puncts and closing_puncts[0][2] == '.':
-        (core_token, closing_puncts) = \
-            _restore_abbreviation(core_token, closing_puncts, text)
-    return (opening_puncts, core_token, closing_puncts)
+    def _split_word(self, word):
+        """Split a word into it's constitutent parts. A word is a tuple of begin offset, end
+        offset and a sequence of non-whitespace characters."""
+        (opening_puncts, core_token, closing_puncts) = self._split_punctuation(word)
+        if closing_puncts and closing_puncts[0][2] == '.':
+            (core_token, closing_puncts) = \
+                self._restore_abbreviation(core_token, closing_puncts)
+        return (opening_puncts, core_token, closing_puncts)
 
 
-def _restore_abbreviation(core_token, closing_puncts, string):
-    """Glue the period back onto the core token if the first closing punctuation is a period
-    and the core token is a known abbreviation."""
-    last = closing_puncts[-1][1]
-    (space, next_token) = slurp_token(string, last)
-    restored = core_token[2] + '.'
-    if restored in dict_abbrevs or abbrev_pattern.search(restored):
-        core_token = (core_token[0], core_token[1] + 1, restored)
-        closing_puncts.pop(0)
-    return (core_token, closing_puncts)
+    def _restore_abbreviation(self, core_token, closing_puncts):
+        """Glue the period back onto the core token if the first closing punctuation is a period
+        and the core token is a known abbreviation."""
+        last = closing_puncts[-1][1]
+        (space, next_token) = self.slurp_token(last)
+        restored = core_token[2] + '.'
+        if restored in dict_abbrevs or abbrev_pattern.search(restored):
+            core_token = (core_token[0], core_token[1] + 1, restored)
+            closing_puncts.pop(0)
+        return (core_token, closing_puncts)
 
 
-def _split_punctuation(word):
+    def _split_punctuation(self, word):
 
-    """Return a triple of opening punctuations, core token and closing punctuation. A core
-    token can contain internal punctuation but token-initial and token-final punctuations
-    are stripped off. If a token has punctuation characters only, then the core token wil
-    be the empty string and the closing list will be empty."""
+        """Return a triple of opening punctuations, core token and closing punctuation. A core
+        token can contain internal punctuation but token-initial and token-final punctuations
+        are stripped off. If a token has punctuation characters only, then the core token wil
+        be the empty string and the closing list will be empty."""
     
-    opening_puncts = []
-    closing_puncts = []
-    core_token = word
+        opening_puncts = []
+        closing_puncts = []
+        core_token = word
 
-    (off1, off2, tok) = word
-
-    while True:
-        if not tok: break
-        found_punc = punctuation_pattern.search(tok[0])
-        if found_punc:
-            opening_puncts.append((off1, off1 + 1, tok[0]))
-            core_token = (off1 + 1, off2, tok[1:])
-            off1 += 1
-            tok = tok[1:]
-        else:
-            break
+        (off1, off2, tok) = word
     
-    while True:
-        if not tok: break
-        found_punc = punctuation_pattern.search(tok[-1])
-        if found_punc:
-            closing_puncts.append((off2 - 1, off2, tok[-1]))
-            core_token = (off1, off2 - 1, tok[:-1])
-            off2 += -1
-            tok = tok[:-1]
-        else:
-            break
+        while True:
+            if not tok: break
+            found_punc = punctuation_pattern.search(tok[0])
+            if found_punc:
+                opening_puncts.append((off1, off1 + 1, tok[0]))
+                core_token = (off1 + 1, off2, tok[1:])
+                off1 += 1
+                tok = tok[1:]
+            else:
+                break
     
-    return (opening_puncts,  core_token, closing_puncts)
+        while True:
+            if not tok: break
+            found_punc = punctuation_pattern.search(tok[-1])
+            if found_punc:
+                closing_puncts.append((off2 - 1, off2, tok[-1]))
+                core_token = (off1, off2 - 1, tok[:-1])
+                off2 += -1
+                tok = tok[:-1]
+            else:
+                break
+    
+        return (opening_puncts,  core_token, closing_puncts)
 
 
-def _split_contractions(all_tokens):
+    def _split_contractions(self, all_tokens):
 
-    new_tokens = []
-    for (puncts1, tok, puncts2) in all_tokens:
-        if not "'" in tok[2]:
-            new_tokens.append( (puncts1, [tok], puncts2) )
-            continue
-        found = contraction_pattern.search(tok[2])
-        if found:
-            idx = found.start(2) - 1
-            split_token = [(tok[0], tok[0] + idx, tok[2][:idx]),
-                           (tok[0] + idx, tok[1], tok[2][idx:])]
-            new_tokens.append( (puncts1, split_token, puncts2) )
-        else:
-            new_tokens.append( (puncts1, [tok], puncts2) )
-    return new_tokens
+        new_tokens = []
+        for (puncts1, tok, puncts2) in all_tokens:
+            if not "'" in tok[2]:
+                new_tokens.append( (puncts1, [tok], puncts2) )
+                continue
+            found = contraction_pattern.search(tok[2])
+            if found:
+                idx = found.start(2) - 1
+                split_token = [(tok[0], tok[0] + idx, tok[2][:idx]),
+                               (tok[0] + idx, tok[1], tok[2][idx:])]
+                new_tokens.append( (puncts1, split_token, puncts2) )
+            else:
+                new_tokens.append( (puncts1, [tok], puncts2) )
+        return new_tokens
+
+
+    def print_xml(self, outfile):
+
+        fh = open(outfile,'w')
+        fh.write("<TOKENS>\n")
+        
+        opening_lexes = {}
+        closing_lexes = {}
+        for l in self.lexes:
+            opening_lexes[l[0]] = l
+            closing_lexes[l[1]] = l
+
+        opening_sents = {}
+        closing_sents = {}
+        for s in self.sentences:
+            opening_sents[s[0]] = s
+            closing_sents[s[1]] = s
+        
+        in_lex = False
+        in_sent = False
+        off = 0
+
+        for char in self.text:
+
+            closing_lex = closing_lexes.get(off)
+            opening_lex = opening_lexes.get(off)
+            closing_s = closing_sents.get(off)
+            opening_s = opening_sents.get(off)
+
+            if closing_lex:
+                fh.write("</lex>\n")
+                in_lex = False
+            if closing_s:
+                fh.write("</s>\n")
+                in_sent = False
+                
+            if opening_s:
+                fh.write("<s>\n")
+                in_sent = True
+            if opening_lex:
+                indent = ''
+                if in_sent: indent = '  '
+                fh.write(indent + "<lex begin='%s' end='%s'>" % (opening_lex[0], opening_lex[1]))
+                in_lex = True
+
+            if in_lex:
+                fh.write(escape(char))
+                
+            off += 1
+
+        fh.write("</TOKENS>\n")
+
 
 
 if __name__ == '__main__':
@@ -351,8 +416,9 @@ if __name__ == '__main__':
     from time import time
     in_file = sys.argv[1]
     btime = time()
-    for i in range(1):
-        (sentences, lexes) = tokenize_text(open(in_file).read())
-    for l in lexes: print l
-    print sentences
+    tokenizer = Tokenizer( open(in_file).read() )
+    for i in range(100):
+        tokenizer.tokenize_text()
+    tokenizer.print_xml('out-tokens.xml')
+    
     print "\nDONE, processing time was %.3f seconds\n" % (time() - btime)
