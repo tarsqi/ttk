@@ -171,19 +171,12 @@ def tokenize_string(string, format='text'):
 
 #### NEW STUFF
 
-# TODO: add abbrev patter for initials and acronyms
+abbrev_pattern = re.compile(r'^([A-Z]\.)+$')
 
 punctuation_pattern = re.compile(r'[.,!?\'\`\";:\]\[\(\){}\<\>]')
 
-t_pattern = re.compile(r"(\w+)'t ", re.IGNORECASE)
-d_pattern = re.compile(r"(\w+)'d ", re.IGNORECASE)
-s_pattern = re.compile(r"(\w+)'s ", re.IGNORECASE)
-m_pattern = re.compile(r"(\w+)'m ", re.IGNORECASE)
-re_pattern = re.compile(r"(\w+)'re ", re.IGNORECASE)
-ll_pattern = re.compile(r"(\w+)'ll ", re.IGNORECASE)
-ve_pattern = re.compile(r"(\w+)'ve ", re.IGNORECASE)
-posse_pattern = re.compile(r"(\S+)'s ", re.IGNORECASE)
-
+# may want to use an exaustive list instead, but note that this pattern also covers
+# possessives
 contraction_pattern = re.compile(r"(\w+)'(t|d|s|m|re|ll|ve|s)$", re.IGNORECASE)
 
 
@@ -210,8 +203,6 @@ def slurp_token(string, offset):
     """Given a string and an offset in the string, return two tuples, one for whitespace after
     the offset and one for a sequence of non-whitespace immdediately after the whitespace. A
     tuple consists of an begin offset, an end offset and a string."""
-    begin = offset
-    end = offset
     (o1, o2, space) = _slurp(string, offset, _test_space)
     (o3, o4, token) = _slurp(string, o2, _test_nonspace)
     return ((o1, o2, space), (o3, o4, token))
@@ -233,10 +224,9 @@ def tokenize_text(text):
             all_tokens.append(tokens)
         offset = word[1]
 
-    _split_contractions(all_tokens)
-        
-    lexes = _get_lexes(all_tokens)
     sentences = _get_sentences(all_tokens, text)
+    all_tokens = _split_contractions(all_tokens)
+    lexes = _get_lexes(all_tokens)
     
     return (sentences, lexes)
 
@@ -245,8 +235,8 @@ def tokenize_text(text):
 def _get_lexes(all_tokens):
     """Return all lexes in all_tokens as a flat list."""
     all_lexes = []
-    for lexes in  [ p1 + [ct] + p2 for (p1, ct, p2) in all_tokens]:
-        all_lexes += lexes
+    for (p1, ct, p2) in all_tokens:
+        all_lexes += p1 + ct + p2
     return all_lexes
 
 
@@ -293,8 +283,9 @@ def _restore_abbreviation(core_token, closing_puncts, string):
     and the core token is a known abbreviation."""
     last = closing_puncts[-1][1]
     (space, next_token) = slurp_token(string, last)
-    if core_token[2]+'.' in dict_abbrevs:
-        core_token = (core_token[0], core_token[1] + 1, core_token[2] + '.')
+    restored = core_token[2] + '.'
+    if restored in dict_abbrevs or abbrev_pattern.search(restored):
+        core_token = (core_token[0], core_token[1] + 1, restored)
         closing_puncts.pop(0)
     return (core_token, closing_puncts)
 
@@ -316,8 +307,8 @@ def _split_punctuation(word):
         if not tok: break
         found_punc = punctuation_pattern.search(tok[0])
         if found_punc:
-            opening_puncts.append((off1, off1+1, tok[0]))
-            core_token = (off1+1, off2,tok[1:])
+            opening_puncts.append((off1, off1 + 1, tok[0]))
+            core_token = (off1 + 1, off2, tok[1:])
             off1 += 1
             tok = tok[1:]
         else:
@@ -327,8 +318,8 @@ def _split_punctuation(word):
         if not tok: break
         found_punc = punctuation_pattern.search(tok[-1])
         if found_punc:
-            closing_puncts.append((off2-1, off2, tok[-1]))
-            core_token = (off1, off2-1, tok[:-1])
+            closing_puncts.append((off2 - 1, off2, tok[-1]))
+            core_token = (off1, off2 - 1, tok[:-1])
             off2 += -1
             tok = tok[:-1]
         else:
@@ -341,15 +332,17 @@ def _split_contractions(all_tokens):
 
     new_tokens = []
     for (puncts1, tok, puncts2) in all_tokens:
+        if not "'" in tok[2]:
+            new_tokens.append( (puncts1, [tok], puncts2) )
+            continue
         found = contraction_pattern.search(tok[2])
         if found:
             idx = found.start(2) - 1
             split_token = [(tok[0], tok[0] + idx, tok[2][:idx]),
                            (tok[0] + idx, tok[1], tok[2][idx:])]
-            print split_token
             new_tokens.append( (puncts1, split_token, puncts2) )
         else:
-            new_tokens.append( (puncts1, tok, puncts2) )
+            new_tokens.append( (puncts1, [tok], puncts2) )
     return new_tokens
 
 
@@ -358,6 +351,8 @@ if __name__ == '__main__':
     from time import time
     in_file = sys.argv[1]
     btime = time()
-    result = tokenize_text(open(in_file).read())
-    #print result
+    for i in range(1):
+        (sentences, lexes) = tokenize_text(open(in_file).read())
+    for l in lexes: print l
+    print sentences
     print "\nDONE, processing time was %.3f seconds\n" % (time() - btime)
