@@ -60,6 +60,7 @@ import sys, os, shutil, time, types, getopt
 from ttk_path import TTK_ROOT
 from docmodel.source_parser import SourceParser
 from docmodel.main import create_parser, get_default_pipeline
+from mixins.parameters import ParameterMixin
 from utilities import logger
 from utilities.file import read_settings
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET
@@ -94,7 +95,7 @@ COMPONENTS = {
 
 
 
-class Tarsqi:
+class Tarsqi(ParameterMixin):
 
     """Main Tarsqi class that drives all processing.
 
@@ -243,38 +244,6 @@ class Tarsqi:
         else:
             wrapper(document).process()
 
-
-    def getopt_genre(self):
-        """Return the 'genre' user option. The default is None."""
-        return self.parameters.get('genre', None)
-        
-    def getopt_platform(self):
-        """Return the 'platform' user option. The default is None."""
-        return self.parameters.get('platform', None)
-        
-    def getopt_trap_errors(self):
-        """Return the 'trap_errors' user option. The default is False."""
-        return self.parameters.get('trap_errors', False)
-
-    def getopt_content_tag(self):
-        """Return the 'content_tag' user option. The default is None."""
-        return self.parameters.get('content_tag', None)
-
-    def getopt_pipeline(self):
-        """Return the 'pipeline' user option. The default is None."""
-        return self.parameters.get('pipeline', None)
-
-    def getopt_extension(self):
-        """Return the 'extension' user option. The default is ''."""
-        return self.parameters.get('extension', '')
-
-    def getopt_remove_tags(self):
-        """Return the 'remove_tags' user option. The default is True."""
-        return self.parameters.get('remove_tags', True)
-
-    def getopt_perl(self):
-        """Return the 'perl' user option. The default is 'perl'."""
-        return self.parameters.get('perl', 'perl')
 
     def write_output(self):
         """Write the xml_document to the output file. First inserts the dct from the

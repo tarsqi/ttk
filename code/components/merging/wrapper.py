@@ -85,7 +85,7 @@ class MergerWrapper:
         into the data."""
 
         os.chdir(self.DIR_LINK_MERGER + os.sep + 'sputlink')
-        perl = self.document.parameters.get('perl')
+        perl = self.document.getopt_perl()
 
         ## A fragment is a list with fragment name (fragment_001) and the first element of
         ## the xmldoc (the <TEXT> tag). The code relies on there being a file named

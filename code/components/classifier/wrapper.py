@@ -30,7 +30,7 @@ class ClassifierWrapper:
         self.document = document
         self.DIR_CLASSIFIER = os.path.join(TTK_ROOT, 'components', 'classifier')
         self.DIR_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
-        platform = self.document.parameters.get('platform')
+        platform = self.document.getopt_platform()
         if platform == 'linux2':
             self.executable = 'mxtest.opt.linux'
         elif platform == 'darwin':
@@ -43,7 +43,7 @@ class ClassifierWrapper:
         update this slice when tlinks are added."""
 
         os.chdir(self.DIR_CLASSIFIER)
-        perl = self.document.parameters.get('perl')
+        perl = self.document.getopt_perl()
         ee_model = os.path.join('data', 'op.e-e.model')
         et_model = os.path.join('data', 'op.e-t.model')
 

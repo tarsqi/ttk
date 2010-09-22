@@ -1,6 +1,7 @@
+from mixins.parameters import ParameterMixin
 
-    
-class TarsqiDocument:
+
+class TarsqiDocument(ParameterMixin):
 
     """An instance of TarsqiDocument should contain all information that may be needed by the
     wrappers to do their work. It will contain minimal document structure in its elements
@@ -20,8 +21,7 @@ class TarsqiDocument:
     potentially by adding them here.
 
     Also note that now that parameters are available to the wrappers only through this
-    class, we do not have access to all the defaults anymore since these were in the
-    getopt methods on Tarsqi. Thin k this over."""
+    class, use the methods in the mixin class to access the parameters."""
     
     def __init__(self, docsource, xmldoc, metadata):
         self.docsource = docsource
@@ -36,3 +36,4 @@ class TarsqiDocument:
     def get_dct(self):
         return self.metadata.get('dct')
     
+

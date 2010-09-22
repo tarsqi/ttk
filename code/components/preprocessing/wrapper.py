@@ -21,6 +21,15 @@ from formatConversor import normalizeXML
 from formatConversor import normalizePOS
 
 
+treetagger = None
+
+def initialize_treetagger(treetagger_dir):
+    global treetagger
+    if treetagger is None:
+        treetagger = TreeTagger(TAGLANG='en', TAGDIR=treetagger_dir)
+    return treetagger
+
+
 
 class PreprocessorWrapper:
     
@@ -28,25 +37,21 @@ class PreprocessorWrapper:
     
 
     def __init__(self, document):
-
         """Calls __init__ of the base class and sets component_name."""
-
         self.component_name = PREPROCESSOR
         self.document = document
         self.xmldoc = document.xmldoc
-        self.xmldoc.pretty_print()
-        self.treetagger_dir = self.document.parameters.get('treetagger')
-        self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
+        self.treetagger_dir = self.document.getopt('treetagger')
+        #self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
+        self.treetagger = initialize_treetagger(self.treetagger_dir)
 
         
     def process(self):
-
         """Retrieve the slices from the XmlDocument and hand these slices as strings to
         the preprocessing chain. The tokenizer returns a string, the tagger a list of
         sentences, which the chunker adds chunk tags to. Slices will be updated with the
         chunker results. If a slice contains tags then they will be stripped out and
         disappear."""
-
         begin_time = time()
         text = self.xmldoc[0].collect_text_content()
         text = self.tokenize_text(text)
@@ -58,10 +63,8 @@ class PreprocessorWrapper:
 
         
     def tokenize_text(self, string):
-
         """Takes a string and returns a tokenized string in a one-line-per-sentence
         format."""
-
         btime = time()
         tokenizer = Tokenizer(string)
         tokenized_string = tokenizer.tokenize_text(output='string')
@@ -99,8 +102,8 @@ class PreprocessorWrapper:
 
     def chunk_text(self, text):
 
-        """Takes a list of sentences and return the same sentences with chunk tags
-        inserted. May need to do something with things like &, <, >, and others, see
+        """Takes a list of sentences and return the same sentences with chunk tags inserted. May
+        need to do something with things like &, <, >, and others, see
         xml_utils.protect_text."""
     
         btime = time()
@@ -113,10 +116,10 @@ class PreprocessorWrapper:
 
 def update_xmldoc(xmldoc, text):
 
-    """Updates the xmldoc with the text that is the result of all preprocessing. At the
-    onset, the xmldoc has only three elements: a TEXT opening tag, character data, and a
-    TEXT closing tag. The character data element is replaced with a list of elements,
-    including lex tags, s tags, chunk tags and character data for all tokens."""
+    """Updates the xmldoc with the text that is the result of all preprocessing. At the onset,
+    the xmldoc has only three elements: a TEXT opening tag, character data, and a TEXT
+    closing tag. The character data element is replaced with a list of elements, including
+    lex tags, s tags, chunk tags and character data for all tokens."""
 
     first_element = xmldoc.elements[0]
     last_element = first_element.get_closing_tag()
@@ -155,8 +158,7 @@ def add_chunktag(element, token):
     
 def add_token(element, token, lid):
     
-    """Add a token, with its opening and closing lex tags, before the
-    XmlDocElement given."""
+    """Add a token, with its opening and closing lex tags, before the XmlDocElement given."""
 
     (tok, pos, lemma) = token
     if lemma == '<unknown>':
