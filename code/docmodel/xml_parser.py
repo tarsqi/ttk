@@ -36,7 +36,7 @@ class Parser:
     def __init__(self):
         """Sets the doc variable to an empty XmlDocument and sets up the Expat parser."""
         self.doc = XmlDocument()        
-        self.parser = xml.parsers.expat.ParserCreate()
+        self.parser = xml.parsers.expat.ParserCreate('utf-8')
         self.parser.buffer_text = 1
         self.parser.StartElementHandler = self._handle_start
         self.parser.EndElementHandler = self._handle_end
@@ -52,7 +52,7 @@ class Parser:
     def parse_string(self, string):
         """Parse a string, forwards to the Parse routine of the expat parser. Takes a string as
         its single argument and returns the value of the doc variable. """
-        self.parser.Parse(string)
+        self.parser.Parse(string.encode('utf-8'))
         return self.doc
    
     def _handle_start(self, name, attrs):

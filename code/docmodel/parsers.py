@@ -4,7 +4,7 @@ from xml.sax.saxutils import escape
 
 from docmodel.xml_parser import Parser
 from docmodel.document import TarsqiDocument
-
+from docmodel.document import TarsqiDocParagraph
 
     
 class DefaultParser:
@@ -31,9 +31,10 @@ class DefaultParser:
         target_tag = self._find_target_tag(docsource)
         text = docsource.source[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
-        dct = get_today()
-        metadata = { 'dct': dct }
-        return TarsqiDocument(docsource, xmldoc, metadata)
+        metadata = { 'dct': get_today() }
+        elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text)]
+        
+        return TarsqiDocument(docsource, elements, metadata, xmldoc)
 
 
     def _find_target_tag(self, docsource):

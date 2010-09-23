@@ -63,35 +63,13 @@ from docmodel.main import create_parser, get_default_pipeline
 from mixins.parameters import ParameterMixin
 from utilities import logger
 from utilities.file import read_settings
-from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET
-from library.tarsqi_constants import S2T, CLASSIFIER, BLINKER, LINK_MERGER, ARGLINKER
-
-from components.preprocessing.wrapper import PreprocessorWrapper
-from components.gutime.wrapper import GUTimeWrapper
-from components.evita.wrapper import EvitaWrapper
-from components.slinket.wrapper import SlinketWrapper
-from components.s2t.wrapper import S2tWrapper
-from components.blinker.wrapper import BlinkerWrapper
-from components.classifier.wrapper import ClassifierWrapper
-from components.merging.wrapper import MergerWrapper
-from components.arglinker.wrapper import ArgLinkerWrapper
+from components import COMPONENTS
 
 logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'))
 
 SETTINGS = 'settings.txt'
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
-
-COMPONENTS = {
-    PREPROCESSOR: PreprocessorWrapper,
-    GUTIME: GUTimeWrapper,
-    EVITA: EvitaWrapper,
-    SLINKET: SlinketWrapper,
-    S2T: S2tWrapper,
-    BLINKER: BlinkerWrapper,
-    CLASSIFIER: ClassifierWrapper,
-    LINK_MERGER: MergerWrapper,
-    ARGLINKER: ArgLinkerWrapper }
 
 
 
@@ -168,12 +146,13 @@ class Tarsqi(ParameterMixin):
                 parameters[attr] = eval(value)
         return parameters
 
-        
+
     def process(self):
         
         """Parse the source with source parser and the document parser. Then apply all
         components and write the results to a file. The actual processing itself is driven
-        using the processing parameters set at initialization."""
+        using the processing parameters set at initialization. Each component is given the
+        TarsqiDocument and updates it."""
 
         if self._skip_file(): return
         self._cleanup_directories()
@@ -316,7 +295,7 @@ def run_tarsqi(args):
             outfile = output + os.sep + file
             if os.path.isfile(infile):
                 print infile
-                Tarsqi(input_type, opts, infile, outfile).process()
+                Tarsqi(opts, infile, outfile).process()
 
     elif os.path.isfile(input):
         if os.path.exists(output):

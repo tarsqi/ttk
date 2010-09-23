@@ -11,7 +11,7 @@ class TarsqiDocument(ParameterMixin):
 
     Instance Variables:
        docsource - instance of DocSource
-       xmldoc - instance of XmlDocument
+       xmldoc - instance of XmlDocument (used for now for heritage code)
        elements - list, not yet used
        metadata - a dictionary
        parameters - parameter dcitionary from the Tasqi instance
@@ -21,14 +21,16 @@ class TarsqiDocument(ParameterMixin):
     potentially by adding them here.
 
     Also note that now that parameters are available to the wrappers only through this
-    class, use the methods in the mixin class to access the parameters."""
+    class. Use the methods in the mixin class to access the parameters, these methods all
+    start with 'getopt' and all they do is to access parameters."""
     
-    def __init__(self, docsource, xmldoc, metadata):
+    def __init__(self, docsource, elements, metadata, xmldoc=None):
         self.docsource = docsource
         self.xmldoc = xmldoc
-        self.elements = []
+        self.elements = elements
         self.metadata = metadata
         self.parameters = {}
+        print elements[0]
         
     def add_parameters(self, parameter_dictionary):
         self.parameters = parameter_dictionary
@@ -36,4 +38,27 @@ class TarsqiDocument(ParameterMixin):
     def get_dct(self):
         return self.metadata.get('dct')
     
+
+
+class TarsqiDocElement:
+
+    def __init__(self, begin, end, text):
+        self.begin = begin
+        self.end = end
+        self.text = text
+        self.xmldoc = None
+        self.tags = {}
+
+    def __str__(self):
+        return "\n<%s %d:%d>\n\n%s\n\n" % (self.__class__, self.begin, self.end, self.text.strip())
+
+    def is_paragraph(): return False
+
+    
+class TarsqiDocParagraph(TarsqiDocElement):
+
+    def __init__(self, begin, end, text):
+        TarsqiDocElement.__init__(self, begin, end, text)
+
+    def is_paragraph(): return True
 
