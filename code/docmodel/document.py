@@ -30,7 +30,6 @@ class TarsqiDocument(ParameterMixin):
         self.elements = elements
         self.metadata = metadata
         self.parameters = {}
-        print elements[0]
         
     def add_parameters(self, parameter_dictionary):
         self.parameters = parameter_dictionary
@@ -50,7 +49,8 @@ class TarsqiDocElement:
         self.tags = {}
 
     def __str__(self):
-        return "\n<%s %d:%d>\n\n%s\n\n" % (self.__class__, self.begin, self.end, self.text.strip())
+        return "\n<%s %d:%d>\n\n%s\n\n" % \
+               (self.__class__, self.begin, self.end, self.text.encode('utf-8').strip())
 
     def is_paragraph(): return False
 

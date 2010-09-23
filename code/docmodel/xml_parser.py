@@ -44,14 +44,14 @@ class Parser:
         self.parser.DefaultHandler = self._handle_default
         
     def parse_file(self, file):
-        """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a file
-        object as its single argument and returns the value of the doc variable. """
+        """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
+        file object as its single argument and returns the value of the doc variable. """
         self.parser.ParseFile(file)
         return self.doc
     
     def parse_string(self, string):
-        """Parse a string, forwards to the Parse routine of the expat parser. Takes a string as
-        its single argument and returns the value of the doc variable. """
+        """Parse a string, forwards to the Parse routine of the expat parser. Takes a
+        string as its single argument and returns the value of the doc variable. """
         self.parser.Parse(string.encode('utf-8'))
         return self.doc
    
@@ -62,19 +62,19 @@ class Parser:
         self.doc.add_opening_tag_element(name, attrs, tagstring)
         
     def _handle_end(self, name):
-        """Handle closing tags by asking the XmlDocument to add it. Takes the tag name as the
-        argument."""
+        """Handle closing tags by asking the XmlDocument to add it. Takes the tag name as
+        the argument."""
         self.doc.add_closing_tag_element(name, "</" + name + ">")
        
     def _handle_characters(self, string):
-        """Handles character data bu asking the XmlDocument to add a data element. This will not
-        necesarily add a contiguous string of character data as one data element. Takes
-        the character string as the argument."""
+        """Handles character data bu asking the XmlDocument to add a data element. This
+        will not necesarily add a contiguous string of character data as one data
+        element. Takes the character string as the argument."""
         self.doc.add_data_element(string)
         
     def _handle_default(self, string):
-        """Handles default data by asking the XmlDocument to add a default element. Takes a string
-        as an argument."""
+        """Handles default data by asking the XmlDocument to add a default element. Takes
+        a string as an argument."""
         self.doc.add_default_element(string)
         
     def _attributes(self, attrs):
@@ -87,12 +87,12 @@ class Parser:
 
 class XmlDocument:
 
-    """An XmlDocument contains the parsed XML created by the XML parser. It contains a list of
-    DocElements which at parse time is grown one element at a time, appending new elements
-    at the end. This list of DocElements correclty reflects the XML document immediately
-    after parsing, but note that the list is not updated when elements are later added or
-    removed. Each DocElement links to the previous and next element. A tags dictionary is
-    maintained to provide quick access to opening elements in the document.
+    """An XmlDocument contains the parsed XML created by the XML parser. It contains a
+    list of DocElements which at parse time is grown one element at a time, appending new
+    elements at the end. This list of DocElements correclty reflects the XML document
+    immediately after parsing, but note that the list is not updated when elements are
+    later added or removed. Each DocElement links to the previous and next element. A tags
+    dictionary is maintained to provide quick access to opening elements in the document.
 
     Instance variables
        elements - a list of XmlDocElements
@@ -101,8 +101,8 @@ class XmlDocument:
 
 
     def __init__(self):
-        """Set the elements and tags variables to an empty list and an empty dictionary and set
-        last_index to -1, indicating that no elements have been added yet."""
+        """Set the elements and tags variables to an empty list and an empty dictionary
+        and set last_index to -1, indicating that no elements have been added yet."""
         self.elements = []
         self.tags = {}
         self.last_index = -1
@@ -114,44 +114,37 @@ class XmlDocument:
     def __setitem__(self, i, val):
         """Set item in the elements variable."""
         self.elements[i] = val
-
         
     def reset(self):
-
-        """Reset the elements variable so that it correctyl reflects the current linked list
-        starting at elements[0]. Also rebuild the tags dictionary."""
-        
+        """Reset the elements variable so that it correctyl reflects the current linked
+        list starting at elements[0]. Also rebuild the tags dictionary."""
         element = self.elements[0]
         elements = [element]
         while element:
             elements.append(element)
             element = element.get_next()
         self.elements = elements
-
         self.tags = {}
         for element in self.elements:
             if element.is_opening_tag():
                 self.add_to_tags_dictionary(element.tag, element)
-
         
     def get_tags(self, tagname):
-        """Return the list of tags from the tag dictionary, takes a tag name as an argument."""
+        """Return the list of tags from the tag dictionary, takes a tag name as an
+        argument."""
         return self.tags.get(tagname, [])
     
     def remove_tags(self, tagname):
-        """Remove tags from the linked list, takes a tag name as an argument. This is a dangerous
-        method because it relies on the tag dictionary being up-to-date."""
+        """Remove tags from the linked list, takes a tag name as an argument. This is a
+        dangerous method because it relies on the tag dictionary being up-to-date."""
         tags = self.tags.get(tagname, [])
         for tag in tags:
             tag.remove()
-
             
     def insert_dct(self, dct, content_tag):
-
-        """Insert the DCT as a TIMEX3 tag just before the first content tag. This is necessary
-        because the DCT is usually not part of the main text. Need to figure out what to
-        do if the DCT does happen to be in the main text."""
-
+        """Insert the DCT as a TIMEX3 tag just before the first content tag. This is
+        necessary because the DCT is usually not part of the main text. Need to figure out
+        what to do if the DCT does happen to be in the main text."""
         tag = self.get_tags(content_tag)[0]
         t1 = XmlDocElement("\n")
         t2 = XmlDocElement('<s>', tag='s')
@@ -161,11 +154,10 @@ class XmlDocument:
         t6 = XmlDocElement('</s>', tag='s')
         for t in (t6, t5, t4, t3, t2, t1):
             tag.insert_element_after(t)
-
             
     def set_element_list(self, xmlDocElements):
-        """Set the contents of the XmlDocument, both self.elements and self.tags. This works if
-        xmlDocElements is properly linked."""
+        """Set the contents of the XmlDocument, both self.elements and self.tags. This
+        works if xmlDocElements is properly linked."""
         self.elements = xmlDocElements
         self.tags = {}
         for xmlDocElement in xmlDocElements:
@@ -185,23 +177,18 @@ class XmlDocument:
         
     def add_closing_tag_element(self, tagname, string):
         """Append an XmlDocElement to the elements list.
-
         Arguments
            tagname - a string
            string - a string that represents the closing tag """
         self._add_doc_element( XmlDocElement(string, tag=tagname) )
-
         
     def add_data_element(self, chardata):
-
         """Append an XmlDocElement to the elements list. If chardata is a string with
         non-whitespace characters, and if the previous element was also chardata dat
         included non-whitespace characters, then no new XmlDocElement will be added, but
         the current chrdata will be appended to the previous one.
-
         Arguments
            chardata - a string that represents the data element"""
-
         last_index = self._get_last_index()
         if last_index > -1:
             previous_element = self.elements[last_index]
@@ -213,19 +200,17 @@ class XmlDocument:
                     return
         new_element = XmlDocElement(chardata)
         self._add_doc_element(new_element)
-
         
     def add_default_element(self, string):
         """Append an XmlDocElement to the elements list.
-
         Arguments
            string - a string that represents the default element"""
         self._add_doc_element( XmlDocElement(string) )
         
     def _add_doc_element(self, current_element):
-        """Append an XmlDocElement to the elements variable. Sets the previous field of the added
-        element and the next field of the previous element is there was one. Also
-        increments the last_index variable."""
+        """Append an XmlDocElement to the elements variable. Sets the previous field of
+        the added element and the next field of the previous element is there was
+        one. Also increments the last_index variable."""
         previous_element = None
         last_index = self._get_last_index()
         if last_index > -1:
@@ -243,16 +228,14 @@ class XmlDocument:
 
         
     def get_tag_contents_as_xmldocs(self, tagname):
-
-        """Return a list of new XmlDocument that consists of all XmlDocElements contained in all
-        occurrences of the specified tagname. Includes the tagname as the root of each new
-        XmlDocument.
+        """Return a list of new XmlDocument that consists of all XmlDocElements contained
+        in all occurrences of the specified tagname. Includes the tagname as the root of
+        each new XmlDocument.
 
         Note that the xmldocs returned are weird in one sense: the previous of the first
         element and the next of the last element are not set to None. We could set
         slice[0].previous and slice[-1].next to None, but then this new document would be
         cut off from its context in the XmlDocument of the entire input document."""
-
         xmldocs = []
         for tag in self.get_tags(tagname):
             slice = tag.get_slice()
@@ -261,11 +244,8 @@ class XmlDocument:
             xmldocs.append(xmldoc)
         return xmldocs
 
-
     def populate_doc_from_list(self, docElements):
-
         """Populate a new XmlDoc from a list of XmlDocElements."""
-
         for docElement in docElements:
             el = docElement.copy()
             if self.elements:
@@ -275,7 +255,6 @@ class XmlDocument:
             self.elements.append(el)
             if el.is_opening_tag():
                 self.add_to_tags_dictionary(el.tag, el)    
-
                 
     def get_closing_tag(self):
         """Return the closing tag, which is not necessarily the last element
@@ -289,11 +268,9 @@ class XmlDocument:
                 index = index -1
             except IndexError:
                 return None
-
             
     def add_tlink(self, reltype, id1, id2, origin):
         """Insert a tlink tag just before the closing tag of the document.
-
         Arguments
            reltype - a string
            id1 - an eiid or a tid
@@ -307,17 +284,14 @@ class XmlDocument:
         closing_tag.insert_element_before(new_opening_element)
         closing_tag.insert_element_before(new_closing_element)
         self.add_to_tags_dictionary('TLINK', new_opening_element)
-
-        
+       
     def add_arglink(self, eventID, argID, argTag='lex', role='UNKNOWN'):
-
         """Insert a arglink tag just before the closing tag of the document.
         Arguments
            eventID - an eid
            argID - an id, usually an lid from a lex tag
            argTag - a string, usually 'lex'
            role - a string"""
-
         attrs = {'eventID': eventID, 'argID': argID, 'argTag': argTag, 'role': role }
         string = create_content_string('ARGLINK', attrs)
         new_opening_element = XmlDocElement(string, tag='ARGLINK', attrs=attrs)
@@ -326,12 +300,9 @@ class XmlDocument:
         closing_tag.insert_element_before(new_opening_element)
         closing_tag.insert_element_before(new_closing_element)
         self.add_to_tags_dictionary('ARGLINK', new_opening_element)
-
         
     def new_link_id(self):
-
         """Return a new unique linkid."""
-
         # NOTE: May want to spend some time doing it a tad more efficient
         link_ids = {}
         for link in self.get_tags('ALINK') + self.get_tags('SLINK') + self.get_tags('TLINK'): 
@@ -343,12 +314,9 @@ class XmlDocument:
             if not link_ids.has_key(new_id):
                 return "l%d" % new_id
             new_id = new_id + 1
-
             
     def save_to_file(self, filename):
-
         """ Print all document elements to a file with the given filename."""
-
         # NOTE: Cannot use a simple loop over the self.elements field because it only has
         # the original sequence of tags and insertions and deletions are not maintained on
         # it. Assumes that the first element of self.elements is always the first element
@@ -360,16 +328,14 @@ class XmlDocument:
             if element.is_text_element():
                 string = escape(string)
             # TODO: get the encoding from the TarsqiDocument
-            string = string.encode('ascii', 'replace')
+            # TODO: these are not unicode strings
+            #string = string.encode('ascii', 'replace')
             string = protectNode(string)
-            outfile.write(string)
+            outfile.write(string.decode('utf-8'))
             element = element.get_next()
 
-
     def toString(self):
-
         """Return a string representation of self as would be printed to a file"""
-
         element = self.elements[0]
         returnString = ""
         while element:
@@ -379,13 +345,10 @@ class XmlDocument:
             returnString += nextString
             element = element.get_next()
         return returnString
-
     
     def pretty_print(self):
-
-        """Pretty printer for XmlDocuments. Pretty prints the list of elements and prints the tag
-        dictionary to standard output."""
-
+        """Pretty printer for XmlDocuments. Pretty prints the list of elements and prints
+        the tag dictionary to standard output."""
         print "\n%s\n\n<<XmlDocElements>>\n" % str(self)
         element = self.elements[0]
         while element:
@@ -400,11 +363,11 @@ class XmlDocument:
 
 class XmlDocElement:
     
-    """ An XmlDocElement initially is an element derived from XML parsing using an instance of
-    the Parser class. Its content field contains a tag or character data (which could be
-    derived from a default handler, which deals with the xmldec as well as processing
-    instructions etc). During further Tarsqi processing, 'pure' charData may be replaced
-    with strings that contain tags. The previous and next fields contain another
+    """ An XmlDocElement initially is an element derived from XML parsing using an
+    instance of the Parser class. Its content field contains a tag or character data
+    (which could be derived from a default handler, which deals with the xmldec as well as
+    processing instructions etc). During further Tarsqi processing, 'pure' charData may be
+    replaced with strings that contain tags. The previous and next fields contain another
     XmlDocElement or None for the first and last XmlDocElements of the document.
 
     Instance variables
@@ -419,10 +382,8 @@ class XmlDocElement:
 
     
     def __init__(self, string, tag=None, attrs=None, data=False):
-
-        """Initialization of an XmlDocElement using string representation, tag name (if any) and
-        attribute dictionary (if any)."""
-
+        """Initialization of an XmlDocElement using string representation, tag name (if
+        any) and attribute dictionary (if any)."""
         global elementID
         elementID = elementID + 1
         self.content = string
@@ -432,22 +393,16 @@ class XmlDocElement:
         self.next = None
         self.deleted = False
         self.id = elementID
-
         
     def __str__(self):
-
         """Print class plus the id and content values."""
-
         content_str = self.content.replace("\n", ' ')
         #return "XmlDocElement { id=%s , content=%s }" % (str(self.id), content_str)
         return "XmlDocElement(%s): %s" % (str(self.id), content_str)
 
-
     def copy(self):
-
-        """Returns a copy of self. All instance variables are copied, except for previous and
-        next, which are set to None."""
-
+        """Returns a copy of self. All instance variables are copied, except for previous
+        and next, which are set to None."""
         newElement = XmlDocElement(self.content, self.tag)
         # must look into how this elementID works in non-standard
         # contexts
@@ -460,7 +415,6 @@ class XmlDocElement:
         newElement.next = None
         newElement.deleted = False
         return newElement
-    
     
     def get_previous(self):
         """Return the value of previous"""
@@ -503,24 +457,21 @@ class XmlDocElement:
         self.previous = doc_element
         
     def collect_content(self):
-        """Return the content of a tag. Result is undefined if called on XmlDocElements that
-        aren't tags. """
+        """Return the content of a tag. Result is undefined if called on XmlDocElements
+        that aren't tags. """
         list = self.collect_content_list()
         return ''.join(list)
         
     def collect_text_content(self):
-        """Return the text content of a tag. Result is undefined if called on XmlDocElements that
-        aren't tags. """
+        """Return the text content of a tag. Result is undefined if called on
+        XmlDocElements that aren't tags. """
         list = self.collect_content_list()
         list = [item for item in list if item.is_text_node()]
         return ''.join(list)
         
-
     def collect_content_list(self):
-
-        """ Get the content included in a tag, does not include the current opening and closing
-        tags. """
-
+        """ Get the content included in a tag, does not include the current opening and
+        closing tags. """
         content = []
         tag = self.tag
         end_tag_found = False
@@ -530,12 +481,9 @@ class XmlDocElement:
             if tag == current_element.tag:
                 return content
             content.append(current_element.content)
-
             
     def collect_text_content(self):
-
         """ Get the text content included in a tag."""
-
         content = ''
         tag = self.tag
         end_tag_found = False
@@ -546,12 +494,9 @@ class XmlDocElement:
                 return content
             if not current_element.tag:
                 content += current_element.content
-
                 
     def collect_contained_tags(self):
-
         """Return a list with all opening tags contained in the tag."""
-
         contained_tags = []
         tag = self.tag
         current_element = self
@@ -561,14 +506,11 @@ class XmlDocElement:
                 return contained_tags
             if current_element.is_opening_tag():
                 contained_tags.append(current_element)
-
                 
     def get_slice(self):
-
-        """ Get a slice of the document, starting at self and ending at the closing tag. Note that
-        the first element will have a previous and the last element will have a next
-        (unless the tag is the root of the xml document)."""
-
+        """ Get a slice of the document, starting at self and ending at the closing
+        tag. Note that the first element will have a previous and the last element will
+        have a next (unless the tag is the root of the xml document)."""
         slice = [self]
         tag = self.tag
         current_element = self
@@ -579,13 +521,10 @@ class XmlDocElement:
             slice.append(current_element)
             if tag == current_element.tag:
                 return slice
-
             
     def get_slice_till(self, id):
-
-        """Get the document slice starting with self and ending with the element with the given
-        id."""
-
+        """Get the document slice starting with self and ending with the element with the
+        given id."""
         contained_tags = [self]
         current_element = self
         while True:
@@ -593,29 +532,22 @@ class XmlDocElement:
             contained_tags.append(current_element)
             if id == current_element.id:
                 return contained_tags
-
             
     def replace_content(self, text):
-
-        """Replaces the list of document elements from itself till the closing element with one
-        document element containing the text string."""
-
+        """Replaces the list of document elements from itself till the closing element
+        with one document element containing the text string."""
         closing_tag = self.get_closing_tag()
         element = XmlDocElement(text)
         element.set_previous(self)
         element.set_next(closing_tag)
         self.set_next(element)
         closing_tag.set_previous(element)
-
         
     def replace_content_with_list(self, element_list):
-
-        """Replaces the list of document elements from itself till the closing element with a new
-        list of document elements.
-        
+        """Replaces the list of document elements from itself till the closing element
+        with a new list of document elements.
         Arguments:
            element_list - a list of XmlDocElements."""
-
         closing_tag = self.get_closing_tag()
         current_tag = self
         for element in element_list:
@@ -628,13 +560,10 @@ class XmlDocElement:
             current_tag = element
         current_tag.set_next(closing_tag)
         closing_tag.set_previous(current_tag)
-
         
     def get_closing_tag(self):
-
-        """Return the closing tag for the XmlDocElement. The return value is not defined when this
-        is called on a non opening tag."""
-
+        """Return the closing tag for the XmlDocElement. The return value is not defined
+        when this is called on a non opening tag."""
         # TODO: needs to be made more general, now it gives the wrong
         # result if you have embedded tags with the same name (with
         # "<np><np>door</np></np>" the first </np> will be returned).
@@ -644,56 +573,42 @@ class XmlDocElement:
                 return next_element
             next_element = next_element.get_next()
         return None
-
     
     def insert_string_after(self, string):
-
-        """Take a string and insert it as an XmlDocElement right after the current element."""
-
+        """Take a string and insert it as an XmlDocElement right after the current
+        element."""
         element = XmlDocElement(string)
         self.insert_element_after(element)
-
         
     def insert_element_after(self, doc_element):
-
         """Insert a document element right after the current one."""
-
         old_next_element = self.get_next()
         self.set_next(doc_element)
         doc_element.set_previous(self)
         doc_element.set_next(old_next_element)
         old_next_element.set_previous(doc_element)
-
         
     def insert_tag_before(self, tagname, string):
-
         """Insert a tag right before the current element.
         Arguments
            tagname - a string
            string - string representation of the entire tag"""
-
         element = XmlDocElement(string,tag=tagname)
         self.insert_element_before(element)
-
         
     def insert_element_before(self, doc_element):
-
         """Insert a document element right before the current one."""
-
         old_previous_element = self.get_previous()
         self.set_previous(doc_element)
         doc_element.set_next(self)
         doc_element.set_previous(old_previous_element)
         old_previous_element.set_next(doc_element)
-
         
     def remove(self):
-
-        """Remove the XmlDocElement. This will not destroy the element but remove it from the
-        linked list. If the element is an opening tag, then the closing tag will be
+        """Remove the XmlDocElement. This will not destroy the element but remove it from
+        the linked list. If the element is an opening tag, then the closing tag will be
         removed as well. The behaviour of this method is undefined for closing tags and
         for the first and last elements of the linked list. """
-
         previous = self.get_previous()
         next = self.get_next()
         previous.set_next(next)
@@ -701,12 +616,9 @@ class XmlDocElement:
         if self.is_opening_tag():
             closing_tag = self.get_closing_tag()
             closing_tag.remove()
-
             
     def pretty_print(self, indent=''):
-
         """Pretty printer for XmlDocElements, prints the content of the element."""
-
         print indent + 'ELEMENT(' + str(self.id) + '): ' + self.content
 
 
@@ -759,8 +671,8 @@ def create_dct_element(dct):
 
 def create_content_string(name, attrs):
 
-    """Utility method to take a tag name and a dictionary of attributes and create a tag from
-    it."""
+    """Utility method to take a tag name and a dictionary of attributes and create a tag
+    from it."""
 
     string = '<'+name
     for att in attrs.items():

@@ -305,7 +305,7 @@ class Tokenizer:
             if in_lex:
                 write_char = char
                 if xml: write_char = escape(char)
-                fh.write(write_char)
+                fh.write(write_char.encode('utf-8'))
                 
             off += 1
 

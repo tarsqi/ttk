@@ -8,7 +8,6 @@ CLASSES
 """
 
 import os
-from time import time
 
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import CLASSIFIER
@@ -47,7 +46,6 @@ class ClassifierWrapper:
         ee_model = os.path.join('data', 'op.e-e.model')
         et_model = os.path.join('data', 'op.e-t.model')
 
-        begin_time = time()
         #xmldocs = self.document.get_tag_contents_as_xmldocs(self.tag)
         xmldocs = [self.document.xmldoc]
         fragment_count = 0
@@ -72,9 +70,6 @@ class ClassifierWrapper:
 
             self._add_links_to_xmldoc(xmldoc, ee_vectors, et_vectors, ee_results, et_results)
             
-        logger.info("%s DONE, processing time was %.3f seconds" %
-                    (self.component_name, time() - begin_time))
-
  
     def _add_links_to_xmldoc(self, xmldoc, ee_vectors, et_vectors, ee_results, et_results):
 

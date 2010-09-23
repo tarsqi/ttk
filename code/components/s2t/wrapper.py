@@ -4,7 +4,6 @@ Contains the S2tWrapper.
 
 """
 
-from time import time
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import S2T
 from components.s2t.main import Slink2Tlink
@@ -24,13 +23,10 @@ class S2tWrapper:
         
     def process(self):
 
-        """Retrieve the XmlDocument and hand it to S2T for processing. Processing will update this
-        slice."""
+        """Retrieve the XmlDocument and hand it to S2T for processing. Processing will
+        update this slice."""
 
-        begin_time = time()
         xmldocs = [self.document.xmldoc]
         for xmldoc in xmldocs:
             xmldoc.reset()
             Slink2Tlink().process_xmldoc(xmldoc)
-        logger.info("%s DONE, processing time was %.3f seconds" %
-                    (self.component_name, time() - begin_time))

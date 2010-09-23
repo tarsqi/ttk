@@ -67,7 +67,11 @@ class Logger:
         """Set logging level and the log file."""
         self.level = level
         self.html_file = open(filename + '.html', 'w')
-        self.html_file.write("<html>\n<body>\n\n<table cellpadding=5>\n\n")
+        self.html_file.write("<html>\n")
+        self.html_file.write("<head>\n<style>\n")
+        self.html_file.write("body, td { font-family:courier,monospace; }\n")
+        self.html_file.write("</style>\n</head>\n")
+        self.html_file.write("<body>\n\n<table cellpadding=5>\n\n")
         
 def initialize_logger(filename, level=2):
     """Initialize the logger on <filename>, default logging level is 2.
@@ -111,7 +115,8 @@ def _log(message_type, log_string):
     """Inspect the stack to find the execution level and the calling
     function, then write the message to the log."""
     stack = inspect.stack()
-    depth = len(stack) - 3
+    depth = len(stack) - 5
+    if depth < 0: depth = 0
     frame = stack[2]
     path = frame[1]
     path_elements = path.split(os.sep)

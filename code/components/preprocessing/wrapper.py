@@ -42,7 +42,6 @@ class PreprocessorWrapper:
         self.document = document
         self.xmldoc = document.xmldoc
         self.treetagger_dir = self.document.getopt('treetagger')
-        #self.treetagger = TreeTagger(TAGLANG='en', TAGDIR=self.treetagger_dir)
         self.treetagger = initialize_treetagger(self.treetagger_dir)
 
         
@@ -52,23 +51,21 @@ class PreprocessorWrapper:
         sentences, which the chunker adds chunk tags to. Slices will be updated with the
         chunker results. If a slice contains tags then they will be stripped out and
         disappear."""
-        begin_time = time()
         text = self.xmldoc[0].collect_text_content()
         text = self.tokenize_text(text)
         text = self.tag_text(text)
         text = self.chunk_text(text)
         update_xmldoc(self.xmldoc, text)
-        logger.info("%s DONE, processing time was %.3f seconds" %
-                    (self.component_name, time() - begin_time))
-
         
     def tokenize_text(self, string):
         """Takes a string and returns a tokenized string in a one-line-per-sentence
         format."""
-        btime = time()
+        t1 = time()
         tokenizer = Tokenizer(string)
         tokenized_string = tokenizer.tokenize_text(output='string')
-        logger.info("tokenizer processing time: %.3f seconds" % (time() - btime))
+        #print type(tokenizer.text)
+        #print type(tokenized_string)
+        logger.info("tokenizer processing time: %.3f seconds" % (time() - t1))
         return tokenized_string
 
 
@@ -77,7 +74,7 @@ class PreprocessorWrapper:
         """Takes a string and returns a list of sentences. Each sentence is list of tuples
         of token, part-of-speech and lemma."""
     
-        btime = time()
+        t1 = time()
         vertical_string = verticalize_text(string)
         taggedItems = self.treetagger.TagText(text=vertical_string,tagonly=True,
                                               notagurl=True, notagemail=True,
@@ -96,19 +93,19 @@ class PreprocessorWrapper:
                 (tok, pos, stem) = item.split("\t")
                 pos = normalizePOS(pos)
                 current_sentence.append((tok, pos, stem))
-        logger.info("tagger processing time: %.3f seconds" % (time() - btime))
+        logger.info("tagger processing time: %.3f seconds" % (time() - t1))
         return text
 
 
     def chunk_text(self, text):
 
-        """Takes a list of sentences and return the same sentences with chunk tags inserted. May
-        need to do something with things like &, <, >, and others, see
+        """Takes a list of sentences and return the same sentences with chunk tags
+        inserted. May need to do something with things like &, <, >, and others, see
         xml_utils.protect_text."""
     
-        btime = time()
+        t1 = time()
         chunked_text = chunk_sentences(text)
-        logger.info("chunker processing time: %.3f seconds" % (time() - btime))
+        logger.info("chunker processing time: %.3f seconds" % (time() - t1))
         return chunked_text
 
 
@@ -116,10 +113,10 @@ class PreprocessorWrapper:
 
 def update_xmldoc(xmldoc, text):
 
-    """Updates the xmldoc with the text that is the result of all preprocessing. At the onset,
-    the xmldoc has only three elements: a TEXT opening tag, character data, and a TEXT
-    closing tag. The character data element is replaced with a list of elements, including
-    lex tags, s tags, chunk tags and character data for all tokens."""
+    """Updates the xmldoc with the text that is the result of all preprocessing. At the
+    onset, the xmldoc has only three elements: a TEXT opening tag, character data, and a
+    TEXT closing tag. The character data element is replaced with a list of elements,
+    including lex tags, s tags, chunk tags and character data for all tokens."""
 
     first_element = xmldoc.elements[0]
     last_element = first_element.get_closing_tag()
@@ -158,7 +155,8 @@ def add_chunktag(element, token):
     
 def add_token(element, token, lid):
     
-    """Add a token, with its opening and closing lex tags, before the XmlDocElement given."""
+    """Add a token, with its opening and closing lex tags, before the XmlDocElement
+    given."""
 
     (tok, pos, lemma) = token
     if lemma == '<unknown>':

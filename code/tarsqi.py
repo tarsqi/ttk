@@ -55,22 +55,21 @@ VARIABLES:
 
 """
 
-import sys, os, shutil, time, types, getopt
+import sys, os, time, types, getopt
 
 from ttk_path import TTK_ROOT
+from components import COMPONENTS
 from docmodel.source_parser import SourceParser
 from docmodel.main import create_parser, get_default_pipeline
 from mixins.parameters import ParameterMixin
 from utilities import logger
 from utilities.file import read_settings
-from components import COMPONENTS
 
-logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'))
+logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=3)
 
 SETTINGS = 'settings.txt'
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
-
 
 
 class Tarsqi(ParameterMixin):
@@ -192,9 +191,8 @@ class Tarsqi(ParameterMixin):
     def apply_component(self, name, wrapper, document):
 
         """Apply a component if the processing parameters determine that the component
-        needs to be applied. This method passes the content tag and the xml_document to
-        the wrapper of the component and asks the wrapper to process the document
-        fragments.
+        needs to be applied. This method passes the TarsqDocument instance to
+        the component wrapper.
 
         Component-level errors are trapped here if trap_errors is True. Those errors are
         now trapped here instead of in the component since we do not tell the component
@@ -210,8 +208,8 @@ class Tarsqi(ParameterMixin):
         teh Tarsqi instance. May in the future need to add some kind of dictionary with
         other needed info."""
 
-        logger.info("RUNNING " + name)
-        print "RUNNING " + name
+        logger.info(name + '............')
+        t1 = time.time()
         if self.getopt_trap_errors():
             try:
                 wrapper(document).process()
@@ -219,9 +217,12 @@ class Tarsqi(ParameterMixin):
                 logger.error(name + " error on " + infile + "\n\t"
                              + str(sys.exc_type) + "\n\t"
                              + str(sys.exc_value) + "\n")
-                shutil.copy(infile, outfile)
+                # TODO: revisit this since we do not have infile and outfile anymore, does
+                # the TarsqiDocument need to be reset?
+                #shutil.copy(infile, outfile)
         else:
             wrapper(document).process()
+        logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
 
     def write_output(self):
@@ -310,16 +311,13 @@ def run_tarsqi(args):
 
 
 def run_profiler(args):
-
     """Wrap running Tarsqi in the profiler."""
-
     import profile
     command = "run_tarsqi([%s])" % ','.join(['"'+x+'"' for x in args])
     print 'Running profiler on:', command
     profile.run(command, PROFILER_OUTPUT)
 
 
-        
     
 if __name__ == '__main__':
 

@@ -13,7 +13,6 @@ USE_BTIME = False
 
 
 import os
-from time import time
 
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import GUTIME
@@ -42,8 +41,6 @@ class GUTimeWrapper:
         GUTime scripts are gradually being replaced with Python code."""
         
         os.chdir(self.DIR_GUTIME)
-        begin_time = time()
-
         xmldocs = [self.document.xmldoc]
         count = 0
 
@@ -68,8 +65,6 @@ class GUTimeWrapper:
             if USE_BTIME:
                 BTime().process_xmldoc(xmldoc)
 
-        logger.info("%s DONE, processing time was %.3f seconds" %
-                    (self.component_name, time() - begin_time))
         os.chdir(TTK_ROOT)
 
 
