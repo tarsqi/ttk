@@ -3,11 +3,11 @@ from mixins.parameters import ParameterMixin
 
 class TarsqiDocument(ParameterMixin):
 
-    """An instance of TarsqiDocument should contain all information that may be needed by the
-    wrappers to do their work. It will contain minimal document structure in its elements
-    variable. Elements will be typed and include the source string and a dictionary of
-    tags. For now we simply use an XmlDocument so we interface easier with the old
-    approach.
+    """An instance of TarsqiDocument should contain all information that may be needed by
+    the wrappers to do their work. It will contain minimal document structure in its
+    elements variable. Elements will be typed and include the source string and a
+    dictionary of tags. For now we simply use an XmlDocument so we interface easier with
+    the old approach.
 
     Instance Variables:
        docsource - instance of DocSource

@@ -7,6 +7,8 @@ Contains the wrapper for all preprocessing components.
 import os
 from time import time
 from types import StringType, TupleType
+from xml.sax.saxutils import escape
+    
 
 from ttk_path import TTK_ROOT
 from docmodel.xml_parser import XmlDocElement
@@ -46,6 +48,23 @@ class PreprocessorWrapper:
 
         
     def process(self):
+        self.process_old()
+        
+    def process_new(self):
+        """Retrieve the slices from the XmlDocument and hand these slices as strings to
+        the preprocessing chain. The tokenizer returns a string, the tagger a list of
+        sentences, which the chunker adds chunk tags to. Slices will be updated with the
+        chunker results. If a slice contains tags then they will be stripped out and
+        disappear."""
+        text = self.xmldoc[0].collect_text_content()
+        text = self.tokenize_text2(text)
+        print text
+        sys.exit()
+        text = self.tag_text(text)
+        text = self.chunk_text(text)
+        update_xmldoc(self.xmldoc, text)
+        
+    def process_old(self):
         """Retrieve the slices from the XmlDocument and hand these slices as strings to
         the preprocessing chain. The tokenizer returns a string, the tagger a list of
         sentences, which the chunker adds chunk tags to. Slices will be updated with the
@@ -62,9 +81,26 @@ class PreprocessorWrapper:
         format."""
         t1 = time()
         tokenizer = Tokenizer(string)
-        tokenized_string = tokenizer.tokenize_text(output='string')
-        #print type(tokenizer.text)
-        #print type(tokenized_string)
+        tokenized_text = tokenizer.tokenize_text()
+        tokenized_string = tokenized_text.as_string()
+        #tokenized_string = tokenizer.tokenize_text(output='string')
+        logger.info("tokenizer processing time: %.3f seconds" % (time() - t1))
+        return tokenized_string
+
+    def tokenize_text2(self, string):
+
+        """Takes a unicode string and returns a tokenized string in a
+        one-line-per-sentence format."""
+        
+        t1 = time()
+        tokenizer = Tokenizer(string)
+        tokenized_text = tokenizer.tokenize_text()
+        tokenized_text.print_as_xmlstring()
+        tokenized_text.print_as_string()
+        sys.exit()
+        print type(string)
+        print type(tokenizer.text)
+        print type(tokenized_string)
         logger.info("tokenizer processing time: %.3f seconds" % (time() - t1))
         return tokenized_string
 
@@ -114,9 +150,9 @@ class PreprocessorWrapper:
 def update_xmldoc(xmldoc, text):
 
     """Updates the xmldoc with the text that is the result of all preprocessing. At the
-    onset, the xmldoc has only three elements: a TEXT opening tag, character data, and a
-    TEXT closing tag. The character data element is replaced with a list of elements,
-    including lex tags, s tags, chunk tags and character data for all tokens."""
+    onset, the xmldoc has only three elements: TEXT opening tag, character data, and TEXT
+    closing tag. The character data element is replaced with a list of elements, including
+    lex tags, s tags, chunk tags and character data for all tokens."""
 
     first_element = xmldoc.elements[0]
     last_element = first_element.get_closing_tag()
@@ -168,3 +204,4 @@ def add_token(element, token, lid):
     element.insert_element_before( XmlDocElement(tok, data=True) )
     element.insert_element_before( XmlDocElement('</lex>', tag='lex') )
     element.insert_element_before( XmlDocElement(' ', data=True) )
+

@@ -161,10 +161,11 @@ class Tarsqi(ParameterMixin):
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
 
-        #self.docsource.pp()
-        self.docsource.print_xml('tmp.xml')
+        # testing whether docsource can be printed
+        #self.docsource.print_xml('tmp.xml')
 
         for (name, wrapper) in self.pipeline:
+            print name
             self.apply_component(name, wrapper, self.document)
 
         os.chdir(TTK_ROOT)

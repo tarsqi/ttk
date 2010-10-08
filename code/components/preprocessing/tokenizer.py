@@ -62,13 +62,11 @@ class Tokenizer:
         self.sentences = []
         
         
-    def tokenize_text(self, output=None):
+    def tokenize_text(self):
 
-        """Tokenize a text and return a set of tokens and a set of sentences. Each token
-        and each sentence is a pair of a begin position and end position. The output
-        argument determines whether output is returned as an xml string (output='xml'),
-        a string with newlines as sentence boundaries and spaces as lex boundaries
-        (output='string'), or no output at all."""
+        """Tokenize a text and return an instance of TokenizedText. Create lists of
+        sentences and lexes and feed these into the TokenizedText. Each token and each
+        sentence is a pair of a begin position and end position."""
 
         offset = 0
         self.tokens = []
@@ -86,9 +84,8 @@ class Tokenizer:
         self._split_contractions()
         self._set_lexes()
 
-        if output == 'xml': return self.get_tokenized_as_xml()
-        if output == 'string': return self.get_tokenized_as_string()
-
+        return TokenizedText(self.sentences, self.lexes)
+    
 
     def slurp_token(self, offset):
         """Given a string and an offset in the string, return two tuples, one for
@@ -256,7 +253,7 @@ class Tokenizer:
                                    lexindent = "  ")
     
     def get_tokenized_as_string(self):
-        """Return the tokennized text as a string where sentences are on one line and
+        """Return the tokenized text as a string where sentences are on one line and
         tokens are separated by spaces. Not that each sentence ends in a space."""
         lex_open_function = (lambda lex: '')
         return self.get_tokenized( xml = False,
@@ -268,7 +265,7 @@ class Tokenizer:
 
     
     def get_tokenized(self, xml, s_open, s_close, lex_open, lex_close, lexindent):
-
+        
         """Return the tokenized text as a string."""
 
         self._set_tag_indexes()
@@ -327,8 +324,108 @@ class Tokenizer:
         for s in self.sentences:
             self.opening_sents[s[0]] = s
             self.closing_sents[s[1]] = s
-        
+
+
+
+
+            
+class TokenizedText:
+
+    """This class takes a list of sentences of the form (begin_offset, end_offset) and a
+    list of tokens of the form (begin_offset, end_offset, text), and creates a list of
+    elements. Each element can either be a TokenizedSentence or a TOkenizedLex (the latter
+    for a token outside a sentence tag)."""
     
+    def __init__(self, sentences, lexes):
+
+        self.sentences = []
+
+        for s in sentences:
+
+            first = s[0]
+            last = s[1]
+
+            while lexes:
+                lex = lexes[0]
+                if lex[0] < first:
+                    self.sentences.append( TokenizedLex(lex[0], lex[1], lex[2]) )
+                    lexes.pop(0)
+                else:
+                    break
+                
+            self.sentences.append( TokenizedSentence(first, last) )
+
+            while lexes:
+                lex = lexes[0]
+                if lex[0] >= first and lex[1] <= last:
+                    self.sentences[-1].append( TokenizedLex(lex[0], lex[1], lex[2]) )
+                    lexes.pop(0)
+                else:
+                    break
+
+
+    def as_string(self):
+        str = ''
+        for s in self.sentences:
+            str += s.as_string()
+        return str
+    
+    def print_as_string(self):
+        for s in self.sentences:
+            s.print_as_string()
+
+    def print_as_xmlstring(self):
+        print "<TOKENS>"
+        for s in self.sentences:
+            s.print_as_xmlstring()
+        print "</TOKENS>"
+
+
+            
+class TokenizedSentence:
+
+    def __init__(self, b, e):
+        self.begin = b
+        self.end = e
+        self.tokens = []
+
+    def append(self, item):
+        self.tokens.append(item)
+        
+    def as_string(self):
+        return ' '.join(t.text for t in self.tokens)
+            
+    def print_as_string(self):
+        print ' '.join(t.text for t in self.tokens)
+            
+    def print_as_xmlstring(self):
+        print '<s>'
+        for t in self.tokens:
+            t.print_as_xmlstring(indent='  ')
+        print '</s>'
+            
+            
+class TokenizedLex:
+
+    def __init__(self, b, e , text):
+        self.begin = b
+        self.end = e
+        self.text = text
+
+    def __str__(self):
+        return "Lex(%d,%d,'%s')" % (self.begin, self.end, self.text)
+
+    def as_string(self, indent=''):
+        return self.text
+
+    def print_as_string(self, indent=''):
+        print self.text
+
+    def print_as_xmlstring(self, indent=''):
+        print "%s<lex begin=\"%d\" end=\"%d\">%s</lex>" % \
+              (indent, self.begin, self.end, escape(self.text))
+
+            
 
 if __name__ == '__main__':
 

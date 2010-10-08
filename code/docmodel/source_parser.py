@@ -2,15 +2,15 @@
 
 Parser for Toolkit input
 
-Module that contains classes to parse and represent the document being processed by the
-toolkit. It contains a simple XML parser that splits inline XML into a source string and a
-list of tags. The source string and the tags are stored in an SourceDoc instance, which is
-intended to provide just enough functionailty to deal with the input in a read-only
-fashion, that is, additional annotations should not be in this instance.
+Module that contains classes to parse and represent the input document. It contains a
+simple XML parser that splits inline XML into a source string and a list of tags. The
+source string and the tags are stored in a SourceDoc instance, which is intended to
+provide just enough functionailty to deal with the input in a read-only fashion, that is,
+additional annotations should not be in this instance.
 
 This class will likely be embedded in a Document instance or a DocumentModel instance. 
 
-TODO: we know assume that the input is valid XML and has at least a root, should change
+TODO: we now assume that the input is valid XML and has at least a root, should change
 this and make a distinction between XML and non-XML, which will simply be treated by
 adding the entire file content to DocSource.source while leaving DocSource.tags
 empty. Implement this by adding ExPat error trapping to SourceParser.parse_file().
@@ -100,10 +100,9 @@ class SourceParser:
         
 class SourceDoc:
 
-    """A SourceDoc contains source data and annotations thereon. It is the result of
-    splitting an XML document into the annotated data and the tags. The source data are
-    put in the source variable as a unicode string, tags are in the tags variable and
-    contain begin and end positions in the source."""
+    """A SourceDoc is created by the SourceParser and contains source data and annotations
+    of those data. The source data are put in the source variable as a unicode string,
+    tags are in the tags variable and contain begin and end positions in the source."""
 
     def __init__(self, filename='<STRING>'):
         """Initialize a SourceDoc on a filename or a string."""
