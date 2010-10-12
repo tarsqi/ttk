@@ -370,6 +370,12 @@ class TokenizedText:
             str += s.as_string()
         return str
     
+    def as_vertical_string(self):
+        str = ''
+        for s in self.sentences:
+            str += "<s>\n" + s.as_vertical_string()
+        return str
+    
     def print_as_string(self):
         for s in self.sentences:
             s.print_as_string()
@@ -391,13 +397,16 @@ class TokenizedSentence:
 
     def append(self, item):
         self.tokens.append(item)
-        
+
     def as_string(self):
-        return ' '.join(t.text for t in self.tokens)
-            
+        return ' '.join([t.text for t in self.tokens]) + "\n"
+    
+    def as_vertical_string(self):
+        return "\n".join([t.text for t in self.tokens]) + "\n"
+    
     def print_as_string(self):
-        print ' '.join(t.text for t in self.tokens)
-            
+        print ' '.join([t.text for t in self.tokens])
+        
     def print_as_xmlstring(self):
         print '<s>'
         for t in self.tokens:
@@ -417,6 +426,9 @@ class TokenizedLex:
 
     def as_string(self, indent=''):
         return self.text
+
+    def as_vertical_string(self, indent=''):
+        return self.text + "\n"
 
     def print_as_string(self, indent=''):
         print self.text

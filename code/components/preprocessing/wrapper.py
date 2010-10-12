@@ -48,7 +48,7 @@ class PreprocessorWrapper:
 
         
     def process(self):
-        self.process_old()
+        self.process_new()
         
     def process_new(self):
         """Retrieve the slices from the XmlDocument and hand these slices as strings to
@@ -96,7 +96,15 @@ class PreprocessorWrapper:
         tokenizer = Tokenizer(string)
         tokenized_text = tokenizer.tokenize_text()
         tokenized_text.print_as_xmlstring()
-        tokenized_text.print_as_string()
+        print
+        ttt = tokenized_text.as_vertical_string()
+
+        # Don't quite want a vertical string here, but first a vertical object, which
+        # contains all elements in the vertical string, but now as a pair where the second
+        # element is a pointer to an offset or even better to a TokenizedLex. In some
+        # cases, with <s> tags for example, the second element would be None.
+        
+        print ttt
         sys.exit()
         print type(string)
         print type(tokenizer.text)
@@ -112,9 +120,19 @@ class PreprocessorWrapper:
     
         t1 = time()
         vertical_string = verticalize_text(string)
-        taggedItems = self.treetagger.TagText(text=vertical_string,tagonly=True,
+        taggedItems = self.treetagger.TagText(text=vertical_string, tagonly=True,
                                               notagurl=True, notagemail=True,
                                               notagip=False,notagdns=False)
+
+        print '---'
+        print vertical_string
+        print '---'
+        for i in taggedItems: print i
+        print '---'
+        print len(vertical_string.split("\n"))
+        print len(taggedItems)
+        print '---'
+
         text = []
         current_sentence = []
         for item in taggedItems:
