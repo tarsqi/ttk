@@ -37,8 +37,8 @@ class GUTimeWrapper:
         
     def process(self):
 
-        """Get the XmlDOcument and call the Perl scripts that implement TempEx and GUTime. The
-        GUTime scripts are gradually being replaced with Python code."""
+        """Get the XmlDOcument and call the Perl scripts that implement TempEx and
+        GUTime. The GUTime scripts are gradually being replaced with Python code."""
         
         os.chdir(self.DIR_GUTIME)
         xmldocs = [self.document.xmldoc]

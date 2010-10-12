@@ -94,8 +94,8 @@ class Document:
         self.nodeCounter = self.nodeCounter + 1 
 
     def addDocLink(self, loc, string):
-        """Add a node to the document's nodeList. Inserts it at the specified location and not at
-        the ned of the document (as indicated by noedeCounter. Still increments the
+        """Add a node to the document's nodeList. Inserts it at the specified location and
+        not at the ned of the document (as indicated by noedeCounter. Still increments the
         nodeCounter becasue the document grows by one element. This is much like
         addDocNode, but it used for adding nodes that were not in the input but that were
         created by a Tarsqi component.
@@ -106,23 +106,23 @@ class Document:
         self.nodeCounter = self.nodeCounter + 1
                 
     def addSentence(self, sentence):
-        """Append a Sentence to the sentenceList and sets the parent feature of the sentence to
-        the document. Also increments the positionCount."""
+        """Append a Sentence to the sentenceList and sets the parent feature of the
+        sentence to the document. Also increments the positionCount."""
         sentence.setParent(self)
         self.sentenceList.append(sentence)
         self.positionCount += 1
 
     def addTimex(self, timex):
-        """Applied when a timex cannot be added to a Chunk or a Sentence, probably intended for
-        the DCT."""
+        """Applied when a timex cannot be added to a Chunk or a Sentence, probably
+        intended for the DCT."""
         # NOTE: this is probably wrong, test it with a document where
         # the DCT will not end up in a sentence tag
         timex.setParent(self)
         self.positionCount += 1
     
     def hasEventWithAttribute(self, eid, att):
-        """Returns the attribute value if the taggedEventsDict has an event with the given id that
-        has a value for the given attribute, returns False otherwise
+        """Returns the attribute value if the taggedEventsDict has an event with the given
+        id that has a value for the given attribute, returns False otherwise
         Arguments
            eid - a string indicating the eid of the event
            att - a string indicating the attribute"""
@@ -158,12 +158,12 @@ class Document:
         
     def addLink(self, linkAttrs, linkType):
 
-        """Add an Alink or Slink to the document. Adds it at the end of the document, that is, at
-        the position indicated by the instance variable nodeCount. This means that the
-        resulting file is not valid XML, but this is not problematic since the file is a
-        fragment that is inserted back into the whole file. This will break down though is
-        the fragment happens to be the outermost tag of the input file. This method should
-        probably use addDocLink instead of addDocNode.
+        """Add an Alink or Slink to the document. Adds it at the end of the document, that
+        is, at the position indicated by the instance variable nodeCount. This means that
+        the resulting file is not valid XML, but this is not problematic since the file is
+        a fragment that is inserted back into the whole file. This will break down though
+        is the fragment happens to be the outermost tag of the input file. This method
+        should probably use addDocLink instead of addDocNode.
 
         Also adds alinks, slinks and tlinks to the link lists. This is to make sure that
         for example the main function of Slinket can easily access newly created links in
@@ -175,7 +175,7 @@ class Document:
 
         Arguments
            linkAttrs - dictionary of attributes
-           linkType - "ALINK" | "SLINK" """
+           linkType - 'ALINK' | 'SLINK' """
 
         linkAttrs['lid'] = self._getNextLinkID(linkType)
         self.addDocNode(emptyContentString(linkType, linkAttrs))
@@ -205,20 +205,20 @@ class Document:
         return "t%d" % next_id
 
     def _getNextEventID(self):
-        """Increment eventCount and return a new unique eid. Assumes that all events are added
-        using this method, otherwise, non-unique eids could be assigned."""
+        """Increment eventCount and return a new unique eid. Assumes that all events are
+        added using this method, otherwise, non-unique eids could be assigned."""
         self.eventCount += 1
         return "e"+str(self.eventCount) 
         
     def _getNextInstanceID(self):
-        """Increment eventCount and return a new unique eiid. Assumes that all instances are added
-        using this method, otherwise, non-unique eiids could be assigned."""
+        """Increment eventCount and return a new unique eiid. Assumes that all instances
+        are added using this method, otherwise, non-unique eiids could be assigned."""
         self.instanceCounter += 1
         return "ei"+str(self.instanceCounter)
 
     def _getNextLinkID(self, linkType):
-        """Return a unique lid. The linkType argument is one of {ALINK,SLINK,TLINK} and has no
-        influence over the lid that is returned but determines what link counter is
+        """Return a unique lid. The linkType argument is one of {ALINK,SLINK,TLINK} and
+        has no influence over the lid that is returned but determines what link counter is
         incremented. Assumes that all links are added using the link counters in the
         document. Breaks down if there are already links added without using those
         counters. """
@@ -262,8 +262,8 @@ class Document:
             file.write(node)
 
     def toString(self):
-        """Return a string representation of the document that matches how the document would be
-        printed.  """
+        """Return a string representation of the document that matches how the document
+        would be printed.  """
         docString = ''
         # loop through document
         for i in range(len(self.nodeList)):
@@ -276,8 +276,8 @@ class Document:
         return docString
             
     def pretty_print(self):
-        """Pretty printer that prints all instance variables and a neat representation of the
-        sentence list."""
+        """Pretty printer that prints all instance variables and a neat representation of
+        the sentence list."""
         print "\n<<Document %s>>\n" % self.sourceFileName
         print 'nodeCounter', self.nodeCounter
         print 'taggedEventsDict'
@@ -303,5 +303,3 @@ class Document:
             print "\nSENTENCE " + str(count) + "\n"
             sentence.pretty_print()
         print "\n"
-
-

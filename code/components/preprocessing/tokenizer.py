@@ -333,7 +333,7 @@ class TokenizedText:
 
     """This class takes a list of sentences of the form (begin_offset, end_offset) and a
     list of tokens of the form (begin_offset, end_offset, text), and creates a list of
-    elements. Each element can either be a TokenizedSentence or a TOkenizedLex (the latter
+    elements. Each element can either be a TokenizedSentence or a TokenizedLex (the latter
     for a token outside a sentence tag)."""
     
     def __init__(self, sentences, lexes):
@@ -342,8 +342,7 @@ class TokenizedText:
 
         for s in sentences:
 
-            first = s[0]
-            last = s[1]
+            (first, last) = s[0:2]
 
             while lexes:
                 lex = lexes[0]
@@ -376,6 +375,16 @@ class TokenizedText:
             str += "<s>\n" + s.as_vertical_string()
         return str
     
+    def as_objects(self):
+        """Return self as a list of pairs, where usually each pair contains a string and a
+        TokenizedLex instance. Also inserts a ('<s>', None) for the beginning of each
+        sentence.  This is intended to take tokenized text and prepare it for the
+        TreeTagger (which does not recognize </s> tags."""
+        objects = []
+        for s in self.sentences:
+            objects += [("<s>", None)] + s.as_objects()
+        return objects
+    
     def print_as_string(self):
         for s in self.sentences:
             s.print_as_string()
@@ -403,7 +412,10 @@ class TokenizedSentence:
     
     def as_vertical_string(self):
         return "\n".join([t.text for t in self.tokens]) + "\n"
-    
+
+    def as_objects(self):
+        return [(t.text, t) for t in self.tokens]
+        
     def print_as_string(self):
         print ' '.join([t.text for t in self.tokens])
         
@@ -430,6 +442,9 @@ class TokenizedLex:
     def as_vertical_string(self, indent=''):
         return self.text + "\n"
 
+    def as_objects(self):
+        return [(self.text, self)]
+    
     def print_as_string(self, indent=''):
         print self.text
 
