@@ -10,35 +10,35 @@ from docmodel.document import TarsqiDocParagraph
 class DefaultParser:
 
     """The simplest parser, much like the SimpleXml parser for the old simple-xml
-    doctype. Gets the TEXT tag and the associated source string. Then creates an
-    XmlDocument for that string and simple metadata for the document by setting the DCT to
-    today. """
+    doctype. Instance variables:
+    
+       docsource - a SourceDoc instance
+       elements - a list with one TarsqiDocParagraph element
+       xmldoc - an XmlDocument instance
+       metadata - a dictionary"""
+
     
     def __init__(self):
-        
-        """This could be used to hand in specific metadata parsers or other functionality that
-        cuts through genres."""
-
+        """Not used now but could be used to hand in specific metadata parsers or other
+        functionality that cuts through genres."""
         pass
 
-
     def parse(self, docsource):
-
-        """Get the TEXT tag and the associated source string. Then create an XmlDocument
-        for that string and simple metadata for the document by setting the DCT to
-        today. Return an instance of TarsqiDocument."""
-            
+        """Return an instance of TarsqiDocument. Get the TEXT tag and the associated
+        source string and populate the TarsqiDocument with the following content: (i)
+        docsource embeds the SourceDoc instance that was created by the SourceParser, (ii)
+        elements contains one element, a TarsqiDocParagraph for the TEXT, (iii) xmldoc
+        contains an XmlDocument created from the TEXT, (iv) metadata simply continas a DCT
+        set to today."""
         target_tag = self._find_target_tag(docsource)
         text = docsource.source[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
+        elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text, xmldoc)]
         metadata = { 'dct': get_today() }
-        elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text)]
-        
         return TarsqiDocument(docsource, elements, metadata, xmldoc)
 
-
     def _find_target_tag(self, docsource):
-        
+        """Return the content of the TEXT tag."""
         for t in docsource.tags:
             if t.name == 'TEXT':
                 return t

@@ -41,11 +41,11 @@ class TarsqiDocument(ParameterMixin):
 
 class TarsqiDocElement:
 
-    def __init__(self, begin, end, text):
+    def __init__(self, begin, end, text, xmldoc=None):
         self.begin = begin
         self.end = end
         self.text = text
-        self.xmldoc = None
+        self.xmldoc = xmldoc
         self.tags = {}
 
     def __str__(self):
@@ -57,8 +57,8 @@ class TarsqiDocElement:
     
 class TarsqiDocParagraph(TarsqiDocElement):
 
-    def __init__(self, begin, end, text):
-        TarsqiDocElement.__init__(self, begin, end, text)
+    def __init__(self, begin, end, text, xmldoc=None):
+        TarsqiDocElement.__init__(self, begin, end, text, xmldoc)
 
     def is_paragraph(): return True
 
