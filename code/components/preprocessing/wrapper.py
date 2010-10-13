@@ -46,6 +46,8 @@ class PreprocessorWrapper:
         are inserted into the element's xmldoc. Note that for simple documents with just
         one element, updating the xmldoc in the element also updates the xmldoc in the
         TarsqiDocument."""
+        for tag in self.document.docsource.tags: print tag
+        for offset, tag in self.document.docsource.opening_tags.items(): print offset, tag
         for element in self.document.elements:
             tokens = self.tokenize_text(element.text)
             text = self.tag_text(tokens)
