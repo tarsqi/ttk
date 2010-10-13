@@ -38,12 +38,13 @@ class DefaultParser:
         return TarsqiDocument(docsource, elements, metadata, xmldoc)
 
     def _find_target_tag(self, docsource):
-        """Return the content of the TEXT tag."""
-        for t in docsource.tags:
-            if t.name == 'TEXT':
-                return t
-        raise DocParserError('Cannot parse docsource, no target_tag')
-
+        """Return the content of the TEXT tag, raise an error if not succesful."""
+        tag = docsource.tags.find_tag('TEXT')
+        if tag is None:
+            raise DocParserError('Cannot parse docsource, no target_tag')
+        else:
+            return tag
+        
 
 class TimebankParser:
 

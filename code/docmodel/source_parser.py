@@ -111,21 +111,19 @@ class SourceDoc:
         self.source = []
         self.comments = {}
         self.processing_instructions = {}
-        self.tags = []
-        self.opening_tags = {}
-        self.closing_tags = {}
+        self.tags = TagRepository()
         self.offset = 0
         self.tag_number = 0
         
     def add_opening_tag(self, name, attrs):
         """Add an opening tag."""
         self.tag_number += 1
-        self.tags.append( OpeningTag(self.tag_number, name, self.offset, attrs) )
+        self.tags.add_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
     def add_closing_tag(self, name):
         """Add a closing tag."""
         self.tag_number += 1
-        self.tags.append( ClosingTag(self.tag_number, name, self.offset) )
+        self.tags.add_tag( ClosingTag(self.tag_number, name, self.offset) )
         
     def add_characters(self, string):
         """Add a character string to the source and increment the current offset."""
@@ -137,37 +135,13 @@ class SourceDoc:
         
     def add_processing_instruction(self, target, data):
         self.processing_instructions.setdefault(self.offset,[]).append((target, data))
-        
 
     def finish(self):
-
-        """Transform the source list into a string and merge the begin and end tags. Print
-        warnings if tags do not match. Also populate opening_tags and closing_tags."""
-        
+        """Transform the source list into a string, merge the begin and end tags, and
+        index the tags on offsets."""
         self.source = ''.join(self.source)
-
-        stack = []
-        merged_tags = []
-        for t in self.tags:
-            if t.is_opening_tag():
-                stack.append(t)
-            elif t.name == stack[-1].name:
-                t1 = stack.pop()
-                merged_tags.append(Tag( t1.id, t1.name, t1.begin, t.end, t1.attrs ))
-            else:
-                raise TarsqiInputError("non-matching tag %s" % t)
-        if stack:
-            raise TarsqiInputError("no closing tag for %s" % stack[-1])
-
-        merged_tags.sort()
-        self.tags = merged_tags
-
-        for tag in self.tags:
-            self.opening_tags.setdefault(tag.begin,[]).append(tag)
-            self.closing_tags.setdefault(tag.end,{}).setdefault(tag.begin,{})[tag.name] = True
-        for (k,v) in self.opening_tags.items():
-            self.opening_tags[k].sort()
-            
+        self.tags.merge()
+        self.tags.index()
 
     def pp(self):
         """Print source and tags."""
@@ -252,7 +226,72 @@ class SourceDoc:
             return self._matching_closing_tags(offset, stack, matching)
         else:
             return (stack, matching)
-            
+
+
+
+class TagRepository:
+
+    """Class that provides access to the tags for a document. An instance of this class is
+    used for the DocSource instance, other instances will be used for the elements in a
+    TarsqiDocument."""
+    
+    def __init__(self):
+        self.tmp = []
+        self.tags = []
+        self.opening_tags = {}
+        self.closing_tags = {}
+
+    def add_tag(self, tagInstance):
+        """Add a OpeningTag or ClosingTag to a temporary list. Used by the XML
+        handlers."""
+        self.tmp.append(tagInstance)
+
+    def merge(self):
+        """Take the OpeningTags and ClosingTags in self.tmp and merge them into
+        Tags. Raise errors if tags do not match."""
+        stack = []
+        for t in self.tmp:
+            if t.is_opening_tag():
+                stack.append(t)
+            elif t.name == stack[-1].name:
+                t1 = stack.pop()
+                self.tags.append(Tag( t1.id, t1.name, t1.begin, t.end, t1.attrs ))
+            else:
+                raise TarsqiInputError("non-matching tag %s" % t)
+        if stack:
+            raise TarsqiInputError("no closing tag for %s" % stack[-1])
+        self.tags.sort()
+
+    def index(self):
+        """Index tags on position."""
+        for tag in self.tags:
+            self.opening_tags.setdefault(tag.begin,[]).append(tag)
+            self.closing_tags.setdefault(tag.end,{}).setdefault(tag.begin,{})[tag.name] = True
+        for (k,v) in self.opening_tags.items():
+            self.opening_tags[k].sort()
+
+    def find_tag(self, name):
+        """Return the first Tag object with name=name, return None if no such tag
+        exists."""
+        for t in self.tags:
+            if t.name == 'TEXT':
+                return t
+        return None
+
+    def add_sentence(self, sid, begin, end):
+        if begin is None or end is None: return
+        tag = Tag(sid, 's', begin, end, {})
+        print tag
+    
+    def print_tags(self):
+        for tag in self.tags: print tag
+    
+    def print_opening_tags(self):
+        for offset, list in sorted(self.opening_tags.items()):
+            print offset
+            for t in list: print '  ', t
+        #for offset, tag in self.opening_tags.items(): print offset, tag
+        
         
         
 class Tag:
@@ -270,13 +309,14 @@ class Tag:
         self.attrs = attrs
         
     def __str__(self):
-
-        return "<Tag %d %s %d %d %s>" % \
+        return "<Tag %d %s %d-%d %s>" % \
                (self.id, self.name, self.begin, self.end, str(self.attrs))
 
     def __cmp__(self, other):
         """Order two Tags based on their id. The id is based on the text position of the
-        opening tag."""
+        opening tag. This guarantees that with tags that span the same tags (as for
+        example with '<event><lex>party</lex></event>'), the embedding tag will come
+        before the embedded tag."""
         return cmp(self.id, other.id)
         
     def is_opening_tag(self): return False

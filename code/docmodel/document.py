@@ -1,4 +1,5 @@
 from mixins.parameters import ParameterMixin
+from source_parser import TagRepository
 
 
 class TarsqiDocument(ParameterMixin):
@@ -46,7 +47,7 @@ class TarsqiDocElement:
         self.end = end
         self.text = text
         self.xmldoc = xmldoc
-        self.tags = {}
+        self.tags = TagRepository()
 
     def __str__(self):
         return "\n<%s %d:%d>\n\n%s\n\n" % \

@@ -46,14 +46,13 @@ class PreprocessorWrapper:
         are inserted into the element's xmldoc. Note that for simple documents with just
         one element, updating the xmldoc in the element also updates the xmldoc in the
         TarsqiDocument."""
-        for tag in self.document.docsource.tags: print tag
-        for offset, tag in self.document.docsource.opening_tags.items(): print offset, tag
         for element in self.document.elements:
             tokens = self.tokenize_text(element.text)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
+            #update_tags(element.tags, text)
             update_xmldoc(element.xmldoc, text)
-        
+
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each object is a
         pair of tokenized string and a TokenizedLex instance. The tokenized string can be
@@ -111,7 +110,69 @@ class PreprocessorWrapper:
                 current_sentence.append((tok, pos, stem, lex.begin, lex.end))
         return text
     
+
+
+def update_tags(tag_repository, text):
+
+    class Chunk:
+        def __str__(self):
+            return "<%s>\n" % self.name() + \
+                   "\n".join(["   "+ str(x) for x in self.data]) + \
+                   "\n</%s>" % self.name()
+        
+    class NG(Chunk):
+        def __init__(self): self.data = []
+        def name(self): return 'NG'
+        def append(self, x): self.data.append(x)
+        
+    class VG(Chunk):
+        def __init__(self): self.data = []
+        def name(self): return 'VG'
+        def append(self, x): self.data.append(x)
+        
+    #print text
+    print tag_repository
+
+    # get sentence offsets
+    lid = 0  # ouwch, this is dangerous since now the numbering may differ from the xmldoc
+    sid = 0
+    for s in text:
+        sid += 1
+        s_begin= None
+        s_end = None
+        for element in s:
+            if type(element) == TupleType:
+                print element
+                #tag_repository.add_lex(
+                if s_begin is None:
+                    s_begin = element[3]
+                s_end = element[4]
+        #print s_begin, s_end
+        tag_repository.add_sentence(sid, s_begin, s_end)
+
+    for s in text:
+        sent = []
+        insert_point = sent
+        for t in s:
+            if t == '<NG>':
+                ng = NG()
+                insert_point.append(ng)
+                insert_point = ng
+            elif t == '<VG>':
+                vg = VG()
+                insert_point.append(vg)
+                insert_point = vg
+            elif t == '</NG>' or t == '</VG>':
+                insert_point = sent
+            elif type(t) == TupleType:
+                insert_point.append(t)
+            #for x in sent:
+            #    print x
+        break
                 
+
+                
+    
 def update_xmldoc(xmldoc, text):
 
     """Updates the xmldoc with the text that is the result of all preprocessing. At the
@@ -123,17 +184,23 @@ def update_xmldoc(xmldoc, text):
     last_element = first_element.get_closing_tag()
     first_element.next = last_element
     last_element.previous = first_element
+
+    (sid, lid, cid) = (0, 0, 0)
     
-    lid = 0
     for sentence in text:
+
+        sid += 1
         last_element.insert_element_before( XmlDocElement('\n', data=True) )
-        last_element.insert_element_before( XmlDocElement('<s>', tag='s', attrs={}) )
+        last_element.insert_element_before( XmlDocElement("<s sid=\"s%d\">" % sid,
+                                                          tag='s',
+                                                          attrs={'sid': "s%d" % sid}) )
         for token in sentence:
             if type(token) == StringType:
-                add_chunktag(last_element, token)
+                if token.startswith('<') and not token.startswith('</'): cid += 1
+                add_chunktag(last_element, token, cid)
             elif type(token) == TupleType:
-                add_token(last_element, token, lid)
                 lid += 1
+                add_token(last_element, token, lid)
             else:
                 logger.warn('Unexpected token type')
         last_element.insert_element_before( XmlDocElement('</s>', tag='s') )
@@ -141,7 +208,7 @@ def update_xmldoc(xmldoc, text):
     last_element.insert_element_before( XmlDocElement('\n', data=True) )
 
 
-def add_chunktag(element, token):
+def add_chunktag(element, token, cid):
 
     """Add a chunk tag before the XmlDocElement given."""
     
@@ -149,6 +216,7 @@ def add_chunktag(element, token):
     if token.startswith('</'):
         element.insert_element_before( XmlDocElement(token, tag=tag) )
     elif token.startswith('<'):
+        token = token[:-1] + " cid=\"c%d\">" % cid
         element.insert_element_before( XmlDocElement(token, tag=tag, attrs={}) )
     else:
         logger.warn('Unexpected element in chunked text')
