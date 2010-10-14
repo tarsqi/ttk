@@ -31,14 +31,14 @@ def startElementString(tagname, attrs):
     return string
 
 def emptyContentString(tagname, attrs):
-    """Return the string representation of a non-consuming tag given the tagname and a dictionary
-    of attributes."""
+    """Return the string representation of a non-consuming tag given the tagname and a
+    dictionary of attributes."""
     string_as_opening_string = startElementString(tagname, attrs)
     return string_as_opening_string[:-1] + '/>'
 
 def protect_text(text):
-    """Take a text string and protect XML special characters. Should also do something with
-    non-ascii characters as well as with things like &#2435; and &quote;. Should use
+    """Take a text string and protect XML special characters. Should also do something
+    with non-ascii characters as well as with things like &#2435; and &quote;. Should use
     xml.sax.saxutils methods."""
     text = re_protect1.sub('&amp;', text)
     text = text.replace('<', '&lt')
@@ -74,9 +74,9 @@ def protectNode(node):
 
     
 def merge_tags_from_files(infile1, infile2, merged_file):
-    """Merge the tags from infile1, which has all tags from the input, with tags from infile2,
-    which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is
-    assumed that both files contain the same amount of lex tags."""
+    """Merge the tags from infile1, which has all tags from the input, with tags from
+    infile2, which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots
+    and it is assumed that both files contain the same amount of lex tags."""
     doc1 = docmodel.xml_parser.Parser().parse_file(open(infile1,"r"))
     doc2 = docmodel.xml_parser.Parser().parse_file(open(infile2,"r"))
     merge_tags_from_xmldocs(doc1, doc2)
@@ -86,10 +86,10 @@ def merge_tags_from_files(infile1, infile2, merged_file):
 
 def merge_tags_from_xmldocs(doc1, doc2):
 
-    """Merge the tags from doc1, which has all tags from the input, with tags from doc2, which
-    has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is assumed
-    that both files contain the same amount of lex tags. The TIMEX3 tags from doc2 are
-    merged into doc1."""
+    """Merge the tags from doc1, which has all tags from the input, with tags from doc2,
+    which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is
+    assumed that both files contain the same amount of lex tags. The TIMEX3 tags from doc2
+    are merged into doc1."""
 
     # add lex_id values to the lex tags
     _mark_lex_tags(doc1)
@@ -118,7 +118,8 @@ def merge_tags_from_xmldocs(doc1, doc2):
             docmodel.xml_parser.Parser().parse_string("<TAG>%s</TAG>" % sequence_string)
             # insert opening and closing timex tags
             first_element.insert_element_before(timex_tag)
-            last_element.insert_element_after(docmodel.xml_parser.XmlDocElement('</TIMEX3>', 'TIMEX3'))
+            last_element.insert_element_after(
+                docmodel.xml_parser.XmlDocElement('</TIMEX3>', 'TIMEX3'))
         except ExpatError:
             # if result was not well-formed, try adding element on both sides
             first_element = _extent_sequence_left(sequence)
@@ -127,7 +128,8 @@ def merge_tags_from_xmldocs(doc1, doc2):
             try:
                 docmodel.xml_parser.Parser().parse_string("<TAG>%s</TAG>" % sequence_string)
                 first_element.insert_element_before(timex_tag)
-                last_element.insert_element_after(docmodel.xml_parser.XmlDocElement('</TIMEX3>', 'TIMEX3'))
+                last_element.insert_element_after(
+                    docmodel.xml_parser.XmlDocElement('</TIMEX3>', 'TIMEX3'))
             except ExpatError:
                 logger.warn("Could not wrap TIMEX3 tag around\n\t %s" % sequence_string)
 
@@ -170,9 +172,9 @@ def _create_lexid_index(doc):
     return index
 
 def _extent_sequence(first_element, last_element, sequence):
-    """Extent the sequence with one to the leftor right if the number of opening and closing
-    tags in the sequence are not equal. Returns the first and last element of the new
-    sequence and changes the sequence as side effect."""
+    """Extent the sequence with one to the leftor right if the number of opening and
+    closing tags in the sequence are not equal. Returns the first and last element of the
+    new sequence and changes the sequence as side effect."""
     opening_tags = [el for el in sequence if el.is_opening_tag()]
     closing_tags = [el for el in sequence if el.is_closing_tag()]
     if len(opening_tags) < len(closing_tags):

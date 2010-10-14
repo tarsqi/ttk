@@ -26,6 +26,23 @@ def initialize_treetagger(treetagger_dir):
         treetagger = TreeTagger(TAGLANG='en', TAGDIR=treetagger_dir)
     return treetagger
 
+def normalizePOS(pos):
+    """Some simple modifications of the TreeTagger POS tags."""
+    if pos == 'SENT':
+        pos ='.'
+    elif pos[0] == 'V':
+        if pos[1] in ['V', 'H']:
+            if len(pos) > 2:
+                rest = pos[2:]
+            else: rest = ''
+            pos = 'VB' + rest
+    elif pos == "NP":
+        pos = "NNP"
+    # new version of treetagger changed the tag for 'that'
+    elif pos == 'IN/that':
+        pos = 'IN'
+    return pos
+
 
 class PreprocessorWrapper:
     
@@ -50,8 +67,8 @@ class PreprocessorWrapper:
             tokens = self.tokenize_text(element.text)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
-            #update_tags(element.tags, text)
             update_xmldoc(element.xmldoc, text)
+            update_tags(element.tags, element.xmldoc)
 
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each object is a
@@ -108,71 +125,9 @@ class PreprocessorWrapper:
                 (tok, pos, stem) = item.split("\t")
                 pos = normalizePOS(pos)
                 current_sentence.append((tok, pos, stem, lex.begin, lex.end))
-        return text
-    
+        return text    
 
 
-def update_tags(tag_repository, text):
-
-    class Chunk:
-        def __str__(self):
-            return "<%s>\n" % self.name() + \
-                   "\n".join(["   "+ str(x) for x in self.data]) + \
-                   "\n</%s>" % self.name()
-        
-    class NG(Chunk):
-        def __init__(self): self.data = []
-        def name(self): return 'NG'
-        def append(self, x): self.data.append(x)
-        
-    class VG(Chunk):
-        def __init__(self): self.data = []
-        def name(self): return 'VG'
-        def append(self, x): self.data.append(x)
-        
-    #print text
-    print tag_repository
-
-    # get sentence offsets
-    lid = 0  # ouwch, this is dangerous since now the numbering may differ from the xmldoc
-    sid = 0
-    for s in text:
-        sid += 1
-        s_begin= None
-        s_end = None
-        for element in s:
-            if type(element) == TupleType:
-                print element
-                #tag_repository.add_lex(
-                if s_begin is None:
-                    s_begin = element[3]
-                s_end = element[4]
-        #print s_begin, s_end
-        tag_repository.add_sentence(sid, s_begin, s_end)
-
-    for s in text:
-        sent = []
-        insert_point = sent
-        for t in s:
-            if t == '<NG>':
-                ng = NG()
-                insert_point.append(ng)
-                insert_point = ng
-            elif t == '<VG>':
-                vg = VG()
-                insert_point.append(vg)
-                insert_point = vg
-            elif t == '</NG>' or t == '</VG>':
-                insert_point = sent
-            elif type(t) == TupleType:
-                insert_point.append(t)
-            #for x in sent:
-            #    print x
-        break
-                
-
-                
-    
 def update_xmldoc(xmldoc, text):
 
     """Updates the xmldoc with the text that is the result of all preprocessing. At the
@@ -191,9 +146,15 @@ def update_xmldoc(xmldoc, text):
 
         sid += 1
         last_element.insert_element_before( XmlDocElement('\n', data=True) )
-        last_element.insert_element_before( XmlDocElement("<s sid=\"s%d\">" % sid,
-                                                          tag='s',
-                                                          attrs={'sid': "s%d" % sid}) )
+        last_element.insert_element_before( XmlDocElement("<s>", tag='s', attrs={}) )
+
+        # TODO: it would be desirable to use the following and add identifiers to
+        # sentences, but withit the code to merge in timexes fails, wait with this tillwe
+        # have BTime
+        #last_element.insert_element_before( XmlDocElement("<s sid=\"s%d\">" % sid,
+        #                                                  tag='s',
+        #                                                  attrs={'sid': "s%d" % sid}) )
+
         for token in sentence:
             if type(token) == StringType:
                 if token.startswith('<') and not token.startswith('</'): cid += 1
@@ -203,9 +164,11 @@ def update_xmldoc(xmldoc, text):
                 add_token(last_element, token, lid)
             else:
                 logger.warn('Unexpected token type')
+                
         last_element.insert_element_before( XmlDocElement('</s>', tag='s') )
 
     last_element.insert_element_before( XmlDocElement('\n', data=True) )
+    xmldoc.reset()
 
 
 def add_chunktag(element, token, cid):
@@ -216,7 +179,8 @@ def add_chunktag(element, token, cid):
     if token.startswith('</'):
         element.insert_element_before( XmlDocElement(token, tag=tag) )
     elif token.startswith('<'):
-        token = token[:-1] + " cid=\"c%d\">" % cid
+        # see comment in previous routine
+        #token = token[:-1] + " cid=\"c%d\">" % cid
         element.insert_element_before( XmlDocElement(token, tag=tag, attrs={}) )
     else:
         logger.warn('Unexpected element in chunked text')
@@ -241,21 +205,34 @@ def add_token(element, token, lid):
     element.insert_element_before( XmlDocElement(' ', data=True) )
 
 
-def normalizePOS(pos):
+def update_tags(tag_repository, xml_doc):
 
-    """Some simple modifications of the TreeTagger POS tags."""
-    
-    if pos == 'SENT':
-        pos ='.'
-    elif pos[0] == 'V':
-        if pos[1] in ['V', 'H']:
-            if len(pos) > 2:
-                rest = pos[2:]
-            else: rest = ''
-            pos = 'VB' + rest
-    elif pos == "NP":
-        pos = "NNP"
-    # new version of treetagger changed the tag for 'that'
-    elif pos == 'IN/that':
-        pos = 'IN'
-    return pos
+    """Update the TagRepository using the XmlDocument. Adds all sentence, chunk and lex
+    tags. May want to do this in one fell swoop for all added tags later in the processing
+    chain."""
+
+    def get_offsets(element):
+        """Return tuple with tagname, begin and end for the element. Begin and end are
+        calcualted from the first and last contained lex tags lex tags of the element,
+        return None if there are no contained lex tags."""
+        tags = [t for t in element.collect_contained_tags() if t.tag == 'lex']
+        if tags:
+            begin = tags[0].attrs['begin']
+            end = tags[-1].attrs['end']
+            return (element.get_tag(), begin, end)
+        return None
+
+    for element in xml_doc:
+        if element.is_opening_tag():
+            tagname = element.get_tag()
+            if tagname == 'lex':
+                (begin, end) = (element.attrs['begin'], element.attrs['end'])
+                tag_specification = ('lex', begin, end, element.attrs)
+                tag_repository.add_tag(tag_specification)
+            if tagname in ['s', 'NG', 'VG']:
+                tag_specification = get_offsets(element) + ({},)
+                if tag_specification is not None:
+                    # throw away sentence and chunk tags that are empty
+                    tag_repository.add_tag(tag_specification)
+
+    tag_repository.index()

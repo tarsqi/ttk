@@ -10,6 +10,16 @@ additional annotations should not be in this instance.
 
 This class will likely be embedded in a Document instance or a DocumentModel instance. 
 
+Classes:
+
+    SourceParser
+    SourceDoc
+    TagRepository
+    Tag
+       OpeningTag
+       ClosingTag
+    TarsqiInputError
+    
 TODO: we now assume that the input is valid XML and has at least a root, should change
 this and make a distinction between XML and non-XML, which will simply be treated by
 adding the entire file content to DocSource.source while leaving DocSource.tags
@@ -94,8 +104,7 @@ class SourceParser:
         """Handle default data by asking the SourceDoc to add it as characters. This is
         here to get the 'ignoreable whitespace, which I do not want to ignore."""
         self.sourcedoc.add_characters(string)
-        
-        
+
 
         
 class SourceDoc:
@@ -118,12 +127,12 @@ class SourceDoc:
     def add_opening_tag(self, name, attrs):
         """Add an opening tag."""
         self.tag_number += 1
-        self.tags.add_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
+        self.tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
     def add_closing_tag(self, name):
         """Add a closing tag."""
         self.tag_number += 1
-        self.tags.add_tag( ClosingTag(self.tag_number, name, self.offset) )
+        self.tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
         
     def add_characters(self, string):
         """Add a character string to the source and increment the current offset."""
@@ -233,7 +242,26 @@ class TagRepository:
 
     """Class that provides access to the tags for a document. An instance of this class is
     used for the DocSource instance, other instances will be used for the elements in a
-    TarsqiDocument."""
+    TarsqiDocument. For now, the repository has the following structure:
+
+    self.tmp
+       A list of OpeningTag and ClosingTag elements, used only to build the tags list.
+
+    self.tags
+       A list with tags, ordered on id.
+
+    self.opening_tags
+       A dictionary of tags indexed on begin offset, the values are lists of Tag
+       instances, again ordered on id (thereby reflecting text order).
+    
+    self.closing_tags
+       A dictionary indexed on end offset and begin offset, the values are dictionary of
+       tagnames. For example, closing_tags[547][543] = {'lex':True, 'NG':True } indicates
+       that there is both a lex tag and an NG tag from 543-547. The opening tags
+       dictionary will have encoded that the opening NG occurs before the opening lex:
+       opening_tags[543] = [<Tag 204 NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
+       
+    """
     
     def __init__(self):
         self.tmp = []
@@ -241,11 +269,16 @@ class TagRepository:
         self.opening_tags = {}
         self.closing_tags = {}
 
-    def add_tag(self, tagInstance):
+    def add_tmp_tag(self, tagInstance):
         """Add a OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
         self.tmp.append(tagInstance)
 
+    def add_tag(self, tag_specification):
+        (name, begin, end, attrs) = tag_specification
+        tag = Tag(None, name, begin, end, attrs)
+        self.tags.append(tag)
+        
     def merge(self):
         """Take the OpeningTags and ClosingTags in self.tmp and merge them into
         Tags. Raise errors if tags do not match."""
@@ -278,30 +311,46 @@ class TagRepository:
                 return t
         return None
 
-    def add_sentence(self, sid, begin, end):
-        if begin is None or end is None: return
-        tag = Tag(sid, 's', begin, end, {})
-        print tag
-    
-    def print_tags(self):
-        for tag in self.tags: print tag
+    def pp(self):
+        print 'ALL TAGS:'
+        self.print_tags(indent='  ')
+        self.print_opening_tags()
+        #self.print_closing_tags()
+        
+    def print_tags(self, indent=''):
+        for tag in self.tags: print "%s%s" % (indent, tag)
     
     def print_opening_tags(self):
         for offset, list in sorted(self.opening_tags.items()):
             print offset
             for t in list: print '  ', t
-        #for offset, tag in self.opening_tags.items(): print offset, tag
+        
+    def print_closing_tags(self):
+        for offset, list in sorted(self.closing_tags.items()):
+            print offset
+            for offset2, list2 in list.items(): print '  ', offset2, list2
         
         
         
 class Tag:
 
     """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
-    attributes. The id is a number generated when the text was parsed, so tags that occur
-    earlier in the text have a lower id."""
-
+    attributes. Identifiers are created in two ways. When a tag is generated from the XML
+    parsers, the id is generated as the text is parsed, so tags that occur earlier in the
+    text have a lower id. This is the case for the tags that are in the input
+    document. Tags that are added by Tarsqi processing receive an id by incrementing the
+    IDENTIFIER class variable while looping through the XmlDocument. With this, we loose
+    the nice property that tag ids reflect text order (although this would still be the
+    case the first time Tags are added from the XmlDocument, but there may be several
+    passes)."""
+    
+    IDENTIFIER = 0
+    
     def __init__(self, id, name, o1, o2, attrs):
         """Initialize id, name, begin, end and attrs instance variables."""
+        if id is None:
+            Tag.IDENTIFIER += 1
+            id = Tag.IDENTIFIER
         self.id = id
         self.name = name
         self.begin = o1
@@ -309,7 +358,7 @@ class Tag:
         self.attrs = attrs
         
     def __str__(self):
-        return "<Tag %d %s %d-%d %s>" % \
+        return "<Tag %s %s %d-%d %s>" % \
                (self.id, self.name, self.begin, self.end, str(self.attrs))
 
     def __cmp__(self, other):
