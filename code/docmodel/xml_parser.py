@@ -14,10 +14,9 @@ WARNING:
 """
 
 import sys
+from types import UnicodeType, IntType, StringType, NoneType
 import xml.parsers.expat
-from xml.sax.saxutils import escape
-
-from utilities.xml_utils import protectNode
+from xml.sax.saxutils import escape, quoteattr
 
 
 # variable used for assigning unique IDs to XmlDocElements
@@ -119,7 +118,7 @@ class XmlDocument:
         """Reset the elements variable so that it correctyl reflects the current linked
         list starting at elements[0]. Also rebuild the tags dictionary."""
         element = self.elements[0]
-        elements = [element]
+        elements = []
         while element:
             elements.append(element)
             element = element.get_next()
@@ -327,11 +326,13 @@ class XmlDocument:
             string = element.get_content()
             if element.is_text_element():
                 string = escape(string)
+            elif element.is_opening_tag() and element.tag == 'lex':
+                string = element.as_xml_tag()
             # TODO: get the encoding from the TarsqiDocument
-            # TODO: these are not unicode strings
-            #string = string.encode('ascii', 'replace')
-            string = protectNode(string)
-            outfile.write(string.decode('utf-8'))
+            # TODO: these are not unicode strings, find where that happened
+            if type(string) != UnicodeType:
+                string = unicode(string, 'utf-8', 'replace')
+            outfile.write(string.encode('utf-8', 'strict'))
             element = element.get_next()
 
     def toString(self):
@@ -339,9 +340,10 @@ class XmlDocument:
         element = self.elements[0]
         returnString = ""
         while element:
-            nextString = element.get_content()
-            nextString = nextString.encode('ascii', 'replace')
-            nextString = protectNode(nextString)
+            if element.is_opening_tag() and element.tag == 'lex':
+                nextString = element.as_xml_tag()
+            else:
+                nextString = escape(element.get_content())
             returnString += nextString
             element = element.get_next()
         return returnString
@@ -616,6 +618,28 @@ class XmlDocElement:
         if self.is_opening_tag():
             closing_tag = self.get_closing_tag()
             closing_tag.remove()
+
+    def as_xml_tag(self):
+        """Return a unicode string that represents the tag. Only useful for opening
+        tags. Protects the attribute values from non-xml characters. Only lex tags need to
+        be dealt this way, so use the simple self.get_content() for other tags, this also
+        does the right thing for non-consuming tags like MAKEINSTANCE, which would not get
+        the closing slash when using the code for lex tags below."""
+        if not self.is_opening_tag(): return None
+        if not self.tag == 'lex': return self.get_content()
+        a_list = []
+        if self.attrs:
+            for (a,v) in self.attrs.items():
+                if type(v) == IntType: v = str(v)
+                if type(v) is NoneType: v = 'None'
+                if type(v) == StringType: v = quoteattr(unicode(v, 'utf-8', 'replace'))
+                a_list.append((a, v))
+        if a_list:
+            a_list = ' ' + ' '.join(["%s=%s" % (a,v) for (a,v) in a_list])
+        else:
+            a_list = ''
+        xmltag = u"<%s%s>" % (self.tag, a_list)
+        return xmltag
             
     def pretty_print(self, indent=''):
         """Pretty printer for XmlDocElements, prints the content of the element."""

@@ -2,8 +2,9 @@
 
 import sys
 import re
+from xml.sax.saxutils import escape, quoteattr
 
-from utilities.xml_utils import emptyContentString, protectNode
+from utilities.xml_utils import emptyContentString
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import ALINK, SLINK, TLINK
@@ -246,35 +247,6 @@ class Document:
         self.tlinkCount += 1
         return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
 
-    def printOut(self, fileName = "STDOUT"):
-        """Print the document to a file or to standard output.
-        Arguments
-           fileName - "STDOUT" or an absolute path, the first by default """
-        # determine output
-        if fileName == "STDOUT":
-            file = sys.stdout
-        else:
-            file = open(fileName, "w")
-        # loop through document
-        for i in range(len(self.nodeList)):
-            node = self.nodeList[i]
-            node = protectNode(node)
-            file.write(node)
-
-    def toString(self):
-        """Return a string representation of the document that matches how the document
-        would be printed.  """
-        docString = ''
-        # loop through document
-        for i in range(len(self.nodeList)):
-            if self.insertDict.has_key(i):
-                docString += self.insertDict[i].content
-            node = self.nodeList[i]
-            node = protectNode(node)
-            docString += node
-            
-        return docString
-            
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation of
         the sentence list."""

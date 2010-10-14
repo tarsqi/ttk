@@ -49,9 +49,9 @@ class Slinket (TarsqiComponent):
         
     def process_file(self, infile, outfile):
 
-        """Run Slinket on the input file and write the results to the output file. Both input an
-        doutput file are fragments. Uses the xml parser as well as the fragment converter
-        to prepare the input and create the shallow tree that Slinket requires.
+        """Run Slinket on the input file and write the results to the output file. Both
+        input an doutput file are fragments. Uses the xml parser as well as the fragment
+        converter to prepare the input and create the shallow tree that Slinket requires.
 
         Arguments:
            infile - an absolute path
@@ -59,7 +59,7 @@ class Slinket (TarsqiComponent):
 
         xmldoc = Parser().parse_file(open(infile,'r'))
         self.process_xml_doc(xmldoc)
-        self.doctree.printOut(outfile)
+        xmldoc.save_to_file(outfile)
 
         
     def process_xmldoc(self, xmldoc):

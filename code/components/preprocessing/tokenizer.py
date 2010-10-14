@@ -375,14 +375,14 @@ class TokenizedText:
             str += "<s>\n" + s.as_vertical_string()
         return str
     
-    def as_objects(self):
+    def as_pairs(self):
         """Return self as a list of pairs, where usually each pair contains a string and a
         TokenizedLex instance. Also inserts a ('<s>', None) for the beginning of each
         sentence.  This is intended to take tokenized text and prepare it for the
         TreeTagger (which does not recognize </s> tags."""
         objects = []
         for s in self.sentences:
-            objects += [("<s>", None)] + s.as_objects()
+            objects += [("<s>", None)] + s.as_pairs()
         return objects
     
     def print_as_string(self):
@@ -413,7 +413,7 @@ class TokenizedSentence:
     def as_vertical_string(self):
         return "\n".join([t.text for t in self.tokens]) + "\n"
 
-    def as_objects(self):
+    def as_pairs(self):
         return [(t.text, t) for t in self.tokens]
         
     def print_as_string(self):
@@ -442,7 +442,7 @@ class TokenizedLex:
     def as_vertical_string(self, indent=''):
         return self.text + "\n"
 
-    def as_objects(self):
+    def as_pairs(self):
         return [(self.text, self)]
     
     def print_as_string(self, indent=''):

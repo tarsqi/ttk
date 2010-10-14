@@ -79,16 +79,17 @@ class PreprocessorWrapper:
         tokenizer = Tokenizer(string)
         tokenized_text = tokenizer.tokenize_text()
         #tokenized_text.print_as_xmlstring()
-        objects = tokenized_text.as_objects()
+        pairs = tokenized_text.as_pairs()
         logger.info("tokenizer processing time: %.3f seconds" % (time() - t1))
-        return objects
+        return pairs
 
     def tag_text(self, tokens):
         """Takes a string and returns a list of sentences. Each sentence is a list of tuples
         of token, part-of-speech and lemma."""
         t1 = time()
-        vertical_string = "\n".join([str(t[0]) for t in tokens])
-        taggedItems = self.call_treetagger(vertical_string)
+        vertical_string = "\n".join([t[0] for t in tokens])
+        # treetagger does not accept a unicode string, so encode in utf-8
+        taggedItems = self.call_treetagger(vertical_string.encode('utf-8'))
         text = self.create_text_from_tokens_and_tags(tokens, taggedItems)
         logger.info("tagger processing time: %.3f seconds" % (time() - t1))
         return text

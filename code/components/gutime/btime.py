@@ -57,7 +57,6 @@ class BTime(TarsqiComponent):
         self.doctree = FragmentConverter(xmldoc, infile).convert()
         #self.pp_doctree(BTIME)
         self.find_timexes()
-        self.doctree.printOut(outfile)
 
         
     def process_xmldoc(self, xmldoc):

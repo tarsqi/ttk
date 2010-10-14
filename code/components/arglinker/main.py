@@ -101,7 +101,6 @@ class ArgLinker (TarsqiComponent):
             import traceback
             traceback.print_exc()
 
-        #self.doctree.printOut(outfile)
         self.xmldoc.save_to_file(outfile)
 
     def getLinks(self, sentence, args):
