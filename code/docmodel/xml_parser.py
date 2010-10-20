@@ -324,6 +324,7 @@ class XmlDocument:
         element = self.elements[0]
         while element:
             string = element.get_content()
+            #print type(string), string
             if element.is_text_element():
                 string = escape(string)
             elif element.is_opening_tag() and element.tag == 'lex':

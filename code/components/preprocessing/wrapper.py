@@ -88,6 +88,9 @@ class PreprocessorWrapper:
         of token, part-of-speech and lemma."""
         t1 = time()
         vertical_string = "\n".join([t[0] for t in tokens])
+        # this avoids handler warning if input is empty
+        if not vertical_string.strip():
+            vertical_string = '<s>'
         # treetagger does not accept a unicode string, so encode in utf-8
         taggedItems = self.call_treetagger(vertical_string.encode('utf-8'))
         text = self.create_text_from_tokens_and_tags(tokens, taggedItems)

@@ -79,7 +79,6 @@ class Tokenizer:
                 tokens = self._split_word(word)
                 self.tokens.append(tokens)
             offset = word[1]
-
         self._set_sentences()
         self._split_contractions()
         self._set_lexes()
@@ -344,6 +343,8 @@ class TokenizedText:
 
             (first, last) = s[0:2]
 
+            # slurp in lexes that occur before the first sentence boundary, will typically
+            # only occur for the very first sentence
             while lexes:
                 lex = lexes[0]
                 if lex[0] < first:
@@ -361,6 +362,16 @@ class TokenizedText:
                     lexes.pop(0)
                 else:
                     break
+
+        # put all remaining lexes into one sentence, only does something when there are no
+        # sentences
+        if lexes:
+            (first, last) = (lexes[0][0], lexes[-1][1])
+            self.sentences.append( TokenizedSentence(first, last) )
+            while lexes:
+                lex = lexes[0]
+                self.sentences[-1].append( TokenizedLex(lex[0], lex[1], lex[2]) )
+                lexes.pop(0)
 
 
     def as_string(self):
