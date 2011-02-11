@@ -159,7 +159,7 @@ class SourceDoc:
         print '-' * 80
         print self.source.encode('utf-8')
         print '-' * 80
-        for t in self.tags: print t
+        print self.tags.pp()
         print '-' * 80, "\n"
 
     def pp_opening(self):
@@ -179,7 +179,22 @@ class SourceDoc:
         pp.pprint(self.closing_tags)
         print
         
-        
+    def print_source(self, filename):
+        """Print the source string to a file, using the utf-8 encoding."""
+        fh = open(filename, 'w')
+        fh.write(self.source.encode('utf-8'))
+
+    def print_tags(self, filename):
+        """Print all the tags to a file. Each tag is printed on a tab-separated line with
+        opening offset, closing offset, tag name, and attribute value pairs."""
+        fh = open(filename, 'w')
+        for t in self.tags.tags:
+            fh.write("%d\t%d\t%s" % (t.begin, t.end, t.name))
+            for (attr, val) in t.attrs.items():
+                fh.write("\t%s=\"%s\"" % (attr, val.replace('"','&quot;')))
+            fh.write("\n")
+
+            
     def print_xml(self, filename):
 
         """Print self as an inline XML file. This should work on all input that did not
@@ -204,7 +219,7 @@ class SourceDoc:
                 xml_string += "</%s>" % t.name
 
             # any new opening tags?
-            for t in self.opening_tags.get(offset,[]):
+            for t in self.tags.opening_tags.get(offset,[]):
                 stack.append(t)
                 xml_string += "<%s%s>" % (t.name, t.attributes_as_string())
 
@@ -229,7 +244,7 @@ class SourceDoc:
             return (stack, matching)
 
         last = stack[-1]
-        if self.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
+        if self.tags.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
             stack.pop()
             matching.append(last)
             return self._matching_closing_tags(offset, stack, matching)
