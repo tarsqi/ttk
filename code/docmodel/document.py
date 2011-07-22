@@ -15,7 +15,7 @@ class TarsqiDocument(ParameterMixin):
        xmldoc - instance of XmlDocument (used for now for heritage code)
        elements - list, not yet used
        metadata - a dictionary
-       parameters - parameter dcitionary from the Tasqi instance
+       parameters - parameter dictionary from the Tasqi instance
        
     Note that more variables will be needed. Currently, sseveral wrappers use data from
     the Tarsqi instance, should check what these data are and get them elsewhere,

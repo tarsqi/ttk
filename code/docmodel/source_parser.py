@@ -157,28 +157,11 @@ class SourceDoc:
         print '-' * 80
         print "<SourceDoc on '%s'>" % self.filename
         print '-' * 80
-        print self.source.encode('utf-8')
+        print self.source.encode('utf-8').strip()
         print '-' * 80
-        print self.tags.pp()
+        self.tags.pp()
         print '-' * 80, "\n"
-
-    def pp_opening(self):
-        """Pretty print self.opening_tags."""
-        print "OPENING:"
-        offsets = self.opening_tags.keys()
-        offsets.sort()
-        for offset in offsets:
-            print '  ', offset, '=>'
-            for tag in self.opening_tags[offset]:
-                print '   ', tag
-        print
-        
-    def pp_closing(self):
-        """Pretty print self.closing_tags."""
-        pp = pprint.PrettyPrinter(indent=3)
-        pp.pprint(self.closing_tags)
-        print
-        
+    
     def print_source(self, filename):
         """Print the source string to a file, using the utf-8 encoding."""
         fh = open(filename, 'w')
@@ -327,24 +310,25 @@ class TagRepository:
         return None
 
     def pp(self):
-        print 'ALL TAGS:'
-        self.print_tags(indent='  ')
-        self.print_opening_tags()
-        #self.print_closing_tags()
+        print; self.print_tags(indent='  ')
+        #print; self.print_opening_tags()
+        #print; self.print_closing_tags()
+        print
         
     def print_tags(self, indent=''):
+        print '<TagRepository>.tags'
         for tag in self.tags: print "%s%s" % (indent, tag)
     
     def print_opening_tags(self):
+        print '<TagRepository>.opening_tags'
         for offset, list in sorted(self.opening_tags.items()):
-            print offset
-            for t in list: print '  ', t
+            print "  %5d " % offset, "\n         ".join([x.__str__() for x in list])
         
     def print_closing_tags(self):
-        for offset, list in sorted(self.closing_tags.items()):
-            print offset
-            for offset2, list2 in list.items(): print '  ', offset2, list2
-        
+        print '<TagRepository>.closing_tags'
+        for offset, dict in sorted(self.closing_tags.items()):
+            print "  %5d " % offset, dict
+
         
         
 class Tag:

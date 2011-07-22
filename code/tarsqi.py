@@ -159,6 +159,8 @@ class Tarsqi(ParameterMixin):
         
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
+        print self.document#.pp()
+        print self.document.elements.pp()
         self.document.add_parameters(self.parameters)
 
         # testing whether docsource can be printed
