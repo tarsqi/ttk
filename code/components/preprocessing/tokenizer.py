@@ -98,7 +98,8 @@ class Tokenizer:
     def _slurp(self, offset, test):
         begin = offset
         end = offset
-        while offset < self.length:
+        length = self.length
+        while offset < length:
             char = self.text[offset]
             if test(char):
                 offset += 1

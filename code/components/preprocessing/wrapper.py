@@ -18,6 +18,11 @@ from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
 
 
+# to ensure unique identifiers
+LEX_ID = 0
+CHUNK_ID = 0
+SENT_ID = 0
+
 treetagger = None
 
 def initialize_treetagger(treetagger_dir):
@@ -67,7 +72,6 @@ class PreprocessorWrapper:
             tokens = self.tokenize_text(element.text)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
-            for x in text: print x
             update_xmldoc(element.xmldoc, text)
             update_tags(element.tarsqi_tags, element.xmldoc)
             
@@ -140,16 +144,18 @@ def update_xmldoc(xmldoc, text):
     closing tag. The character data element is replaced with a list of elements, including
     lex tags, s tags, chunk tags and character data for all tokens."""
 
+    global LEX_ID, CHUNK_ID, SENT_ID
+
     first_element = xmldoc.elements[0]
     last_element = first_element.get_closing_tag()
     first_element.next = last_element
     last_element.previous = first_element
 
-    (sid, lid, cid) = (0, 0, 0)
+    #(sid, lid, cid) = (0, 0, 0)
     
     for sentence in text:
 
-        sid += 1
+        SENT_ID += 1
         last_element.insert_element_before( XmlDocElement('\n', data=True) )
         last_element.insert_element_before( XmlDocElement("<s>", tag='s', attrs={}) )
 
@@ -163,11 +169,12 @@ def update_xmldoc(xmldoc, text):
 
         for token in sentence:
             if type(token) == StringType:
-                if token.startswith('<') and not token.startswith('</'): cid += 1
-                add_chunktag(last_element, token, cid)
+                if token.startswith('<') and not token.startswith('</'):
+                    CHUNK_ID += 1
+                add_chunktag(last_element, token, CHUNK_ID)
             elif type(token) == TupleType:
-                lid += 1
-                add_token(last_element, token, lid)
+                LEX_ID += 1
+                add_token(last_element, token, LEX_ID)
             else:
                 logger.warn('Unexpected token type')
                 
@@ -208,7 +215,6 @@ def add_token(element, token, lid):
     element.insert_element_before( XmlDocElement(lex_string, tag='lex', attrs=lex_attrs) )
     element.insert_element_before( XmlDocElement(tok, data=True) )
     element.insert_element_before( XmlDocElement('</lex>', tag='lex') )
-    element.insert_element_before( XmlDocElement(' ', data=True) )
 
 
 def update_tags(tag_repository, xml_doc):
@@ -219,8 +225,8 @@ def update_tags(tag_repository, xml_doc):
 
     def get_offsets(element):
         """Return tuple with tagname, begin and end for the element. Begin and end are
-        calcualted from the first and last contained lex tags lex tags of the element,
-        return None if there are no contained lex tags."""
+        calculated from the first and last contained lex tags of the element, return None
+        if there are no contained lex tags."""
         tags = [t for t in element.collect_contained_tags() if t.tag == 'lex']
         if tags:
             begin = tags[0].attrs['begin']
@@ -237,8 +243,8 @@ def update_tags(tag_repository, xml_doc):
                 tag_repository.add_tag(tag_specification)
             if tagname in ['s', 'NG', 'VG']:
                 tag_specification = get_offsets(element) + ({},)
+                # only use sentence and chunk tags that are not empty
                 if tag_specification is not None:
-                    # throw away sentence and chunk tags that are empty
                     tag_repository.add_tag(tag_specification)
 
     tag_repository.index()

@@ -6,13 +6,13 @@
 ## sys.platform variable
 
 platform = linux2
-platform = darwin
+#platform = darwin
 
 ## Location of the IMS TreeTagger lives
 
 treetagger = /home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
 #treetagger = /Users/marc/Documents/tools/treetagger
-treetagger = /Users/marc/Desktop/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
+#treetagger = /Users/marc/Desktop/tarsqi/code/TTK/cvs/ttk/code/components/preprocessing/treetagger
 
 ## Location of the Stanford Parser
 
@@ -26,4 +26,4 @@ trap-errors = True
 ## which is the case for perl on OS 10.4
 
 perl = perl
-perl = /usr/local/ActivePerl-5.8/bin/perl
+#perl = /usr/local/ActivePerl-5.8/bin/perl

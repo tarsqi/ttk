@@ -314,21 +314,19 @@ class TagRepository:
         return None
 
     def pp(self):
-        print; self.print_tags(indent='  ')
-        #print; self.print_opening_tags()
-        #print; self.print_closing_tags()
-        print
+        self.pp_tags(indent='    ')
+        #print; self.pp_opening_tags()
+        #print; self.pp_closing_tags()
         
-    def print_tags(self, indent=''):
-        print '<TagRepository>.tags'
+    def pp_tags(self, indent=''):
         for tag in self.tags: print "%s%s" % (indent, tag)
     
-    def print_opening_tags(self):
+    def pp_opening_tags(self):
         print '<TagRepository>.opening_tags'
         for offset, list in sorted(self.opening_tags.items()):
             print "  %5d " % offset, "\n         ".join([x.__str__() for x in list])
         
-    def print_closing_tags(self):
+    def pp_closing_tags(self):
         print '<TagRepository>.closing_tags'
         for offset, dict in sorted(self.closing_tags.items()):
             print "  %5d " % offset, dict

@@ -10,8 +10,17 @@ from docmodel.document import TarsqiDocParagraph
 class DefaultParser:
 
     """The simplest parser, much like the SimpleXml parser for the old simple-xml
-    doctype. Instance variables:
+    doctype. It creates a TarsqiDocument instance with a single TarsqiDocParagraph in
+    it. It finds the target tag, which is assumed to be TEXT, and considers all text
+    inside as the content of the single TarsqiDocParagraph.
+
+    TODO: make this more general in that it should be able to deal with more than one tag,
+    perhaps defined in the processing parameters.
+
+    TODO: make this work with pure text input, taking all content, perhaps a default
+    should be to take all text if no target tag could be found.
     
+    Instance variables:
        docsource - a SourceDoc instance
        elements - a list with one TarsqiDocParagraph element
        xmldoc - an XmlDocument instance
@@ -28,14 +37,20 @@ class DefaultParser:
         source string and populate the TarsqiDocument with the following content: (i)
         docsource embeds the SourceDoc instance that was created by the SourceParser, (ii)
         elements contains one element, a TarsqiDocParagraph for the TEXT, (iii) xmldoc
-        contains an XmlDocument created from the TEXT, (iv) metadata simply continas a DCT
+        contains an XmlDocument created from the TEXT, (iv) metadata simply contains a DCT
         set to today."""
         target_tag = self._find_target_tag(docsource)
         text = docsource.text[target_tag.begin:target_tag.end]
-        xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
-        elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text, xmldoc)]
+        #xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
+        #elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text, xmldoc)]
+        element_offsets = split_paragraph(text)
+        elements = []
+        for (p1, p2) in element_offsets:
+            xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
+            elements.append(TarsqiDocParagraph(p1, p2, text[p1:p2], xmldoc))
         for e in elements:
             e.add_source_tags(docsource.tags.all_tags())
+            e.source_tags.index()
         metadata = { 'dct': get_today() }
         return TarsqiDocument(docsource, elements, metadata, xmldoc)
     
@@ -46,11 +61,71 @@ class DefaultParser:
             raise DocParserError('Cannot parse docsource, no target_tag')
         else:
             return tag
-        
+
+
+
+def split_paragraph(text):
+
+    """Very simplistic way to split a paragraph into more than one paragraph, simply by
+    looking for an empty line."""
+
+    text_end = len(text)
+    (par_begin, par_end) = (None, None)
+    (p1, p2, space) = slurp_space(text, 0)
+    par_begin = p2
+    seeking_space = False
+    paragraphs = []
+    
+    while (p2 < text_end):
+        if not seeking_space:
+            (p1, p2, token) = slurp_token(text, p2)
+            par_end = p2
+            seeking_space = True
+        else:
+            (p1, p2, space) = slurp_space(text, p2)
+            seeking_space = False
+            if space.count("\n") > 1:
+                par_end = p1
+                paragraphs.append((par_begin, par_end))
+                par_begin = p2
+                par_end = None
+
+    if seeking_space and p2 > par_begin:
+        paragraphs.append((par_begin, par_end))
+
+    return paragraphs
+
+
+
+def slurp(text, offset, test):
+    """Starting at offset in text, find a substring where all characters pass test. Return
+    the begin and end position and the substring."""
+    begin = offset
+    end = offset
+    length = len(text)
+    while offset < length:
+        char = text[offset]
+        if test(char):
+            offset += 1
+            end = offset
+        else:
+            return (begin, end, text[begin:end])
+    return (begin, end, text[begin:end])
+    
+def slurp_space(text, offset):
+    def test_space(char): return char.isspace()
+    return slurp(text, offset, test_space)
+
+def slurp_token(text, offset):
+    def test_nonspace(char): return not char.isspace()
+    return slurp(text, offset, test_nonspace)
+
+
+
 
 class TimebankParser:
 
-    """Preliminary class for Timebank parsing. Will likely not work, but is stroing some DCT
+    """Preliminary class for Timebank parsing. Will likely not work, but is storing some DCT
     processing functionality (which probably needs to be moved out of the class). """
     
 

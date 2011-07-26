@@ -160,22 +160,22 @@ class Tarsqi(ParameterMixin):
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-        self.document.pp(xmldoc=False, elements=False)
+        self.document.pp(xmldoc=False, source=False,
+                         parameters=False, metadata=False, elements=True)
         
         # testing whether docsource can be printed
-        self.docsource.print_xml('tmp.xml')
+        #self.docsource.print_xml('data/tmp.xml')
 
         for (name, wrapper) in self.pipeline:
             print name
             self.apply_component(name, wrapper, self.document)
             #print type(self.document.elements[0].text)
 
-        #self.document.pp(xmldoc=False)
-        print self.document.elements[0].get_text(556,563)
-        print self.document.elements[0].get_text(439,453)
+        #self.document.pp(xmldoc=True)
+        #print self.document.elements[0].get_text(439,453)
         
         os.chdir(TTK_ROOT)
-        self.write_output()
+        self.write_output() # THIS IS BROKEN
 
 
     def _skip_file(self):

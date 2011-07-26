@@ -93,9 +93,12 @@ class TarsqiDocElement:
                 self.source_tags.append(t2)
     
     def pp(self):
-        print self
+        print "\n", self
+        print "\n  <%s.source_tags>" % self.__class__
         self.source_tags.pp()
+        print "\n  <%s.tarsqi_tags>" % self.__class__
         self.tarsqi_tags.pp()
+        print
         
     
 class TarsqiDocParagraph(TarsqiDocElement):
