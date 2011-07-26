@@ -160,7 +160,7 @@ class Tarsqi(ParameterMixin):
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-        self.document.pp(xmldoc=False)
+        self.document.pp(xmldoc=False, elements=False)
         
         # testing whether docsource can be printed
         self.docsource.print_xml('tmp.xml')
@@ -170,7 +170,7 @@ class Tarsqi(ParameterMixin):
             self.apply_component(name, wrapper, self.document)
             #print type(self.document.elements[0].text)
 
-        self.document.pp(xmldoc=False)
+        #self.document.pp(xmldoc=False)
         print self.document.elements[0].get_text(556,563)
         print self.document.elements[0].get_text(439,453)
         

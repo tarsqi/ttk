@@ -31,7 +31,7 @@ class DefaultParser:
         contains an XmlDocument created from the TEXT, (iv) metadata simply continas a DCT
         set to today."""
         target_tag = self._find_target_tag(docsource)
-        text = docsource.source[target_tag.begin:target_tag.end]
+        text = docsource.text[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
         elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text, xmldoc)]
         for e in elements:
@@ -69,7 +69,7 @@ class TimebankParser:
         today. Return an instance of TarsqiDocument."""
 
         target_tag = self._find_target_tag(docsource)
-        text = docsource.source[target_tag.begin:target_tag.end]
+        text = docsource.text[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % text)
         dct = self.parse_dct()
         metadata = { 'dct': dct }

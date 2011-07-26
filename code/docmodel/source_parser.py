@@ -117,7 +117,7 @@ class SourceDoc:
         """Initialize a SourceDoc on a filename or a string."""
         self.filename = filename
         self.xmldecl = None
-        self.source = []
+        self.text = []
         self.comments = {}
         self.processing_instructions = {}
         self.tags = TagRepository()
@@ -136,7 +136,7 @@ class SourceDoc:
         
     def add_characters(self, string):
         """Add a character string to the source and increment the current offset."""
-        self.source.append(string) # this is already unicode
+        self.text.append(string) # this is already unicode
         self.offset += len(string)        
 
     def add_comment(self, string):
@@ -148,20 +148,20 @@ class SourceDoc:
     def finish(self):
         """Transform the source list into a string, merge the begin and end tags, and
         index the tags on offsets."""
-        self.source = ''.join(self.source)
+        self.text = ''.join(self.text)
         self.tags.merge()
         self.tags.index()
 
     def pp(self):
         """Print source and tags."""
         print "\n<SourceDoc on '%s'>\n" % self.filename
-        print self.source.encode('utf-8').strip()
+        print self.text.encode('utf-8').strip()
         self.tags.pp()
     
     def print_source(self, filename):
         """Print the source string to a file, using the utf-8 encoding."""
         fh = open(filename, 'w')
-        fh.write(self.source.encode('utf-8'))
+        fh.write(self.text.encode('utf-8'))
 
     def print_tags(self, filename):
         """Print all the tags to a file. Each tag is printed on a tab-separated line with
@@ -184,14 +184,14 @@ class SourceDoc:
         tags. Therefore, the code is also not set up to deal with tags added to the tags
         repository since those may have introduced crossing tags."""
 
-        # TODO: check what happens when in put is not an xml file
+        # TODO: check what happens when input is not an xml file
         # TODO: add xmldec, processing instructions and comments
         
         xml_string = u''
         offset = 0
         stack = []
         
-        for char in self.source:
+        for char in self.text:
 
             # any tags on the stack that can be closed?
             (stack, matching) = self._matching_closing_tags(offset, stack, [])

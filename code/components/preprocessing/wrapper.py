@@ -67,6 +67,7 @@ class PreprocessorWrapper:
             tokens = self.tokenize_text(element.text)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
+            for x in text: print x
             update_xmldoc(element.xmldoc, text)
             update_tags(element.tarsqi_tags, element.xmldoc)
             

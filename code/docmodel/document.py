@@ -12,7 +12,7 @@ class TarsqiDocument(ParameterMixin):
     the old approach.
 
     Instance Variables:
-       docsource - instance of DocSource
+       source - instance of DocSource
        xmldoc - instance of XmlDocument (used for now for heritage code)
        elements - list, not yet used
        metadata - a dictionary
@@ -27,7 +27,7 @@ class TarsqiDocument(ParameterMixin):
     start with 'getopt' and all they do is to access parameters."""
     
     def __init__(self, docsource, elements, metadata, xmldoc=None):
-        self.docsource = docsource
+        self.source = docsource
         self.xmldoc = xmldoc
         self.elements = elements
         self.metadata = metadata
@@ -40,7 +40,7 @@ class TarsqiDocument(ParameterMixin):
         return self.metadata.get('dct')
     
     def pp(self, source=True, xmldoc=True, metadata=True, parameters=True, elements=True):
-        if source: self.docsource.pp()
+        if source: self.source.pp()
         if xmldoc: self.xmldoc.pp()
         if metadata:
             print "\nMETADATA DICTIONARY:", self.metadata, "\n"
@@ -55,8 +55,11 @@ class TarsqiDocElement:
     """Contains a slice from a TarsqiDocument. The slice is determined by the begin and
     end instance variables and the content of text is the slice from the source document.
     """
+
+    ELEMENT_ID = 0
     
     def __init__(self, begin, end, text, xmldoc=None):
+        self._assign_identifier()
         self.begin = begin
         self.end = end
         self.text = text
@@ -65,8 +68,12 @@ class TarsqiDocElement:
         self.tarsqi_tags = TagRepository()
 
     def __str__(self):
-        return "<%s %d:%d>\n\n%s" % \
-               (self.__class__, self.begin, self.end, self.text.encode('utf-8').strip())
+        return "<%s #%d %d:%d>\n\n%s" % \
+               (self.__class__, self.id, self.begin, self.end, self.text.encode('utf-8').strip())
+
+    def _assign_identifier(self):
+        self.__class__.ELEMENT_ID += 1
+        self.id = self.__class__.ELEMENT_ID
 
     def is_paragraph(): return False
 
