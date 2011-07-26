@@ -352,18 +352,21 @@ class XmlDocument:
     def pretty_print(self):
         """Pretty printer for XmlDocuments. Pretty prints the list of elements and prints
         the tag dictionary to standard output."""
-        print "\n%s\n\n<<XmlDocElements>>\n" % str(self)
+        print "\n%s\n\nELEMENTS:\n" % str(self)
         element = self.elements[0]
         while element:
             element.pretty_print(indent='   ')
             element = element.get_next()
-        print "\n<<TagDictionary>>",
+        print "\nTAGS:",
         for tag in self.tags.keys():
-            print "\n\n[" + tag + '] ',
+            print "\n\n   [" + tag + '] ',
             for el in self.tags[tag]:
                 print str(el.id),
 
+    def pp(self):
+        self.pretty_print()
 
+        
 class XmlDocElement:
     
     """ An XmlDocElement initially is an element derived from XML parsing using an

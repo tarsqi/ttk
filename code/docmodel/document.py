@@ -1,3 +1,4 @@
+from copy import copy
 from mixins.parameters import ParameterMixin
 from source_parser import TagRepository
 
@@ -38,23 +39,57 @@ class TarsqiDocument(ParameterMixin):
     def get_dct(self):
         return self.metadata.get('dct')
     
-
+    def pp(self, source=True, xmldoc=True, metadata=True, parameters=True, elements=True):
+        if source: self.docsource.pp()
+        if xmldoc: self.xmldoc.pp()
+        if metadata:
+            print "\nMETADATA DICTIONARY:", self.metadata, "\n"
+        if parameters:
+            print "\nPARAMETERS DICTIONARY:", self.parameters, "\n"
+        if elements:
+            for e in self.elements: e.pp()
+        
 
 class TarsqiDocElement:
 
+    """Contains a slice from a TarsqiDocument. The slice is determined by the begin and
+    end instance variables and the content of text is the slice from the source document.
+    """
+    
     def __init__(self, begin, end, text, xmldoc=None):
         self.begin = begin
         self.end = end
         self.text = text
         self.xmldoc = xmldoc
-        self.tags = TagRepository()
+        self.source_tags = TagRepository()
+        self.tarsqi_tags = TagRepository()
 
     def __str__(self):
-        return "\n<%s %d:%d>\n\n%s\n\n" % \
+        return "<%s %d:%d>\n\n%s" % \
                (self.__class__, self.begin, self.end, self.text.encode('utf-8').strip())
 
     def is_paragraph(): return False
 
+    def get_text(self, p1, p2):
+        return self.text[p1:p2]
+    
+    def add_source_tags(self, tag_repository):
+        """Add all tags from a TagRepostitory (handed in from the SourceDoc) that fall
+        within the scope of this element. Makes a shallow copy of the Tag from the
+        SourceDoc TagRepository and updates the begin and end variables according to the
+        begin position of the element."""
+        for t in tag_repository:
+            if t.begin >= self.begin and t.end <= self.end:
+                t2 = copy(t)
+                t2.begin -= self.begin
+                t2.end -= self.begin
+                self.source_tags.append(t2)
+    
+    def pp(self):
+        print self
+        self.source_tags.pp()
+        self.tarsqi_tags.pp()
+        
     
 class TarsqiDocParagraph(TarsqiDocElement):
 
@@ -63,3 +98,4 @@ class TarsqiDocParagraph(TarsqiDocElement):
 
     def is_paragraph(): return True
 
+    

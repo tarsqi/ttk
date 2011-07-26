@@ -52,8 +52,9 @@ class Evita (TarsqiComponent):
             xmldoc - an instance of an XmlDocument object"""
 
         self.xmldoc = xmldoc
-        #self.pp_xmldoc(EVITA)
         self.doctree = FragmentConverter(xmldoc).convert()
+        #self.pp_xmldoc(EVITA)
+        #self.pp_doctree(EVITA)
         self.extractEvents()
 
         
@@ -72,8 +73,8 @@ class Evita (TarsqiComponent):
     
     def extractEvents(self):
 
-        """Loop through all sentences in self.doctree and through all nodes in each sentence and
-        determine if the node contains an event."""
+        """Loop through all sentences in self.doctree and through all nodes in each
+        sentence and determine if the node contains an event."""
 
         for sentence in self.doctree:
             #print "<sentence>\n"

@@ -68,8 +68,8 @@ class PreprocessorWrapper:
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
             update_xmldoc(element.xmldoc, text)
-            update_tags(element.tags, element.xmldoc)
-
+            update_tags(element.tarsqi_tags, element.xmldoc)
+            
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each object is a
         pair of tokenized string and a TokenizedLex instance. The tokenized string can be
@@ -153,11 +153,12 @@ def update_xmldoc(xmldoc, text):
         last_element.insert_element_before( XmlDocElement("<s>", tag='s', attrs={}) )
 
         # TODO: it would be desirable to use the following and add identifiers to
-        # sentences, but withit the code to merge in timexes fails, wait with this tillwe
-        # have BTime
-        #last_element.insert_element_before( XmlDocElement("<s sid=\"s%d\">" % sid,
-        #                                                  tag='s',
-        #                                                  attrs={'sid': "s%d" % sid}) )
+        # sentences, but with it the code to merge in timexes fails, wait with this till
+        # we have BTime
+        #
+        # last_element.insert_element_before( XmlDocElement("<s sid=\"s%d\">" % sid,
+        #                                                   tag='s',
+        #                                                   attrs={'sid': "s%d" % sid}) )
 
         for token in sentence:
             if type(token) == StringType:

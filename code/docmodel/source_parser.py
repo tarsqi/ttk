@@ -154,13 +154,9 @@ class SourceDoc:
 
     def pp(self):
         """Print source and tags."""
-        print '-' * 80
-        print "<SourceDoc on '%s'>" % self.filename
-        print '-' * 80
+        print "\n<SourceDoc on '%s'>\n" % self.filename
         print self.source.encode('utf-8').strip()
-        print '-' * 80
         self.tags.pp()
-        print '-' * 80, "\n"
     
     def print_source(self, filename):
         """Print the source string to a file, using the utf-8 encoding."""
@@ -177,17 +173,18 @@ class SourceDoc:
                 fh.write("\t%s=\"%s\"" % (attr, val.replace('"','&quot;')))
             fh.write("\n")
 
-            
+           
     def print_xml(self, filename):
 
         """Print self as an inline XML file. This should work on all input that did not
         generate a warning while parsing. The output file is identical to the input file
-        modulo the order of attributes in an opening tag and the kind of quotes
-        used. Also, tags that were printed as <SOME_TAG/> will be printed as two
-        tags. There are no provisions for crossing tags. Therefore, the code is also not
-        set up to deal with tags added to the tags repository since those may have
-        introduced crossing tags."""
+        modulo processing instrucxtions, comments, and the order of attributes in an
+        opening tag and the kind of quotes used. Also, tags that were printed as
+        <SOME_TAG/> will be printed as two tags. There are no provisions for crossing
+        tags. Therefore, the code is also not set up to deal with tags added to the tags
+        repository since those may have introduced crossing tags."""
 
+        # TODO: check what happens when in put is not an xml file
         # TODO: add xmldec, processing instructions and comments
         
         xml_string = u''
@@ -267,6 +264,9 @@ class TagRepository:
         self.opening_tags = {}
         self.closing_tags = {}
 
+    def all_tags(self):
+        return self.tags
+    
     def add_tmp_tag(self, tagInstance):
         """Add a OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
@@ -276,7 +276,11 @@ class TagRepository:
         (name, begin, end, attrs) = tag_specification
         tag = Tag(None, name, begin, end, attrs)
         self.tags.append(tag)
-        
+
+    def append(self, tag):
+        """Appends an instance of Tag to the tags list."""
+        self.tags.append(tag)
+    
     def merge(self):
         """Take the OpeningTags and ClosingTags in self.tmp and merge them into
         Tags. Raise errors if tags do not match."""

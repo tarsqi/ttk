@@ -34,9 +34,11 @@ class DefaultParser:
         text = docsource.source[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
         elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text, xmldoc)]
+        for e in elements:
+            e.add_source_tags(docsource.tags.all_tags())
         metadata = { 'dct': get_today() }
         return TarsqiDocument(docsource, elements, metadata, xmldoc)
-
+    
     def _find_target_tag(self, docsource):
         """Return the content of the TEXT tag, raise an error if not succesful."""
         tag = docsource.tags.find_tag('TEXT')
