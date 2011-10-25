@@ -34,6 +34,13 @@ USAGE
       --stanford-parser=PATH
              path to the Stanford parser
 
+      --content_tag=STRING|BOOLEAN
+             Influences whether and how the default document parser uses a content tag to
+             limit what part of the document will be processed. If True, the parser will
+             use a list of tags defined in the docmodel.parsers module. If False, it will
+             not use a tag, if a string, it will use that tag with this name. The default
+             is True.
+         
       --trap-errors=BOOLEAN
              set error trapping, errors are trapped by default
          
@@ -121,7 +128,7 @@ class Tarsqi(ParameterMixin):
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
 
         self.components = COMPONENTS
-        self.parser = create_parser(self.getopt_genre())
+        self.parser = create_parser(self.getopt_genre(), self.parameters)
         self.pipeline = self._create_pipeline()
         
 
@@ -160,22 +167,25 @@ class Tarsqi(ParameterMixin):
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-        self.document.pp(xmldoc=False, source=False,
-                         parameters=False, metadata=False, elements=True)
-        
+        #self.document.pp(xmldoc=False, source=False,
+        #                 parameters=False, metadata=False, elements=True)
+        #print self.parameters
+        #print self.document.parameters
+
         # testing whether docsource can be printed
         #self.docsource.print_xml('data/tmp.xml')
 
+        return
         for (name, wrapper) in self.pipeline:
             print name
             self.apply_component(name, wrapper, self.document)
-            #print type(self.document.elements[0].text)
 
-        #self.document.pp(xmldoc=True)
+        #self.document.pp(xmldoc=True, source=False,
+        #                 parameters=False, metadata=False, elements=True)
         #print self.document.elements[0].get_text(439,453)
         
         os.chdir(TTK_ROOT)
-        self.write_output() # THIS IS BROKEN
+        self.write_output() # THIS IS BROKEN, ONLY PRINTS LAST PARAGRAPH
 
 
     def _skip_file(self):
@@ -255,7 +265,8 @@ def _read_arguments(args):
     """ Read the list of arguments given to the tarsqi.py script.  Return a tuple with
     three elements: processing options dictionary, input path and output path."""
 
-    options = ['genre=', 'trap-errors=', 'pipeline=', 'perl=', 'loglevel=', 'ignore=']
+    options = ['genre=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=', 
+               'loglevel=', 'ignore=', 'platform=', 'treetagger=']
 
     try:
         (opts, args) = getopt.getopt(sys.argv[1:],'', options)

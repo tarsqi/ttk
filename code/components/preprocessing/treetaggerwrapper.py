@@ -172,7 +172,7 @@ import glob
 import re
 import sys
 import getopt
-
+import subprocess
 
 DEBUG = 0
 DEBUG_PREPROCESS = 0
@@ -696,7 +696,11 @@ class TreeTagger (object) :
         #----- Start the TreeTagger.
         tagcmd = self.tagbin+" "+self.tagopt+" "+self.tagparfile
         try :
-            self.taginput,self.tagoutput = os.popen2(tagcmd)
+            pipe = subprocess.PIPE
+            p = subprocess.Popen(tagcmd, shell=True, 
+                                 stdin=pipe, stdout=pipe, close_fds=True)
+            (self.taginput,self.tagoutput) = (p.stdin, p.stdout)
+            #self.taginput,self.tagoutput = os.popen2(tagcmd)
             logger.info("Started TreeTagger from command: %s",tagcmd)
         except :
             logger.error("Failure to start TreeTagger with: %s",\

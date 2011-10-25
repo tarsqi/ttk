@@ -35,15 +35,14 @@ import pprint
 
 class SourceParser:
 
-    """Simple XML parser, using the Expat parser. 
+    """ Simple XML parser, using the Expat parser. 
 
     Instance variables
-       doc - an XmlDocument
-       parser - an Expat parser """
+       encoding - a string
+       parser - an Expat parser
 
-    # TODO: ad other handlers
-    # SEE: http://docs.python.org/library/pyexpat.html
-
+    TODO: need to add other handlers, see http://docs.python.org/library/pyexpat.html
+    """
     
     def __init__(self, encoding='utf-8'):
         """Set up the Expat parser."""
@@ -59,20 +58,13 @@ class SourceParser:
         self.parser.DefaultHandler = self._handle_default
         
     def parse_file(self, filename):
-        file = open(filename)
         """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
         file object as its single argument and returns the SourceDoc. """
         self.sourcedoc = SourceDoc(filename)
-        self.parser.ParseFile(file)
+        self.parser.ParseFile(open(filename))  # this adds content to the sourcedoc variable
         self.sourcedoc.finish()
         return self.sourcedoc
     
-    def parse_string(self, string):
-        """Parse a string, forwards to the Parse routine of the expat parser. Takes a
-        string as its single argument and returns the value of the doc variable. """
-        self.parser.Parse(string)
-        return self.doc
-
     def _handle_xmldecl(self, version, encoding, standalone):
         """Store the XML declaration."""
         self.sourcedoc.xmldecl = (version, encoding, standalone)
@@ -97,12 +89,14 @@ class SourceParser:
         
     def _handle_characters(self, string):
         """Handle character data by asking the SourceDocument to add the data. This will
-        not necesarily add a contiguous string of character data as one data element."""
+        not necesarily add a contiguous string of character data as one data element. This
+        should include ingnorable whtespace, but see the comment in the method below, I
+        apparantly had reason t think otherwise."""
         self.sourcedoc.add_characters(string)
-               
+        
     def _handle_default(self, string):
         """Handle default data by asking the SourceDoc to add it as characters. This is
-        here to get the 'ignoreable whitespace, which I do not want to ignore."""
+        here to get the 'ignoreable' whitespace, which I do not want to ignore."""
         self.sourcedoc.add_characters(string)
 
 
@@ -156,7 +150,11 @@ class SourceDoc:
         """Print source and tags."""
         print "\n<SourceDoc on '%s'>\n" % self.filename
         print self.text.encode('utf-8').strip()
+        print "\nTAGS:"
         self.tags.pp()
+        print "\nXMLDECL:", self.xmldecl
+        print "COMMENTS:", self.comments
+        print "PROCESSING:", self.processing_instructions
     
     def print_source(self, filename):
         """Print the source string to a file, using the utf-8 encoding."""
@@ -309,7 +307,7 @@ class TagRepository:
         """Return the first Tag object with name=name, return None if no such tag
         exists."""
         for t in self.tags:
-            if t.name == 'TEXT':
+            if t.name == name:
                 return t
         return None
 

@@ -6,65 +6,84 @@ from docmodel.xml_parser import Parser
 from docmodel.document import TarsqiDocument
 from docmodel.document import TarsqiDocParagraph
 
-    
+
+# Default content tags, used by the default parser to find the part of the text that is
+# worth parsing.
+CONTENT_TAGS = ('TEXT', 'text', 'DOC', 'doc')
+
+
 class DefaultParser:
 
     """The simplest parser, much like the SimpleXml parser for the old simple-xml
-    doctype. It creates a TarsqiDocument instance with a single TarsqiDocParagraph in
+    doctype. It creates a TarsqiDocument instance with a list of TarsqiDocParagraphs in
     it. It finds the target tag, which is assumed to be TEXT, and considers all text
-    inside as the content of the single TarsqiDocParagraph.
+    inside as the content of a single TarsqiDocParagraph.
 
-    TODO: make this more general in that it should be able to deal with more than one tag,
-    perhaps defined in the processing parameters.
+    TODO: figure out exatly what it does with the paragraphs and update the documentation
+
+    TODO: may want to allow the user to hand in a target_tag as a processing parameter,
+    thereby bypassing the default list in CONTENT_TAGS. Should include the option to use
+    --target_tag=None so that we overrule using any tag (for example for documents with
+    lots of TEXT tags, in which case only the first one of those would be used).
 
     TODO: make this work with pure text input, taking all content, perhaps a default
     should be to take all text if no target tag could be found.
     
     Instance variables:
        docsource - a SourceDoc instance
-       elements - a list with one TarsqiDocParagraph element
+       elements - a list with TarsqiDocParagraph elements
        xmldoc - an XmlDocument instance
        metadata - a dictionary"""
 
     
-    def __init__(self):
+    def __init__(self, parameters):
         """Not used now but could be used to hand in specific metadata parsers or other
         functionality that cuts through genres."""
-        pass
+        self.content_tag = parameters.get('content_tag', True) 
+        #print '>>>',self.content_tag
+
 
     def parse(self, docsource):
-        """Return an instance of TarsqiDocument. Get the TEXT tag and the associated
-        source string and populate the TarsqiDocument with the following content: (i)
-        docsource embeds the SourceDoc instance that was created by the SourceParser, (ii)
-        elements contains one element, a TarsqiDocParagraph for the TEXT, (iii) xmldoc
-        contains an XmlDocument created from the TEXT, (iv) metadata simply contains a DCT
-        set to today."""
+        """Return an instance of TarsqiDocument. Use self.content_tag to determine what
+        part of the suorce to take. Populate the TarsqiDocument with the following
+        content: (i) docsource: the SourceDoc instance that was created by the
+        SourceParser, (ii) elements: a list of TarsqiDocParagraphs, (iii) xmldoc: an
+        XmlDocument, this is being phased out, (iv) metadata: a dictionary with now one
+        element, the DCT, which is set to today."""
         target_tag = self._find_target_tag(docsource)
-        text = docsource.text[target_tag.begin:target_tag.end]
-        #xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text))
-        #elements = [TarsqiDocParagraph(target_tag.begin, target_tag.end, text, xmldoc)]
-        element_offsets = split_paragraph(text)
-        elements = []
+        offset_adjustment = target_tag.begin if target_tag else 0
+        #print target_tag
+        text = docsource.text[target_tag.begin:target_tag.end] if target_tag else docsource.text
+        metadata = { 'dct': get_today() }
+        tarsqidoc = TarsqiDocument(docsource, metadata)
+        element_offsets = split_paragraph(text, offset_adjustment)
         for (p1, p2) in element_offsets:
             xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
-            elements.append(TarsqiDocParagraph(p1, p2, text[p1:p2], xmldoc))
-        for e in elements:
-            e.add_source_tags(docsource.tags.all_tags())
-            e.source_tags.index()
-        metadata = { 'dct': get_today() }
-        return TarsqiDocument(docsource, elements, metadata, xmldoc)
+            para = TarsqiDocParagraph(tarsqidoc, p1, p2, xmldoc)
+            para.add_source_tags(docsource.tags.all_tags())
+            para.source_tags.index()
+            tarsqidoc.elements.append(para)
+        return tarsqidoc
     
     def _find_target_tag(self, docsource):
-        """Return the content of the TEXT tag, raise an error if not succesful."""
-        tag = docsource.tags.find_tag('TEXT')
-        if tag is None:
-            raise DocParserError('Cannot parse docsource, no target_tag')
+        """Return the Tag that contains the main content that needs to be processed. Any
+        text outside of the tag will NOT be processed. Uses the tagnames in CONTENT_TAGS
+        or the overide in the self.content_tag, which originated from the user
+        parameters. Return None if there is no such tag."""
+        if self.content_tag is False:
+            return None
+        elif self.content_tag is True:
+            for tagname in CONTENT_TAGS:
+                tag = docsource.tags.find_tag(tagname)
+                if tag is not None:
+                    return tag
+            return None
         else:
-            return tag
+            return docsource.tags.find_tag(self.content_tag)
 
 
 
-def split_paragraph(text):
+def split_paragraph(text, adjustment=0):
 
     """Very simplistic way to split a paragraph into more than one paragraph, simply by
     looking for an empty line."""
@@ -86,12 +105,12 @@ def split_paragraph(text):
             seeking_space = False
             if space.count("\n") > 1:
                 par_end = p1
-                paragraphs.append((par_begin, par_end))
+                paragraphs.append((par_begin + adjustment, par_end + adjustment))
                 par_begin = p2
                 par_end = None
 
     if seeking_space and p2 > par_begin:
-        paragraphs.append((par_begin, par_end))
+        paragraphs.append((par_begin + adjustment, par_end + adjustment))
 
     return paragraphs
 
@@ -130,10 +149,8 @@ class TimebankParser:
     
 
     def __init__(self):
-        
         """This could be used to hand in specific metadata parsers or other functionality that
         cuts through genres."""
-
         pass
 
 

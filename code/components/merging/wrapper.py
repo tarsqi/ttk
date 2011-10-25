@@ -10,7 +10,7 @@ determined by the value of USE_HERITAGE_CODE.
 USE_HERITAGE_CODE = True
 #USE_HERITAGE_CODE = False
 
-import os
+import os, subprocess
 
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import LINK_MERGER
@@ -106,7 +106,12 @@ class MergerWrapper:
             self.document.xmldoc.save_to_file(in_fragment)
             # process them
             command = "%s merge.pl %s %s" % (perl, in_fragment, tmp_fragment)
-            (i, o, e) = os.popen3(command)
+
+            pipe = subprocess.PIPE
+            p = subprocess.Popen(command, shell=True, 
+                                 stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
+            (i, o, e) = (p.stdin, p.stdout, p.stderr)
+            #(i, o, e) = os.popen3(command)
             for line in e:
                 if line.lower().startswith('warn'):
                     logger.warn('MERGING: ' + line)

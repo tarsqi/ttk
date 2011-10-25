@@ -12,7 +12,7 @@ btime.py for reasons why using BTime does not make sense right now.
 USE_BTIME = False
 
 
-import os
+import os, subprocess
 
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import GUTIME
@@ -53,7 +53,11 @@ class GUTimeWrapper:
             self._prepare_gutime_input(xmldoc, fin)
 
             command = "perl TimeTag.pl %s > %s" % (fin, fout) 
-            (fh_in, fh_out, fh_errors) = os.popen3(command)
+            pipe = subprocess.PIPE
+            p = subprocess.Popen(command, shell=True, 
+                                 stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
+            (fh_in, fh_out, fh_errors) = (p.stdin, p.stdout, p.stderr)
+            #(fh_in, fh_out, fh_errors) = os.popen3(command)
             for line in fh_errors:
                 logger.warn(line)
 

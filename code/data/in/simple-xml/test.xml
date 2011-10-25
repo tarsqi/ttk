@@ -2,7 +2,7 @@
 <?php echo "hopsasa" ?>
 <DOC id='34'><DOCID>Simple Test</DOCID>
 
-<TEXT>
+<XTEXT>
 Mr. Vinken got the flue on Nov. 29th. John fell after Mary pushed him? They heard an
 explosion on Monday, but not in 2007. This reminded them of the 1968 war, which ravaged
 the countryside in 1969. He slept on Friday night. He began to sleep. He is eager to
@@ -11,9 +11,9 @@ he would resign on Tuesday. He thought it was a great deal.
 
 John leaves today. "Dr. John <CRAP>(&lt;dork&gt; &amp; @#$)</CRAP> does not leave
 today. The Dr. The new Dr. Weird: [] We're in line and won't you know. My name is
-W.F. Hermans.
+W.F. Hermans. <!-- comment -->
 
-hopsasa</TEXT>
+hopsasa</XTEXT>
 
-<!-- comment -->
+<!-- another comment -->
 </DOC>

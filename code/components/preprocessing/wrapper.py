@@ -69,7 +69,7 @@ class PreprocessorWrapper:
         one element, updating the xmldoc in the element also updates the xmldoc in the
         TarsqiDocument."""
         for element in self.document.elements:
-            tokens = self.tokenize_text(element.text)
+            tokens = self.tokenize_text(element.get_text())
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
             update_xmldoc(element.xmldoc, text)
