@@ -446,7 +446,7 @@ class TokenizedLex:
         self.text = text
 
     def __str__(self):
-        return "Lex(%d,%d,'%s')" % (self.begin, self.end, self.text)
+        return "TokenizedLex(%d,%d,'%s')" % (self.begin, self.end, self.text)
 
     def as_string(self, indent=''):
         return self.text

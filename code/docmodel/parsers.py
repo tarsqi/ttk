@@ -53,10 +53,12 @@ class DefaultParser:
         target_tag = self._find_target_tag(docsource)
         offset_adjustment = target_tag.begin if target_tag else 0
         #print target_tag
-        text = docsource.text[target_tag.begin:target_tag.end] if target_tag else docsource.text
+        text = docsource.text[target_tag.begin:target_tag.end] \
+               if target_tag else docsource.text
         metadata = { 'dct': get_today() }
         tarsqidoc = TarsqiDocument(docsource, metadata)
         element_offsets = split_paragraph(text, offset_adjustment)
+        #print element_offsets
         for (p1, p2) in element_offsets:
             xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
             para = TarsqiDocParagraph(tarsqidoc, p1, p2, xmldoc)
@@ -112,6 +114,11 @@ def split_paragraph(text, adjustment=0):
     if seeking_space and p2 > par_begin:
         paragraphs.append((par_begin + adjustment, par_end + adjustment))
 
+    # this deals with the boundary case where there are no empty lines, should really have
+    # a more elegant solution
+    if not paragraphs:
+        paragraphs = [(0 + adjustment, text_end + adjustment)]
+        
     return paragraphs
 
 

@@ -1,3 +1,4 @@
+import sys
 from copy import copy
 from mixins.parameters import ParameterMixin
 from source_parser import TagRepository
@@ -49,7 +50,11 @@ class TarsqiDocument(ParameterMixin):
         if parameters: print "\nPARAMETERS DICTIONARY:", self.parameters, "\n"
         if elements: 
             for e in self.elements: e.pp()
-        
+
+    def print_source(self, filename):
+        self.source.print_source(filename)
+
+    
 
 class TarsqiDocElement:
 

@@ -4,9 +4,9 @@
 
 Main script that drives all tarsqi toolkit processing.
 
-Low-level and source-specific processing is delegated to the Document Model, which has
-access to an XML Parser and metadata processors. The module calls preprocessing and tarsqi
-modules to do the real work.
+Low-level and source-specific processing is delegated to the docmodel package, which has
+access to an XML Parser and metadata processors. This script calls on preprocessing and
+tarsqi modules to do the real work.
 
 USAGE
 
@@ -167,7 +167,7 @@ class Tarsqi(ParameterMixin):
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-        #self.document.pp(xmldoc=False, source=False,
+        #self.document.pp(xmldoc=False, source=True,
         #                 parameters=False, metadata=False, elements=True)
         #print self.parameters
         #print self.document.parameters
@@ -175,17 +175,18 @@ class Tarsqi(ParameterMixin):
         # testing whether docsource can be printed
         #self.docsource.print_xml('data/tmp.xml')
 
-        return
+        #return
         for (name, wrapper) in self.pipeline:
             print name
             self.apply_component(name, wrapper, self.document)
 
-        #self.document.pp(xmldoc=True, source=False,
+        #self.document.print_source('tmp.txt')
+        #self.document.pp(xmldoc=False, source=False,
         #                 parameters=False, metadata=False, elements=True)
         #print self.document.elements[0].get_text(439,453)
         
         os.chdir(TTK_ROOT)
-        self.write_output() # THIS IS BROKEN, ONLY PRINTS LAST PARAGRAPH
+        #self.write_output() # THIS IS BROKEN, ONLY PRINTS LAST PARAGRAPH
 
 
     def _skip_file(self):

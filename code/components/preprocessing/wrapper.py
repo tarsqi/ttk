@@ -49,6 +49,18 @@ def normalizePOS(pos):
     return pos
 
 
+def adjust_lex_offsets(tokens, offset):
+
+    """The tokenizer works on isolated strings, adding offsets relative to the beginning
+    of the string"""
+
+    for token in tokens:
+        if token[1] is None:
+            continue
+        token[1].begin += offset
+        token[1].end += offset
+
+
 class PreprocessorWrapper:
     
     """Wrapper for the preprocessing components."""
@@ -58,7 +70,7 @@ class PreprocessorWrapper:
         """Set component_name and initialize TreeTagger."""
         self.component_name = PREPROCESSOR
         self.document = document
-        self.xmldoc = document.xmldoc
+        #self.xmldoc = document.xmldoc
         self.treetagger_dir = self.document.getopt('treetagger')
         self.treetagger = initialize_treetagger(self.treetagger_dir)
         
@@ -70,6 +82,7 @@ class PreprocessorWrapper:
         TarsqiDocument."""
         for element in self.document.elements:
             tokens = self.tokenize_text(element.get_text())
+            adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
             update_xmldoc(element.xmldoc, text)
