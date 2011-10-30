@@ -40,7 +40,6 @@ import components.gutime.btime
 import components.merging.wrapper
 
 import components.preprocessing.abbreviation
-import components.preprocessing.formatConversor
 import components.preprocessing.tokenizer
 import components.preprocessing.wrapper
 
@@ -62,6 +61,7 @@ import utilities.binsearch
 import utilities.converter
 import utilities.logger
 import utilities.porterstemmer
+import utilities.xml_utils
 
 import utilities.sputlink.main
 import utilities.sputlink.graph
@@ -104,7 +104,6 @@ MODULES = [
     components.merging.wrapper,
     
     components.preprocessing.abbreviation,
-    components.preprocessing.formatConversor,
     components.preprocessing.tokenizer,
     components.preprocessing.wrapper,
 

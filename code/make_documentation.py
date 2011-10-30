@@ -148,7 +148,7 @@ def get_function_name(fun):
     except IOError:
         # needed for some imports, like "from string import lower"
         firstline = ''
-        print 'WARNING: could not get source lines of', fun
+        print 'WARNING: could not get function name of', fun
     firstline = firstline.strip()
     firstline = firstline[4:-1]
     return firstline
@@ -161,7 +161,11 @@ def print_function_code(id, name, fun):
     funfile.write("</head>\n<body>\n")
     #funfile.write("<h3>%s</h3>\n" % name)
     funfile.write('<pre>')
-    code = "".join(inspect.getsourcelines(fun)[0])
+    try:
+        code = "".join(inspect.getsourcelines(fun)[0])
+    except IOError:
+        print "WARNING: could not get sourcecode of %s" % fun
+        code = ''
     code = trim(code, 0)
     code = code.replace('<', '&lt;')
     funfile.write(code)
