@@ -1,4 +1,4 @@
-import sys
+import sys, codecs
 from copy import copy
 from mixins.parameters import ParameterMixin
 from source_parser import TagRepository
@@ -29,7 +29,6 @@ class TarsqiDocument(ParameterMixin):
     the methods in the mixin class to access the parameters, these methods all start with
     'getopt' and all they do is access parameters."""
     
-    #def __init__(self, docsource, elements, metadata, xmldoc=None):
     def __init__(self, docsource, metadata, xmldoc=None):
         self.source = docsource
         self.xmldoc = xmldoc
@@ -43,6 +42,9 @@ class TarsqiDocument(ParameterMixin):
     def get_dct(self):
         return self.metadata.get('dct')
     
+    def text(self, p1, p2):
+        return self.source.text[p1:p2]
+
     def pp(self, source=True, xmldoc=True, metadata=True, parameters=True, elements=True):
         if source: self.source.pp()
         if xmldoc: self.xmldoc.pp()
@@ -51,11 +53,45 @@ class TarsqiDocument(ParameterMixin):
         if elements: 
             for e in self.elements: e.pp()
 
-    def print_source(self, filename):
-        self.source.print_source(filename)
+    def print_source(self, fname):
+        """Print the original source of the document, without the tags to file fname."""
+        self.source.print_source(fname)
 
-    
+    def print_sentences(self, fname=None):
+        """Write to file (or stadard output if no filename was given) a Python variable
+        assignment where the content of the variable the list of sentences as a list of
+        lists of token strings."""
+        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
+        fh.write("sentences = ")
+        fh.write(str(self.list_of_sentences()))
+        fh.write("\n")
 
+    def print_tags(self, fname=None):
+        """Prints all the tags from the source documents to a layer file."""
+        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
+        for e in self.elements:
+            for tag in e.tarsqi_tags.tags:
+                fh.write(tag.in_layer_format()+"\n")
+
+    def list_of_sentences(self):
+        sentences = []
+        sentence = []
+        for element in self.elements:
+            # TODO: delegate to TarsqiDocParagraph?
+            for t in element.tarsqi_tags.tags:
+                if t.name == 's':
+                    if sentence:
+                        sentences.append(sentence)
+                        sentence = []
+                elif t.name == 'lex':
+                    sentence.append(self.text(t.begin, t.end))
+            if sentence:
+                sentences.append(sentence)
+            sentence = []
+        return sentences
+        
+
+            
 class TarsqiDocElement:
 
     """Contains a slice from a TarsqiDocument. The slice is determined by the begin and

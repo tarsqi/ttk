@@ -7,18 +7,17 @@ Contains the wrapper for all preprocessing components.
 import os
 from time import time
 from types import StringType, TupleType
-from xml.sax.saxutils import escape, quoteattr
 
 from ttk_path import TTK_ROOT
 from utilities import logger
-from docmodel.xml_parser import XmlDocElement
+from docmodel.source_parser import Tag
 from library.tarsqi_constants import PREPROCESSOR
 from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
 
 
-# to ensure unique identifiers
+# ensure unique identifiers
 LEX_ID = 0
 CHUNK_ID = 0
 SENT_ID = 0
@@ -48,14 +47,13 @@ def normalizePOS(pos):
         pos = 'IN'
     return pos
 
-
 def adjust_lex_offsets(tokens, offset):
-
     """The tokenizer works on isolated strings, adding offsets relative to the beginning
-    of the string"""
-
+    of the string. But for the lex tags we need to relate the offset to the beginning of
+    the file, not to the beginning of some random string. This procedure is used to
+    increment offsets on instances of TokenizedLex."""
     for token in tokens:
-        if token[1] is None:
+        if token[1] is None:  # skip the s tags
             continue
         token[1].begin += offset
         token[1].end += offset
@@ -70,28 +68,26 @@ class PreprocessorWrapper:
         """Set component_name and initialize TreeTagger."""
         self.component_name = PREPROCESSOR
         self.document = document
-        #self.xmldoc = document.xmldoc
         self.treetagger_dir = self.document.getopt('treetagger')
         self.treetagger = initialize_treetagger(self.treetagger_dir)
         
     def process(self):
         """Retrieve the elements from the tarsqiDocument and hand these as strings to the
-        preprocessing chain. The result is shallow tree with sentences and tokens. These
-        are inserted into the element's xmldoc. Note that for simple documents with just
-        one element, updating the xmldoc in the element also updates the xmldoc in the
-        TarsqiDocument."""
+        preprocessing chain. The result is a shallow tree with sentences and tokens. These
+        are inserted into the element's xmldoc. TODO: remove xmldoc. Note that for simple
+        documents with just one element, updating the xmldoc in the element also updates
+        the xmldoc in the TarsqiDocument."""
         for element in self.document.elements:
             tokens = self.tokenize_text(element.get_text())
             adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
-            update_xmldoc(element.xmldoc, text)
-            update_tags(element.tarsqi_tags, element.xmldoc)
+            update_tags(element.tarsqi_tags, text)
             
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each object is a
-        pair of tokenized string and a TokenizedLex instance. The tokenized string can be
-        '<s>', in which case the second element of the pair is None instead of a
+        pair of a tokenized string and a TokenizedLex instance. The tokenized string can
+        be '<s>', in which case the second element of the pair is None instead of a
         TokenizedLex."""
         t1 = time()
         tokenizer = Tokenizer(string)
@@ -150,114 +146,49 @@ class PreprocessorWrapper:
         return text    
 
 
-def update_xmldoc(xmldoc, text):
 
-    """Updates the xmldoc with the text that is the result of all preprocessing. At the
-    onset, the xmldoc has only three elements: TEXT opening tag, character data, and TEXT
-    closing tag. The character data element is replaced with a list of elements, including
-    lex tags, s tags, chunk tags and character data for all tokens."""
+def update_tags(tag_repository, text):
+
+    """Updates the TagRepository with the text that is the result of all preprocessing."""
 
     global LEX_ID, CHUNK_ID, SENT_ID
+    ctag = None
 
-    first_element = xmldoc.elements[0]
-    last_element = first_element.get_closing_tag()
-    first_element.next = last_element
-    last_element.previous = first_element
-
-    #(sid, lid, cid) = (0, 0, 0)
-    
     for sentence in text:
 
         SENT_ID += 1
-        last_element.insert_element_before( XmlDocElement('\n', data=True) )
-        last_element.insert_element_before( XmlDocElement("<s>", tag='s', attrs={}) )
-
-        # TODO: it would be desirable to use the following and add identifiers to
-        # sentences, but with it the code to merge in timexes fails, wait with this till
-        # we have BTime
-        #
-        # last_element.insert_element_before( XmlDocElement("<s sid=\"s%d\">" % sid,
-        #                                                   tag='s',
-        #                                                   attrs={'sid': "s%d" % sid}) )
+        stag = Tag(SENT_ID, 's', None, None, {})
 
         for token in sentence:
-            if type(token) == StringType:
-                if token.startswith('<') and not token.startswith('</'):
+
+            if type(token) == StringType and token.startswith('<') and token.endswith('>'):
+                if not token.startswith('</'):
                     CHUNK_ID += 1
-                add_chunktag(last_element, token, CHUNK_ID)
+                    ctag = Tag(CHUNK_ID, token[1:-1], None, None, {})
+                else:
+                    ctag.end = last_ltag.end
+                    ctag.nodes.append("%s%d" % (last_ltag.name, last_ltag.id))
+                    tag_repository.append(ctag)
+                    ctag = None
+
             elif type(token) == TupleType:
                 LEX_ID += 1
-                add_token(last_element, token, LEX_ID)
+                ltag = Tag(LEX_ID, 'lex', token[3], token[4], { 'lemma': token[2], 'pos': token[1] })
+                tag_repository.append(ltag)
+                if stag.begin is None:
+                    stag.begin = token[3]
+                    stag.nodes.append("%s%d" % (ltag.name, ltag.id))
+                if ctag is not None and ctag.begin is None:
+                    ctag.begin = ltag.begin
+                    ctag.nodes.append("%s%d" % (ltag.name, ltag.id))
+                last_end_offset = token[4]
+                last_ltag = ltag
+
             else:
                 logger.warn('Unexpected token type')
-                
-        last_element.insert_element_before( XmlDocElement('</s>', tag='s') )
 
-    last_element.insert_element_before( XmlDocElement('\n', data=True) )
-    xmldoc.reset()
-
-
-def add_chunktag(element, token, cid):
-
-    """Add a chunk tag before the XmlDocElement given."""
-    
-    tag = token.strip('</>')
-    if token.startswith('</'):
-        element.insert_element_before( XmlDocElement(token, tag=tag) )
-    elif token.startswith('<'):
-        # see comment in previous routine
-        #token = token[:-1] + " cid=\"c%d\">" % cid
-        element.insert_element_before( XmlDocElement(token, tag=tag, attrs={}) )
-    else:
-        logger.warn('Unexpected element in chunked text')
-    
-    
-def add_token(element, token, lid):
-    
-    """Add a token, with its opening and closing lex tags, before the XmlDocElement
-    given."""
-
-    (tok, pos, lemma, begin, end) = token
-    if lemma == '<unknown>': lemma = tok
-    lid = "l%d" % lid
-
-    lex_string = "<lex lid=\"%s\" pos=%s lemma=%s begin=\"%d\" end=\"%d\">" % \
-                 (lid, quoteattr(pos), quoteattr(lemma), begin, end)
-    lex_attrs={'lid': lid, 'pos': pos, 'lemma': lemma, 'begin': begin, 'end': end }
-                      
-    element.insert_element_before( XmlDocElement(lex_string, tag='lex', attrs=lex_attrs) )
-    element.insert_element_before( XmlDocElement(tok, data=True) )
-    element.insert_element_before( XmlDocElement('</lex>', tag='lex') )
-
-
-def update_tags(tag_repository, xml_doc):
-
-    """Update the TagRepository using the XmlDocument. Adds all sentence, chunk and lex
-    tags. May want to do this in one fell swoop for all added tags later in the processing
-    chain."""
-
-    def get_offsets(element):
-        """Return tuple with tagname, begin and end for the element. Begin and end are
-        calculated from the first and last contained lex tags of the element, return None
-        if there are no contained lex tags."""
-        tags = [t for t in element.collect_contained_tags() if t.tag == 'lex']
-        if tags:
-            begin = tags[0].attrs['begin']
-            end = tags[-1].attrs['end']
-            return (element.get_tag(), begin, end)
-        return None
-
-    for element in xml_doc:
-        if element.is_opening_tag():
-            tagname = element.get_tag()
-            if tagname == 'lex':
-                (begin, end) = (element.attrs['begin'], element.attrs['end'])
-                tag_specification = ('lex', begin, end, element.attrs)
-                tag_repository.add_tag(tag_specification)
-            if tagname in ['s', 'NG', 'VG']:
-                tag_specification = get_offsets(element) + ({},)
-                # only use sentence and chunk tags that are not empty
-                if tag_specification is not None:
-                    tag_repository.add_tag(tag_specification)
+        stag.end = last_ltag.end
+        stag.nodes.append("%s%d" % (last_ltag.name, last_ltag.id))
+        tag_repository.append(stag)
 
     tag_repository.index()

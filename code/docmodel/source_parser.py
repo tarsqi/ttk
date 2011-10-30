@@ -354,11 +354,13 @@ class Tag:
         self.name = name
         self.begin = o1
         self.end = o2
+        self.nodes = []   # filled in later for tags that point to other layers. 
         self.attrs = attrs
         
     def __str__(self):
-        return "<Tag %s %s %d-%d %s>" % \
-               (self.id, self.name, self.begin, self.end, str(self.attrs))
+        nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
+        return "<Tag %s %s %d-%d %s%s>" % \
+               (self.name, self.id, self.begin, self.end, nodes, str(self.attrs))
 
     def __cmp__(self, other):
         """Order two Tags based on their id. The id is based on the text position of the
@@ -370,7 +372,12 @@ class Tag:
     def is_opening_tag(self): return False
 
     def is_closing_tag(self): return False
-    
+
+    def in_layer_format(self):
+        nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
+        return "%s id=%d begin=%d end=%d %s{%s }" % \
+            (self.name, self.id, self.begin, self.end, nodes, self.attributes_as_string())
+
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
         if not self.attrs:

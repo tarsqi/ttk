@@ -175,12 +175,14 @@ class Tarsqi(ParameterMixin):
         # testing whether docsource can be printed
         #self.docsource.print_xml('data/tmp.xml')
 
-        #return
         for (name, wrapper) in self.pipeline:
             print name
             self.apply_component(name, wrapper, self.document)
+            
+        self.document.print_sentences('tmp-sentences.py')
+        self.document.print_source('tmp-source.txt')
+        self.document.print_tags('tmp-tags.txt')
 
-        #self.document.print_source('tmp.txt')
         #self.document.pp(xmldoc=False, source=False,
         #                 parameters=False, metadata=False, elements=True)
         #print self.document.elements[0].get_text(439,453)
