@@ -1,7 +1,7 @@
 body 
 {
   font-size: 12pt;
-  background-color: #eeeeff;
+  background-color: #eeeeee;
 }
 
 pre 
@@ -15,7 +15,7 @@ pre
 h3 
 { 
   font-size: 16pt;
-  background-color: #ffffcc;
+  background-color: #ffffee;
   padding: 5pt;
   padding-left: 10pt;
   margin-top: 15pt;
@@ -35,7 +35,7 @@ blockquote
 { 
   font-size: 24pt;
   font-weight: bold;
-  background-color: #ccffcc;
+  background-color: #eeffee;
   padding: 10pt;
   margin-top: 10pt;
   margin-bottom: 10pt;
@@ -46,7 +46,7 @@ blockquote
 {
   font-size: 20pt;
   font-weight: bold;
-  background-color: #ccffcc;
+  background-color: #eeffee;
   padding: 5pt;
   padding-left: 10pt;
   margin-top: 20pt;
