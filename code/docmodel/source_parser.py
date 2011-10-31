@@ -29,8 +29,8 @@ empty. Implement this by adding ExPat error trapping to SourceParser.parse_file(
 
 import sys
 import xml.parsers.expat
-import xml.sax.saxutils
 import pprint
+from xml.sax.saxutils import escape, quoteattr
 
 
 class SourceParser:
@@ -206,7 +206,7 @@ class SourceDoc:
             for t in matching: 
                 xml_string += "</%s>" % t.name
 
-            xml_string += xml.sax.saxutils.escape(char)
+            xml_string += escape(char)
             offset += 1
 
         fh = open(filename, 'w')
@@ -374,15 +374,16 @@ class Tag:
     def is_closing_tag(self): return False
 
     def in_layer_format(self):
-        nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
-        return "%s id=%d begin=%d end=%d %s{%s }" % \
-            (self.name, self.id, self.begin, self.end, nodes, self.attributes_as_string())
+        nodes = '' if not self.nodes else " targets=\"%s %s\"" % (self.nodes[0], self.nodes[-1])
+        return "<%s id=%s anchors=\"%s %s\"%s%s />" % \
+            (self.name, quoteattr(str(self.id)), 
+             self.begin, self.end, nodes, self.attributes_as_string())
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
         if not self.attrs:
             return ''
-        return ' ' + ' '.join(["%s=\"%s\"" % (k,v) for (k,v) in self.attrs.items()])
+        return ' ' + ' '.join(["%s=%s" % (k,quoteattr(v)) for (k,v) in self.attrs.items()])
 
 
 class OpeningTag(Tag):

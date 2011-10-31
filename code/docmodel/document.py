@@ -17,6 +17,7 @@ class TarsqiDocument(ParameterMixin):
     Instance Variables:
        source - instance of DocSource
        xmldoc - instance of XmlDocument (used for now for heritage code)
+       doctree - instance of Document (to replace xmldoc)
        elements - list of TarsqiDocElements
        metadata - a dictionary
        parameters - parameter dictionary from the Tasqi instance
@@ -27,7 +28,10 @@ class TarsqiDocument(ParameterMixin):
 
     Also note that parameters are available to the wrappers only through this class. Use
     the methods in the mixin class to access the parameters, these methods all start with
-    'getopt' and all they do is access parameters."""
+    'getopt' and all they do is access parameters.
+
+    Also note that we may need a tarsqi_tags variable, to store those tags that are not
+    internal to any of the elements. """
     
     def __init__(self, docsource, metadata, xmldoc=None):
         self.source = docsource
@@ -69,16 +73,17 @@ class TarsqiDocument(ParameterMixin):
     def print_source_tags(self, fname=None):
         """Prints all the tags from the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
-        for e in self.elements:
-            for tag in e.source_tags.tags:
-                fh.write(tag.in_layer_format()+"\n")
+        for tag in self.source.tags.tags:
+            fh.write(tag.in_layer_format()+"\n")
 
     def print_tarsqi_tags(self, fname=None):
         """Prints all the tarsqi tags added to the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
+        fh.write("<ttk>\n")
         for e in self.elements:
             for tag in e.tarsqi_tags.tags:
-                fh.write(tag.in_layer_format()+"\n")
+                fh.write('  ' + tag.in_layer_format() + "\n")
+        fh.write("</ttk>\n")
 
     def _print_tags(self, tag_repository, fname=None):
         """Prints all the tarsqi tags added to the source documents to a layer file."""

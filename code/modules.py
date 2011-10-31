@@ -53,6 +53,7 @@ import components.slinket.wrapper
 import demo.display
 
 import docmodel.main
+import docmodel.document
 import docmodel.parsers
 import docmodel.xml_parser
 import docmodel.source_parser
@@ -117,6 +118,7 @@ MODULES = [
     demo.display,
     
     docmodel.main,
+    docmodel.document,
     docmodel.parsers,
     docmodel.xml_parser,
     docmodel.source_parser,

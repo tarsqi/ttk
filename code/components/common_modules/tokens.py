@@ -89,8 +89,34 @@ class Token(Constituent):
         event_string = ''
         if self.event:
             event_string = ' event="' + str(self.event_tag.attrs) + '"'
-        print "%s<lex lid=\"%s\" pos=\"%s\" text=\"%s\"%s>" % \
+            
+        print type(self.getText()), "%s<lex lid=\"%s\" pos=\"%s\" text=\"%s\"%s>" % \
               (indent * ' ', self.lid, self.pos, self.getText(), event_string)
+
+
+class NewToken(Token):
+
+    """Playpen to put in some functionality that should replace what is in Token."""
+
+    def __init__(self, document, text, pos, stem, begin, end):
+        self.doc = document
+        self.text = text
+        self.pos = pos
+
+        self.lid = 1
+        self.event = None
+        self.textIdx = []          # should be None?
+        self.document = document
+        self.position = None
+        self.parent = None
+        self.cachedGramChunk = 0
+        self.flagCheckedForEvents = 0
+        # added this one to provide a pointer to the XmlDocElement instance.
+        # Made it into a list of all the docelements BK 20080725
+        self.lex_tag_list = []
+
+    def getText(self):
+        return self.text
 
 
         

@@ -7,11 +7,18 @@ Contains the wrapper for all preprocessing components.
 import os
 from time import time
 from types import StringType, TupleType
+from xml.sax.saxutils import escape, quoteattr
 
 from ttk_path import TTK_ROOT
 from utilities import logger
 from docmodel.source_parser import Tag
 from library.tarsqi_constants import PREPROCESSOR
+
+from components.common_modules.document import Document
+from components.common_modules.sentence import Sentence
+from components.common_modules.chunks import NounChunk, VerbChunk
+from components.common_modules.tokens import Token, NewToken, AdjectiveToken
+
 from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
@@ -82,7 +89,7 @@ class PreprocessorWrapper:
             adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
-            export(text, element.tarsqi_tags)
+            export(text, element)
             
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each object is a
@@ -147,7 +154,12 @@ class PreprocessorWrapper:
 
 
 
-def export(text, tag_repository):
+def export(text, tarsqi_element):
+    export_to_tags(text, tarsqi_element)
+    export_to_doctree(text, tarsqi_element)
+    
+
+def export_to_tags(text, tarsqi_element):
 
     """Updates the TagRepository with the text that is the result of preprocessing."""
 
@@ -157,30 +169,33 @@ def export(text, tag_repository):
     for sentence in text:
 
         SENT_ID += 1
-        stag = Tag(SENT_ID, 's', None, None, {})
+        sid = "s%d" % SENT_ID
+        stag = Tag(sid, 's', None, None, {})
 
         for token in sentence:
 
             if type(token) == StringType and token.startswith('<') and token.endswith('>'):
                 if not token.startswith('</'):
                     CHUNK_ID += 1
-                    ctag = Tag(CHUNK_ID, token[1:-1], None, None, {})
+                    cid = "c%d" % CHUNK_ID
+                    ctag = Tag(cid, token[1:-1], None, None, {})
                 else:
                     ctag.end = last_ltag.end
-                    ctag.nodes.append("%s%d" % (last_ltag.name, last_ltag.id))
-                    tag_repository.append(ctag)
+                    ctag.nodes.append("%s" % (last_ltag.id))
+                    tarsqi_element.tarsqi_tags.append(ctag)
                     ctag = None
 
             elif type(token) == TupleType:
                 LEX_ID += 1
-                ltag = Tag(LEX_ID, 'lex', token[3], token[4], { 'lemma': token[2], 'pos': token[1] })
-                tag_repository.append(ltag)
+                lid = "l%d" % LEX_ID
+                ltag = Tag(lid, 'lex', token[3], token[4], { 'lemma': token[2], 'pos': token[1] })
+                tarsqi_element.tarsqi_tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]
-                    stag.nodes.append("%s%d" % (ltag.name, ltag.id))
+                    stag.nodes.append("%s" % (ltag.id))
                 if ctag is not None and ctag.begin is None:
                     ctag.begin = ltag.begin
-                    ctag.nodes.append("%s%d" % (ltag.name, ltag.id))
+                    ctag.nodes.append("%s" % (ltag.id))
                 last_end_offset = token[4]
                 last_ltag = ltag
 
@@ -188,7 +203,41 @@ def export(text, tag_repository):
                 logger.warn('Unexpected token type')
 
         stag.end = last_ltag.end
-        stag.nodes.append("%s%d" % (last_ltag.name, last_ltag.id))
-        tag_repository.append(stag)
+        stag.nodes.append("%s" % (last_ltag.id))
+        tarsqi_element.tarsqi_tags.append(stag)
 
-    tag_repository.index()
+    tarsqi_element.tarsqi_tags.index()
+
+
+
+def export_to_doctree(text, tarsqi_element):
+
+    """TODO: should probably not build this from the text but from the tarsqi element's tag repository."""
+
+    tarsqi_element.doctree = Document('tarsqi_element')
+    doc = tarsqi_element.doctree
+
+    currentSentence = None
+    
+    for sentence in text:
+        
+        currentSentence = Sentence()
+        doc.addSentence(currentSentence)
+
+        for element in sentence:
+
+            if type(element) == StringType and element.startswith('<') and element.endswith('>'):
+
+                pass
+
+            elif type(element) == TupleType:
+
+                #print element
+                (text, pos, stem, begin, end) = element
+                tok = NewToken(doc, text, pos, stem, begin, end)
+                #tok.pretty_print()
+                #currentSentence.add(Token(doc, 'door',12))
+                pass
+
+
+    #doc.pretty_print()
