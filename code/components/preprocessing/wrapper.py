@@ -82,7 +82,7 @@ class PreprocessorWrapper:
             adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
-            update_tags(element.tarsqi_tags, text)
+            export(text, element.tarsqi_tags)
             
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each object is a
@@ -147,9 +147,9 @@ class PreprocessorWrapper:
 
 
 
-def update_tags(tag_repository, text):
+def export(text, tag_repository):
 
-    """Updates the TagRepository with the text that is the result of all preprocessing."""
+    """Updates the TagRepository with the text that is the result of preprocessing."""
 
     global LEX_ID, CHUNK_ID, SENT_ID
     ctag = None

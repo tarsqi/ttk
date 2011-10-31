@@ -66,11 +66,25 @@ class TarsqiDocument(ParameterMixin):
         fh.write(str(self.list_of_sentences()))
         fh.write("\n")
 
-    def print_tags(self, fname=None):
+    def print_source_tags(self, fname=None):
         """Prints all the tags from the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
         for e in self.elements:
+            for tag in e.source_tags.tags:
+                fh.write(tag.in_layer_format()+"\n")
+
+    def print_tarsqi_tags(self, fname=None):
+        """Prints all the tarsqi tags added to the source documents to a layer file."""
+        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
+        for e in self.elements:
             for tag in e.tarsqi_tags.tags:
+                fh.write(tag.in_layer_format()+"\n")
+
+    def _print_tags(self, tag_repository, fname=None):
+        """Prints all the tarsqi tags added to the source documents to a layer file."""
+        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
+        for e in self.elements:
+            for tag in tag_repository.tags:
                 fh.write(tag.in_layer_format()+"\n")
 
     def list_of_sentences(self):

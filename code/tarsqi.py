@@ -169,26 +169,21 @@ class Tarsqi(ParameterMixin):
         self.document.add_parameters(self.parameters)
         #self.document.pp(xmldoc=False, source=True,
         #                 parameters=False, metadata=False, elements=True)
-        #print self.parameters
-        #print self.document.parameters
-
-        # testing whether docsource can be printed
-        #self.docsource.print_xml('data/tmp.xml')
 
         for (name, wrapper) in self.pipeline:
             print name
             self.apply_component(name, wrapper, self.document)
             
-        self.document.print_sentences('tmp-sentences.py')
+        #self.docsource.print_xml('tmp.xml')
+        #self.document.print_sentences('tmp-sentences.py')
         self.document.print_source('tmp-source.txt')
-        self.document.print_tags('tmp-tags.txt')
+        self.document.print_source_tags('tmp-tags.txt')
+        self.document.print_tarsqi_tags('tmp-ttk.txt')
 
         #self.document.pp(xmldoc=False, source=False,
         #                 parameters=False, metadata=False, elements=True)
-        #print self.document.elements[0].get_text(439,453)
         
         os.chdir(TTK_ROOT)
-        #self.write_output() # THIS IS BROKEN, ONLY PRINTS LAST PARAGRAPH
 
 
     def _skip_file(self):
