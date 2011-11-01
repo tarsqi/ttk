@@ -21,14 +21,13 @@ DEBUG = False
 # Determines whether we try to disambiguate nominals with training data
 NOM_DISAMB_TR = True
 
-# Determines whether we use context information in training data (has
-# no effect if NOM_DISAMB_TR == False).
+# Determines whether we use context information in training data (has no effect if
+# NOM_DISAMB_TR == False).
 NOM_CONTEXT_TR = True
 
-# Determines how we use WN to recognize events if True, mark only
-# forms whose first WN sense is an event sense if False, mark forms
-# which have any event sense (if NOM_DISAMB_TR is true, this is only a
-# fallback where no training data exists).
+# Determines how we use WN to recognize events if True, mark only forms whose first WN
+# sense is an event sense if False, mark forms which have any event sense (if
+# NOM_DISAMB_TR is true, this is only a fallback where no training data exists).
 NOM_WNPRIMSENSE_ONLY = True
 
 # Open dbm's with information about nominal events. 
@@ -40,8 +39,8 @@ try:
 except:
     DBM_FILES_OPENED = False
 
-# Also open all corresponding text files, these are a fallback in case
-# the dbm's are not supported.
+# Also open all corresponding text files, these are a fallback in case the dbm's are not
+# supported.
 wnPrimSenseIsEvent_TXT = open(forms.wnPrimSenseIsEvent_TXT,'r')
 wnAllSensesAreEvents_TXT = open(forms.wnAllSensesAreEvents_TXT,'r')
 wnSomeSensesAreEvents_TXT = open(forms.wnSomeSensesAreEvents_TXT,'r')
@@ -57,27 +56,21 @@ DictVerbStems = pickle.load(DictVerbStemPickleFile)
 DictSemcorContextPickleFile.close()
 DictVerbStemPickleFile.close()
 
-# Create one Bayesian event recognizer.
+# Create one Bayesian event recognizer and one stemmer
 nomEventRec = BayesEventRecognizer(DictSemcorEvent, DictSemcorContext)
-
-# Similarly, create one stemmer only.
-#stemmer = evitaUtils.Stemmer()
 stemmer = porterstemmer.Stemmer()
 
 
 
-
 def getWordList(itemsList):
-    """Input: List of Item instances"""
-    # Fucntion for debugging purposes
+    """Input: List of Item instances. Function for debugging purposes."""
     res = []
     for item in itemsList:
         res.append(item.getText())
     return res
 
 def getPOSList(itemsList):
-    """Input: List of Item instances"""
-    # Fucntion for debugging purposes
+    """Input: List of Item instances. Function for debugging purposes."""
     res = []
     for item in itemsList:
         res.append(item.pos)
@@ -94,20 +87,18 @@ def collapse_timex_nodes(nodes):
             return_nodes.append(node)
     return return_nodes
 
-
 def debug (*args):
     if DEBUG:
         for arg in args: print arg,
         print
 
-
         
 class GramChunk:
 
     def _matchChunk(self, chunkDescription): 
-        """Match chunk to the patterns in chunkDescriptions.
-        chunkDescription is a dictionary with keys-values pairs that
-        match instance variables and their values on GramChunks.
+        """Match chunk to the patterns in chunkDescriptions.  chunkDescription is a
+        dictionary with keys-values pairs that match instance variables and their values
+        on GramChunks.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...} 
@@ -118,9 +109,9 @@ class GramChunk:
         a second constituent of a 2-position tuple whose initial position
         is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
         
-        (R) M: This code breaks on the fourth line, claiming that gramch is
-        None.
+        (R) M: This code breaks on the fourth line, claiming that gramch is None.
         This method is also implemented in the Chunk.Constituent class """
+
         debug("......entering _matchChunk()")
         for feat in chunkDescription.keys():
             debug("\n......PAIR <" + str(feat) + " " + str(chunkDescription[feat])+">")
@@ -155,8 +146,8 @@ class GramAChunk(GramChunk):
         self.evClass = self.getEventClass()
 
     def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance
-        variables used in the pattern matching phase."""
+        """Used by Sentence._match. Needs cases for all instance variables used in the
+        pattern matching phase."""
         # if name == 'class': return self.evClass
         # return None
         pass
@@ -360,7 +351,18 @@ class GramVChunkList:
         else:
             string = ''
             for i in self.gramVChunksList:
-                node = "\n\tNEGATIVE: "+str(getWordList(i.negMarks))+"\n\tINFINITIVE: "+str(getWordList(i.infMark))+"\n\tADVERBS-pre: "+str(getWordList(i.adverbsPre))+"\n\tADVERBS-post: "+str(getWordList(i.adverbsPost))+" "+str(getPOSList(i.adverbsPost))+"\n\tTRUE CHUNK: "+str(getWordList(i.trueChunk))+"\t          :"+str(getPOSList(i.trueChunk))+"\n\tTENSE: "+str(i.tense)+"\n\tASPECT: "+str(i.aspect)+"\n\tNF_MORPH: "+str(i.nf_morph)+"\n\tMODALITY: "+str(i.modality)+"\n\tPOLARITY: "+str(i.polarity)+"\n\tHEAD: "+str(i.head.getText())+"\n\tCLASS: "+str(i.evClass)
+                node = "\n\tNEGATIVE: "+str(getWordList(i.negMarks))\
+                    +"\n\tINFINITIVE: " +str(getWordList(i.infMark))\
+                    +"\n\tADVERBS-pre: "+str(getWordList(i.adverbsPre))\
+                    +"\n\tADVERBS-post: "+str(getWordList(i.adverbsPost))+" "+str(getPOSList(i.adverbsPost))\
+                    +"\n\tTRUE CHUNK: "+str(getWordList(i.trueChunk))+"\t :"+str(getPOSList(i.trueChunk))\
+                    +"\n\tTENSE: "+str(i.tense)\
+                    +"\n\tASPECT: "+str(i.aspect)\
+                    +"\n\tNF_MORPH: "+str(i.nf_morph)\
+                    +"\n\tMODALITY: "+str(i.modality)\
+                    +"\n\tPOLARITY: "+str(i.polarity)\
+                    +"\n\tHEAD: "+str(i.head.getText())\
+                    +"\n\tCLASS: "+str(i.evClass)
                 string = string+"\n"+node
         return string
     
@@ -482,20 +484,18 @@ class GramVChunkList:
             return 0
 
     def updateChunkLists(self):
-        """Necessary for dealing with chunks containing subchunks
-        e.g., 'remains to be seen'"""
+        """Necessary for dealing with chunks containing subchunks e.g., 'remains to be
+        seen'"""
         for list in self.chunkLists:
             if len(list) == self.counter:
-                """The presence of a main verb has already
-                updated self.counter """
+                """The presence of a main verb has already updated self.counter"""
                 list.append([])
                 
     def addInCurrentSublist(self, list, element):
         if len(list)-self.counter == 1:
             list[self.counter].append(element)
         else:
-            """The presence of a main verb has already
-            updated self.counter """
+            """The presence of a main verb has already updated self.counter"""
             pass
             
     def addInPreviousSublist(self, list, element):
@@ -564,8 +564,8 @@ class GramVChunk(GramChunk):
     
     
     def __getattr__(self, name):  
-        """Used by Sentence._match. Needs cases for all instance
-        variables used in the pattern matching phase."""
+        """Used by Sentence._match. Needs cases for all instance variables used in the
+        pattern matching phase."""
         if name == 'headForm':
             #logger.debug("(V) HEAD FORM: "+self.head.getText())
             try:
@@ -664,9 +664,8 @@ class GramVChunk(GramChunk):
         if self.gramFeatures:
             return self.gramFeatures[0]
         else:
-            """If no Tense is found for the current chunk
-            (generally due to a POS tagging problem), estimate
-            it from the head of the chunk"""
+            """If no Tense is found for the current chunk (generally due to a POS tagging
+            problem), estimate it from the head of the chunk"""
             if len(self.trueChunk) > 1 and self.getHead():
                 return GramVChunkList([self.getHead()])[0].tense  
             else:
@@ -676,9 +675,8 @@ class GramVChunk(GramChunk):
         if self.gramFeatures:
             return self.gramFeatures[1]
         else:
-            """If no Aspect is found for the current chunk
-            (generally due to a POS tagging problem), estimate
-            it from the head of the chunk"""
+            """If no Aspect is found for the current chunk (generally due to a POS tagging
+            problem), estimate it from the head of the chunk"""
             if len(self.trueChunk) > 1 and self.getHead():
                 return GramVChunkList([self.getHead()])[0].aspect 
             else:
@@ -688,9 +686,8 @@ class GramVChunk(GramChunk):
         if self.gramFeatures:
             return self.gramFeatures[2]
         else:
-            """If no Nf_morph is found for the current chunk
-            (generally due to a POS tagging problem), estimate
-            it from the head of the chunk"""
+            """If no Nf_morph is found for the current chunk (generally due to a POS
+            tagging problem), estimate it from the head of the chunk"""
             if len(self.trueChunk) > 1 and self.getHead():
                 return GramVChunkList([self.getHead()])[0].nf_morph 
             else:
@@ -802,9 +799,8 @@ class GramVChunk(GramChunk):
         try:
             headString = self.head.getText()
         except AttributeError:
-            # This is used when the head is None, which can be the
-            # case for some weird (and incorrect) chunks, like [to/TO]
-            # (MV 11//08/07)
+            # This is used when the head is None, which can be the case for some weird
+            # (and incorrect) chunks, like [to/TO] (MV 11//08/07)
             return None
         # may want to use forms.be (MV 11/08/07)
         if headString in ['was', 'were', 'been']:
@@ -838,7 +834,6 @@ class GramVChunk(GramChunk):
             head_string = self.head.getText()
         except AttributeError:
             head_string = ''
-        
 
         return \
             opening_string + "\n" + \
@@ -855,6 +850,3 @@ class GramVChunk(GramChunk):
             "\tPOLARITY:" + self.polarity + "\n" + \
             "\tHEAD:" + head_string + "\n" + \
             "\tCLASS:" + str(self.evClass)
-
-
-

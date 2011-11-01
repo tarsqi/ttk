@@ -237,7 +237,7 @@ def export_tags_to_doctree(tarsqi_element):
             tok = NewToken(doctree, t.id, tarsqi_doc.text(p1,p2), t.attrs['pos'], t.attrs['lemma'], p1, p2)
             currentSentence.add(tok)
             
-    doctree.pretty_print()
+    #doctree.pretty_print()
 
 
 def insert_chunks(sentence, chunks):

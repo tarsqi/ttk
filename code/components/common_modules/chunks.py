@@ -21,8 +21,8 @@ from components.evita.gramChunk import GramNChunk, GramAChunk, GramVChunkList
 
 class Chunk(Constituent):
 
-    """Implements the common behaviour of chunks. Chunks are embedded in sentences
-    and contain event tags, timex tags and tokens.
+    """Implements the common behaviour of chunks. Chunks are embedded in sentences and
+    contain event tags, timex tags and tokens.
 
     Instance variables
        phraseType -  string indicating the chunk type, usually 'VG' or 'NG'
@@ -69,10 +69,9 @@ class Chunk(Constituent):
 
     def __getattr__(self, name):
 
-        """Used by Sentence._match. Needs cases for all instance
-        variables used in the pattern matching phase. This is almost
-        identical to the same method on Token, do this a bit more
-        elegantly."""
+        """Used by Sentence._match. Needs cases for all instance variables used in the
+        pattern matching phase. This is almost identical to the same method on Token, do
+        this a bit more elegantly."""
 
         if name == 'nodeType':
             return self.__class__.__name__
@@ -118,15 +117,15 @@ class Chunk(Constituent):
             gramChunk.evClass):
             doc.addEvent(Event(gramChunk))
 
-    # the next methods (up to, but not including endVerbs) were all
-    # taken from the slinket/s2t version.
+    # the next methods (up to, but not including endVerbs) were all taken from the
+    # slinket/s2t version.
 
     
     def _matchChunk(self, chunkDescription):
 
         """Match the chunk instance to the patterns in chunkDescriptions.
-        chunkDescription is a dictionary with keys-values pairs that
-        match instance variables and their values on GramChunks.
+        chunkDescription is a dictionary with keys-values pairs that match instance
+        variables and their values on GramChunks.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...} 
@@ -194,8 +193,7 @@ class Chunk(Constituent):
         return None
             
     def setEmbedded(self):
-        """Keeping track of chunks embedded
-        within other chunks, for parsing purposes"""
+        """Keeping track of chunks embedded within other chunks, for parsing purposes"""
         self.isEmbedded = 1
 
     def resetEmbedded(self):
@@ -226,9 +224,8 @@ class Chunk(Constituent):
         return string
 
     def getTokens(self, sequence):
-        """Given a sequence of sentence elements, de-chunk it and return a
-        list of plain tokens. Used for mapping sentences slices into
-        RegEx-based patterns."""
+        """Given a sequence of sentence elements, de-chunk it and return a list of plain
+        tokens. Used for mapping sentences slices into RegEx-based patterns."""
         tokensList = []
         for item in sequence:
             if item.nodeType[-5:] == 'Token':
@@ -323,9 +320,8 @@ class NounChunk(Chunk):
     def createEvent(self, verbGramFeat='nil'):
         """for evita"""
         logger.debug("createEvent in NounChunk")
-        # Do not try to create an event if the chunk is empty (which
-        # is happening due to a crazy bug in the converter code) (mv
-        # 11/08/07)
+        # Do not try to create an event if the chunk is empty (which is happening due to a
+        # crazy bug in the converter code) (mv 11/08/07)
         if not self.dtrs:
             return
         GramNCh = self.gramChunk()
@@ -340,9 +336,8 @@ class NounChunk(Chunk):
             logger.debug('[N_NPC] ' + GramNCh.as_extended_string())
         else:
             logger.debug('[1] ' + GramNCh.as_extended_string())
-        # Even if preceded by a BE or a HAVE form,
-        # only tagging N Chunks headed by an eventive noun
-        # E.g., "was an intern" will NOT be tagged
+        # Even if preceded by a BE or a HAVE form, only tagging N Chunks headed by an
+        # eventive noun E.g., "was an intern" will NOT be tagged
         if GramNCh.isEventCandidate_Syn() and GramNCh.isEventCandidate_Sem():
             logger.debug("Accepted Nominal")
             self._processEventInChunk(GramNCh)
@@ -372,12 +367,10 @@ class VerbChunk(Chunk):
     def _updatePositionInSentence(self, endPosition):
         pass
 
-    # The following methods are all from the Evita version. Slinket
-    # threw an error when all methods were included, the culprit being
-    # _identify_substring, which overrides a slightly
-    # different method on Chunk and introduces an error, and whose
-    # name was changed a bit for the slinket/s2t version. Need to find
-    # better solution.
+    # The following methods are all from the Evita version. Slinket threw an error when
+    # all methods were included, the culprit being _identify_substring, which overrides a
+    # slightly different method on Chunk and introduces an error, and whose name was
+    # changed a bit for the slinket/s2t version. Need to find better solution.
     # NOTE: this comment may be obsolete by now
 
     def XXX_identify_substring(self, sentence_slice, fsa_list):
@@ -415,9 +408,8 @@ class VerbChunk(Chunk):
         return restSentence
             
     def _lookForMultiChunk(self, FSA_set, STRUCT='flat'):
-        """Default argument 'STRUCT' specifies the structural format
-        of the rest of the sentence: either a flat, token-level representation
-        or a chunked one."""
+        """Default argument 'STRUCT' specifies the structural format of the rest of the
+        sentence: either a flat, token-level representation or a chunked one."""
         logger.debug("Entering _lookForMultiChunk")
         restSentence = self._getRestSent(STRUCT)
         if STRUCT == 'flat':                                                  
@@ -531,8 +523,8 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
 
         elif GramVCh.nodeIsBecomeForm(self.nextNode()):
-            """Looking for BECOME + ADJ Predicative Complement
-            e.g., He became famous at the age of 21"""
+            """Looking for BECOME + ADJ Predicative Complement e.g., He became famous at
+            the age of 21"""
             logger.debug("Looking for BECOME + ADJ")
             substring = self._lookForMultiChunk(patterns.BECOME_A_FSAs, 'chunked')
             if substring:
@@ -542,8 +534,8 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
 
         elif GramVCh.nodeIsContinueForm(self.nextNode()):
-            """Looking for CONTINUE + ADJ Predicative Complement
-            e.g., Interest rate continued low."""
+            """Looking for CONTINUE + ADJ Predicative Complement e.g., Interest rate
+            continued low."""
             logger.debug("Looking for CONTINUE + ADJ")
             substring = self._lookForMultiChunk(patterns.CONTINUE_A_FSAs, 'chunked')
             if substring:
@@ -553,8 +545,8 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
 
         elif GramVCh.nodeIsKeepForm(self.nextNode()):
-            """Looking for KEEP + ADJ Predicative Complement
-            e.g., The announcement kept everybody Adj."""
+            """Looking for KEEP + ADJ Predicative Complement e.g., The announcement kept
+            everybody Adj."""
             logger.debug("Looking for KEEP + [NChunk] + ADJ ")
             substring = self._lookForMultiChunk(patterns.KEEP_A_FSAs, 'chunked')
             if substring:
@@ -573,10 +565,8 @@ class VerbChunk(Chunk):
         logger.debug("createEvent in VerbChunk")
         
         GramVChList = self.gramChunk()
-        #print GramVChList
         
-        # do not attempt to create an event if there are no true
-        # chunks in there
+        # do not attempt to create an event if there are no true chunks in there
         true_chunks = GramVChList.trueChunkLists
         if len(true_chunks) == 1 and not true_chunks[0]:
             return

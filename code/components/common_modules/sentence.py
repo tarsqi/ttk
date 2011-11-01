@@ -5,8 +5,8 @@ from utilities import logger
 
 class Sentence:
 
-    """A Sentence is a top-level element of a Document. It contains a list
-    of Chunks and Tokens.
+    """A Sentence is a top-level element of a Document. It contains a list of Chunks and
+    Tokens.
     
     Instance variables
         dtrs - a list of Chunks and Tokens
@@ -17,13 +17,11 @@ class Sentence:
         parent - a Document
         embeddedTags - a list
 
-    The eventList variable stores (eLoc, eid) tuples of each tagged
-    event in the sentence, the eLoc is the location of the event
-    inside the embedding constituent, usually a chunk). The
-    embeddedTags variable is a stack to keep track of all currently
-    open elements, in order to deal with multiple embedding of the
-    same element type; e.g., <T3><Chk><T3><Chk> ...
-    </Chk></T3></Chk></T3> """
+    The eventList variable stores (eLoc, eid) tuples of each tagged event in the sentence,
+    the eLoc is the location of the event inside the embedding constituent, usually a
+    chunk). The embeddedTags variable is a stack to keep track of all currently open
+    elements, in order to deal with multiple embedding of the same element type; e.g.,
+    <T3><Chk><T3><Chk> ...  </Chk></T3></Chk></T3>"""
 
     def __init__(self):
         """Initialize all instance variables to 0, empty list or None."""
@@ -65,8 +63,8 @@ class Sentence:
         return self.parent.document()
 
     def add(self, chunkOrToken):
-        """Add a chunk or token to the end of the sentence. Sets the sentence
-        as the value of the parents variable on the chunk or token.
+        """Add a chunk or token to the end of the sentence. Sets the sentence as the value
+        of the parents variable on the chunk or token.
         Arguments
            chunkOrToken - a Chunk or a Token"""
         chunkOrToken.setParent(self)
@@ -74,9 +72,8 @@ class Sentence:
         self.positionCount += 1
 
     def setParent(self, parent):
-        """Set the parent feature of the sentence to the document. Also copies
-        the postionCount variable of the parent to the position
-        variable of the sentence.
+        """Set the parent feature of the sentence to the document. Also copies the
+        postionCount variable of the parent to the position variable of the sentence.
         Arguments
            parent - a Document"""
         self.parent = parent
@@ -109,11 +106,10 @@ class Sentence:
         self.eventList = self.get_event_list()
 
     def trackEmbedding(self, tag):
-        """Tracks embedding of event and timex tags relative to other
-        chunks. Used when (i) a chunk is embedded in a timex, event or
-        other chunk, (ii) an event is found inside a timex or other
-        event, or (iii) a timex is found inside another timex or an
-        event."""
+        """Tracks embedding of event and timex tags relative to other chunks. Used when
+        (i) a chunk is embedded in a timex, event or other chunk, (ii) an event is found
+        inside a timex or other event, or (iii) a timex is found inside another timex or
+        an event."""
         self.embeddedTags.append(tag)
 
     def hasEmbedded(self, tag):
@@ -155,5 +151,3 @@ class Sentence:
     def pp(self):
         """Delegates to self.pretty_print()."""
         self.pretty_print()
-
-        

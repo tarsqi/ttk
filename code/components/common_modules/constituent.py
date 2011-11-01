@@ -8,8 +8,8 @@ from library.timeMLspec import ALINK, SLINK, SYNTAX, RELTYPE
 
 
 class Constituent:
-    """An abstract class that contains some methods that are identical
-    for Chunks and Tokens plus a couple of default methods."""
+    """An abstract class that contains some methods that are identical for Chunks and
+    Tokens plus a couple of default methods."""
 
     def setParent(self, parent):
         self.parent = parent
@@ -21,49 +21,20 @@ class Constituent:
     def document(self):
         return self.parent.document()
 
-    def isToken(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isAdjToken(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isChunk(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isVerbChunk(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isNounChunk(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isAdjChunk(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isTimex(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isEvent(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isNChHead(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
-
-    def isPreposition(self):
-        """Always returns False. Overrides are specified as needed."""
-        return False
+    def isToken(self): return False
+    def isAdjToken(self): return False
+    def isChunk(self): return False
+    def isVerbChunk(self): return False
+    def isNounChunk(self): return False
+    def isAdjChunk(self): return False
+    def isTimex(self): return False
+    def isEvent(self): return False
+    def isNChHead(self): return False
+    def isPreposition(self): return False
     
     def __getattr__(self, name):
-        """Used by node._matchChunk. Needs cases for all instance
-        variables used in the pattern matching phase."""
+        """Used by node._matchChunk. Needs cases for all instance variables used in the
+        pattern matching phase."""
         if name == 'nodeType':
             return self.__class__.__name__
         elif name == 'text':
@@ -84,20 +55,18 @@ class Constituent:
         pass
 
     def nextNode(self):
-        """Works only dreamily when called on Sentence elements. If
-        called on a token that is embedded in a chunk, then it should
-        really look into the next chunk is self is a chunk-final
-        token."""
+        """Works only dreamily when called on Sentence elements. If called on a token that
+        is embedded in a chunk, then it should really look into the next chunk is self is
+        a chunk-final token."""
         try:
             return self.parent[self.position+1]
         except IndexError:
             return ''
 
     def gramChunk(self):
-        """Use a cache to increase speed for the code that checks
-        patterns. That patterns code breaks because this method
-        appears to return None is certain ill-understood cases. Used
-        in Evita only."""
+        """Use a cache to increase speed for the code that checks patterns. That patterns
+        code breaks because this method appears to return None is certain ill-understood
+        cases. Used in Evita only."""
         if not self.cachedGramChunk:
             self._createGramChunk()
         return self.cachedGramChunk
@@ -109,7 +78,6 @@ class Constituent:
     def createEvent(self):
         """Used in Evita only"""
         logger.debug("CreateEvent in Consituent")
-        pass
 
     def _hackToSolveProblemsInValue(self, value):
         """From slinket/s2t"""
@@ -129,8 +97,8 @@ class Constituent:
 
     def _matchChunk(self, chunkDescription):
         """Match the chunk instance to the patterns in chunkDescriptions.
-        chunkDescription is a dictionary with keys-values pairs that
-        match instance variables and their values on GramChunks.
+        chunkDescription is a dictionary with keys-values pairs that match instance
+        variables and their values on GramChunks.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...}
@@ -166,8 +134,7 @@ class Constituent:
 
 
     def get_event(self):
-        """Return None or the EventTag that is contained in the
-        constituent."""
+        """Return None or the EventTag that is contained in the constituent."""
         if self.isEvent():
             return self
         elif self.isChunk:
@@ -177,8 +144,7 @@ class Constituent:
         return None
 
     def get_timex(self):
-        """Return None or the TimexTag that is contained in the
-        constituent."""
+        """Return None or the TimexTag that is contained in the constituent."""
         if self.isTimex():
             return self
         elif self.isChunk:
@@ -213,16 +179,14 @@ class Constituent:
     
     def find_backward_alink(self, fsa_reltype_groups):
 
-        """Search for an alink to the left of the event. Return True
-        is event was found, False otherwise. Note that the context
-        includes the event itself and the token to its immediate
-        right. It is not quite clear why but it has tro do with how
-        the patterns are defined.
+        """Search for an alink to the left of the event. Return True is event was found,
+        False otherwise. Note that the context includes the event itself and the token to
+        its immediate right. It is not quite clear why but it has tro do with how the
+        patterns are defined.
 
-        Backward Alinks also check for the adequacy (e.g., in terms
-        of TENSE or ASPECT) of the Subordinating Event. For cases such
-        as 'the <EVENT>transaction</EVENT> has been
-        <EVENT>completed</EVENT>' """
+        Backward Alinks also check for the adequacy (e.g., in terms of TENSE or ASPECT) of
+        the Subordinating Event. For cases such as 'the <EVENT>transaction</EVENT> has
+        been <EVENT>completed</EVENT>'"""
 
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
@@ -233,9 +197,9 @@ class Constituent:
 
     def _find_alink(self, event_context, fsa_lists, reltype_list):
 
-        """Try to create an alink using the context and patterns from
-        the dictionary. Alinks are created as a side effect. Returns
-        True if an alink was created, False otherwise."""
+        """Try to create an alink using the context and patterns from the
+        dictionary. Alinks are created as a side effect. Returns True if an alink was
+        created, False otherwise."""
        
         for i in range(len(fsa_lists)):
 
@@ -281,10 +245,9 @@ class Constituent:
 
     def find_backward_slink(self, fsa_reltype_groups):
 
-        """Tries to create backward Slinks, using a group of FSAs.
-        Backward Slinks should check for the adequacy (e.g., in terms
-        of TENSE or ASPECT) of the Subordinating Event. For cases such
-        as 'the <EVENT>transaction</EVENT> has been
+        """Tries to create backward Slinks, using a group of FSAs.  Backward Slinks should
+        check for the adequacy (e.g., in terms of TENSE or ASPECT) of the Subordinating
+        Event. For cases such as 'the <EVENT>transaction</EVENT> has been
         <EVENT>approved</EVENT>'
 
         Arguments:
@@ -299,17 +262,15 @@ class Constituent:
 
     def find_reporting_slink(self, fsa_reltype_groups):
 
-        """Reporting Slinks are applied to reporting predicates
-        ('say', 'told', etc) that link an event in a preceeding quoted
-        sentence which is separated from the clause of the reporting
-        event by a comma; e.g.,
+        """Reporting Slinks are applied to reporting predicates ('say', 'told', etc) that
+        link an event in a preceeding quoted sentence which is separated from the clause
+        of the reporting event by a comma; e.g.,
 
             ``I <EVENT>want</EVENT> a referendum,'' Howard
             <EVENT class='REPORTING'>said</EVENT>.
 
-        Slinket assumes that these quoted clauses always initiate the
-        main sentence. Therefore, the first item in the sentence are
-        quotation marks. """
+        Slinket assumes that these quoted clauses always initiate the main
+        sentence. Therefore, the first item in the sentence are quotation marks."""
 
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
@@ -325,9 +286,8 @@ class Constituent:
 
     def _find_slink(self, event_context, fsa_lists, reltype_list):
 
-        """Try to find an slink in the given event_context using lists of
-        FSAs. If the context matches an FSA, then create an slink and
-        insert it in the document.""" 
+        """Try to find an slink in the given event_context using lists of FSAs. If the
+        context matches an FSA, then create an slink and insert it in the document.""" 
             
         for i in range(len(fsa_lists)):
 
@@ -356,14 +316,13 @@ class Constituent:
 
     def _look_for_link(self, sentence_slice, fsa_list):
 
-        """Given a slice of a sentence and a list of FSAs, return a tuple of
-        the size of the matching slize and the number of the FSA that
-        featured in the match. Return False if there is no match."""
+        """Given a slice of a sentence and a list of FSAs, return a tuple of the size of
+        the matching slize and the number of the FSA that featured in the match. Return
+        False if there is no match."""
 
-        # Eventually, if we want to merge EVITA and SLINKET common stuff,
-        # this method should call self._lookForStructuralPattern(FSA_set)
-        # But careful: _lookForLink MUST return also fsaNum
-        # and that will have effects on Evita code. 
+        # Eventually, if we want to merge EVITA and SLINKET common stuff, this method
+        # should call self._lookForStructuralPattern(FSA_set) But careful: _lookForLink
+        # MUST return also fsaNum and that will have effects on Evita code.
 
         lenSubstring, fsaNum = self._identify_substring(sentence_slice, fsa_list)
         #print fsa_list[0]
@@ -378,12 +337,11 @@ class Constituent:
 
     def _identify_substring(self, sentence_slice, fsa_list):
 
-        """Checks whether a token sequnce matches an pattern. Returns a tuple
-        of sub sequence lenght that matched the pattern (where a
-        lenght of 0 indicates no match) and the index of the FSA that
-        applied the succesfull match. This is the method where the FSA
-        is asked to find a substring in the sequence that matches the
-        FSA.
+        """Checks whether a token sequnce matches an pattern. Returns a tuple of sub
+        sequence lenght that matched the pattern (where a lenght of 0 indicates no match)
+        and the index of the FSA that applied the succesfull match. This is the method
+        where the FSA is asked to find a substring in the sequence that matches the FSA.
+
         Arguments:
            sentence_slice - a list of Chunks and Tokens
            fsa_list - a list of FSAs """
@@ -401,7 +359,6 @@ class Constituent:
 
         
     def _extract_quotation(self, fragment):
-
         for idx in range(len(fragment)):
             try:
                 # For some reason, it may break here (though rarely)
@@ -413,16 +370,12 @@ class Constituent:
                 logger.warn('Quotation could not be extracted')
         else:
             return
-
         
         
 def get_reltype(reltype_list, i):
-
-    """Returns the reltype in reltype_list at index i. Returns the
-    last element of reltype list if i is out of bounds (which happens
-    when patterns have a list of reltypes that is shorter than the
-    list of FSAs."""
-    
+    """Returns the reltype in reltype_list at index i. Returns the last element of reltype
+    list if i is out of bounds (which happens when patterns have a list of reltypes that
+    is shorter than the list of FSAs."""
     try:
         reltype = reltype_list[i]
     except IndexError:

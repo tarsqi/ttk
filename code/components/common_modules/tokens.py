@@ -21,8 +21,8 @@ class Token(Constituent):
         self.parent = None
         self.cachedGramChunk = 0
         self.flagCheckedForEvents = 0
-        # added this one to provide a pointer to the XmlDocElement instance.
-        # Made it into a list of all the docelements BK 20080725
+        # added this one to provide a pointer to the XmlDocElement instance.  Made it into
+        # a list of all the docelements BK 20080725
         self.lex_tag_list = []
 
     def __getitem__(self, index):
@@ -63,8 +63,8 @@ class Token(Constituent):
         return self.document.nodeList[self.textIdx]
 
     def document(self):
-        """For some reason, tokens have a document variable. Use this
-        variable and avoid looking all the way up the tree"""
+        """For some reason, tokens have a document variable. Use this variable and avoid
+        looking all the way up the tree"""
         return self.document
 
     def isToken(self):
@@ -95,7 +95,6 @@ class Token(Constituent):
 
 
 class NewToken(Token):
-
     """Playpen to put in some functionality that should replace what is in Token."""
 
     def __init__(self, document, id, text, pos, stem, begin, end):
@@ -111,8 +110,8 @@ class NewToken(Token):
         self.parent = None
         self.cachedGramChunk = 0
         self.flagCheckedForEvents = 0
-        # added this one to provide a pointer to the XmlDocElement instance.
-        # Made it into a list of all the docelements BK 20080725
+        # added this one to provide a pointer to the XmlDocElement instance.  Made it into
+        # a list of all the docelements BK 20080725
         self.lex_tag_list = []
 
     def getText(self):
@@ -122,19 +121,16 @@ class NewToken(Token):
         
 class AdjectiveToken(Token):
 
-    
     def __init__(self, document, pos, lid=0):
         Token.__init__(self, document, pos, lid)
         self.event = None
         self.eid = None
-
         
     def _createGramChunk(self):
         self.cachedGramChunk = GramAChunk(self)
 
 
     def __getattr__(self, name):
-
         """(Slinket method) Used by Sentence._match. Needs cases for all instance
         variables used in the pattern matching phase."""
 
@@ -170,11 +166,9 @@ class AdjectiveToken(Token):
 
         
     def createEvent(self):
-        """Arriving here adjs passed through the main loop
-        for createEvent"""
+        """Arriving here adjs passed through the main loop for createEvent"""
         logger.debug("createEvent in AdjToken")
         pass
-
     
     def createAdjEvent(self, verbGramFeat='nil'):
         """(Evita method) only for tokens that are not in a chunk"""
@@ -195,14 +189,11 @@ class AdjectiveToken(Token):
                 logger.debug("[A_2Ev] " + GramACh.as_extended_string())
             self._processEventInToken(GramACh)            
 
-            
     def isAdjToken(self):
         return 1
 
-
     def doc(self):
         return self.parent.document()
-    
 
     def setEventInfo(self, eid):
         self.event = 1

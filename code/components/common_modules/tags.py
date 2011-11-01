@@ -32,10 +32,9 @@ class EventTag(Tag):
     """Class for TimeML EVENT tags."""
     
     def __init__(self, attrs):
-        """ The nodeType attribute is set to the same value as name
-         because some methods ask for a nodeType attribute, which used
-         to be dealt with by __getattr__ which I'm trying to get rid
-         of. (MV 2007/06/13) """
+        """ The nodeType attribute is set to the same value as name because some methods
+         ask for a nodeType attribute, which used to be dealt with by __getattr__ which
+         I'm trying to get rid of. (MV 2007/06/13)"""
         self.name = EVENT
         self.nodeType = EVENT
         self.dtrs = []
@@ -151,9 +150,8 @@ class InstanceTag(Tag):
 
 class TimexTag(Tag):
 
-    """There is something fishy about this class because it all breaks
-    when you try to print an instance. The problem probably stems from
-    __getattr__."""
+    """There is something fishy about this class because it all breaks when you try to
+    print an instance. The problem probably stems from __getattr__."""
     
     def __init__(self, attrs):
         # NOTE: need to standardize on using name or nodeType
@@ -178,10 +176,9 @@ class TimexTag(Tag):
         return self.dtrs[i:j]
 
     def X__getattr__(self, name):
-        """This method causes weird problems. The code seems to run okay
-        without it, but it is used, typically for nodeType. Investigate
-        what it is used for and eliminate that use, which was already done
-        for nodeType."""
+        """This method causes weird problems. The code seems to run okay without it, but
+        it is used, typically for nodeType. Investigate what it is used for and eliminate
+        that use, which was already done for nodeType."""
 
         if trackGetAttrUse:
             print "*** TimexTag.__getattr__", name
@@ -232,8 +229,7 @@ class TimexTag(Tag):
         
 class SignalTag(Tag):
 
-    """The class for SIGNAL tags.
-
+    """
     Instance variables
        name - a string"""
     
@@ -244,8 +240,7 @@ class SignalTag(Tag):
         
 class TlinkTag(Tag):
 
-    """The class for TLINK tags.
-
+    """
     Instance variables
        name - a string
        attrs - a dictionary of attributes"""
@@ -257,9 +252,7 @@ class TlinkTag(Tag):
 
         
 class SlinkTag(Tag):
-
-    """The class for SLINK tags.
-
+    """
     Instance variables
        name - a string
        attrs - a dictionary of attributes"""
@@ -271,9 +264,7 @@ class SlinkTag(Tag):
 
         
 class AlinkTag(Tag):
-
-    """The class for ALINK tags.
-
+    """
     Instance variables
        name - a string
        attrs - a dictionary of attributes"""
@@ -282,4 +273,3 @@ class AlinkTag(Tag):
         """Initialize name and attributes."""
         self.name = ALINK
         self.attrs = attrs
-

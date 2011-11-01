@@ -1,13 +1,13 @@
 DEBUG_BAYES = 0
 
-# Specify at which frequency training data are allowed to have an
-# impact on sense disambiguation
+# Specify at which frequency training data are allowed to have an impact on sense
+# disambiguation
 MINIMAL_FREQUENCY = 2.0
 
 
 class DisambiguationError(LookupError):
-    """Use a special exception class to distinguish general KeyErrors
-    from errors due to failed disambiguation. """
+    """Use a special exception class to distinguish general KeyErrors from errors due to
+    failed disambiguation."""
     pass
 
 
@@ -24,9 +24,7 @@ class BayesEventRecognizer:
         self.context = context
         self.nominalForm = nominalForm
 
-        # retrieve probability data and get event and non-event
-        # probabilities
-        
+        # retrieve probability data and get event and non-event probabilities
         try:
             senseProbData = self.senseProbs[nominalForm]
         except KeyError:
@@ -47,9 +45,8 @@ class BayesEventRecognizer:
         if probNonEvent == 1:
             return False
 
-        # adjust probablities with probabilities of contextual
-        # elements, ignore contexts for which we have no data
-        
+        # adjust probablities with probabilities of contextual elements, ignore contexts
+        # for which we have no data
         for contextForm in context:
             try:
                 contextData = self.condProbs[nominalForm][contextForm]
