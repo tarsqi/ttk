@@ -90,7 +90,7 @@ class Token(Constituent):
         if self.event:
             event_string = ' event="' + str(self.event_tag.attrs) + '"'
             
-        print type(self.getText()), "%s<lex lid=\"%s\" pos=\"%s\" text=\"%s\"%s>" % \
+        print "%s<lex lid=\"%s\" pos=\"%s\" text=\"%s\"%s>" % \
               (indent * ' ', self.lid, self.pos, self.getText(), event_string)
 
 
@@ -98,15 +98,15 @@ class NewToken(Token):
 
     """Playpen to put in some functionality that should replace what is in Token."""
 
-    def __init__(self, document, text, pos, stem, begin, end):
-        self.doc = document
+    def __init__(self, document, id, text, pos, stem, begin, end):
+
+        self.document = document
         self.text = text
         self.pos = pos
+        self.lid = id
 
-        self.lid = 1
         self.event = None
         self.textIdx = []          # should be None?
-        self.document = document
         self.position = None
         self.parent = None
         self.cachedGramChunk = 0

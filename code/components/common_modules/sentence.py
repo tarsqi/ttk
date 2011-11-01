@@ -47,9 +47,18 @@ class Sentence:
         else:
             return self.dtrs[index]
 
+    def __setitem__(self, idx, element):
+        """Note that element has to be a sequence if idx is a slice."""
+        self.dtrs[idx] = element
+
     def __getslice__(self, i, j):
         """Get a slice from the dtrs variable."""
         return self.dtrs[i:j]
+
+    def X__setslice__(self, i, j, seq):
+        """Set a slice in the dtrs variable. Deprecated in 2.6, __setitem__ above should
+        do the trick."""
+        self.dtrs[i:j] = seq
 
     def document(self):
         """Return the document that the sentence is in."""

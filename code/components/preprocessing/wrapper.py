@@ -24,10 +24,15 @@ from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
 
 
-# ensure unique identifiers
-LEX_ID = 0
-CHUNK_ID = 0
-SENT_ID = 0
+
+class TagId:
+    """Class to provide fresh identifers for lex, ng, vg and s tags."""
+    ids = { 's': 0, 'c': 0, 'l': 0 }
+    @classmethod
+    def next(cls, prefix):
+        cls.ids[prefix] += 1
+        return "%s%d" % (prefix, cls.ids[prefix])
+
 
 treetagger = None
 
@@ -143,8 +148,8 @@ class PreprocessorWrapper:
                 continue
             lex = token[1]
             if item[0] == '<' and item[-1] == '>':
-                # not quite sure what these are for, probably tags that
-                # the TreeTagger leaves alone
+                # not quite sure what these are for, probably tags that the TreeTagger
+                # leaves alone
                 current_sentence.append((item[0], 'SYM', item[0], lex.begin, lex.end))
             else:
                 (tok, pos, stem) = item.split("\t")
@@ -155,30 +160,25 @@ class PreprocessorWrapper:
 
 
 def export(text, tarsqi_element):
-    export_to_tags(text, tarsqi_element)
-    export_to_doctree(text, tarsqi_element)
+    """Export preprocessing information to the tag repository ad the doctree."""
+    export_text_to_tags(text, tarsqi_element)
+    export_tags_to_doctree(tarsqi_element)
     
 
-def export_to_tags(text, tarsqi_element):
-
+def export_text_to_tags(text, tarsqi_element):
     """Updates the TagRepository with the text that is the result of preprocessing."""
 
-    global LEX_ID, CHUNK_ID, SENT_ID
     ctag = None
 
     for sentence in text:
 
-        SENT_ID += 1
-        sid = "s%d" % SENT_ID
-        stag = Tag(sid, 's', None, None, {})
+        stag = Tag(TagId.next('s'), 's', None, None, {})
 
         for token in sentence:
 
             if type(token) == StringType and token.startswith('<') and token.endswith('>'):
                 if not token.startswith('</'):
-                    CHUNK_ID += 1
-                    cid = "c%d" % CHUNK_ID
-                    ctag = Tag(cid, token[1:-1], None, None, {})
+                    ctag = Tag(TagId.next('c'), token[1:-1], None, None, {})
                 else:
                     ctag.end = last_ltag.end
                     ctag.nodes.append("%s" % (last_ltag.id))
@@ -186,9 +186,7 @@ def export_to_tags(text, tarsqi_element):
                     ctag = None
 
             elif type(token) == TupleType:
-                LEX_ID += 1
-                lid = "l%d" % LEX_ID
-                ltag = Tag(lid, 'lex', token[3], token[4], { 'lemma': token[2], 'pos': token[1] })
+                ltag = Tag(TagId.next('l'), 'lex', token[3], token[4], { 'lemma': token[2], 'pos': token[1] })
                 tarsqi_element.tarsqi_tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]
@@ -209,35 +207,60 @@ def export_to_tags(text, tarsqi_element):
     tarsqi_element.tarsqi_tags.index()
 
 
+def export_tags_to_doctree(tarsqi_element):
+    """Build an instance of Document in the doctree variable, using the tags in the
+    tarsqi_tags repository."""
 
-def export_to_doctree(text, tarsqi_element):
+    element_name = tarsqi_element.__class__.__name__ + ':' + str(tarsqi_element.id)
+    tarsqi_element.doctree = Document(element_name)
+    doctree = tarsqi_element.doctree
+    tarsqi_doc = tarsqi_element.doc
 
-    """TODO: should probably not build this from the text but from the tarsqi element's tag repository."""
+    currentSentence = Sentence()
+    chunks = []
 
-    tarsqi_element.doctree = Document('tarsqi_element')
-    doc = tarsqi_element.doctree
+    for t in tarsqi_element.tarsqi_tags.tags:
 
-    currentSentence = None
-    
-    for sentence in text:
-        
-        currentSentence = Sentence()
-        doc.addSentence(currentSentence)
+        if t.name == 's':
+            insert_chunks(currentSentence, chunks)
+            chunks = []
+            doctree.addSentence(currentSentence)
+            currentSentence = Sentence()
 
-        for element in sentence:
+        elif t.name in ('NG', 'VG'):
+            chunks.append(t)
 
-            if type(element) == StringType and element.startswith('<') and element.endswith('>'):
-
-                pass
-
-            elif type(element) == TupleType:
-
-                #print element
-                (text, pos, stem, begin, end) = element
-                tok = NewToken(doc, text, pos, stem, begin, end)
-                #tok.pretty_print()
-                #currentSentence.add(Token(doc, 'door',12))
-                pass
+        elif t.name == 'lex':
+            p1 = t.begin
+            p2 = t.end
+            # TODO: use Token
+            tok = NewToken(doctree, t.id, tarsqi_doc.text(p1,p2), t.attrs['pos'], t.attrs['lemma'], p1, p2)
+            currentSentence.add(tok)
+            
+    doctree.pretty_print()
 
 
-    #doc.pretty_print()
+def insert_chunks(sentence, chunks):
+    """For each chunk, find the lexes that are part of it, add them to the chunk, and
+    replace the sequences of lex tags in the sentence woth the chunk."""
+
+    def find_lex_in_sentence(lid):
+        idx = 0
+        for l in sentence:
+            if l.isToken() and l.lid == lid: return idx
+            idx += 1
+        return -1
+
+    def chunk_class(tag):
+        if tag == 'NG': return NounChunk
+        if tag == 'VG': return VerbChunk
+
+    for c in chunks:
+        lex1 = find_lex_in_sentence(c.nodes[0])
+        lex2 = find_lex_in_sentence(c.nodes[-1])
+        if c.name in ('NG', 'VG'):
+            c_class = chunk_class(c.name)
+            chunk = c_class(c.name)
+            for i in range(lex1, lex2+1):
+                chunk.addToken(sentence[i])
+            sentence[lex1:lex2+1] = [chunk]
