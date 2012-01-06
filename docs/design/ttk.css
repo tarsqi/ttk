@@ -1,0 +1,19 @@
+
+body { 
+ width: 700pt; font-size: 14pt; margin-left: 10pt;
+ counter-reset: section; }
+
+h3 { 
+     }
+
+h3:before { 
+ content: counter(section) ". "; 
+ counter-increment: section; }
+
+p { font-size: 14pt; }
+
+table { margin-left: 10pt; }
+
+td {  font-size: 14pt; }
+
+img { margin-left: 10pt; }
