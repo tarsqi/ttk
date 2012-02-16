@@ -44,6 +44,19 @@ class GUTimeWrapper:
         xmldocs = [self.document.xmldoc]
         count = 0
 
+        print "\n\n"
+        print '-'*90
+        print self.document
+        for element in self.document.elements:
+            print "\n"
+            print element.source_tags
+            element.source_tags.pp()
+            print element.tarsqi_tags
+            element.tarsqi_tags.pp()
+
+
+        return
+    
         for xmldoc in xmldocs:
 
             count += 1
