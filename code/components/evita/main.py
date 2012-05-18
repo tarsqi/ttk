@@ -57,12 +57,28 @@ class Evita (TarsqiComponent):
                 if not node.flagCheckedForEvents:
                     node.createEvent()
 
+    # The following method will replace the previous one. This will also make
+    # process_file, process_xmldoc and process_string obsolete, and those will need to be
+    # replaced somehow.
+                    
     def process_element(self, element):
+
+        """Process an instance of docmodel.document.TarsqiDocParagraph. """
+        
         for sentence in element.doctree:
+
+            # element.doctree is an instance
+            # of components.common_modules.document.Document 
+
+            # one difference with 1.0 is that the pp() prints "nodeCounter 0" instead of a
+            # higher number
+            print '>>>', element.doctree
+            element.doctree.pp()
+            
             print "<sentence>\n"
             logger.debug("> SENTENCE:" + str(getWordList(sentence)))
             for node in sentence:
-                # node.pretty_print()
+                node.pretty_print()
                 # print "  checked=" + str(node.flagCheckedForEvents) + "\n"
                 if not node.flagCheckedForEvents:
                     node.createEvent()

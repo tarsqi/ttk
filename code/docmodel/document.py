@@ -129,8 +129,9 @@ class TarsqiDocElement:
         self.tarsqi_tags = TagRepository()
 
     def __str__(self):
-        return "<%s #%d %d:%d>\n\n%s" % (self.__class__, self.id, self.begin, self.end, 
-                                         self.get_text().encode('utf-8').strip())
+        return "<%s #%d %d:%d>\n\n%s\n" % \
+               (self.__class__, self.id, self.begin, self.end, 
+                self.get_text().encode('utf-8').strip())
             
     def _assign_identifier(self):
         self.__class__.ELEMENT_ID += 1

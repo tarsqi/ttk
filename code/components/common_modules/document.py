@@ -275,3 +275,5 @@ class Document:
             print "\nSENTENCE " + str(count) + "\n"
             sentence.pretty_print()
         print "\n"
+
+    def pp(self): self.pretty_print()

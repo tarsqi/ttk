@@ -22,4 +22,6 @@ class EvitaWrapper:
         """Retrieve the xmldoc and hand it to Evita for processing. Evita processing will
         update the xmldoc when events are added. No arguments and no return value."""
         for element in self.document.elements:
+            # element is an instance of docmodel.document.TarsqiDocParagraph (which is a
+            # subclass of docmodel.document.TarsqiDocElement)
             Evita().process_element(element)

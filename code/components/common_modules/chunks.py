@@ -340,6 +340,8 @@ class NounChunk(Chunk):
         # eventive noun E.g., "was an intern" will NOT be tagged
         if GramNCh.isEventCandidate_Syn() and GramNCh.isEventCandidate_Sem():
             logger.debug("Accepted Nominal")
+            print type(GramNCh)
+            print GramNCh.__class__
             self._processEventInChunk(GramNCh)
 
 
