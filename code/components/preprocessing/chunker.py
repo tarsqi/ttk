@@ -9,6 +9,9 @@ Usage
    
 """
 
+from types import StringType
+    
+
 
 # CHUNK TYPES
 
@@ -252,14 +255,50 @@ class Sentence:
 
     def is_VB_VBG_NN(self, idx):
 
-        """Return True is starting at idx, we get the pattern "NOT_BE VBG
+        """Return True if starting at idx, we have the pattern "NOT_BE VBG
         </VG> <NG> NN", return False otherwise."""
 
+        def not_be(token):
+            if len(token) > 2:
+                return token[2] != 'be'
+            else:
+                return token[0] not in ('is', 'am', 'are')
+            
         # may want to test for tuples, but this works even thought the
         # first one below evaluates to True for chunk tags.
         return \
-            self.sentence[idx][2] != 'be' \
+            not_be(self.sentence[idx]) \
             and self.sentence[idx+1][1] == 'VBG' \
             and self.sentence[idx+2] == '</VG>' \
             and self.sentence[idx+3] == '<NG>' \
             and self.sentence[idx+4][1] in ('NN', 'NNS', 'NNP', 'NNPS') 
+
+    
+    def pp(self):
+        in_chunk = False
+        for t in self.sentence:
+            ss = '   '+str(t) if in_chunk else str(t)
+            print ss
+            if type(t) == StringType:
+                in_chunk = not in_chunk
+
+
+
+if __name__ == '__main__':
+
+    # Example input with token, tag, stem, begin offset and end offset. The offsets are
+    # not needed, but will be passed on in the output if they are given.
+    s1 = [('Mr.', 'NNP', 'Mr.', 16, 19), ('Vinken', 'NNP', 'Vinken', 20, 26),
+          ('got', 'VBD', 'get', 27, 30), ('the', 'DT', 'the', 31, 34),
+          ('flue', 'NN', 'flue', 35, 39), ('on', 'IN', 'on', 40, 42),
+          ('Nov.', 'NNP', 'Nov.', 43, 47), ('29th', 'JJ', '29th', 48, 52),
+          ('.', '.', '.', 52, 53)]
+
+    # Input with only token and tag is also excepted, but may result in a few more faulty
+    # chunks
+    s2 = [t[:2] for t in s1]
+    
+    for s in [s1, s2]:
+        sentence = Sentence(s)
+        sentence.chunk()
+        sentence.pp()
