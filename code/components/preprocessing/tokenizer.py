@@ -1,18 +1,36 @@
 """
 
-Simple tokenizer.
+Simple tokenizer that leaves the input unchanged and that generates character
+offsets of tokens and sentences.
 
 Usage:
 
     tokenizer = Tokenizer(text_string)
     tokenizer.tokenize_text()
+
+At this point, you can get lists of sentences offsets and token offsets in the
+tokenizer object:
+
+    print tokenizer.sentences
+    print tokenizer.tokens
+
+You can also get the output as an xml string or in the old-fashioned
+format with one-sentences-per-line and tokens separated by spaces:
+
     print tokenizer.get_tokenized_as_xml()
     print tokenizer.get_tokenized_as_string()
+
+Both methods return unicode strings.
+
+If you run this file as the main script, it expects a filename as the single
+argument. It prints both the xml string and the old-fashioned string to the
+standard output, followed by a note on elasped time. Edit the end of the script
+to change this.
 
 """
 
 import re
-from cStringIO import StringIO
+from StringIO import StringIO
 from xml.sax.saxutils import escape
 
 from abbreviation import dict_abbrevs
@@ -72,7 +90,7 @@ class Tokenizer:
         self.tokens = []
         self.lexes = []
         self.sentences = []
-        
+
         while offset < self.length:
             (space, word) = self.slurp_token(offset)
             if word[2]:
@@ -87,10 +105,10 @@ class Tokenizer:
     
 
     def slurp_token(self, offset):
-        """Given a string and an offset in the string, return two tuples, one for
-        whitespace after the offset and one for a sequence of non-whitespace immdediately
-        after the whitespace. A tuple consists of an begin offset, an end offset and a
-        string."""
+        """Given a string and an offset in the string, return two tuples, one
+        for whitespace characters after the offset and one for non-whitespaces
+        characters immediately after the whitespace. A tuple consists of a begin
+        offset, an end offset and a string."""
         (o1, o2, space) = self._slurp(offset, test_space)
         (o3, o4, token) = self._slurp(o2, test_nonspace)
         return ((o1, o2, space), (o3, o4, token))
@@ -117,7 +135,6 @@ class Tokenizer:
                 if tok[0] != tok[1]:
                     self.lexes.append(tok)
             self.lexes += p2
-
             
     def _set_sentences(self):
 
@@ -244,24 +261,24 @@ class Tokenizer:
         """Return the tokenized text as an XML string. Crappy way of printing XML, will
         only work for lex and s tags. Need to eventually use a method on TarsqiDocument
         (now there is a method on DocSource that probably needs to be moved."""
-        lex_open_function = lambda lex: "<lex begin='%s' end='%s'>" % (lex[0], lex[1])
+        lex_open_function = lambda lex: u"<lex begin='%s' end='%s'>" % (lex[0], lex[1])
         return self.get_tokenized( xml = True,
-                                   s_open = "<s>\n",
-                                   s_close = "</s>\n",
+                                   s_open = u"<s>\n",
+                                   s_close = u"</s>\n",
                                    lex_open = lex_open_function,
-                                   lex_close = "</lex>\n",
-                                   lexindent = "  ")
+                                   lex_close = u"</lex>\n",
+                                   lexindent = u"  ")
     
     def get_tokenized_as_string(self):
         """Return the tokenized text as a string where sentences are on one line and
         tokens are separated by spaces. Not that each sentence ends in a space."""
-        lex_open_function = (lambda lex: '')
+        lex_open_function = (lambda lex: u'')
         return self.get_tokenized( xml = False,
-                                   s_open = '',
-                                   s_close = "\n",
+                                   s_open = u'',
+                                   s_close = u"\n",
                                    lex_open = lex_open_function,
-                                   lex_close = ' ',
-                                   lexindent = '')
+                                   lex_close = u' ',
+                                   lexindent = u'')
 
     
     def get_tokenized(self, xml, s_open, s_close, lex_open, lex_close, lexindent):
@@ -272,7 +289,7 @@ class Tokenizer:
         
         fh = StringIO()
         if xml:
-            fh.write("<TOKENS>\n")
+            fh.write(u"<TOKENS>\n")
         
         (in_lex, in_sent, off) = (False, False, 0)
 
@@ -307,7 +324,7 @@ class Tokenizer:
             off += 1
 
         if xml:
-            fh.write("<TOKENS>\n")
+            fh.write(u"<TOKENS>\n")
 
         return fh.getvalue()
 
@@ -336,10 +353,12 @@ class TokenizedText:
     elements. Each element can either be a TokenizedSentence or a TokenizedLex (the latter
     for a token outside a sentence tag)."""
     
-    def __init__(self, sentences, lexes):
+    def __init__(self, sentences, tokenizer_lexes):
 
         self.sentences = []
 
+        lexes = tokenizer_lexes[:]
+        
         for s in sentences:
 
             (first, last) = s[0:2]
@@ -370,13 +389,13 @@ class TokenizedText:
             (first, last) = (lexes[0][0], lexes[-1][1])
             self.sentences.append( TokenizedSentence(first, last) )
             while lexes:
-                lex = lexes[0]
+                lex = lexes_copy[0]
                 self.sentences[-1].append( TokenizedLex(lex[0], lex[1], lex[2]) )
-                lexes.pop(0)
+                lexes_copy.pop(0)
 
 
     def as_string(self):
-        str = ''
+        str = u''
         for s in self.sentences:
             str += s.as_string()
         return str
@@ -420,7 +439,7 @@ class TokenizedSentence:
         self.tokens.append(item)
 
     def as_string(self):
-        return ' '.join([t.text for t in self.tokens]) + "\n"
+        return u' '.join([t.text for t in self.tokens]) + u"\n"
     
     def as_vertical_string(self):
         return "\n".join([t.text for t in self.tokens]) + "\n"
@@ -468,15 +487,17 @@ class TokenizedLex:
 
 if __name__ == '__main__':
 
-    import sys
+    import sys, codecs
     from time import time
 
     in_file = sys.argv[1]
-    btime = time()
-    tokenizer = Tokenizer( open(in_file).read() )
+    t1 = time()
+    tk = Tokenizer( codecs.open(in_file, encoding="utf-8").read() )
     for i in range(1):
-        tokenizer.tokenize_text()
-    print tokenizer.get_tokenized_as_xml()
-    print tokenizer.get_tokenized_as_string()
+        text = tk.tokenize_text()
+    #print tk.sentences
+    #print tk.lexes
+    print tk.get_tokenized_as_xml()
+    print tk.get_tokenized_as_string()
     
-    print "\nDONE, processing time was %.3f seconds\n" % (time() - btime)
+    print "\nDONE, processing time was %.3f seconds\n" % (time() - t1)
