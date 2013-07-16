@@ -258,9 +258,10 @@ class Tokenizer:
 
         
     def get_tokenized_as_xml(self):
-        """Return the tokenized text as an XML string. Crappy way of printing XML, will
-        only work for lex and s tags. Need to eventually use a method on TarsqiDocument
-        (now there is a method on DocSource that probably needs to be moved."""
+        """Return the tokenized text as an XML string. Crappy way of printing
+        XML, will only work for lex and s tags. Need to eventually use a method
+        on TarsqiDocument (now there is a method on DocSource that probably
+        needs to be moved."""
         lex_open_function = lambda lex: u"<lex begin='%s' end='%s'>" % (lex[0], lex[1])
         return self.get_tokenized( xml = True,
                                    s_open = u"<s>\n",
@@ -270,8 +271,9 @@ class Tokenizer:
                                    lexindent = u"  ")
     
     def get_tokenized_as_string(self):
-        """Return the tokenized text as a string where sentences are on one line and
-        tokens are separated by spaces. Not that each sentence ends in a space."""
+        """Return the tokenized text as a string where sentences are on one line
+        and tokens are separated by spaces. Not that each sentence ends with a
+        space because each token is followed by a space."""
         lex_open_function = (lambda lex: u'')
         return self.get_tokenized( xml = False,
                                    s_open = u'',
@@ -288,25 +290,27 @@ class Tokenizer:
         self._set_tag_indexes()
         
         fh = StringIO()
+        
         if xml:
             fh.write(u"<TOKENS>\n")
         
         (in_lex, in_sent, off) = (False, False, 0)
 
-        for char in self.text:
-
+        for off in range(len(self.text) + 1):
+            
+            char = self.text[off] if off < len(self.text) else None
             closing_lex = self.closing_lexes.get(off)
             opening_lex = self.opening_lexes.get(off)
             closing_s = self.closing_sents.get(off)
             opening_s = self.opening_sents.get(off)
 
             if closing_lex:
-                fh.write(lex_close)
+                if not closing_s:
+                    fh.write(lex_close)
                 in_lex = False
             if closing_s:
                 fh.write(s_close)
                 in_sent = False
-                
             if opening_s:
                 fh.write(s_open)
                 in_sent = True
@@ -315,16 +319,14 @@ class Tokenizer:
                 if in_sent: indent = lexindent
                 fh.write(indent + lex_open(opening_lex))
                 in_lex = True
-
-            if in_lex:
+                
+            if in_lex and char is not None:
                 write_char = char
                 if xml: write_char = escape(char)
-                fh.write(write_char.encode('utf-8'))
+                fh.write(write_char)
                 
-            off += 1
-
         if xml:
-            fh.write(u"<TOKENS>\n")
+            fh.write(u"</TOKENS>\n")
 
         return fh.getvalue()
 
@@ -427,7 +429,7 @@ class TokenizedText:
         print "</TOKENS>"
 
 
-            
+
 class TokenizedSentence:
 
     def __init__(self, b, e):
@@ -440,22 +442,22 @@ class TokenizedSentence:
 
     def as_string(self):
         return u' '.join([t.text for t in self.tokens]) + u"\n"
-    
+
     def as_vertical_string(self):
         return "\n".join([t.text for t in self.tokens]) + "\n"
 
     def as_pairs(self):
         return [(t.text, t) for t in self.tokens]
-        
+
     def print_as_string(self):
         print ' '.join([t.text for t in self.tokens])
-        
+
     def print_as_xmlstring(self):
         print '<s>'
         for t in self.tokens:
             t.print_as_xmlstring(indent='  ')
         print '</s>'
-            
+
             
 class TokenizedLex:
 
@@ -475,7 +477,7 @@ class TokenizedLex:
 
     def as_pairs(self):
         return [(self.text, self)]
-    
+
     def print_as_string(self, indent=''):
         print self.text
 
@@ -483,7 +485,7 @@ class TokenizedLex:
         print "%s<lex begin=\"%d\" end=\"%d\">%s</lex>" % \
               (indent, self.begin, self.end, escape(self.text))
 
-            
+
 
 if __name__ == '__main__':
 
@@ -499,5 +501,4 @@ if __name__ == '__main__':
     #print tk.lexes
     print tk.get_tokenized_as_xml()
     print tk.get_tokenized_as_string()
-    
     print "\nDONE, processing time was %.3f seconds\n" % (time() - t1)
