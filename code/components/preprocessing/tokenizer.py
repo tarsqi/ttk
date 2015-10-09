@@ -391,9 +391,10 @@ class TokenizedText:
             (first, last) = (lexes[0][0], lexes[-1][1])
             self.sentences.append( TokenizedSentence(first, last) )
             while lexes:
-                lex = lexes_copy[0]
+                #lex = lexes_copy[0]
+                lex = lexes[0]
                 self.sentences[-1].append( TokenizedLex(lex[0], lex[1], lex[2]) )
-                lexes_copy.pop(0)
+                lexes.pop(0)
 
 
     def as_string(self):
