@@ -235,7 +235,7 @@ g_langsupport = {
     "en": { "binfile-win": "tree-tagger.exe",
             "binfile-lin": "tree-tagger",
             "binfile-darwin": "tree-tagger",
-            "tagparfile": "english.par",
+            "tagparfile": "english-utf8.par",
             "abbrevfile": "english-abbreviations",
             "pchar"     : alonemarks+r"'",
             "fchar"     : alonemarks+r"'",
