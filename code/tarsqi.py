@@ -117,7 +117,7 @@ class Tarsqi(ParameterMixin):
         # Make sure we're in the right directory. If the toolkit crashed on a previous
         # file it may end up being in a different directory.
         os.chdir(TTK_ROOT)
-        
+
         self.input = input
         self.output = output
         self.basename = _basename(input)
@@ -167,23 +167,20 @@ class Tarsqi(ParameterMixin):
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-        #self.document.pp(xmldoc=False, source=True,
-        #                 parameters=False, metadata=False, elements=True)
 
         for (name, wrapper) in self.pipeline:
-            print name
+            print name, wrapper
             self.apply_component(name, wrapper, self.document)
             
-        #self.docsource.print_xml('tmp.xml')
-        #self.document.print_sentences('tmp-sentences.py')
+        #self.document.pp(xmldoc=False, source=False, elements=True)
+
+        os.chdir(TTK_ROOT)
+        self.docsource.print_xml('tmp.xml')
+        self.document.print_sentences('tmp-sentences.py')
         self.document.print_source('tmp-source.txt')
         self.document.print_source_tags('tmp-tags.txt')
         self.document.print_tarsqi_tags('tmp-ttk.txt')
 
-        #self.document.pp(xmldoc=False, source=False,
-        #                 parameters=False, metadata=False, elements=True)
-        
-        os.chdir(TTK_ROOT)
 
 
     def _skip_file(self):

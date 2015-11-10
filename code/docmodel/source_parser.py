@@ -39,6 +39,7 @@ class SourceParser:
 
     Instance variables
        encoding - a string
+       sourcedoc - an instance of SourceDoc
        parser - an Expat parser
 
     TODO: need to add other handlers, see http://docs.python.org/library/pyexpat.html
@@ -47,6 +48,7 @@ class SourceParser:
     def __init__(self, encoding='utf-8'):
         """Set up the Expat parser."""
         self.encoding = encoding
+        self.sourcedoc = None
         self.parser = xml.parsers.expat.ParserCreate(encoding=encoding)
         self.parser.buffer_text = 1
         self.parser.XmlDeclHandler = self._handle_xmldecl
@@ -61,6 +63,7 @@ class SourceParser:
         """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
         file object as its single argument and returns the SourceDoc. """
         self.sourcedoc = SourceDoc(filename)
+        # TODO: should this be codecs.open() for non-ascii?
         self.parser.ParseFile(open(filename))  # this adds content to the sourcedoc variable
         self.sourcedoc.finish()
         return self.sourcedoc
@@ -104,13 +107,14 @@ class SourceParser:
 class SourceDoc:
 
     """A SourceDoc is created by the SourceParser and contains source data and annotations
-    of those data. The source data are put in the source variable as a unicode string,
+    of those data. The source data are put in the text variable as a unicode string,
     tags are in the tags variable and contain begin and end positions in the source."""
 
     def __init__(self, filename='<STRING>'):
         """Initialize a SourceDoc on a filename or a string."""
         self.filename = filename
         self.xmldecl = None
+        # initialize as a list, will be a string later
         self.text = []
         self.comments = {}
         self.processing_instructions = {}
@@ -135,7 +139,7 @@ class SourceDoc:
 
     def add_comment(self, string):
         self.comments.setdefault(self.offset,[]).append(string)
-        
+
     def add_processing_instruction(self, target, data):
         self.processing_instructions.setdefault(self.offset,[]).append((target, data))
 
@@ -174,18 +178,21 @@ class SourceDoc:
            
     def print_xml(self, filename):
 
-        """Print self as an inline XML file. This should work on all input that did not
-        generate a warning while parsing. The output file is identical to the input file
-        modulo processing instrucxtions, comments, and the order of attributes in an
-        opening tag and the kind of quotes used. Also, tags that were printed as
-        <SOME_TAG/> will be printed as two tags. There are no provisions for crossing
-        tags. Therefore, the code is also not set up to deal with tags added to the tags
-        repository since those may have introduced crossing tags."""
+        """Print self as an inline XML file. This should work on all input that did
+        not generate a warning while parsing. The output file is identical to
+        the input file modulo processing instructions, comments, and the order
+        of attributes in an opening tag and the kind of quotes used. Also, tags
+        that were printed as <SOME_TAG/> will be printed as two tags. There are
+        no provisions for crossing tags. Therefore, the code is also not set up
+        to deal with tags added to the tags repository since those may have
+        introduced crossing tags.
+
+        """
 
         # TODO: check what happens when input is not an xml file
         # TODO: add xmldec, processing instructions and comments
-        
-        xml_string = u''
+
+        xml_string = u''  # TODO: use a string buffer
         offset = 0
         stack = []
         
@@ -214,13 +221,10 @@ class SourceDoc:
 
 
     def _matching_closing_tags(self, offset, stack, matching):
-
         """Recursively return the closing tags that match the tail of the stack of opening
         tags."""
-        
         if not stack:
             return (stack, matching)
-
         last = stack[-1]
         if self.tags.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
             stack.pop()
@@ -255,6 +259,12 @@ class TagRepository:
        opening_tags[543] = [<Tag 204 NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
        
     """
+
+    # TODO: the closing_tags dictionary is delusional in that it cannot deal
+    # with multiple tags with the same name, begin and end. The question is
+    # whether the opening and closing tags are needed, all they seem to do is be
+    # there for when we create an XML document, which we may want to relegate to
+    # another component alltogether.
     
     def __init__(self):
         self.tmp = []
@@ -270,7 +280,7 @@ class TagRepository:
         handlers."""
         self.tmp.append(tagInstance)
 
-    def add_tag(self, tag_specification):
+    def XXX_add_tag(self, tag_specification):
         (name, begin, end, attrs) = tag_specification
         tag = Tag(None, name, begin, end, attrs)
         self.tags.append(tag)
@@ -302,6 +312,10 @@ class TagRepository:
             self.closing_tags.setdefault(tag.end,{}).setdefault(tag.begin,{})[tag.name] = True
         for (k,v) in self.opening_tags.items():
             self.opening_tags[k].sort()
+
+    def find_tags(self, name):
+        """Return all tags of this name."""
+        return [t for t in self.tags if t.name == name]
 
     def find_tag(self, name):
         """Return the first Tag object with name=name, return None if no such tag
@@ -342,6 +356,14 @@ class Tag:
     the nice property that tag ids reflect text order (although this would still be the
     case the first time Tags are added from the XmlDocument, but there may be several
     passes)."""
+
+    # TODO: self.nodes is now a list of two identifier strings, but should be a
+    # list with all elements, which would be similar to targets in GRAF. Could
+    # also consider making it a list of Tag objects.
+
+    # TODO: the way this deals with identifiers is not right and this needs to
+    # be revisited. The main problem is that existing identifiers may clash with
+    # newly made ones.
     
     IDENTIFIER = 0
     
@@ -359,6 +381,7 @@ class Tag:
         
     def __str__(self):
         nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
+        #if nodes: print self.nodes
         return "<Tag %s %s %d-%d %s%s>" % \
                (self.name, self.id, self.begin, self.end, nodes, str(self.attrs))
 
@@ -367,6 +390,10 @@ class Tag:
         opening tag. This guarantees that with tags that span the same tags (as for
         example with '<event><lex>party</lex></event>'), the embedding tag will come
         before the embedded tag."""
+        # TODO: this is somewhat brittle because it relies on the identifiers,
+        # using the begin and end positions will not help, so maybe cannot rely
+        # on this and need to use the nodes attribute
+        # TODO: get rid of this complete and do not order tags this way
         return cmp(self.id, other.id)
         
     def is_opening_tag(self): return False
@@ -378,6 +405,10 @@ class Tag:
         return "<%s id=%s anchors=\"%s %s\"%s%s />" % \
             (self.name, quoteattr(str(self.id)), 
              self.begin, self.end, nodes, self.attributes_as_string())
+
+    def as_lex_xml_string(self, text):
+        return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \
+            (self.id, self.begin, self.end, str(self.attrs['pos']), text)
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""

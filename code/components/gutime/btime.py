@@ -6,7 +6,7 @@ GUTime wrapper. There are two problems:
 
     It does not add the new timex to the xmldoc, but to the doctree
 
-    It does only one thing and it does it badle: turning four integers
+    It does only one thing and it does it badly: turning four integers
     numbers into years, there should be some restrictions there.
 
 """

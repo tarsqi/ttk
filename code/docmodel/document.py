@@ -22,7 +22,7 @@ class TarsqiDocument(ParameterMixin):
        metadata - a dictionary
        parameters - parameter dictionary from the Tasqi instance
        
-    Note that more variables will be needed. Currently, sseveral wrappers use data from
+    Note that more variables will be needed. Currently, several wrappers use data from
     the Tarsqi instance, should check what these data are and get them elsewhere,
     potentially by adding them here.
 
@@ -39,6 +39,9 @@ class TarsqiDocument(ParameterMixin):
         self.elements = []
         self.metadata = metadata
         self.parameters = {}
+
+    def __str__(self):
+        return "<%s on '%s'>" % (self.__class__, self.source.filename)
         
     def add_parameters(self, parameter_dictionary):
         self.parameters = parameter_dictionary
@@ -49,11 +52,14 @@ class TarsqiDocument(ParameterMixin):
     def text(self, p1, p2):
         return self.source.text[p1:p2]
 
-    def pp(self, source=True, xmldoc=True, metadata=True, parameters=True, elements=True):
+    def pp(self, source=True, xmldoc=True, elements=True):
+        print "\n", self, "\n"
+        for key, value in self.metadata.items():
+            print "   metadata.%-17s  -->  %s" % (key, value)
+        for key, value in self.parameters.items():
+            print "   parameters.%-15s  -->  %s" % (key, value)
         if source: self.source.pp()
         if xmldoc: self.xmldoc.pp()
-        if metadata: print "\nMETADATA DICTIONARY:", self.metadata, "\n"
-        if parameters: print "\nPARAMETERS DICTIONARY:", self.parameters, "\n"
         if elements: 
             for e in self.elements: e.pp()
 
@@ -113,8 +119,12 @@ class TarsqiDocument(ParameterMixin):
             
 class TarsqiDocElement:
 
-    """Contains a slice from a TarsqiDocument. The slice is determined by the begin and
-    end instance variables and the content of text is the slice from the source document.
+    """Contains a slice from a TarsqiDocument. The slice is determined by the begin
+    and end instance variables and the content of text is the slice from the
+    source document. The slice includes the tags that are relevant to this
+    element. These tags have offsets that are relative to the entire document,
+    these can be translated into local offsets using self.begin.
+
     """
 
     ELEMENT_ID = 0
@@ -139,29 +149,33 @@ class TarsqiDocElement:
 
     def is_paragraph(): return False
 
-    def get_text(self, p1=None, p2=None):
-        if p1 is None: p1 = self.begin
-        if p2 is None: p2 = self.end
-        return self.doc.source.text[p1:p2]
+    def get_text(self):
+        """Return the text slice in this element."""
+        return self.doc.text(self.begin, self.end)
     
     def add_source_tags(self, tag_repository):
         """Add all tags from a TagRepostitory (handed in from the SourceDoc) that fall
-        within the scope of this element. Makes a shallow copy of the Tag from the
-        SourceDoc TagRepository and updates the begin and end variables according to the
-        begin position of the element. Also incldue those tags where the start is before
-        and the end is after the document."""
-        for t in tag_repository:
+        within the scope of this element. Also includes tags whose begin is
+        before and whose end is after the element. Makes a shallow copy of the
+        Tag from the SourceDoc TagRepository.
+
+        """
+        # note that tag_repository is also available in self.doc.source.tags
+        for t in tag_repository.tags:
             if (t.begin >= self.begin and t.end <= self.end) \
                     or (t.begin <= self.begin and t.end >= self.end):
                 self.source_tags.append(copy(t))
-    
+
+    def add_timex(self, begin, end, timex_type, timex_value):
+        tagspec = ['TIMEX3', begin, end, {'type': timex_type, 'value': timex_value}]
+        self.tarsqi_tags.XXX_add_tag(tagspec)
+
     def pp(self):
         print "\n", self
-        print "\n  <%s.source_tags>" % self.__class__
-        self.source_tags.pp()
-        print "\n  <%s.tarsqi_tags>" % self.__class__
-        self.tarsqi_tags.pp()
-        print
+        for tag in self.source_tags.tags:
+            print "  source_tag  %s" % tag
+        for tag in self.tarsqi_tags.tags:
+            print "  tarsqi_tag  %s" % tag
         
     
 class TarsqiDocParagraph(TarsqiDocElement):

@@ -1,18 +1,27 @@
+"""Contains the GUTime wrapper.
+
+The wrapper takes the content of all TarsqiDocElements in the TarsqiDocument and
+creates the input needed by TimeTag.pl, which is the wrapper around TempEx.pm.
+
+The input required by TimeTag.pl looks as follows:
+
+   <DOC>
+   <DATE>20120912</DATE>
+   <s>
+      <lex id=1 pos="NNP">Monday</lex>
+      <lex id=2 pos="NN">morning</lex>
+      <lex id=3>and</lex>
+      <lex id=4>today</lex>
+   </s>
+   </DOC>
+
+The DOC root is required and so is the DATE tag. Otherwise, only s and lex tags
+are allowed. Note that any kind of spacing between the tags is allowed.
+
 """
 
-Contains the GUTime wrapper.
-
-The wrapper contains an optional call to BTime, governed by the variable USE_BTIME. This
-variable is set to False by default. Set it to True if you want to apply BTime, see
-btime.py for reasons why using BTime does not make sense right now.
-
-"""
-
-# boolean to switch BTime on and off
-USE_BTIME = False
-
-
-import os, subprocess
+import os, subprocess, codecs
+from xml.dom.minidom import parse
 
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import GUTIME
@@ -23,129 +32,73 @@ from components.gutime.btime import BTime
 
 
 class GUTimeWrapper:
-
-    """Wrapper for GUTime."""
     
+    """Wrapper for GUTime."""
 
     def __init__(self, document):
-
         self.document = document
         self.component_name = GUTIME
         self.DIR_GUTIME = os.path.join(TTK_ROOT, 'components', 'gutime')
         self.DIR_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
-        
-        
+
     def process(self):
-
-        """Get the XmlDOcument and call the Perl scripts that implement TempEx and
-        GUTime. The GUTime scripts are gradually being replaced with Python code."""
-        
+        """Create the input required by TimeTag.pl, call the Perl script and collect the
+        TIMEX3 tags."""
         os.chdir(self.DIR_GUTIME)
-        xmldocs = [self.document.xmldoc]
         count = 0
-
-        print "\n\n"
-        print '-'*90
-        print self.document
         for element in self.document.elements:
-            print "\n"
-            print element.source_tags
-            element.source_tags.pp()
-            print element.tarsqi_tags
-            element.tarsqi_tags.pp()
-
-
-        return
-    
-        for xmldoc in xmldocs:
-
             count += 1
-            fin = os.path.join(self.DIR_DATA, "frag%03d.gut.t1.xml" % count)
-            fout = os.path.join(self.DIR_DATA, "frag%03d.gut.t2.xml" % count)
-            
-            self._prepare_gutime_input(xmldoc, fin)
-
-            command = "perl TimeTag.pl %s > %s" % (fin, fout) 
-            pipe = subprocess.PIPE
-            p = subprocess.Popen(command, shell=True, 
-                                 stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
-            (fh_in, fh_out, fh_errors) = (p.stdin, p.stdout, p.stderr)
-            #(fh_in, fh_out, fh_errors) = os.popen3(command)
-            for line in fh_errors:
-                logger.warn(line)
-
-            # get the gutime result, remove the DATE_LINE tag and its
-            # content, merge the results into xmldoc and apply btime
-            xmldoc_out = Parser().parse_file(open(fout,"r"))
-            self._remove_datetime(xmldoc_out)
-            merge_tags_from_xmldocs(xmldoc, xmldoc_out)
-            if USE_BTIME:
-                BTime().process_xmldoc(xmldoc)
-
-        os.chdir(TTK_ROOT)
+            fin = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.in.xml" % count)
+            fout = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.out.xml" % count)
+            _create_gutime_input(element, fin)
+            _run_gutime(fin, fout)
+            _import_timex_tags(fout, element)
 
 
-    def _prepare_gutime_input(self, xmldoc, filename):
+def _create_gutime_input(element, fname):
+    """Create input needed by GUTime (TimeTag.pl plus Tempex.pm)"""
+    fh = codecs.open(fname, 'w', encoding='utf8')
+    closing_s_needed = False
+    fh.write("<DOC>\n")
+    fh.write("<DATE>%s</DATE>\n" % element.doc.metadata.get('dct'))
+    offsets = sorted(element.tarsqi_tags.opening_tags.keys())
+    for offset in offsets:
+        for tag in element.tarsqi_tags.opening_tags[offset]:
+            if tag.name == 's':
+                if closing_s_needed:
+                    fh.write("</s>\n")
+                fh.write("<s>\n")
+                closing_s_needed = True
+        for tag in element.tarsqi_tags.opening_tags[offset]:
+            if tag.name == 'lex':
+                text = element.doc.text(tag.begin, tag.end)
+                fh.write("   %s\n" % tag.as_lex_xml_string(text))
+    if closing_s_needed:
+        fh.write("</s>\n")
+    fh.write("</DOC>\n")
 
-        """Takes an xmldoc (a slice of the entire document) and creates the input file for
-        GUTime."""
+def _run_gutime(fin, fout):
+    """Run the GUTIME Perls script."""
+    command = "perl TimeTag.pl %s > %s" % (fin, fout)
+    pipe = subprocess.PIPE
+    p = subprocess.Popen(command, shell=True,
+                         stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
+    (fh_in, fh_out, fh_errors) = (p.stdin, p.stdout, p.stderr)
+    #(fh_in, fh_out, fh_errors) = os.popen3(command)
+    for line in fh_errors:
+        logger.warn(line)
 
-        # assume that the first element is an opening tag
-        opentag = xmldoc.elements[0]
-        new_elements = opentag.get_slice()
-
-        # crate new xmldoc to copy contents into, this is needed
-        # because we will remove most tags
-        new_xmldoc = XmlDocument()
-        new_xmldoc.populate_doc_from_list(new_elements)
-
-        # remove all tags from the body except <s>, <lex> and the content tag
-        #content_tag = self.tarsqi_instance.content_tag
-        content_tag = 'TEXT'
-        for el in new_xmldoc.elements:
-            if el.is_opening_tag():
-                if not el.tag in ['s', 'lex', content_tag]:
-                    el.remove()
-                
-        change_root_tag(new_xmldoc, content_tag, 'DOC')
-    
-        # add a DATE_TIME tag with the DCT
-        el1 = XmlDocElement('<DATE_TIME>', tag='DATE_TIME', attrs={})
-        el2 = XmlDocElement(self.document.get_dct())
-        el3 = XmlDocElement('</DATE_TIME>', tag='DATE_TIME')
-        new_xmldoc.elements[0].insert_element_after(el3)
-        new_xmldoc.elements[0].insert_element_after(el2)
-        new_xmldoc.elements[0].insert_element_after(el1)
-
-        # save the GUTime input
-        new_xmldoc.save_to_file(filename)
-
-
-    def _remove_datetime(self, xmldoc):
-
-        """Removes the DATE_TIME tag and its contents from xmldoc. Removes the slice from the
-        linked list and the embedded TIMEX3 from the timex tags list."""
-        
-        open_datetime = xmldoc.get_tags('DATE_TIME')[0]
-        datetime_slice = open_datetime.get_slice()
-        for el in datetime_slice:
-            el.remove()
-        try:
-            xmldoc.tags['TIMEX3'].remove(open_datetime.next)
-        except ValueError:
-            logger.warn("Could not remove TIMEX3 in DATE_TIME tag - ValueError")
-        except AttributeError:
-            logger.warn("Could not remove TIMEX3 in DATE_TIME tag - AttributeError")
-
-            
-def change_root_tag(xmldoc, oldname, newname):
-
-    """Replace the name of the root tag with tagname."""
-
-    opening_tag = xmldoc.elements[0]
-    closing_tag = xmldoc.elements[-1]
-    opening_tag.tag = newname
-    closing_tag.tag = newname
-    opening_tag.content = opening_tag.content.replace('<'+oldname,'<'+newname)
-    closing_tag.content = closing_tag.content.replace('</'+oldname,'</'+newname)
-    
+def _import_timex_tags(fname, element):
+    """Take the TIMEX3 tags from the GUTime output and add them to the tarsqi
+    tags dictionary."""
+    dom = parse(fname)
+    timexes = dom.getElementsByTagName('TIMEX3')
+    for timex in timexes:
+        lexes = timex.getElementsByTagName('lex')
+        if lexes:
+            p1 = int(lexes[0].getAttribute('begin'))
+            p2 = int(lexes[-1].getAttribute('end'))
+            timex_type = timex.getAttribute('TYPE')
+            timex_value = timex.getAttribute('VAL')
+            #print p1, p2, timex_type, timex_value, timex
+            element.add_timex(p1, p2, timex_type, timex_value)

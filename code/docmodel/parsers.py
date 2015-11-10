@@ -52,7 +52,6 @@ class DefaultParser:
         element, the DCT, which is set to today."""
         target_tag = self._find_target_tag(docsource)
         offset_adjustment = target_tag.begin if target_tag else 0
-        #print target_tag
         text = docsource.text[target_tag.begin:target_tag.end] \
                if target_tag else docsource.text
         metadata = { 'dct': get_today() }
@@ -62,7 +61,7 @@ class DefaultParser:
         for (p1, p2) in element_offsets:
             xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
             para = TarsqiDocParagraph(tarsqidoc, p1, p2, xmldoc)
-            para.add_source_tags(docsource.tags.all_tags())
+            para.add_source_tags(docsource.tags)
             para.source_tags.index()
             tarsqidoc.elements.append(para)
         return tarsqidoc
