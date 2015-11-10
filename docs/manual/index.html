@@ -155,10 +155,10 @@ This will unpack TTK into a directory named <code>ttk-1.0</code>.
 <h4>Installing the Part-of-Speech Tagger</h4>
 
 The Tarsqi toolkit is designed to work seamlessly with the IMS
-TreeTagger. Download the packages needed for your platform from the <a
-href="http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/">TreeTagger
-website</a> and follow the directions. The TreeTagger needs to be
-installed in
+TreeTagger. Download the packages needed for your platform from
+the <a href="http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/">TreeTagger
+website</a> and follow the directions. With the current processing defaults, the
+TreeTagger needs to be installed in
 
 <blockquote>
 <code>
@@ -168,6 +168,10 @@ ttk-1.0/code/components/preprocessing/treetagger/
 
 and this directory needs to have sub directories <code>bin</code> and
 <code>lib</code>. 
+
+<p>The TreeTagger may be installed elsewhere, but then the settings.txt file should be updated accordingly.
+
+<p>You also need to add the treetaggerwrapper.py script to the preprocessing directory.</p>
 
 <p>
 
@@ -444,6 +448,33 @@ modules. For each module, and each class and function in that module,
 the documentation strings are printed. There are also links to the
 source code of each function.
 
+
+<a name=issues><h3>7. Known Issues</h3></a>
+
+
+<li> Bad CPU type in executable
+
+<p>This error may be thrown by the bin/tree-tagger executable in the treetagger
+directory. You have the wrong executable. Insta;; the correct version for your
+operating system.</p>
+
+<li>TreeTagger parameter file invalid: english.par
+
+<p>This is thrown by components.preprocessing.treetaggerwrapper.TreeTaggerError
+and it can occur when your versions of the treetagger and the treetaggerwrapper
+script are out of sync. Find the line
+
+<blockquote>
+"tagparfile": "english.par",
+</blockquote>
+
+and replace it with
+
+<blockquote>
+"tagparfile": "english-utf8.par",
+</blockquote>
+
+Note that this should really be fixed by using the new treetaggerwrapper.</p>
 
 
 <a name=contrib><h3>7. Contributors</h3></a>
