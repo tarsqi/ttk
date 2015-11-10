@@ -18,6 +18,10 @@ The input required by TimeTag.pl looks as follows:
 The DOC root is required and so is the DATE tag. Otherwise, only s and lex tags
 are allowed. Note that any kind of spacing between the tags is allowed.
 
+Note that the directory that this wrapper is in has two unused files: gutime.pl
+and postTempEx.pl. Much of the functionality in those files is either in this
+wrapper or obsolete. They are kept around for reference.
+
 """
 
 import os, subprocess, codecs
@@ -28,7 +32,6 @@ from library.tarsqi_constants import GUTIME
 from utilities.xml_utils import merge_tags_from_files, merge_tags_from_xmldocs
 from utilities import logger
 from docmodel.xml_parser import Parser, XmlDocument, XmlDocElement
-from components.gutime.btime import BTime
 
 
 class GUTimeWrapper:
