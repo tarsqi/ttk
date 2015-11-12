@@ -5,6 +5,7 @@ Responsible for the top-level processing of Evita.
 """
 
 import StringIO
+from xml.sax.saxutils import escape, quoteattr
 
 from components.evita.gramChunk import getWordList, getPOSList
 from components.common_modules.component import TarsqiComponent
@@ -56,12 +57,12 @@ class Evita (TarsqiComponent):
         that contrary to the other processing methods, in this case the xmldoc
         and doctree variables on the Evita instance are the ones for just one
         element and not for the whole documewnt or string. Events are added to
-        the tag repository on th eelement."""
+        the tag repository on the element."""
         xml_string = _create_xml_string(element)
-        #print xml_string
         self.process_string(xml_string)
-        #self.xmldoc.pp()
         _import_event_tags(self.xmldoc, element)
+        #print xml_string
+        #self.xmldoc.pp()
         #self.doctree.pp()
         #print self.xmldoc.toString()
 
@@ -104,7 +105,10 @@ def  _create_xml_string(element):
         write_open_s(lex, xmlstring, stack, sentences)
         write_open_vg(lex, xmlstring, stack, vgs)
         write_open_ng(lex, xmlstring, stack, ngs)
-        text = element.doc.text(lex.begin, lex.end)
+        # TODO: not sure whether the escape is needed here, check whether it
+        # works out correctly with the offsets, something similar may need to be
+        # checked in the gutime wrapper
+        text = escape(element.doc.text(lex.begin, lex.end))
         xmlstring.write("%s%s\n" % (stack.indent*' ', lex.as_lex_xml_string(text)))
         write_closing_tag(lex, stack.ng_end, 'NG', xmlstring, stack)
         write_closing_tag(lex, stack.vg_end, 'VG', xmlstring, stack)

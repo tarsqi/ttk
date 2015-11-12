@@ -382,7 +382,7 @@ class Tag:
         self.end = o2
         self.nodes = []   # filled in later for tags that point to other layers. 
         self.attrs = attrs
-        
+
     def __str__(self):
         nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
         #if nodes: print self.nodes
@@ -390,16 +390,14 @@ class Tag:
                (self.name, self.id, self.begin, self.end, nodes, str(self.attrs))
 
     def __cmp__(self, other):
-        """Order two Tags based on their id. The id is based on the text position of the
-        opening tag. This guarantees that with tags that span the same tags (as for
-        example with '<event><lex>party</lex></event>'), the embedding tag will come
-        before the embedded tag."""
-        # TODO: this is somewhat brittle because it relies on the identifiers,
-        # using the begin and end positions will not help, so maybe cannot rely
-        # on this and need to use the nodes attribute
-        # TODO: get rid of this complete and do not order tags this way
-        return cmp(self.id, other.id)
-        
+        """Order two Tags based on their begin offset and end offsets. Tags with an
+        earlier begin will be ranked before tags with a later begin, with equal
+        begins the tag with the higher end will be ranked first. The order of
+        two tags with the same begin and end is undefined."""
+        begin_cmp = cmp(self.begin, other.begin)
+        end_cmp =  cmp(other.end, self.end)
+        return end_cmp if begin_cmp == 0 else begin_cmp
+
     def is_opening_tag(self): return False
 
     def is_closing_tag(self): return False
@@ -412,7 +410,7 @@ class Tag:
 
     def as_lex_xml_string(self, text):
         return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \
-            (self.id, self.begin, self.end, str(self.attrs['pos']), text)
+            (self.id, self.begin, self.end, str(self.attrs['pos']), escape(text))
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
