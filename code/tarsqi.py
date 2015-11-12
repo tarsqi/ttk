@@ -152,36 +152,22 @@ class Tarsqi(ParameterMixin):
                 parameters[attr] = eval(value)
         return parameters
 
-
     def process(self):
-        
         """Parse the source with source parser and the document parser. Then apply all
         components and write the results to a file. The actual processing itself is driven
         using the processing parameters set at initialization. Each component is given the
         TarsqiDocument and updates it."""
-
         if self._skip_file(): return
         self._cleanup_directories()
         logger.info("Processing %s" % self.input)
-        
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
-
         for (name, wrapper) in self.pipeline:
             print name, wrapper
             self.apply_component(name, wrapper, self.document)
-            
-        #self.document.pp(xmldoc=False, source=False, elements=True)
-
         os.chdir(TTK_ROOT)
-        self.docsource.print_xml('tmp.xml')
-        self.document.print_sentences('tmp-sentences.py')
-        self.document.print_source('tmp-source.txt')
-        self.document.print_source_tags('tmp-tags.txt')
-        self.document.print_tarsqi_tags('tmp-ttk.txt')
-
-
+        self.document.print_all(self.output)
 
     def _skip_file(self):
         """Return true if file does not match specified extension. Useful when the script

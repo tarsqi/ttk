@@ -76,6 +76,22 @@ class TarsqiDocument(ParameterMixin):
         fh.write(str(self.list_of_sentences()))
         fh.write("\n")
 
+    def print_all(self, fname):
+        """Write source string, source tags and ttk tags all to one file."""
+        fh = codecs.open(fname, mode='w', encoding='UTF-8')
+        fh.write("<ttk>\n")
+        fh.write("<text>%s</text>\n" % self.source.text)
+        fh.write("<source_tags>\n")
+        for tag in self.source.tags.tags:
+            fh.write("  %s\n" % tag.in_layer_format())
+        fh.write("<source_tags>\n")
+        fh.write("<ttk_tags>\n")
+        for e in self.elements:
+            for tag in e.tarsqi_tags.tags:
+                fh.write("  %s\n" % tag.in_layer_format())
+        fh.write("</ttk_tags>\n")
+        fh.write("</ttk>\n")
+
     def print_source_tags(self, fname=None):
         """Prints all the tags from the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
@@ -167,8 +183,11 @@ class TarsqiDocElement:
                 self.source_tags.append(copy(t))
 
     def add_timex(self, begin, end, timex_type, timex_value):
-        tagspec = ['TIMEX3', begin, end, {'type': timex_type, 'value': timex_value}]
-        self.tarsqi_tags.XXX_add_tag(tagspec)
+        self.tarsqi_tags.add_tag('TIMEX3', begin, end,
+                                 {'type': timex_type, 'value': timex_value})
+
+    def add_event(self, begin, end, attrs):
+        self.tarsqi_tags.add_tag('EVENT', begin, end, attrs)
 
     def pp(self):
         print "\n", self

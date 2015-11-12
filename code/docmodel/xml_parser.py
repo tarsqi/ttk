@@ -344,24 +344,24 @@ class XmlDocument:
             if element.is_opening_tag() and element.tag == 'lex':
                 nextString = element.as_xml_tag()
             else:
-                nextString = escape(element.get_content())
+                # TODO: I don't think escaping is needed here, check this
+                nextString = element.get_content()
+                #nextString = escape(element.get_content())
             returnString += nextString
             element = element.get_next()
         return returnString
-    
+
     def pretty_print(self):
         """Pretty printer for XmlDocuments. Pretty prints the list of elements and prints
         the tag dictionary to standard output."""
-        print "\n%s\n\nELEMENTS:\n" % str(self)
+        print "\n%s\n" % str(self)
         element = self.elements[0]
         while element:
-            element.pretty_print(indent='   ')
+            element.pretty_print(indent='')
             element = element.get_next()
-        print "\nTAGS:",
+        print "\nTAGS:"
         for tag in self.tags.keys():
-            print "\n\n   [" + tag + '] ',
-            for el in self.tags[tag]:
-                print str(el.id),
+            print "   %-5s  %s" % ('<'+tag+'>', [el.id for el in self.tags[tag]])
 
     def pp(self):
         self.pretty_print()
@@ -644,10 +644,10 @@ class XmlDocElement:
             a_list = ''
         xmltag = u"<%s%s>" % (self.tag, a_list)
         return xmltag
-            
+
     def pretty_print(self, indent=''):
         """Pretty printer for XmlDocElements, prints the content of the element."""
-        print indent + 'ELEMENT(' + str(self.id) + '): ' + self.content
+        print indent + 'ELEMENT(' + str(self.id) + '): ' + self.content.replace("\n", '\\n')
 
 
 

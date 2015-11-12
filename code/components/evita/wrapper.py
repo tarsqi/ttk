@@ -17,11 +17,11 @@ class EvitaWrapper:
         self.component_name = EVITA
         self.document = document
         
-        
     def process(self):
-        """Retrieve the xmldoc and hand it to Evita for processing. Evita processing will
-        update the xmldoc when events are added. No arguments and no return value."""
+        """Hand in all document elements to Evita for processing. Document
+        elements are instances of docmodel.document.TarsqiDocParagraph (a
+        subclass of docmodel.document.TarsqiDocElement). This is a simple
+        approach that assumes that all document elements are processed the same
+        way."""
         for element in self.document.elements:
-            # element is an instance of docmodel.document.TarsqiDocParagraph (which is a
-            # subclass of docmodel.document.TarsqiDocElement)
             Evita().process_element(element)

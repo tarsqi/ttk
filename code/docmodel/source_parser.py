@@ -249,7 +249,8 @@ class TagRepository:
 
     self.opening_tags
        A dictionary of tags indexed on begin offset, the values are lists of Tag
-       instances, again ordered on id (thereby reflecting text order).
+       instances, again ordered on id (thereby reflecting text order, but only
+       for tags in the original input).
     
     self.closing_tags
        A dictionary indexed on end offset and begin offset, the values are dictionary of
@@ -257,7 +258,7 @@ class TagRepository:
        that there is both a lex tag and an NG tag from 543-547. The opening tags
        dictionary will have encoded that the opening NG occurs before the opening lex:
        opening_tags[543] = [<Tag 204 NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
-       
+
     """
 
     # TODO: the closing_tags dictionary is delusional in that it cannot deal
@@ -280,10 +281,13 @@ class TagRepository:
         handlers."""
         self.tmp.append(tagInstance)
 
-    def XXX_add_tag(self, tag_specification):
-        (name, begin, end, attrs) = tag_specification
+    def add_tag(self, name, begin, end, attrs):
+        """Add a tag to the tags list and the opening_tags and closing_tags
+        dictionaries."""
         tag = Tag(None, name, begin, end, attrs)
         self.tags.append(tag)
+        self.opening_tags.setdefault(begin,[]).append(tag)
+        self.closing_tags.setdefault(end,{}).setdefault(begin,{})[tag.name] = True
 
     def append(self, tag):
         """Appends an instance of Tag to the tags list."""
