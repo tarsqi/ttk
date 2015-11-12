@@ -1,8 +1,10 @@
-"""
+"""make_documentation.py
 
-Create manual pages with the docstrings for modules, classes and functions. This latter
-functionality was added because pydoc breaks on some of the tarsqi modules, most notably
-those that import the treetagger.
+Create manual pages with the docstrings for modules, classes and functions,
+using the modules listed in modules.py.
+
+This code was written because pydoc breaks on some of the tarsqi modules, most
+notably those that import the treetagger.
 
 NOTES:
 
@@ -12,9 +14,6 @@ NOTES:
 
 """
 
-# not used yet, private methods are never printed
-print_private_methods = True
-
 
 import os
 import sys
@@ -23,25 +22,33 @@ from types import ClassType, FunctionType, MethodType
 
 from modules import MODULES
 
+# Set this to True if you want the sources for all functions written to files
+# that are linked to from the module page, slows down the code a bit and
+# requires 6MB more space.
+WRITE_FUNCTION_SOURCES = False
+
+# With this one set to True, private functions (those that start with a single
+# underscore) are included.
+print_private_methods = True
+
 
 javascript_code = \
 """<script language="JavaScript" type="text/JavaScript">
 <!--
-
 function view_code(id) {
   var newurl = "../functions/" + id + ".html";
   var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
   w.xopener = window;
 }
-
 //-->
 </script>
 """
 
 FUNCTION_ID = 0
 
-    
+
 def print_module_documentation(module):
+    print module.__name__
     filename = os.path.join('..', 'docs', 'code', 'modules', module.__name__+'.html')
     docfile = open(filename,'w')
     docfile.write("<html>\n<head>\n")
@@ -135,11 +142,12 @@ def print_function(name, fun, docfile):
     docfile.write(docstring)
     FUNCTION_ID += 1
     id = "%04d" % FUNCTION_ID
-    if docstring:
-        docfile.write("\n\n")
-    docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>" % id)
-    funname = get_function_name(fun)
-    print_function_code(id, funname, fun)
+    if WRITE_FUNCTION_SOURCES:
+        if docstring:
+            docfile.write("\n\n")
+        docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>" % id)
+        funname = get_function_name(fun)
+        print_function_code(id, funname, fun)
     docfile.write("</pre>\n")
     
 def get_function_name(fun):
@@ -159,7 +167,6 @@ def print_function_code(id, name, fun):
     funfile.write("<html>\n<head>\n")
     funfile.write('<link href="../css/function.css" rel="stylesheet" type="text/css">'+"\n")
     funfile.write("</head>\n<body>\n")
-    #funfile.write("<h3>%s</h3>\n" % name)
     funfile.write('<pre>')
     try:
         code = "".join(inspect.getsourcelines(fun)[0])
@@ -186,7 +193,6 @@ def print_docstring(object, docfile, prefix=''):
         id = "%04d" % FUNCTION_ID
         if docstring:
             docfile.write("\n\n")
-        #docfile.write("<a href=\"functions/%s.html\">view source</a>\n" % id)
         docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>" % id)
         funname = get_function_name(object)
         print_function_code(id, funname, object)
@@ -234,20 +240,6 @@ def trim(docstring, linenum=1):
 
 
 if __name__ == '__main__':
-
-    # use this if user specified just a set of modules, only create documentation for
-    # those modules (this will by the way screw up the numbering for functions, so it
-    # should only be used to quickly check updated documentation for a module,
-    # documentation for other modules may be off)
-
-    if sys.argv[1:]:
-        for module_name in sys.argv[1:]:
-            module = eval(module_name)
-            analyse_module(module)
-            print_module_documentation(module)
-        sys.exit()
-
-    # otherwise, do everything
 
     filename = os.path.join('..', 'docs', 'code', 'index.html')
     indexfile = open(filename,'w')

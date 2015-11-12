@@ -276,4 +276,5 @@ class Document:
             sentence.pretty_print()
         print "\n"
 
-    def pp(self): self.pretty_print()
+    def pp(self):
+        self.pretty_print()

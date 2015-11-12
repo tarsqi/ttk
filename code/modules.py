@@ -35,7 +35,6 @@ import components.evita.rule
 import components.evita.wrapper
 
 import components.gutime.wrapper
-import components.gutime.btime
 
 import components.merging.wrapper
 
@@ -100,7 +99,7 @@ MODULES = [
     components.evita.wrapper,
 
     components.gutime.wrapper,
-    components.gutime.btime,
+    #components.gutime.btime,
 
     components.merging.wrapper,
     
