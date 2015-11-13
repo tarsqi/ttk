@@ -404,7 +404,7 @@ class Tag:
 
     def in_layer_format(self):
         nodes = '' if not self.nodes else " targets=\"%s %s\"" % (self.nodes[0], self.nodes[-1])
-        return "<%s id=%s anchors=\"%s %s\"%s%s />" % \
+        return "<%s id=%s begin=\"%s\" end=\"%s\"%s%s />" % \
             (self.name, quoteattr(str(self.id)), 
              self.begin, self.end, nodes, self.attributes_as_string())
 
