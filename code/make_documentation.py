@@ -23,13 +23,13 @@ from types import ClassType, FunctionType, MethodType
 from modules import MODULES
 
 # Set this to True if you want the sources for all functions written to files
-# that are linked to from the module page, slows down the code a bit and
+# that are linked to from the module page, this slows down the code a bit and
 # requires 6MB more space.
 WRITE_FUNCTION_SOURCES = False
 
 # With this one set to True, private functions (those that start with a single
 # underscore) are included.
-print_private_methods = True
+PRINT_PRIVATE_FUNCTIONS = True
 
 
 javascript_code = \
@@ -90,7 +90,7 @@ def print_class_documentation(docfile, classes):
             for (name,fun) in public_functions:
                 print_function(name, fun, docfile)
             docfile.write("</blockquote>\n")
-        if private_functions and print_private_methods:
+        if private_functions and PRINT_PRIVATE_FUNCTIONS:
             docfile.write("<h3>Private Functions</h3>\n")
             docfile.write("<blockquote>\n")
             for (name,fun) in private_functions:

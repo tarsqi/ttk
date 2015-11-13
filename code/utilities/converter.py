@@ -48,7 +48,7 @@ class Converter:
     deals with those but perhaps only because of S2T.  """
 
     
-    def __init__(self, xmldoc, filename='NONE'):
+    def __init__(self, xmldoc, filename=None):
 
         """Initializes xmldoc and doc, using two arguments: xmldoc (an
         XmlDocument) and filename (a string). Also sets instance
@@ -172,7 +172,7 @@ class FragmentConverter:
       <lex pos="." text="."> """
 
 
-    def __init__(self, xmldoc, filename='NONE'):
+    def __init__(self, xmldoc, filename=None):
         """Initializes xmldoc and doc, using two arguments: xmldoc (an
         XmlDocument) and filename (a string). Also sets instance
         variables currentSentence, currentChunk, currentToken,

@@ -188,23 +188,24 @@ class Tarsqi(ParameterMixin):
 
     def apply_component(self, name, wrapper, document):
 
-        """Apply a component if the processing parameters determine that the component
-        needs to be applied. This method passes the TarsqDocument instance to
-        the component wrapper.
+        """Apply a component if the processing parameters determine that the
+        component needs to be applied. This method passes the TarsqDocument
+        instance to the component wrapper.
 
-        Component-level errors are trapped here if trap_errors is True. Those errors are
-        now trapped here instead of in the component since we do not tell the component
-        what the output file is.
+        Component-level errors are trapped here if trap_errors is True. Those
+        errors are now trapped here instead of in the component since we do not
+        tell the component what the output file is.
 
         Arguments:
            name - string, the name of the component
            wrapper - instance of one of the wrapper classes
            document - instance of TarsqiDocument
-        Return value: None
 
-        Wrappers are now only given a TarsqiDocument, which includes the parameters from
-        teh Tarsqi instance. May in the future need to add some kind of dictionary with
-        other needed info."""
+        Wrappers only get a TarsqiDocument, which includes the parameters from
+        the Tarsqi instance. May need to add some kind of dictionary with other
+        needed info.
+
+        """
 
         logger.info(name + '............')
         t1 = time.time()

@@ -247,14 +247,37 @@ class Document:
         self.tlinkCount += 1
         return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
 
+    def pp(self):
+        """Short form of pretty_print()"""
+        self.pretty_print()
+
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation of
         the sentence list."""
-        print "\n<<Document %s>>\n" % self.sourceFileName
+        print "\n<Document sourceFilename=%s>\n" % self.sourceFileName
         print 'nodeCounter', self.nodeCounter
+        print 'taggedEventsDict =', self.taggedEventsDict
+        #self.pretty_print_tagged_events_dict()
+        print 'instanceCounter =', self.instanceCounter
+        print 'insertDict =', self.insertDict
+        print 'eventCount =', self.eventCount
+        print 'alinkCount =', self.alinkCount
+        print 'slinkCount =', self.slinkCount
+        print 'tlinkCount =', self.tlinkCount
+        print 'linkCount =', self.linkCount
+        print 'postionCount =', self.positionCount
+        print 'nodeList[:10] =', self.nodeList[:10]
+        print 'sentenceList[:2] =', self.sentenceList[:2]
+        print 'event_dict =', self.event_dict
+        print 'instance_dict =', self.instance_dict
+        print 'alink_list =', self.alink_list
+        print 'slink_list =', self.slink_list
+        print 'tlink_list =', self.tlink_list
+        self.pretty_print_sentences()
+
+    def pretty_print_tagged_events_dict(self):
         print 'taggedEventsDict'
-        eids = self.taggedEventsDict.keys()
-        eids.sort()
+        eids = sorted(self.taggedEventsDict.keys())
         for eid in eids:
             print ' ', eid, '=> {',
             attrs = self.taggedEventsDict[eid].keys()
@@ -262,13 +285,8 @@ class Document:
             for attr in attrs:
                 print "%s=%s" % (attr, str(self.taggedEventsDict[eid][attr])),
             print '}'
-        print 'instanceCounter =', self.instanceCounter
-        print 'insertDict =', self.insertDict
-        print 'eventCount =', self.eventCount
-        print 'alinkCount =', self.alinkCount
-        print 'slinkCount =', self.slinkCount
-        print 'linkCount =', self.linkCount
-        print 'postionCount =', self.positionCount
+
+    def pretty_print_sentences(self):
         count = 0
         for sentence in self.sentenceList:
             count = count + 1
@@ -276,5 +294,3 @@ class Document:
             sentence.pretty_print()
         print "\n"
 
-    def pp(self):
-        self.pretty_print()

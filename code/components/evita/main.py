@@ -102,39 +102,40 @@ def  _create_xml_string(element):
     xmlstring.write("<DOC>\n")
     stack = Stack()
     for lex in lexes:
-        write_open_s(lex, xmlstring, stack, sentences)
-        write_open_vg(lex, xmlstring, stack, vgs)
-        write_open_ng(lex, xmlstring, stack, ngs)
+        _write_open_s(lex, xmlstring, stack, sentences)
+        _write_open_vg(lex, xmlstring, stack, vgs)
+        _write_open_ng(lex, xmlstring, stack, ngs)
         # TODO: not sure whether the escape is needed here, check whether it
         # works out correctly with the offsets, something similar may need to be
         # checked in the gutime wrapper
         text = escape(element.doc.text(lex.begin, lex.end))
         xmlstring.write("%s%s\n" % (stack.indent*' ', lex.as_lex_xml_string(text)))
-        write_closing_tag(lex, stack.ng_end, 'NG', xmlstring, stack)
-        write_closing_tag(lex, stack.vg_end, 'VG', xmlstring, stack)
-        write_closing_tag(lex, stack.s_end, 's', xmlstring, stack)
+        _write_closing_tag(lex, stack.ng_end, 'NG', xmlstring, stack)
+        _write_closing_tag(lex, stack.vg_end, 'VG', xmlstring, stack)
+        _write_closing_tag(lex, stack.s_end, 's', xmlstring, stack)
     xmlstring.write("</DOC>\n")
     return xmlstring.getvalue()
 
-def write_open_s(lex, xmlstring, stack, sentences):
+
+def _write_open_s(lex, xmlstring, stack, sentences):
     if sentences.has_key(lex.begin):
         stack.s_end = sentences[lex.begin].end
         xmlstring.write("<s>\n")
         stack.indent += 2
 
-def write_open_ng(lex, xmlstring, stack, ngs):
+def _write_open_ng(lex, xmlstring, stack, ngs):
     if ngs.has_key(lex.begin):
         stack.ng_end = ngs[lex.begin].end
         xmlstring.write("%s<NG>\n" % (stack.indent*' '))
         stack.indent += 2
 
-def write_open_vg(lex, xmlstring, stack, vgs):
+def _write_open_vg(lex, xmlstring, stack, vgs):
     if vgs.has_key(lex.begin):
         stack.vg_end = vgs[lex.begin].end
         xmlstring.write("%s<VG>\n" % (stack.indent*' '))
         stack.indent += 2
 
-def write_closing_tag(lex, end, tag, xmlstring, stack):
+def _write_closing_tag(lex, end, tag, xmlstring, stack):
     """Write a closing tag if the end for that tag is equal to the end of the lex."""
     if lex.end == end:
         stack.indent -= 2
