@@ -52,20 +52,24 @@ def print_module_documentation(module):
     filename = os.path.join('..', 'docs', 'code', 'modules', module.__name__+'.html')
     docfile = open(filename,'w')
     docfile.write("<html>\n<head>\n")
-    docfile.write("")
     docfile.write('<link href="../css/module.css" rel="stylesheet" type="text/css">'+"\n")
     docfile.write(javascript_code)
     docfile.write("</head>\n<body>\n")
     docfile.write('<a href=../index.html>index</a>' + "\n\n")
     docfile.write('<div class="title">module ' + module.__name__ + "</div>\n\n")
+    module_classes = get_classes(module)
+    if module_classes:
+        docfile.write("<pre>\n")
+        for module_class in module_classes:
+            docfile.write("<a href=#%s>%s</a>\n" % (module_class.__name__, module_class.__name__))
+        docfile.write("</pre>\n\n")
     docstring = get_docstring(module)
     if docstring:
         docfile.write("<pre>\n" + docstring + "</pre>\n\n")
-    print_class_documentation(docfile, get_classes(module))
+    print_class_documentation(docfile, module_classes)
     print_function_documentation(docfile, get_functions(module))
 
 def print_class_documentation(docfile, classes):
-    classes.sort(lambda x,y: cmp(str(x),str(y)))
     for class_object in classes:
         (module_name, class_name) = get_module_and_class_name(class_object)
         docfile.write("\n" + '<a name="' + class_name + '"/>')
@@ -85,21 +89,21 @@ def print_class_documentation(docfile, classes):
         public_functions = get_public_functions(functions)
         private_functions = get_private_functions(functions)
         if public_functions:
-            docfile.write("<h3>Public Functions</h3>\n")
             docfile.write("<blockquote>\n")
+            docfile.write("<h3>Public Functions</h3>\n")
             for (name,fun) in public_functions:
                 print_function(name, fun, docfile)
             docfile.write("</blockquote>\n")
         if private_functions and PRINT_PRIVATE_FUNCTIONS:
-            docfile.write("<h3>Private Functions</h3>\n")
             docfile.write("<blockquote>\n")
+            docfile.write("<h3>Private Functions</h3>\n")
             for (name,fun) in private_functions:
                 print_function(name, fun, docfile)
             docfile.write("</blockquote>\n")
 
 def print_function_documentation(docfile, functions):
     if functions:
-        docfile.write("\n" + '<div class="section">functions</div>'+"\n")
+        docfile.write("\n" + '<div class="section">module functions</div>'+"\n")
     functions.sort(lambda x, y: cmp(x[0],y[0]))
     for (name, fun) in get_public_functions(functions):
         print_function(name, fun, docfile)
@@ -110,6 +114,7 @@ def get_classes(module):
         if type(val) == ClassType:
             if val.__dict__['__module__'] == module.__name__:
                 classes.append(val)
+    classes.sort(lambda x,y: cmp(str(x),str(y)))
     return classes
 
 def get_functions(class_object):
@@ -171,7 +176,7 @@ def print_function_code(id, name, fun):
     try:
         code = "".join(inspect.getsourcelines(fun)[0])
     except IOError:
-        print "WARNING: could not get sourcecode of %s" % fun
+        print "WARNING: could not get source code of %s" % fun
         code = ''
     code = trim(code, 0)
     code = code.replace('<', '&lt;')
