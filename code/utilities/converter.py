@@ -205,7 +205,7 @@ class FragmentConverter:
     def _process_opening_tag(self, element):
         """Process an opening tag, calling the appropriate handler depending
         on the tag."""
-        logger.debug("ELEMENT: %s ,  %s" % (element.content, self._tag_stack_as_string()))
+        #logger.debug("ELEMENT: %s ,  %s" % (element.content, self._tag_stack_as_string()))
         if element.tag == SENTENCE:
             self._process_opening_sentence(element)
         elif element.tag == NOUNCHUNK:
@@ -265,13 +265,13 @@ class FragmentConverter:
         # self.currentSentence, which worked fine for the latter but
         # not for the former (no idea why that was the case, MV)
         if self._current_node_is_timex():
-            logger.debug('    adding token to timex')
+            #logger.debug('    adding token to timex')
             self.currentTimex.add(self.currentToken)
         elif self._current_node_is_chunk():
-            logger.debug('    adding token to chunk')
+            #logger.debug('    adding token to chunk')
             self.currentChunk.addToken(self.currentToken)
         elif self._current_node_is_sentence():
-            logger.debug('    adding token to sentence')
+            #logger.debug('    adding token to sentence')
             self.currentSentence.add(self.currentToken)
         elif self._current_node() == 'EVENT':
             if self.currentChunk is not None: self.currentChunk.addToken(self.currentToken)
@@ -346,8 +346,8 @@ class FragmentConverter:
     def _process_closing_tag(self, element):
         """Resets currentSentence or other currently open constituent to None,
         depending on the closing tag.""" 
-        logger.debug("ELEMENT: %s ,  %s" %
-                     (element.content, self._tag_stack_as_string()))
+        #logger.debug("ELEMENT: %s ,  %s" %
+        #             (element.content, self._tag_stack_as_string()))
         if element.tag == SENTENCE: self.currentSentence = None
         if element.tag == NOUNCHUNK: self.currentChunk = None
         if element.tag == VERBCHUNK: self.currentChunk = None
@@ -368,7 +368,7 @@ class FragmentConverter:
     def _process_element(self, element):
         """Non-tags are treated as text nodes and added to the current token
         if there is one."""
-        logger.debug('ELEMENT: "'+element.content+'"')
+        #logger.debug('ELEMENT: "'+element.content+'"')
         if self.currentToken != None:
             self.currentToken.setTextNode(self.doc.nodeCounter)
             self.currentToken.lex_tag_list.append(element)            

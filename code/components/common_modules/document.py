@@ -144,7 +144,9 @@ class Document:
             self.taggedEventsDict[eid][att] = val
 
     def document(self):
-        """Returns the document itself."""
+        """Returns the document itself. This is so that chunks can ask their parent for
+        the document without having to worry whether the parent is a Sentence or a
+        Document."""
         return self
 
     def addEvent(self, event):

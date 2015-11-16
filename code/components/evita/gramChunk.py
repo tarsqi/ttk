@@ -95,6 +95,21 @@ def debug (*args):
         
 class GramChunk:
 
+    """This class is used to add grammatical features to a NounChunk, VerbChunk or
+    AdjectiveToken. It lives in the cachedGramChunk instance variable of one of
+    those classes.
+
+    """
+
+    def add_verb_features(self, verbGramFeat):
+        """Set grammatical features (tense, aspect, modality an dpolarity) with the
+        features handed in from the governing verb."""
+        if verbGramFeat is not None:
+            self.tense = verbGramFeat['tense']
+            self.aspect = verbGramFeat['aspect']
+            self.modality = verbGramFeat['modality']
+            self.polarity = verbGramFeat['polarity']
+
     def _matchChunk(self, chunkDescription): 
         """Match chunk to the patterns in chunkDescriptions.  chunkDescription is a
         dictionary with keys-values pairs that match instance variables and their values
@@ -148,31 +163,36 @@ class GramAChunk(GramChunk):
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
         pattern matching phase."""
+        # TODO: why doesn't this do anything?
         # if name == 'class': return self.evClass
         # return None
         pass
     
     def getHead(self):
-        # When it is a Chunk:
-        try: head = self.node[-1]
-        # When it is a lexical item (a Token)
-        except: head = self.node
+        """Return the head of the GramAChunk."""
+        # allow for the node to be a chunk or a token
+        # TODO: is this needed?
+        try:
+            head = self.node[-1]
+        except IndexError:
+            head = self.node
         return head
 
     def getEventClass(self):
+        """Return I_STATE if the head is on a short list of intentional state
+        adjectives, return STATE otherwise."""
         headString = self.head.getText()
-        if headString in forms.istateAdj: return  'I_STATE'
-        else: return 'STATE'
+        return 'I_STATE' if headString in forms.istateAdj else 'STATE'
 
     def as_extended_string(self):
         return \
-         "\nADJ CHUNK:" + self.node.getText() + \
-         "\tTENSE:" + self.tense + \
-         "\tASPECT:" + self.aspect + \
-         "\tNF_MORPH:" + self.nf_morph + \
-         "\tMODALITY:" + self.modality + \
-         "\tPOLARITY:" + self.polarity + \
-         "\tHEAD:" + self.head.getText() + \
+         "\nGramAChunk: %s\n" % self.node.getText() + \
+         "\tTENSE:" + self.tense + "\n" + \
+         "\tASPECT:" + self.aspect + "\n" + \
+         "\tNF_MORPH:" + self.nf_morph + "\n" + \
+         "\tMODALITY:" + self.modality + "\n" + \
+         "\tPOLARITY:" + self.polarity + "\n" + \
+         "\tHEAD:" + self.head.getText() + "\n" + \
          "\tCLASS:" + self.evClass
         
 
@@ -204,6 +224,9 @@ class GramNChunk(GramChunk):
             hString = str(self.head.getText()).lower()
             hString = stemmer.stem(hString)
         return hString
+
+    def isEventCandidate(self):
+        return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
 
     def isEventCandidate_Syn(self):
         """Return True if the GramNChunk is syntactically able to be an event, return
@@ -308,7 +331,7 @@ class GramNChunk(GramChunk):
 
     def as_extended_string(self):
         return \
-            "NOUN CHUNK:" + self.node.getText() + "\n" + \
+            "GramNChunk:" + self.node.getText() + "\n" + \
             "\tTENSE:" + self.tense + "\n" + \
             "\tASPECT:" + self.aspect + "\n" + \
             "\tNF_MORPH:" + self.nf_morph + "\n" + \
@@ -316,7 +339,9 @@ class GramNChunk(GramChunk):
             "\tHEAD:" + self.head.getText() + "\n" + \
             "\tCLASS:" + self.evClass
 
+
 class GramVChunkList:
+
     def __init__(self, node):
         self.node = node
         self.counter = 0 #To control different subchunks w/in a chunk (e.g., "began to study") 
@@ -347,25 +372,36 @@ class GramVChunkList:
 
     def __str__(self):
         if len(self.gramVChunksList) == 0:
-            string= '[]'
+            string = '[]'
         else:
             string = ''
             for i in self.gramVChunksList:
-                node = "\n\tNEGATIVE: "+str(getWordList(i.negMarks))\
-                    +"\n\tINFINITIVE: " +str(getWordList(i.infMark))\
-                    +"\n\tADVERBS-pre: "+str(getWordList(i.adverbsPre))\
-                    +"\n\tADVERBS-post: "+str(getWordList(i.adverbsPost))+" "+str(getPOSList(i.adverbsPost))\
-                    +"\n\tTRUE CHUNK: "+str(getWordList(i.trueChunk))+"\t :"+str(getPOSList(i.trueChunk))\
-                    +"\n\tTENSE: "+str(i.tense)\
-                    +"\n\tASPECT: "+str(i.aspect)\
-                    +"\n\tNF_MORPH: "+str(i.nf_morph)\
-                    +"\n\tMODALITY: "+str(i.modality)\
-                    +"\n\tPOLARITY: "+str(i.polarity)\
-                    +"\n\tHEAD: "+str(i.head.getText())\
-                    +"\n\tCLASS: "+str(i.evClass)
-                string = string+"\n"+node
+                node = "\n\tNEGATIVE: " + str(getWordList(i.negMarks)) \
+                    + "\n\tINFINITIVE: "  + str(getWordList(i.infMark)) \
+                    + "\n\tADVERBS-pre: " + str(getWordList(i.adverbsPre)) \
+                    + "\n\tADVERBS-post: " + str(getWordList(i.adverbsPost)) + str(getPOSList(i.adverbsPost)) \
+                    + "\n\tTRUE CHUNK: " + str(getWordList(i.trueChunk)) + str(getPOSList(i.trueChunk)) \
+                    + "\n\tTENSE: " + str(i.tense) \
+                    + "\n\tASPECT: " + str(i.aspect) \
+                    + "\n\tNF_MORPH: " + str(i.nf_morph) \
+                    + "\n\tMODALITY: " + str(i.modality) \
+                    + "\n\tPOLARITY: " + str(i.polarity) \
+                    + "\n\tHEAD: " + str(i.head.getText()) \
+                    + "\n\tCLASS: " + str(i.evClass)
+                string = string + "\n" + node
         return string
-    
+
+    def do_not_process(self):
+        """Return True if this GramVChunkList can be skipped, either because
+        there are no true chunks or because there is no content."""
+        true_chunks = self.trueChunkLists
+        if len(true_chunks) == 1 and not true_chunks[0]:
+            return True
+        if len(self) == 0:
+            logger.warn("Obtaining an empty GramVChList")
+            return True
+        return False
+
     def _treatMainVerb(self, item, tempNode, itemCounter):
         self.addInCurrentSublist(self.trueChunkLists, item)
         self.updateCounter()
@@ -374,9 +410,8 @@ class GramVChunkList:
             pass
         else:
             self.updateChunkLists()
-        
 
-    
+
     def distributeInfo(self):
         """ Getting rid of colons and colon-embedded comments
             e.g., ['ah', ',', 'coming', 'up']  >> ['ah', 'coming', 'up']
@@ -826,23 +861,20 @@ class GramVChunk(GramChunk):
 
     def as_extended_string(self):
         if self.node == None:
-            opening_string = 'VERB CHUNK:' + 'None'
+            opening_string = 'GramVChunk: None'
         else:
-            opening_string = "VERB CHUNK:" + self.node.getText()
-
+            opening_string = "GramVChunk: %s" % self.node.getText()
         try:
             head_string = self.head.getText()
         except AttributeError:
             head_string = ''
-
         return \
             opening_string + "\n" + \
             "\tNEGATIVE:" + str(getWordList(self.negative)) + "\n" + \
             "\tINFINITIVE:" + str(getWordList(self.infinitive)) + "\n" + \
             "\tADVERBS-pre:" + str(getWordList(self.adverbsPre)) + "\n" + \
             "\tADVERBS-post:" + str(getWordList(self.adverbsPost)) + str(getPOSList(self.adverbsPost)) + "\n" + \
-            "\tTRUE CHUNK:" + str(getWordList(self.trueChunk)) + "\n" + \
-            "\t          :" + str(getPOSList(self.trueChunk)) + "\n" + \
+            "\tTRUE CHUNK:" + str(getWordList(self.trueChunk)) + str(getPOSList(self.trueChunk)) + "\n" + \
             "\tTENSE:" + self.tense + "\n" + \
             "\tASPECT:" + self.aspect + "\n" + \
             "\tNF_MORPH:" + self.nf_morph + "\n" + \

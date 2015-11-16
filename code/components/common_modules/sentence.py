@@ -21,10 +21,10 @@ class Sentence:
     the eLoc is the location of the event inside the embedding constituent, usually a
     chunk). The embeddedTags variable is a stack to keep track of all currently open
     elements, in order to deal with multiple embedding of the same element type; e.g.,
-    <T3><Chk><T3><Chk> ...  </Chk></T3></Chk></T3>"""
+    <T3><Chk><T3><Chk> ... </Chk></T3></Chk></T3>"""
 
     def __init__(self):
-        """Initialize all instance variables to 0, empty list or None."""
+        """Initialize all instance variables to 0, None or the empty list."""
         self.dtrs = []
         self.chunkIndex = 0
         self.eventList = [] 
@@ -46,17 +46,18 @@ class Sentence:
             return self.dtrs[index]
 
     def __setitem__(self, idx, element):
-        """Note that element has to be a sequence if idx is a slice."""
+        """Set an element in the dtrs variable. The idx value is intended to be a slice
+        so element should be alist."""
         self.dtrs[idx] = element
 
     def __getslice__(self, i, j):
         """Get a slice from the dtrs variable."""
         return self.dtrs[i:j]
 
-    def X__setslice__(self, i, j, seq):
-        """Set a slice in the dtrs variable. Deprecated in 2.6, __setitem__ above should
-        do the trick."""
-        self.dtrs[i:j] = seq
+    #def __setslice__(self, i, j, seq):
+    #    """Set a slice in the dtrs variable. Deprecated in 2.6, __setitem__ should
+    #    now do the trick."""
+    #    self.dtrs[i:j] = seq
 
     def document(self):
         """Return the document that the sentence is in."""
@@ -143,11 +144,19 @@ class Sentence:
                 logger.warn("Sentence element that is not a chunk or token")
         return tokenList
 
-    def pretty_print(self):
+    def pretty_print(self, tree=True):
         """Pretty print the sentence by pretty printing all daughters"""
-        for dtr in self.dtrs:
-            dtr.pretty_print(indent=2)
+        print self
+        print "   parent        = %s" % self.parent
+        print "   chunkIndex    = %s" % self.chunkIndex
+        print "   position      = %s" % self.position
+        print "   positionCount = %s" % self.positionCount
+        print "   eventList     = %s" % self.eventList
+        if tree:
+            print "\nTREE:"
+            for dtr in self.dtrs:
+                dtr.pretty_print(indent=2)
 
-    def pp(self):
+    def pp(self, tree=True):
         """Delegates to self.pretty_print()."""
-        self.pretty_print()
+        self.pretty_print(tree)

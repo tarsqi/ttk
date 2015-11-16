@@ -1,8 +1,9 @@
 """Implements the behaviour of chunks.
 
-Chunks are embedded in sentences and contain event tags, timex tags
-and tokens. Much of the functionality of Evita and Slinket is
-delegated to chunks.
+Chunks are embedded in sentences and contain event tags, timex tags and
+instances of Token.
+
+Much of the functionality of Evita and Slinket is delegated to chunks.
 
 """
 
@@ -30,7 +31,7 @@ class Chunk(Constituent):
        positionCount = 0
        position = None
        parent = None
-       cachedGramChunk = 0
+       gramchunk = 0
        event = None
        eid = None
        isEmbedded = 0
@@ -44,7 +45,7 @@ class Chunk(Constituent):
         self.positionCount = 0
         self.position = None
         self.parent = None
-        self.cachedGramChunk = 0
+        self.gramchunk = 0
         self.event = None
         self.eid = None
         self.isEmbedded = 0
@@ -108,18 +109,22 @@ class Chunk(Constituent):
         multiChunkInit = self.getTokens(self)
         return multiChunkInit + multiChunkEnd
 
-    def _processEventInChunk(self, gramChunk):
-        """for evita."""
+    def _processEventInChunk(self, gramChunk=None):
+        """Perform a few little checks on the head and check whether there is an event
+        class, then add the event to the document. When this is called on a
+        NounChunk, then there is no GramChunk handed in and it will be retrieved
+        from the gramchunk instance variable, when it is called from
+        VerbChunk, then the GramChunk will be handed in. """
         doc = self.document()
-        if (gramChunk.head and
-            gramChunk.head.getText() not in forms.be and
-            gramChunk.head.getText() not in forms.spuriousVerb and
-            gramChunk.evClass):
-            doc.addEvent(Event(gramChunk))
+        gchunk = self.gramchunk if gramChunk is None else gramChunk
+        if (gchunk.head
+            and gchunk.head.getText() not in forms.be
+            and gchunk.head.getText() not in forms.spuriousVerb
+            and gchunk.evClass):
+            doc.addEvent(Event(gchunk))
 
     # the next methods (up to, but not including endVerbs) were all taken from the
     # slinket/s2t version.
-
     
     def _matchChunk(self, chunkDescription):
 
@@ -182,7 +187,6 @@ class Chunk(Constituent):
     def _getHeadText(self):
         headText = string.split(self.getText())[-1]
         return headText.strip()
-    
 
     def embedded_event(self):
         """Returns the embedded event of the chunk if it has one, returns None
@@ -242,7 +246,6 @@ class Chunk(Constituent):
                 raise "ERROR: unknown item type: "+item.nodeType
         return tokensList
 
-
     def startHead(self):
         pass
 
@@ -260,14 +263,15 @@ class Chunk(Constituent):
         else: return 0
 
     def pretty_print(self, indent=0):
-        print indent * ' ' + '<' + self.phraseType + '>'
+        print "%s<%s positionCount=%s position=%s isEmbedded=%s, checked=%s eid=%s>" % \
+            (indent * ' ', self.__class__.__name__,
+             self.positionCount, self.position, self.isEmbedded, self.flagCheckedForEvents, self.eid)
         for tok in self.dtrs:
-            #print tok
             tok.pretty_print(indent+2)
-
 
         
 class AdjChunk(Chunk):
+
     def __init__(self, phraseType):
         Chunk.__init__(self, phraseType)
         self.head = -1
@@ -302,47 +306,40 @@ class NounChunk(Chunk):
             self.poss = 0
 
     def isNounChunk(self):
-        return 1
-
-    def _createGramChunk(self):
-        self.cachedGramChunk = GramNChunk(self)
+        """Returns True"""
+        return True
 
     def isDefinite(self):
+        """Return True if self includes a Token that is a POS, PRP$ or a definite DET."""
         for token in self.dtrs[:self.head]:
             if token.pos == 'POS' or token.pos == 'PRP$':
                 return True
             elif token.pos == 'DET' and token.getText() in ['the', 'this', 'that', 'these', 'those']:
                 return True
-        # in the slinket/s2t version, the following line used to be
-        # included as an else above
+        # in the slinket/s2t version, the following line used to be included as
+        # an else in the loop above, which seems wrong
         return False
 
-    def createEvent(self, verbGramFeat='nil'):
-        """for evita"""
-        logger.debug("createEvent in NounChunk")
+    def createEvent(self, verbGramFeat=None):
+        """Try to create an event in the NounChunk. Checks whether the nominal is an
+        event candidate, then conditionally adds it."""
+        logger.debug("NounChunk.createEvent(verbGramFeat=%s)" % verbGramFeat)
         # Do not try to create an event if the chunk is empty (which is happening due to a
         # crazy bug in the converter code) (mv 11/08/07)
         if not self.dtrs:
+            logger.warn("There are no dtrs in the NounChunk")
             return
-        GramNCh = self.gramChunk()
-        """ To percolate gram features from verb
-        in case of nominal events that are the head of
-        predicative complements"""
-        if verbGramFeat !='nil':
-            GramNCh.tense = verbGramFeat['tense']
-            GramNCh.aspect = verbGramFeat['aspect']
-            GramNCh.modality = verbGramFeat['modality']
-            GramNCh.polarity = verbGramFeat['polarity']
-            logger.debug('[N_NPC] ' + GramNCh.as_extended_string())
-        else:
-            logger.debug('[1] ' + GramNCh.as_extended_string())
+        # TODO: find out why "print self.gramchunk" gives an error
+        self.gramchunk = GramNChunk(self)
+        # percolate grammatical features from the verb for nominal events that
+        # are the head of predicative complements
+        self.gramchunk.add_verb_features(verbGramFeat)
+        logger.debug(self.gramchunk.as_extended_string())
         # Even if preceded by a BE or a HAVE form, only tagging N Chunks headed by an
         # eventive noun E.g., "was an intern" will NOT be tagged
-        if GramNCh.isEventCandidate_Syn() and GramNCh.isEventCandidate_Sem():
-            logger.debug("Accepted Nominal")
-            print type(GramNCh)
-            print GramNCh.__class__
-            self._processEventInChunk(GramNCh)
+        if self.gramchunk.isEventCandidate():
+            logger.debug("Nominal is an event candidate")
+            self._processEventInChunk()
 
 
 class VerbChunk(Chunk):
@@ -362,9 +359,6 @@ class VerbChunk(Chunk):
 
     def isVerbChunk(self):
         return 1
-
-    def _createGramChunk(self):
-        self.cachedGramChunk = GramVChunkList(self)   
 
     def _updatePositionInSentence(self, endPosition):
         pass
@@ -389,7 +383,6 @@ class VerbChunk(Chunk):
                 return (lenSubstring, fsaCounter)
         else:
             return (0, fsaCounter)
-
 
     def _updateFlagCheckedForEvents(self, multiChunkEnd):
         """Update Position in sentence, by marking as already checked for EVENT
@@ -563,25 +556,20 @@ class VerbChunk(Chunk):
 
             
     def createEvent(self):
-        
-        logger.debug("createEvent in VerbChunk")
-        
-        GramVChList = self.gramChunk()
-        
-        # do not attempt to create an event if there are no true chunks in there
-        true_chunks = GramVChList.trueChunkLists
-        if len(true_chunks) == 1 and not true_chunks[0]:
+        """Try to create an event in the VerbChunk. Delegates to two methods
+        depending on the position of the verb in the chunk."""
+
+        logger.debug("VerbChunk.createEvent()")
+        GramVChList = GramVChunkList(self)
+        if GramVChList.do_not_process():
             return
-        # also skip if there is no content at all
-        if len(GramVChList) == 0:
-            logger.warn("Obtaining an empty GramVChList")
+        logger.debug("len(GramVChList) ==> %d" % len(GramVChList))
+
         # simple case
-        elif len(GramVChList) == 1:
-            logger.debug("len(GramVChList) == 1")
+        if len(GramVChList) == 1:
             self._createEventOnRightmostVerb(GramVChList[-1])
         # complex case
         else:
-            logger.debug("len(GramVChList) > 1:" + str(len(GramVChList)))
             lastIdx = len(GramVChList)-1
             for idx in range(len(GramVChList)):
                 gramVCh = GramVChList[idx]

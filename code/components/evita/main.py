@@ -15,7 +15,6 @@ from utilities import logger
 from utilities.converter import FragmentConverter
 
 
-
 class Evita (TarsqiComponent):
 
     """Class that implements Evita's event recognizer. Instance variables: NAME: a string,
@@ -56,8 +55,9 @@ class Evita (TarsqiComponent):
         """Process an instance of docmodel.document.TarsqiDocParagraph. Note
         that contrary to the other processing methods, in this case the xmldoc
         and doctree variables on the Evita instance are the ones for just one
-        element and not for the whole documewnt or string. Events are added to
+        element and not for the whole document or string. Events are added to
         the tag repository on the element."""
+        # TODO: instead of this maybe create a doctree directly
         xml_string = _create_xml_string(element)
         self.process_string(xml_string)
         _import_event_tags(self.xmldoc, element)
@@ -70,10 +70,15 @@ class Evita (TarsqiComponent):
         """Loop through all sentences in self.doctree and through all nodes in each
         sentence and determine if the node contains an event."""
         for sentence in self.doctree:
-            logger.debug("> SENTENCE:" + str(getWordList(sentence)))
+            #sentence.pp(tree=False)
+            logger.debug("SENTENCE: %s" % ' '.join(getWordList(sentence)))
             for node in sentence:
+                #print node
+                #node.pp()
                 if not node.flagCheckedForEvents:
                     node.createEvent()
+            #print; sentence.pp(tree=True)
+        #self.doctree.pp()
 
 
 def  _create_xml_string(element):
@@ -137,6 +142,7 @@ def _write_open_vg(lex, xmlstring, stack, vgs):
 
 def _write_closing_tag(lex, end, tag, xmlstring, stack):
     """Write a closing tag if the end for that tag is equal to the end of the lex."""
+    # TODO: this is brittle and may only work for the built-in chunker
     if lex.end == end:
         stack.indent -= 2
         xmlstring.write("%s</%s>\n" % (stack.indent*' ', tag))
@@ -144,7 +150,7 @@ def _write_closing_tag(lex, end, tag, xmlstring, stack):
 
 class Stack(object):
     """Auxiliary datastructure used by _create_xml_string(). Its main task is to
-    track of what the closing position is of a currently open s, NG or VG tag."""
+    track what the closing position is of a currently open s, NG or VG tag."""
     def __init__(self):
         self.s_end = None
         self.ng_end = None
@@ -154,11 +160,10 @@ class Stack(object):
 def _import_event_tags(xmldoc, doc_element):
     """Find all the information for each event in the XmlDocument and add it to the
     document element. This involves merging information from the EVENT tag, the
-    embedded lex tag and the MAKEINSTANCE tag. """
+    MAKEINSTANCE tag and the embedded lex tag (for the offsets)."""
     current_event = None
     xmlelement = xmldoc.elements[0]
     while xmlelement:
-        #print xmlelement
         if xmlelement.content.startswith('<EVENT'):
             current_event = xmlelement.attrs
         if xmlelement.content.startswith('<lex') and current_event:
@@ -166,7 +171,8 @@ def _import_event_tags(xmldoc, doc_element):
             current_event['end'] = xmlelement.attrs['end']
         if xmlelement.content.startswith('<MAKEINSTANCE') and current_event:
             current_event.update(xmlelement.attrs)
-            current_event = { k:v for k,v in current_event.items() if v is not None and k is not 'eventID' }
+            current_event = { k:v for k,v in current_event.items()
+                              if v is not None and k is not 'eventID' }
             #print current_event
             begin = int(current_event.pop('begin'))
             end = int(current_event.pop('end'))

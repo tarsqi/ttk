@@ -233,7 +233,7 @@ def export_tags_to_doctree(tarsqi_element):
         elif t.name == 'lex':
             p1 = t.begin
             p2 = t.end
-            # TODO: use Token
+            # TODO: use Token instead and add NewToken functionality to Token
             tok = NewToken(doctree, t.id, tarsqi_doc.text(p1,p2), t.attrs['pos'], t.attrs['lemma'], p1, p2)
             currentSentence.add(tok)
             

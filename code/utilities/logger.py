@@ -147,7 +147,6 @@ def _log(message_type, log_string):
 def set_stdout_printing(Boolean):
     """When this function is called, the out and outnl methods will
     not print to the output. """
-    
     global STDOUT_PRINTING
     STDOUT_PRINTING = Boolean
 

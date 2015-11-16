@@ -63,21 +63,10 @@ class Constituent:
         except IndexError:
             return ''
 
-    def gramChunk(self):
-        """Use a cache to increase speed for the code that checks patterns. That patterns
-        code breaks because this method appears to return None is certain ill-understood
-        cases. Used in Evita only."""
-        if not self.cachedGramChunk:
-            self._createGramChunk()
-        return self.cachedGramChunk
-
-    def _createGramChunk(self):
-        """Used in Evita only"""
-        self.cachedGramChunk = 0
-
     def createEvent(self):
-        """Used in Evita only"""
-        logger.debug("CreateEvent in Consituent")
+        """Does nothing except for logging a warning. Event creation is only attempted
+        on some sub classes."""
+        logger.warn("Unexpected recipient of createEvent")
 
     def _hackToSolveProblemsInValue(self, value):
         """From slinket/s2t"""

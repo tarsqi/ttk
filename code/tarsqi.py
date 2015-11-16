@@ -72,7 +72,8 @@ from mixins.parameters import ParameterMixin
 from utilities import logger
 from utilities.file import read_settings
 
-logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=3)
+logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=4)
+
 
 SETTINGS = 'settings.txt'
 USE_PROFILER = False
@@ -251,7 +252,7 @@ def _read_arguments(args):
                'loglevel=', 'ignore=', 'platform=', 'treetagger=']
 
     try:
-        (opts, args) = getopt.getopt(sys.argv[1:],'', options)
+        (opts, args) = getopt.getopt(args,'', options)
     except getopt.GetoptError:
         print "ERROR: %s" % sys.exc_value
         sys.exit(_usage_string())
@@ -290,6 +291,7 @@ def run_tarsqi(args):
 
     begin_time = time.time()
 
+
     if os.path.isdir(input) and os.path.isdir(output):
         for file in os.listdir(input):
             infile = input + os.sep + file
@@ -317,6 +319,11 @@ def run_profiler(args):
     print 'Running profiler on:', command
     profile.run(command, PROFILER_OUTPUT)
 
+def test():
+    os.remove('out.xml')
+    run_tarsqi(['--pipeline=PREPROCESSOR,GUTIME,EVITA',
+                'data/in/simple-xml/tiny.xml',
+                'out.xml'])
 
     
 if __name__ == '__main__':
