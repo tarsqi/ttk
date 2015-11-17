@@ -158,13 +158,10 @@ def print_function(name, fun, docfile):
 def get_function_name(fun):
     try:
         firstline = inspect.getsourcelines(fun)[0][0]
+        return firstline.strip()[4:-1]
     except IOError:
-        # needed for some imports, like "from string import lower"
-        firstline = ''
-        print 'WARNING: could not get function name of', fun
-    firstline = firstline.strip()
-    firstline = firstline[4:-1]
-    return firstline
+        # in case the function was imported
+        return fun.__name__ + ' (imported)'
     
 def print_function_code(id, name, fun):
     filename = os.path.join('..', 'docs', 'code', 'functions', "%s.html" % id)
