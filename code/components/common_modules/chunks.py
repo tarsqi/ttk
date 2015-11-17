@@ -117,6 +117,7 @@ class Chunk(Constituent):
         VerbChunk, then the GramChunk will be handed in. """
         doc = self.document()
         gchunk = self.gramchunk if gramChunk is None else gramChunk
+        # TODO: the second and third test seem relevant for verbs only
         if (gchunk.head
             and gchunk.head.getText() not in forms.be
             and gchunk.head.getText() not in forms.spuriousVerb
@@ -310,11 +311,12 @@ class NounChunk(Chunk):
         return True
 
     def isDefinite(self):
-        """Return True if self includes a Token that is a POS, PRP$ or a definite DET."""
+        """Return True if self includes a Token that is a POS, PRP$ or a definite determiner."""
         for token in self.dtrs[:self.head]:
             if token.pos == 'POS' or token.pos == 'PRP$':
                 return True
-            elif token.pos == 'DET' and token.getText() in ['the', 'this', 'that', 'these', 'those']:
+            if token.pos in ('DT', 'DET') \
+                    and token.getText() in ['the', 'this', 'that', 'these', 'those']:
                 return True
         # in the slinket/s2t version, the following line used to be included as
         # an else in the loop above, which seems wrong
