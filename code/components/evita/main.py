@@ -73,8 +73,6 @@ class Evita (TarsqiComponent):
             #sentence.pp(tree=False)
             logger.debug("SENTENCE: %s" % ' '.join(getWordList(sentence)))
             for node in sentence:
-                #print node
-                #node.pp()
                 if not node.flagCheckedForEvents:
                     node.createEvent()
             #print; sentence.pp(tree=True)

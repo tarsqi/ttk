@@ -19,31 +19,31 @@ import utilities.logger as logger
 DEBUG = False
 
 # Determines whether we try to disambiguate nominals with training data
-NOM_DISAMB_TR = True
+NOM_DISAMB = True
 
 # Determines whether we use context information in training data (has no effect if
-# NOM_DISAMB_TR == False).
-NOM_CONTEXT_TR = True
+# NOM_DISAMB == False).
+NOM_CONTEXT = True
 
-# Determines how we use WN to recognize events if True, mark only forms whose first WN
-# sense is an event sense if False, mark forms which have any event sense (if
-# NOM_DISAMB_TR is true, this is only a fallback where no training data exists).
+# Determines how we use WordNet to recognize events. If True, mark only forms
+# whose first WN sense is an event sense, if False, mark forms which have any
+# event sense (if NOM_DISAMB is true, this is only a fallback where no training
+# data exists).
 NOM_WNPRIMSENSE_ONLY = True
 
-# Open dbm's with information about nominal events. 
+# Open dbm's with information about nominal events. If that does not work, open
+# all corresponding text files, these are a fallback in case the dbm's are not
+# supported or not available
 try:
     wnPrimSenseIsEvent_DBM = anydbm.open(forms.wnPrimSenseIsEvent_DBM,'r')
     wnAllSensesAreEvents_DBM = anydbm.open(forms.wnAllSensesAreEvents_DBM,'r')
     wnSomeSensesAreEvents_DBM = anydbm.open(forms.wnSomeSensesAreEvents_DBM,'r')
     DBM_FILES_OPENED = True
 except:
+    wnPrimSenseIsEvent_TXT = open(forms.wnPrimSenseIsEvent_TXT,'r')
+    wnAllSensesAreEvents_TXT = open(forms.wnAllSensesAreEvents_TXT,'r')
+    wnSomeSensesAreEvents_TXT = open(forms.wnSomeSensesAreEvents_TXT,'r')
     DBM_FILES_OPENED = False
-
-# Also open all corresponding text files, these are a fallback in case the dbm's are not
-# supported.
-wnPrimSenseIsEvent_TXT = open(forms.wnPrimSenseIsEvent_TXT,'r')
-wnAllSensesAreEvents_TXT = open(forms.wnAllSensesAreEvents_TXT,'r')
-wnSomeSensesAreEvents_TXT = open(forms.wnSomeSensesAreEvents_TXT,'r')
 
 # Open pickle files with semcor and verbstem information
 DictSemcorEventPickleFile = open(forms.DictSemcorEventPickleFilename, 'r')
@@ -56,25 +56,26 @@ DictVerbStems = pickle.load(DictVerbStemPickleFile)
 DictSemcorContextPickleFile.close()
 DictVerbStemPickleFile.close()
 
-# Create one Bayesian event recognizer and one stemmer
+# Create the Bayesian event recognizer and the stemmer
 nomEventRec = BayesEventRecognizer(DictSemcorEvent, DictSemcorContext)
 stemmer = porterstemmer.Stemmer()
 
+if DEBUG:
+    print "NOM_DISAMB = %s" % NOM_DISAMB
+    print "NOM_CONTEXT = %s" % NOM_CONTEXT
+    print "NOM_WNPRIMSENSE_ONLY = %s" % NOM_WNPRIMSENSE_ONLY
+    print "DBM_FILES_OPENED = %s" % DBM_FILES_OPENED
 
 
-def getWordList(itemsList):
+def getWordList(consituents):
+    """Returns a list of words from the list of consituents, typically the
+    constituents ar einstances of NounCHunk, VerbChunk or Token. Used for
+    debugging purposes."""
+    return [consituent.getText() for consituent in consituents]
+
+def getPOSList(consituents):
     """Input: List of Item instances. Function for debugging purposes."""
-    res = []
-    for item in itemsList:
-        res.append(item.getText())
-    return res
-
-def getPOSList(itemsList):
-    """Input: List of Item instances. Function for debugging purposes."""
-    res = []
-    for item in itemsList:
-        res.append(item.pos)
-    return res
+    return [consituent.pos for consituent in consituents]
 
 def collapse_timex_nodes(nodes):
     """Take a list of nodes and flatten it out by removing Timex tags."""
@@ -95,14 +96,14 @@ def debug (*args):
         
 class GramChunk:
 
-    """This class is used to add grammatical features to a NounChunk, VerbChunk or
-    AdjectiveToken. It lives in the cachedGramChunk instance variable of one of
-    those classes.
+    """The subclasses of this class are used to add grammatical features to a
+    NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
+    of instances of those classes.
 
     """
 
     def add_verb_features(self, verbGramFeat):
-        """Set grammatical features (tense, aspect, modality an dpolarity) with the
+        """Set grammatical features (tense, aspect, modality and polarity) with the
         features handed in from the governing verb."""
         if verbGramFeat is not None:
             self.tense = verbGramFeat['tense']
@@ -110,10 +111,23 @@ class GramChunk:
             self.modality = verbGramFeat['modality']
             self.polarity = verbGramFeat['polarity']
 
+    def as_extended_string(self):
+        """Debugging method to print the GramChunk and its features."""
+        return \
+            "%s: %s\n" % (self.__class__.__name__, self.node.getText()) + \
+            "\tTENSE: %s\n" % self.tense + \
+            "\tASPECT: %s\n" % self.aspect + \
+            "\tNF_MORPH: %s\n" % self.nf_morph + \
+            "\tMODALITY: %s\n" % self.modality + \
+            "\tPOLARITY: %s\n" % self.polarity + \
+            "\tHEAD: %s\n" % self.head.getText() + \
+            "\tCLASS: %s\n" % self.evClass
+
+
     def _matchChunk(self, chunkDescription): 
-        """Match chunk to the patterns in chunkDescriptions.  chunkDescription is a
-        dictionary with keys-values pairs that match instance variables and their values
-        on GramChunks.
+        """Match chunk to the patterns in chunkDescriptions.  chunkDescription
+        is a dictionary with key-value pairs that match instance variables and
+        their values on GramChunks.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...} 
@@ -127,9 +141,9 @@ class GramChunk:
         (R) M: This code breaks on the fourth line, claiming that gramch is None.
         This method is also implemented in the Chunk.Constituent class """
 
-        debug("......entering _matchChunk()")
+        #debug("......entering _matchChunk()" + str(self))
         for feat in chunkDescription.keys():
-            debug("\n......PAIR <" + str(feat) + " " + str(chunkDescription[feat])+">")
+            #debug("\n......PAIR <" + str(feat) + " " + str(chunkDescription[feat])+">")
             value = chunkDescription[feat]
             if type(value) is TupleType:
                 if value[0] == '^':
@@ -150,13 +164,17 @@ class GramChunk:
 
 class GramAChunk(GramChunk):
 
-    def __init__(self, node, ten="NONE", asp="NONE", nf_m="ADJECTIVE", mod="NONE", pol="POS"):
-        self.node = node
-        self.tense = ten
-        self.aspect = asp
-        self.nf_morph = nf_m
-        self.modality = mod
-        self.polarity = pol
+    """Contains the grammatical features for an AdjectiveToken."""
+
+    def __init__(self, adjectivetoken):
+        """Initialize with an AdjectiveToken and use default values for most
+        instance variables."""
+        self.node = adjectivetoken
+        self.tense = "NONE"
+        self.aspect = "NONE"
+        self.nf_morph = "ADJECTIVE"
+        self.modality = "NONE"
+        self.polarity = "POS"
         self.head = self.getHead()
         self.evClass = self.getEventClass()
 
@@ -184,27 +202,23 @@ class GramAChunk(GramChunk):
         headString = self.head.getText()
         return 'I_STATE' if headString in forms.istateAdj else 'STATE'
 
-    def as_extended_string(self):
-        return \
-         "\nGramAChunk: %s\n" % self.node.getText() + \
-         "\tTENSE:" + self.tense + "\n" + \
-         "\tASPECT:" + self.aspect + "\n" + \
-         "\tNF_MORPH:" + self.nf_morph + "\n" + \
-         "\tMODALITY:" + self.modality + "\n" + \
-         "\tPOLARITY:" + self.polarity + "\n" + \
-         "\tHEAD:" + self.head.getText() + "\n" + \
-         "\tCLASS:" + self.evClass
-        
 
 class GramNChunk(GramChunk):
 
-    def __init__(self, node, ten="NONE", asp="NONE", nf_m="NOUN", mod="NONE", pol="POS"):
-        self.node = node
-        self.tense = ten
-        self.aspect = asp
-        self.nf_morph = nf_m
-        self.modality = mod
-        self.polarity = pol
+    """Contains the grammatical features for a NounChunk."""
+
+    def __init__(self, nounchunk):
+        """Initialize with a NounChunk and use default values for most instance
+        variables."""
+        chunkclassname = nounchunk.__class__.__name__
+        if chunkclassname != 'NounChunk':
+            logger.warn("GramNChunk created with instance of " + chunkclassname)
+        self.node = nounchunk
+        self.tense = "NONE"
+        self.aspect = "NONE"
+        self.nf_morph = "NOUN"
+        self.modality = "NONE"
+        self.polarity = "POS"
         self.head = self.node.getHead()
         self.evClass = self.getEventClass()
 
@@ -212,132 +226,106 @@ class GramNChunk(GramChunk):
         """Used by Sentence._match. Needs cases for all instance variables used in the
         pattern matching phase."""
         if name == 'class': return self.evClass
+        # TODO: how does this work?
         return None
     
     def getEventClass(self):
+        """Get the event class for the GramChunk. For nominals, the event class
+        is always OCCURRENCE."""
         return "OCCURRENCE"
   
     def getEventLemma(self):
+        """Return the lemma from the head of the GramNChunk. If there is no head
+        or the head has no lemma, then build it from the text using a stemmer."""
         try:
-            hString = str(self.head.lemma)
-        except:
-            hString = str(self.head.getText()).lower()
-            hString = stemmer.stem(hString)
-        return hString
+            return self.head.lemma
+        except AttributeError:
+            return stemmer.stem(self.head.getText().lower())
 
     def isEventCandidate(self):
+        """Return True if the nominal is syntactically and semantically an
+        event, return False otherwise."""
         return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
 
     def isEventCandidate_Syn(self):
-        """Return True if the GramNChunk is syntactically able to be an event, return
-        False otherwise. A event candidate syntactically has to have a head (which cannot
-        be a timex) and the head has to be a common noun."""
-        #logger.out(self.head.__class__.__name__)
+        """Return True if the GramNChunk is syntactically able to be an event,
+        return False otherwise. A event candidate syntactically has to have a
+        head (which cannot be a timex) and the head has to be a common noun."""
         if self.head.isTimex():
             return False
-        return self.head and forms.nomcomprog.match(self.head.pos)
+        # using the regular expression is a bit faster then lookup in the short
+        # list of common noun parts of speech (forms.nounsCommon)
+        return self.head and forms.RE_nounsCommon.match(self.head.pos)
 
-    
     def isEventCandidate_Sem(self):
-
-        hString = self.getEventLemma()
-        debug('GramNChunk.isEventCandidate_Sem("' +hString + '")')
-
-        if self._wnAllSensesAreEvents(hString):
+        """Return True if the GramNChunk can be an event semantically."""
+        debug("event candidate?")
+        lemma = self.getEventLemma()
+        # return True if all WorrdNetsenses are events, no classifier needed
+        if self._wnAllSensesAreEvents(lemma):
             return True
-        
-        if NOM_DISAMB_TR:
-            debug("  NOM_DISAMB_TR == True")
-            contextLemmas = []
-            if NOM_CONTEXT_TR:
-                if self.node.isNounChunk():
-                    if self.node.isDefinite():
-                        contextLemmas.append('DEF')
-                    else:
-                        contextLemmas.append('INDEF')   
-                contextLemmas.append(self.head.pos)
-
+        # run the classifier if required, fall through on disambiguation error
+        if NOM_DISAMB:
             try:
-                if nomEventRec.isEvent(hString, contextLemmas):
-                    debug("  nomEventRec[", hString, "] ==> True")
-                    return True
-                else:
-                    debug("  nomEventRec[", hString, "] ==> False")
-                    return False
+                return self._run_classifier(lemma)
             except DisambiguationError, (strerror):
-                debug("  DisambiguationError: ", strerror)
-        
+                debug("  DisambiguationError: %s" % strerror)
+        # check whether primary sense or some of the senses are events
         if NOM_WNPRIMSENSE_ONLY:
-            debug("  Disambiguating by checking WordNet primary sense")
-            if self._wnPrimarySenseIsEvent(hString):
-                debug("  Primary sense is an event")
-                return True
-            else:
-                debug("  Primary sense is not an event")
-                return False
-            
+            is_event = self._wnPrimarySenseIsEvent(lemma)
+            debug("  primary WordNet sense is event ==> %s" % is_event)
         else:
-            debug("  Diasambiguating by checking all WordNet senses")
-            if self._wnSomeSensesAreEvents(hString):
-                debug("  Some senses are events")
-                return True
-            else:
-                debug("  No senses are events")
-                return False
+            is_event = self._wnSomeSensesAreEvents(lemma)
+            debug("  some WordNet sense is event ==> %s" % is_event)
+        return is_event
 
-            
-    def _wnPrimarySenseIsEvent(self, form):
-        debug("  GramNChunk._wnPrimarySenseIsEvent(..)")
-        if DBM_FILES_OPENED:
-            try:
-                return self._lookupFormInDBM(form, wnPrimSenseIsEvent_DBM)
-            except:
-                pass
-        return self._lookupFormInTXT(form, wnPrimSenseIsEvent_TXT)
-    
-    def _wnAllSensesAreEvents(self, form):
-        debug("  GramNChunk._wnAllSensesAreEvents(..)")
-        if DBM_FILES_OPENED:
-            try:
-                return self._lookupFormInDBM(form, wnAllSensesAreEvents_DBM)
-            except:
-                pass
-        return self._lookupFormInTXT(form, wnAllSensesAreEvents_TXT)
+    def _run_classifier(self, lemma):
+        """Run the classifier on lemma, using features from the GramNChunk."""
+        features = self._collect_features()
+        is_event = nomEventRec.isEvent(lemma, features)
+        debug("  nomEventRec.isEvent(%s) ==> %s" % (lemma, is_event))
+        return is_event
 
-    def _wnSomeSensesAreEvents(self, form):
-        debug("  GramNChunk._wnSomeSensesAreEvents(..)")
+    def _collect_features(self):
+        """Collect features for the Bayesian classifier."""
+        features = []
+        if NOM_CONTEXT:
+            def_marker = 'DEF' if self.node.isDefinite() else 'INDEF'
+            features.append(def_marker)
+            features.append(self.head.pos)
+        return features
+
+    def _wnPrimarySenseIsEvent(self, lemma):
+        """Determine whether primary WN sense is an event."""
+        #debug("  GramNChunk._wnPrimarySenseIsEvent(..)")
         if DBM_FILES_OPENED:
-            try:
-                return self._lookupFormInDBM(form, wnSomeSensesAreEvents_DBM)
-            except:
-                pass
-        return self._lookupFormInTXT(form, wnSomeSensesAreEvents_TXT)
+            return self._lookupLemmaInDBM(lemma, wnPrimSenseIsEvent_DBM)
+        return self._lookupLemmaInTXT(lemma, wnPrimSenseIsEvent_TXT)
     
-    def _lookupFormInDBM(self, form, dbm):
-        debug("  GramNChunk._lookupFormInDBM", form, dbm)
-        try:
-            return dbm[form]
-        except KeyError:
-            return False
+    def _wnAllSensesAreEvents(self, lemma):
+        """Determine whether all WN senses are events."""
+        #debug("  GramNChunk._wnAllSensesAreEvents(..)")
+        if DBM_FILES_OPENED:
+            return self._lookupLemmaInDBM(lemma, wnAllSensesAreEvents_DBM)
+        return self._lookupLemmaInTXT(lemma, wnAllSensesAreEvents_TXT)
+
+    def _wnSomeSensesAreEvents(self, lemma):
+        """Determine whether some WN senses are events."""
+        #debug("  GramNChunk._wnSomeSensesAreEvents(..)")
+        if DBM_FILES_OPENED:
+            return self._lookupLemmaInDBM(lemma, wnSomeSensesAreEvents_DBM)
+        return self._lookupLemmaInTXT(lemma, wnSomeSensesAreEvents_TXT)
+    
+    def _lookupLemmaInDBM(self, lemma, dbm):
+        """Look up lemma in database."""
+        # note that has_key here returns 0 or 1, hence the if-then-else
+        return True if dbm.has_key(lemma) else False
         
-    def _lookupFormInTXT(self, form, file):
-        debug("  GramNChunk._lookupFormInTXT", form)
-        #line = evitaUtils.binarySearchFile(file, form, "\n")
-        line = binsearch.binarySearchFile(file, form, "\n")
-        if line:
-            return True
-        else:
-            return False
-
-    def as_extended_string(self):
-        return \
-            "GramNChunk:" + self.node.getText() + "\n" + \
-            "\tTENSE:" + self.tense + "\n" + \
-            "\tASPECT:" + self.aspect + "\n" + \
-            "\tNF_MORPH:" + self.nf_morph + "\n" + \
-            "\tMODALITY:" + self.modality + "\n" + \
-            "\tHEAD:" + self.head.getText() + "\n" + \
-            "\tCLASS:" + self.evClass
+    def _lookupLemmaInTXT(self, lemma, file):
+        """Look up lemma in text file."""
+        #debug("  GramNChunk._lookupLemmaInTXT", lemma)
+        line = binsearch.binarySearchFile(file, lemma, "\n")
+        return True if line else False
 
 
 class GramVChunkList:
