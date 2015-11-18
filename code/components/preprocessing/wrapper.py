@@ -77,7 +77,7 @@ class PreprocessorWrapper:
     
 
     def __init__(self, document):
-        """Set component_name and initialize TreeTagger."""
+        """Set component_name, add the TarsqiDocument and initialize the TreeTagger."""
         self.component_name = PREPROCESSOR
         self.document = document
         self.treetagger_dir = self.document.getopt('treetagger')

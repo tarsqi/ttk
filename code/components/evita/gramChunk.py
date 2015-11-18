@@ -35,6 +35,8 @@ NOM_WNPRIMSENSE_ONLY = True
 # all corresponding text files, these are a fallback in case the dbm's are not
 # supported or not available
 try:
+    # these dictionaries are not under git control or bundled with Tarsqi, but
+    # they can be generated with code/library/evita/build_event_nominals2.py
     wnPrimSenseIsEvent_DBM = anydbm.open(forms.wnPrimSenseIsEvent_DBM,'r')
     wnAllSensesAreEvents_DBM = anydbm.open(forms.wnAllSensesAreEvents_DBM,'r')
     wnSomeSensesAreEvents_DBM = anydbm.open(forms.wnSomeSensesAreEvents_DBM,'r')
