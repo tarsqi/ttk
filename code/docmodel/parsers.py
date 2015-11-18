@@ -42,7 +42,6 @@ class DefaultParser:
         self.content_tag = parameters.get('content_tag', True) 
         #print '>>>',self.content_tag
 
-
     def parse(self, docsource):
         """Return an instance of TarsqiDocument. Use self.content_tag to determine what
         part of the suorce to take. Populate the TarsqiDocument with the following
@@ -83,7 +82,6 @@ class DefaultParser:
             return docsource.tags.find_tag(self.content_tag)
 
 
-
 def split_paragraph(text, adjustment=0):
 
     """Very simplistic way to split a paragraph into more than one paragraph, simply by
@@ -121,7 +119,6 @@ def split_paragraph(text, adjustment=0):
     return paragraphs
 
 
-
 def slurp(text, offset, test):
     """Starting at offset in text, find a substring where all characters pass test. Return
     the begin and end position and the substring."""
@@ -137,15 +134,19 @@ def slurp(text, offset, test):
             return (begin, end, text[begin:end])
     return (begin, end, text[begin:end])
     
+
 def slurp_space(text, offset):
+    """Starting at offset consume a string of space characters, then return the
+    begin and end position and the consumed string."""
     def test_space(char): return char.isspace()
     return slurp(text, offset, test_space)
 
+
 def slurp_token(text, offset):
+    """Starting at offset consume a string of non-space characters, then return
+    the begin and end position and the consumed string."""
     def test_nonspace(char): return not char.isspace()
     return slurp(text, offset, test_nonspace)
-
-
 
 
 class TimebankParser:
@@ -159,13 +160,10 @@ class TimebankParser:
         cuts through genres."""
         pass
 
-
     def parse(self, docsource):
-
         """Get the TEXT tag and the associated source string. Then create an XmlDocument
         for that string and simple metadata for the document by setting the DCT to
         today. Return an instance of TarsqiDocument."""
-
         target_tag = self._find_target_tag(docsource)
         text = docsource.text[target_tag.begin:target_tag.end]
         xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % text)
@@ -173,9 +171,9 @@ class TimebankParser:
         metadata = { 'dct': dct }
         return TarsqiDocument(docsource, xmldoc, metadata)
 
-
     def _find_target_tag(self, docsource):
-        
+        """Find and return the first TEXT tag in the docsource tags. Raise an
+        error if that is unsuccessful."""
         for t in docsource.tags:
             if t.name == 'TEXT':
                 return t
@@ -257,9 +255,7 @@ class TimebankParser:
 
     
     def _get_doc_source(self, xmldoc):
-        
         """Returns the name of the content provider."""
-
         tag_DOCNO = xmldoc.tags['DOCNO'][0]
         content = tag_DOCNO.collect_content().strip()
         # TimeBank has only these providers
@@ -268,7 +264,6 @@ class TimebankParser:
                 return str
         logger.warn("Could not determine document source from DOCNO tag")
         return 'GENERIC'
-
 
 
 class MetaDataParser_ATEE:

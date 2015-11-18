@@ -80,6 +80,9 @@ class Token(Constituent):
         return "%s: %s %s Event:%s" % \
                (self.__class__.__name__, self.getText(), self.pos, str(event_val))
 
+    def pp(self):
+        self.pretty_print()
+
     def pretty_print(self, indent=0):
         event_string = ''
         if self.event:

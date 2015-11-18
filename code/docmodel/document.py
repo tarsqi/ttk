@@ -58,8 +58,14 @@ class TarsqiDocument(ParameterMixin):
             print "   metadata.%-17s  -->  %s" % (key, value)
         for key, value in self.parameters.items():
             print "   parameters.%-15s  -->  %s" % (key, value)
-        if source: self.source.pp()
-        if xmldoc: self.xmldoc.pp()
+        if source:
+            self.source.pp()
+        if xmldoc:
+            # xmldoc is being phased out so we won't always be able to print it
+            if self.xmldoc is None:
+                print "\nWARNING: there is no xmldoc to print"
+            else:
+                self.xmldoc.pp()
         if elements: 
             for e in self.elements: e.pp()
 
