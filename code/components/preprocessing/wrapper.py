@@ -97,14 +97,12 @@ class PreprocessorWrapper:
             export(text, element)
             
     def tokenize_text(self, string):
-        """Takes a unicode string and returns a list of objects, where each object is a
-        pair of a tokenized string and a TokenizedLex instance. The tokenized string can
-        be '<s>', in which case the second element of the pair is None instead of a
-        TokenizedLex."""
+        """Takes a unicode string and returns a list of objects, where each
+        object is either the pair ('<s>', None) or a pair of a tokenized string
+        and a TokenizedLex instance."""
         t1 = time()
         tokenizer = Tokenizer(string)
         tokenized_text = tokenizer.tokenize_text()
-        #tokenized_text.print_as_xmlstring()
         pairs = tokenized_text.as_pairs()
         logger.info("tokenizer processing time: %.3f seconds" % (time() - t1))
         return pairs

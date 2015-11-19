@@ -78,19 +78,15 @@ class Tokenizer:
         self.tokens = []
         self.lexes = []
         self.sentences = []
-        
-        
+
     def tokenize_text(self):
-
-        """Tokenize a text and return an instance of TokenizedText. Create lists of
-        sentences and lexes and feed these into the TokenizedText. Each token and each
-        sentence is a pair of a begin position and end position."""
-
+        """Tokenize a text and return an instance of TokenizedText. Create lists
+        of sentences and lexes and feed these into the TokenizedText. Each token
+        and each sentence is a pair of a begin position and end position."""
         offset = 0
         self.tokens = []
         self.lexes = []
         self.sentences = []
-
         while offset < self.length:
             (space, word) = self.slurp_token(offset)
             if word[2]:
@@ -100,9 +96,7 @@ class Tokenizer:
         self._set_sentences()
         self._split_contractions()
         self._set_lexes()
-
         return TokenizedText(self.sentences, self.lexes)
-    
 
     def slurp_token(self, offset):
         """Given a string and an offset in the string, return two tuples, one
@@ -194,11 +188,12 @@ class Tokenizer:
 
     def _split_punctuation(self, word):
 
-        """Return a triple of opening punctuations, core token and closing punctuation. A core
-        token can contain internal punctuation but token-initial and token-final punctuations
-        are stripped off. If a token has punctuation characters only, then the core token wil
-        be the empty string and the closing list will be empty."""
-    
+        """Return a triple of opening punctuations, core token and closing
+        punctuation. A core token can contain internal punctuation but
+        token-initial and token-final punctuations are stripped off. If a token
+        has punctuation characters only, then the core token wil be the empty
+        string and the closing list will be empty."""
+
         opening_puncts = []
         closing_puncts = []
         core_token = word
@@ -226,23 +221,22 @@ class Tokenizer:
                 tok = tok[:-1]
             else:
                 break
-    
+
+        # need to reverse because the closing punctuations were added from the
+        # end
+        closing_puncts.reverse()
         return (opening_puncts,  core_token, closing_puncts)
 
 
     def _split_contractions(self):
-
         new_tokens = []
         for (puncts1, tok, puncts2) in self.tokens:
             new_tokens.append( self._split_contraction(puncts1, tok, puncts2) )
         self.tokens = new_tokens
 
-        
     def _split_contraction(self, puncts1, tok, puncts2):
-
         def split(tok, i):
             return [(tok[0], tok[0]+i, tok[2][:i]), (tok[0]+i, tok[1], tok[2][i:])]
-        
         if not "'" in tok[2]:
             return (puncts1, [tok], puncts2) 
         found_neg = contraction_pattern1.search(tok[2])
@@ -255,8 +249,6 @@ class Tokenizer:
             return (puncts1, split(tok, idx), puncts2)
         return (puncts1, [tok], puncts2) 
 
-
-        
     def get_tokenized_as_xml(self):
         """Return the tokenized text as an XML string. Crappy way of printing
         XML, will only work for lex and s tags. Need to eventually use a method
@@ -345,9 +337,6 @@ class Tokenizer:
             self.closing_sents[s[1]] = s
 
 
-
-
-            
 class TokenizedText:
 
     """This class takes a list of sentences of the form (begin_offset, end_offset) and a
