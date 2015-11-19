@@ -51,18 +51,18 @@ class DefaultParser:
         XmlDocument, this is being phased out, (iv) metadata: a dictionary with now one
         element, the DCT, which is set to today."""
         self.sourcedoc = sourcedoc
-        target_tag = self._find_target_tag(sourcedoc)
-        self.target_tag = target_tag
-        offset_adjustment = target_tag.begin if target_tag else 0
-        text = sourcedoc.text[target_tag.begin:target_tag.end] \
-               if target_tag else sourcedoc.text
+        self.target_tag = self._find_target_tag()
+        offset_adjustment = self.target_tag.begin if self.target_tag else 0
+        text = self.sourcedoc.text
+        if self.target_tag:
+            text = self.sourcedoc.text[self.target_tag.begin:self.target_tag.end]
         metadata = { 'dct': self.get_dct() }
-        tarsqidoc = TarsqiDocument(sourcedoc, metadata)
+        tarsqidoc = TarsqiDocument(self.sourcedoc, metadata)
         element_offsets = split_paragraph(text, offset_adjustment)
         for (p1, p2) in element_offsets:
             xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
             para = TarsqiDocParagraph(tarsqidoc, p1, p2, xmldoc)
-            para.add_source_tags(sourcedoc.tags)
+            para.add_source_tags(self.sourcedoc.tags)
             para.source_tags.index()
             tarsqidoc.elements.append(para)
         return tarsqidoc
@@ -71,7 +71,7 @@ class DefaultParser:
         """Return today's date in YYYYMMDD format."""
         return get_today()
     
-    def _find_target_tag(self, docsource):
+    def _find_target_tag(self):
         """Return the Tag that contains the main content that needs to be processed. Any
         text outside of the tag will NOT be processed. Uses the tagnames in CONTENT_TAGS
         or the overide in the self.content_tag, which originated from the user
@@ -80,12 +80,23 @@ class DefaultParser:
             return None
         elif self.content_tag is True:
             for tagname in CONTENT_TAGS:
-                tag = docsource.tags.find_tag(tagname)
+                tag = self.sourcedoc.tags.find_tag(tagname)
                 if tag is not None:
                     return tag
             return None
         else:
             return docsource.tags.find_tag(self.content_tag)
+
+    def _get_tag_content(self, tagname):
+        """Return the text content of the first tag with name tagname, return None if
+        there is no such tag."""
+        try:
+            tag = self.sourcedoc.tags.find_tags(tagname)[0]
+            content = self.sourcedoc.text[tag.begin:tag.end].strip()
+            return content
+        except IndexError:
+            logger.warn("Cannot get the %s tag in this document" % tagname)
+            return None
 
 
 def split_paragraph(text, adjustment=0):
@@ -206,17 +217,6 @@ class TimebankParser(DefaultParser):
         logger.warn("Could not determine document source from DOCNO tag")
         return None
 
-    def _get_tag_content(self, tagname):
-        """Return the text content of the first tag with name tagname, return None if
-        there is no such tag."""
-        try:
-            tag = self.sourcedoc.tags.find_tags(tagname)[0]
-            content = self.sourcedoc.text[tag.begin:tag.end].strip()
-            return content
-        except IndexError:
-            logger.warn("Cannot get the %s tag of this Timebank document" % tagname)
-            return None
-
     def _parse_tag_content(self, regexpr, tagname):
         """Return the DCT part of the tag content of tagname, requires a reqular
         expression as one of the arguments."""
@@ -230,22 +230,28 @@ class TimebankParser(DefaultParser):
             return get_today()
 
 
-class MetaDataParser_ATEE:
+class ATEEParser(DefaultParser):
 
-    """This is how DCT parsing was done for ATEE document. Must decide whether neta data
-    parsers are separate classes (like here) or are part of the Parser (see
-    TimebankParser)."""
-    
-    def parse_dct(self, xmldoc):
+    """The parser for ATEE document."""
+
+    def get_dct(self):
         """All ATEE documents have a DATE tag with a value attribute, the value of that attribute
         is returned."""
-        date_tag = xmldoc.tags['DATE'][0]
+        date_tag = self.sourcedoc.tags.find_tag('DATE')
         return date_tag.attrs['value']
 
+
+class RTE3Parser(DefaultParser):
+
+    """The parser for RTE3 documents, does not differ yet from the default
+    parser."""
     
+    def get_dct(self):
+        return get_today()
+
+
 def get_today():
     """Return today's date in YYYYMMDD format."""
     return time.strftime("%Y%m%d", time.localtime());
 
 
-class DocParserError(Exception): pass
