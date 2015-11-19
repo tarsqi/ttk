@@ -72,7 +72,7 @@ from mixins.parameters import ParameterMixin
 from utilities import logger
 from utilities.file import read_settings
 
-logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=4)
+logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=3)
 
 
 SETTINGS = 'settings.txt'
@@ -160,7 +160,7 @@ class Tarsqi(ParameterMixin):
         TarsqiDocument and updates it."""
         if self._skip_file(): return
         self._cleanup_directories()
-        logger.info("Processing %s" % self.input)
+        logger.info(self.input)
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)

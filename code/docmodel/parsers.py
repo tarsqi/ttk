@@ -1,10 +1,12 @@
 
+import re
 import time
 from xml.sax.saxutils import escape
 
 from docmodel.xml_parser import Parser
 from docmodel.document import TarsqiDocument
 from docmodel.document import TarsqiDocParagraph
+import utilities.logger as logger
 
 
 # Default content tags, used by the default parser to find the part of the text that is
@@ -30,7 +32,7 @@ class DefaultParser:
     should be to take all text if no target tag could be found.
     
     Instance variables:
-       docsource - a SourceDoc instance
+       sourcedoc - a SourceDoc instance
        elements - a list with TarsqiDocParagraph elements
        xmldoc - an XmlDocument instance
        metadata - a dictionary"""
@@ -40,30 +42,34 @@ class DefaultParser:
         """Not used now but could be used to hand in specific metadata parsers or other
         functionality that cuts through genres."""
         self.content_tag = parameters.get('content_tag', True) 
-        #print '>>>',self.content_tag
 
-    def parse(self, docsource):
+    def parse(self, sourcedoc):
         """Return an instance of TarsqiDocument. Use self.content_tag to determine what
         part of the suorce to take. Populate the TarsqiDocument with the following
-        content: (i) docsource: the SourceDoc instance that was created by the
+        content: (i) sourcedoc: the SourceDoc instance that was created by the
         SourceParser, (ii) elements: a list of TarsqiDocParagraphs, (iii) xmldoc: an
         XmlDocument, this is being phased out, (iv) metadata: a dictionary with now one
         element, the DCT, which is set to today."""
-        target_tag = self._find_target_tag(docsource)
+        self.sourcedoc = sourcedoc
+        target_tag = self._find_target_tag(sourcedoc)
+        self.target_tag = target_tag
         offset_adjustment = target_tag.begin if target_tag else 0
-        text = docsource.text[target_tag.begin:target_tag.end] \
-               if target_tag else docsource.text
-        metadata = { 'dct': get_today() }
-        tarsqidoc = TarsqiDocument(docsource, metadata)
+        text = sourcedoc.text[target_tag.begin:target_tag.end] \
+               if target_tag else sourcedoc.text
+        metadata = { 'dct': self.get_dct() }
+        tarsqidoc = TarsqiDocument(sourcedoc, metadata)
         element_offsets = split_paragraph(text, offset_adjustment)
-        #print element_offsets
         for (p1, p2) in element_offsets:
             xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
             para = TarsqiDocParagraph(tarsqidoc, p1, p2, xmldoc)
-            para.add_source_tags(docsource.tags)
+            para.add_source_tags(sourcedoc.tags)
             para.source_tags.index()
             tarsqidoc.elements.append(para)
         return tarsqidoc
+
+    def get_dct(self):
+        """Return today's date in YYYYMMDD format."""
+        return get_today()
     
     def _find_target_tag(self, docsource):
         """Return the Tag that contains the main content that needs to be processed. Any
@@ -149,121 +155,79 @@ def slurp_token(text, offset):
     return slurp(text, offset, test_nonspace)
 
 
-class TimebankParser:
+class TimebankParser(DefaultParser):
 
-    """Preliminary class for Timebank parsing. Will likely not work, but is storing some DCT
-    processing functionality (which probably needs to be moved out of the class). """
+    """The parser for Timebank documents. All it does is overwriting the get_dct() method."""
     
+    def get_dct(self, xmldoc=None):
+        """Takes an XmlDocument, extracts the document creation time, and returns it as
+        a string of the form YYYYMMDD. Depending on the source, the DCT can be
+        found in one of the following tags: DOCNO, DATE_TIME, PUBDATE or FILEID."""
+        result = self._get_doc_source()
+        if result is None:
+            # dct defaults to today if we cannot find the DOCNO tag in the document
+            return get_today()
+        source_identifier, content = result
+        if source_identifier == 'ABC':
+            return content[3:11]
+        elif source_identifier == 'AP':
+            dct = self._parse_tag_content("(?:AP-NR-)?(\d+)-(\d+)-(\d+)", 'FILEID')
+            # if the previous failed, the DCT will be YYYYMMDD, if it succeeded
+            # it will be YYMMDD
+            return dct if len(dct) == 8 else '19' + dct
+        elif source_identifier == 'APW':
+            return self._parse_tag_content("(\d+)/(\d+)/(\d+)", 'DATE_TIME')
+        elif source_identifier == 'CNN':
+            return content[3:11]
+        elif source_identifier == 'NYT':
+            return self._parse_tag_content("(\d+)/(\d+)/(\d+)", 'DATE_TIME')
+        elif source_identifier == 'PRI':
+            return content[3:11]
+        elif source_identifier == 'SJMN':
+            pubdate_content = self._get_tag_content('PUBDATE')
+            return '19' + pubdate_content
+        elif source_identifier == 'VOA':
+            return content[3:11]
+        elif source_identifier == 'WSJ':
+            return '19' + content[3:9]
+        elif source_identifier == 'ea':
+            return '19' + content[2:8]
+        elif source_identifier == 'ed':
+            return '19' + content[2:8]
 
-    def __init__(self):
-        """This could be used to hand in specific metadata parsers or other functionality that
-        cuts through genres."""
-        pass
-
-    def parse(self, docsource):
-        """Get the TEXT tag and the associated source string. Then create an XmlDocument
-        for that string and simple metadata for the document by setting the DCT to
-        today. Return an instance of TarsqiDocument."""
-        target_tag = self._find_target_tag(docsource)
-        text = docsource.text[target_tag.begin:target_tag.end]
-        xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % text)
-        dct = self.parse_dct()
-        metadata = { 'dct': dct }
-        return TarsqiDocument(docsource, xmldoc, metadata)
-
-    def _find_target_tag(self, docsource):
-        """Find and return the first TEXT tag in the docsource tags. Raise an
-        error if that is unsuccessful."""
-        for t in docsource.tags:
-            if t.name == 'TEXT':
-                return t
-        raise DocParserError('Cannot parse docsource, no target_tag')
-
-
-    def parse_dct(self, xmldoc):
-
-        """Takes an XmlDocument, extracts the document creation time, and returns it as a
-        string of the form YYYYMMDD.
-
-        TODO: update for use with DocSource class."""
-
-        # set DCT default
-        dct = get_today()
-
-        docsource = self._get_doc_source(xmldoc)
-
-        if docsource == 'ABC':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = docno[3:11]
-            
-        elif docsource == 'AP':
-            fileid = xmldoc.tags['FILEID'][0].collect_content().strip()
-            result = re.compile("(AP-NR-)?(\d+)-(\d+)-(\d+)").match(fileid)
-            if result:
-                (crap, month, day, year) = result.groups()
-                dct = "19%s%s%s" % (year, month, day)
-            else:
-                logger.warn("Could not get date from %s" % fileid)
-                
-        elif docsource == 'APW':
-            date_time = xmldoc.tags['DATE_TIME'][0].collect_content().strip()
-            result = re.compile("(\d+)/(\d+)/(\d+)").match(date_time)
-            if result:
-                (month, day, year) = result.groups()
-                dct = "%s%s%s" % (year, month, day)
-            else:
-                logger.warn("Could not get date from %s" % fileid)
-            
-        elif docsource == 'CNN':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = docno[3:11]
-
-        elif docsource == 'NYT':
-            date_time = xmldoc.tags['DATE_TIME'][0].collect_content().strip()
-            result = re.compile("(\d+)/(\d+)/(\d+)").match(date_time)
-            if result:
-                (month, day, year) = result.groups()
-                dct = "%s%s%s" % (year, month, day)
-            else:
-                logger.warn("Could not get date from %s" % fileid)
-
-        elif docsource == 'PRI':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = docno[3:11]
-
-        elif docsource == 'SJMN':
-            pubdate = xmldoc.tags['PUBDATE'][0].collect_content().strip()
-            dct = '19' + pubdate
-
-        elif docsource == 'VOA':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = docno[3:11]
-
-        elif docsource == 'WSJ':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = '19' + docno[3:9]
-
-        elif docsource == 'eaX':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = '19' + docno[2:8]
-
-        elif docsource == 'ea':
-            docno = xmldoc.tags['DOCNO'][0].collect_content().strip()
-            dct = '19' + docno[2:8]
-
-        return dct
-
-    
-    def _get_doc_source(self, xmldoc):
-        """Returns the name of the content provider."""
-        tag_DOCNO = xmldoc.tags['DOCNO'][0]
-        content = tag_DOCNO.collect_content().strip()
-        # TimeBank has only these providers
-        for str in ('ABC', 'APW', 'AP', 'CNN', 'NYT', 'PRI', 'SJMN', 'VOA', 'WSJ', 'ea', 'ed'):
-            if content.startswith(str):
-                return str
+    def _get_doc_source(self):
+        """Return the name of the content provider as well as the content of the DOCNO
+        tag that has that information."""
+        content = self._get_tag_content('DOCNO')
+        content = str(content)  # in case the above returned None
+        for source_identifier in ('ABC', 'APW', 'AP', 'CNN', 'NYT', 'PRI', 'SJMN', 'VOA', 'WSJ', 'ea', 'ed'):
+            if content.startswith(source_identifier):
+                return (source_identifier, content)
         logger.warn("Could not determine document source from DOCNO tag")
-        return 'GENERIC'
+        return None
+
+    def _get_tag_content(self, tagname):
+        """Return the text content of the first tag with name tagname, return None if
+        there is no such tag."""
+        try:
+            tag = self.sourcedoc.tags.find_tags(tagname)[0]
+            content = self.sourcedoc.text[tag.begin:tag.end].strip()
+            return content
+        except IndexError:
+            logger.warn("Cannot get the %s tag of this Timebank document" % tagname)
+            return None
+
+    def _parse_tag_content(self, regexpr, tagname):
+        """Return the DCT part of the tag content of tagname, requires a reqular
+        expression as one of the arguments."""
+        content_string =  self._get_tag_content(tagname)
+        result = re.compile(regexpr).match(content_string)
+        if result:
+            (month, day, year) = result.groups()
+            return "%s%s%s" % (year, month, day)
+        else:
+            logger.warn("Could not get date from %s tag" % tagname)
+            return get_today()
 
 
 class MetaDataParser_ATEE:

@@ -12,14 +12,14 @@ renamed into Text).
 import os
 
 from utilities import logger
-from docmodel.parsers import DefaultParser
+from docmodel.parsers import DefaultParser, TimebankParser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER, ARGLINKER
 
 
 PARSERS = {
     'simple-xml': DefaultParser,
-    'timebank': DefaultParser,
+    'timebank': TimebankParser,
     'atee': DefaultParser,
     'rte3': DefaultParser }
 

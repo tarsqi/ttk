@@ -74,7 +74,6 @@ def adjust_lex_offsets(tokens, offset):
 class PreprocessorWrapper:
     
     """Wrapper for the preprocessing components."""
-    
 
     def __init__(self, document):
         """Set component_name, add the TarsqiDocument and initialize the TreeTagger."""
@@ -82,7 +81,10 @@ class PreprocessorWrapper:
         self.document = document
         self.treetagger_dir = self.document.getopt('treetagger')
         self.treetagger = initialize_treetagger(self.treetagger_dir)
-        
+        self.tokenize_time = 0
+        self.tag_time = 0
+        self.chunk_time = 0
+
     def process(self):
         """Retrieve the elements from the tarsqiDocument and hand these as strings to the
         preprocessing chain. The result is a shallow tree with sentences and tokens. These
@@ -95,7 +97,10 @@ class PreprocessorWrapper:
             text = self.tag_text(tokens)
             text = self.chunk_text(text)
             export(text, element)
-            
+        logger.info("tokenizer processing time: %.3f seconds" % self.tokenize_time)
+        logger.info("tagger processing time: %.3f seconds" % self.tag_time)
+        logger.info("chunker processing time: %.3f seconds" % self.chunk_time)
+
     def tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each
         object is either the pair ('<s>', None) or a pair of a tokenized string
@@ -104,7 +109,7 @@ class PreprocessorWrapper:
         tokenizer = Tokenizer(string)
         tokenized_text = tokenizer.tokenize_text()
         pairs = tokenized_text.as_pairs()
-        logger.info("tokenizer processing time: %.3f seconds" % (time() - t1))
+        self.tokenize_time += time() - t1
         return pairs
 
     def tag_text(self, tokens):
@@ -118,7 +123,7 @@ class PreprocessorWrapper:
         # treetagger does not accept a unicode string, so encode in utf-8
         taggedItems = self.call_treetagger(vertical_string.encode('utf-8'))
         text = self.create_text_from_tokens_and_tags(tokens, taggedItems)
-        logger.info("tagger processing time: %.3f seconds" % (time() - t1))
+        self.tag_time += time() - t1
         return text
 
     def chunk_text(self, text):
@@ -127,7 +132,7 @@ class PreprocessorWrapper:
         xml_utils.protect_text."""
         t1 = time()
         chunked_text = chunk_sentences(text)
-        logger.info("chunker processing time: %.3f seconds" % (time() - t1))
+        self.chunk_time += time() - t1
         return chunked_text
 
     def call_treetagger(self, vertical_string):
