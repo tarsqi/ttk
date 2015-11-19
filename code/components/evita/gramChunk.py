@@ -3,7 +3,6 @@ import string
 import sys
 import os
 import anydbm
-import pickle
 from types import ListType, TupleType, InstanceType
 
 from rule import FeatureRule
@@ -15,6 +14,7 @@ import library.evita.patterns.feature_rules as evitaFeatureRules
 import utilities.porterstemmer as porterstemmer
 import utilities.binsearch as binsearch
 import utilities.logger as logger
+from utilities.file import open_pickle_file
 
 DEBUG = False
 
@@ -48,15 +48,9 @@ except:
     DBM_FILES_OPENED = False
 
 # Open pickle files with semcor and verbstem information
-DictSemcorEventPickleFile = open(forms.DictSemcorEventPickleFilename, 'r')
-DictSemcorEvent = pickle.load(DictSemcorEventPickleFile)
-DictSemcorEventPickleFile.close()
-DictSemcorContextPickleFile = open(forms.DictSemcorContextPickleFilename, 'r')
-DictSemcorContext = pickle.load(DictSemcorContextPickleFile)
-DictVerbStemPickleFile = open(forms.DictVerbStemPickleFileName, 'r')
-DictVerbStems = pickle.load(DictVerbStemPickleFile)
-DictSemcorContextPickleFile.close()
-DictVerbStemPickleFile.close()
+DictSemcorEvent = open_pickle_file(forms.DictSemcorEventPickleFilename)
+DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
+DictVerbStems = open_pickle_file(forms.DictVerbStemPickleFileName)
 
 # Create the Bayesian event recognizer and the stemmer
 nomEventRec = BayesEventRecognizer(DictSemcorEvent, DictSemcorContext)
@@ -71,7 +65,7 @@ if DEBUG:
 
 def getWordList(consituents):
     """Returns a list of words from the list of consituents, typically the
-    constituents ar einstances of NounCHunk, VerbChunk or Token. Used for
+    constituents are instances of NounCHunk, VerbChunk or Token. Used for
     debugging purposes."""
     return [consituent.getText() for consituent in consituents]
 
@@ -127,9 +121,8 @@ class GramChunk:
 
 
     def _matchChunk(self, chunkDescription): 
-        """Match chunk to the patterns in chunkDescriptions.  chunkDescription
-        is a dictionary with key-value pairs that match instance variables and
-        their values on GramChunks.
+        """Match chunk to the patterns in chunkDescription, a dictionary with key-value
+        pairs that match instance variables and their values on GramChunks.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...} 
@@ -141,27 +134,33 @@ class GramChunk:
         is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
         
         (R) M: This code breaks on the fourth line, claiming that gramch is None.
-        This method is also implemented in the Chunk.Constituent class """
 
-        #debug("......entering _matchChunk()" + str(self))
+        This method is also implemented in the Chunk.Constituent class
+
+        """
+
+        # TODO: started sanitizing this, when finished, also look at the version
+        # on Consituent
+
+        logger.debug("matching chunk to %s" % chunkDescription)
         for feat in chunkDescription.keys():
-            #debug("\n......PAIR <" + str(feat) + " " + str(chunkDescription[feat])+">")
             value = chunkDescription[feat]
             if type(value) is TupleType:
+                # TODO: this does not do anuything but sometimes throw an error
                 if value[0] == '^':
                     value = value[1]
                 else:
-                    raise "ERROR specifying description of pattern" 
+                    raise "ERROR specifying description of pattern"
             elif type(value) is ListType:
                 if self.__getattr__(feat) not in value:
-                    logger.debug("FEAT " + feat + " does not match (11)")
-                    return 0
+                    #logger.debug("mismatch with %s: %s" % (feat, self.__getattr__(feat)))
+                    return False
             else:
                 if self.__getattr__(feat) != value:
-                    logger.debug("FEAT " + feat + " does not match (12)")
-                    return 0
-        logger.debug("Matched! (10)")
-        return 1        
+                    #logger.debug("mismatch with %s: %s" % (feat, self.__getattr__(feat)))
+                    return False
+        logger.debug("matched!")
+        return True
 
 
 class GramAChunk(GramChunk):
@@ -580,11 +579,11 @@ class GramVChunk(GramChunk):
 
     def __str__(self):
         print_string = "<GramVChunk>\n" + \
-                       "  head         = %s\n" % ( str(self.head) ) + \
-                       "  evClass      = %s\n" % ( str(self.evClass) ) + \
-                       "  tense        = %s\n" % ( str(self.tense) ) + \
-                       "  aspect       = %s\n" % ( str(self.aspect) ) + \
-                       "  gramFeatures = %s\n" % ( str(self.gramFeatures) )
+                       "\thead         = %s\n" % ( str(self.head) ) + \
+                       "\tevClass      = %s\n" % ( str(self.evClass) ) + \
+                       "\ttense        = %s\n" % ( str(self.tense) ) + \
+                       "\taspect       = %s\n" % ( str(self.aspect) ) + \
+                       "\tgramFeatures = %s\n" % ( str(self.gramFeatures) )
         return print_string
     
     
@@ -743,10 +742,14 @@ class GramVChunk(GramChunk):
             return 'NONE'
 
     def nodeIsNotEventCandidate(self):
-        if (self._matchChunk({'headForm': 'including', 'tense': 'NONE'}) or
-            self._matchChunk({'headForm': '_'})):
-            return 1
-        else: return 0
+        """Return True if the GramVChunk cannot possibly be an event. This is the place
+        for performing some simple stoplist-like tests."""
+        # TODO: why would any of these ever occur?
+        # TODO: how about avoiding _matchChunk() and just checking self.tense
+        # and self.head.text
+        return \
+            self._matchChunk({'headForm': 'including', 'tense': 'NONE'}) \
+            or self._matchChunk({'headForm': '_'})
 
     def nodeIsModalForm(self, nextNode):
         if self._matchChunk({'headPos': 'MD'}) and nextNode: 

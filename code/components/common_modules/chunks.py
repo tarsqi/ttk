@@ -26,12 +26,13 @@ class Chunk(Constituent):
     contain event tags, timex tags and tokens.
 
     Instance variables
-       phraseType -  string indicating the chunk type, usually 'VG' or 'NG'
-       dtrs - a list of Tokens, EventTags and TimexTags
+       phraseType         - string indicating the chunk type, usually 'VG' or 'NG'
+       dtrs = []          - a list of Tokens, EventTags and TimexTags
        positionCount = 0
        position = None
        parent = None
-       gramchunk = 0
+       gramchunk = None   - an instance of GramAChunk, GramNChunk or GramVChunk
+       gramchunks = []    - used for verb chunks
        event = None
        eid = None
        isEmbedded = 0
@@ -45,7 +46,8 @@ class Chunk(Constituent):
         self.positionCount = 0
         self.position = None
         self.parent = None
-        self.gramchunk = 0
+        self.gramchunk = None
+        self.gramchunks = []
         self.event = None
         self.eid = None
         self.isEmbedded = 0
@@ -322,26 +324,31 @@ class NounChunk(Chunk):
         # an else in the loop above, which seems wrong
         return False
 
+    def isEmpty(self):
+        """Return True if the chunk is empty, False otherwise."""
+        if not self.dtrs:
+            # this happened at some point due to a crazy bug in the converter
+            # code (as noted by mv on 11/08/07)
+            logger.warn("There are no dtrs in the NounChunk")
+            return True
+        return False
+
     def createEvent(self, verbGramFeat=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
-        event candidate, then conditionally adds it."""
+        event candidate, then conditionally adds it. The verbGramFeat dictionary
+        is used when a governing verb hands in its features to a nominal in a
+        predicatve complement."""
         logger.debug("NounChunk.createEvent(verbGramFeat=%s)" % verbGramFeat)
-        # Do not try to create an event if the chunk is empty (which is happening due to a
-        # crazy bug in the converter code) (mv 11/08/07)
-        if not self.dtrs:
-            logger.warn("There are no dtrs in the NounChunk")
-            return
-        # TODO: find out why "print self.gramchunk" gives an error
-        self.gramchunk = GramNChunk(self)
-        # percolate grammatical features from the verb for nominal events that
-        # are the head of predicative complements
-        self.gramchunk.add_verb_features(verbGramFeat)
-        logger.debug(self.gramchunk.as_extended_string())
-        # Even if preceded by a BE or a HAVE form, only tagging N Chunks headed by an
-        # eventive noun E.g., "was an intern" will NOT be tagged
-        if self.gramchunk.isEventCandidate():
-            logger.debug("Nominal is an event candidate")
-            self._processEventInChunk()
+        if not self.isEmpty():
+            # TODO: find out why "print self.gramchunk" gives an error
+            self.gramchunk = GramNChunk(self)
+            self.gramchunk.add_verb_features(verbGramFeat)
+            logger.debug(self.gramchunk.as_extended_string())
+            # Even if preceded by a BE or a HAVE form, only tagging N Chunks headed by an
+            # eventive noun E.g., "was an intern" will NOT be tagged
+            if self.gramchunk.isEventCandidate():
+                logger.debug("Nominal is an event candidate")
+                self._processEventInChunk()
 
 
 class VerbChunk(Chunk):
@@ -422,7 +429,6 @@ class VerbChunk(Chunk):
 
     def _processEventInMultiVChunk(self, substring):   
         GramMultiVChunk = GramVChunkList(self._createMultiChunk(substring))[0] 
-        #logger.debug("[3] " + gramVCh.as_extended_string())
         self._processEventInChunk(GramMultiVChunk)
         self._updateFlagCheckedForEvents(substring)
 
@@ -456,12 +462,10 @@ class VerbChunk(Chunk):
         
     def _createEventOnRightmostVerb(self, GramVCh):
 
-        #print GramVCh
-
         if GramVCh.nodeIsNotEventCandidate():
-            pass
+            return
 
-        elif GramVCh.nodeIsModalForm(self.nextNode()):
+        if GramVCh.nodeIsModalForm(self.nextNode()):
             logger.debug("Entering checking for modal pattern............")
             substring = self._lookForMultiChunk(patterns.MODAL_FSAs)
             if substring:
@@ -565,6 +569,7 @@ class VerbChunk(Chunk):
         GramVChList = GramVChunkList(self)
         if GramVChList.do_not_process():
             return
+        logger.debug(GramVChList[-1].as_extended_string())
         logger.debug("len(GramVChList) ==> %d" % len(GramVChList))
 
         # simple case
@@ -572,7 +577,7 @@ class VerbChunk(Chunk):
             self._createEventOnRightmostVerb(GramVChList[-1])
         # complex case
         else:
-            lastIdx = len(GramVChList)-1
+            lastIdx = len(GramVChList) - 1
             for idx in range(len(GramVChList)):
                 gramVCh = GramVChList[idx]
                 if idx == lastIdx:

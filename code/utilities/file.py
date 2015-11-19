@@ -2,6 +2,7 @@
 
 import os
 import string
+import pickle
 
 
 def file_contents(filename):
@@ -22,16 +23,9 @@ def file_contents_as_list(filename):
     f.close()
     return content
 
-
 def write_text_to_file(text, filename):
-
-    """Write a string to a file. If the file already exists, it will
-    be overwritten.
-    Arguments:
-       text - a string
-       filename - an absolute path
-    Returns True if succesful, False otherwise."""
-
+    """Write a string to a file, overwriting an existing file. Takes a string and
+    an absolute path as input.  Returns True if succesful, False otherwise."""
     try:
         f = open(filename, 'w')
         f.write(text)
@@ -40,13 +34,15 @@ def write_text_to_file(text, filename):
     except:
         return False
 
+def open_pickle_file(fname):
+    """Return the contents of a pickle file."""
+    with open(fname, 'r') as fh:
+        return pickle.load(fh)
 
 def read_settings(filename):
-    
     """Read the content of filename and put flags and values in a dictionary. Each line in
     the file is either an empty line, a line starting with '#' or an attribute-value pair
     separated by a '=' sign. Returns the dictionary."""
-
     file = open(filename, 'r')
     settings = {}
     for line in file:
@@ -59,7 +55,6 @@ def read_settings(filename):
         settings[flag] = value
     file.close()
     return settings
-
 
 def write_settings(settings, filename):
     """Write a dictionary to a file, with one line per entry and with the
