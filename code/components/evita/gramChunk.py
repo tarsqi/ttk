@@ -270,7 +270,7 @@ class GramNChunk(GramChunk):
             try:
                 return self._run_classifier(lemma)
             except DisambiguationError, (strerror):
-                debug("  DisambiguationError: %s" % strerror)
+                debug("  DisambiguationError: %s" % unicode(strerror))
         # check whether primary sense or some of the senses are events
         if NOM_WNPRIMSENSE_ONLY:
             is_event = self._wnPrimarySenseIsEvent(lemma)
@@ -803,7 +803,6 @@ class GramVChunk(GramChunk):
         if form == 'ca': return 'can'
         elif form == "'d": return 'would'
         else: raise "ERROR: unknown modal form: "+str(form)
-           
 
     def normalizeHave(self, form):
         if form == "'d": return 'had'
