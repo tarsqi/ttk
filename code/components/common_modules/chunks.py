@@ -227,7 +227,8 @@ class Chunk(Constituent):
     def getText(self):
         string = ""
         for token in self.dtrs:
-            string = string+' '+str(token.getText())
+            string = string+' '+token.getText()
+            #string = string+' '+str(token.getText())
         return string
 
     def getTokens(self, sequence):
