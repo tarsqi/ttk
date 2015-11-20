@@ -90,7 +90,7 @@ class TarsqiDocument(ParameterMixin):
         fh.write("<source_tags>\n")
         for tag in self.source.tags.tags:
             fh.write("  %s\n" % tag.in_layer_format())
-        fh.write("<source_tags>\n")
+        fh.write("</source_tags>\n")
         fh.write("<ttk_tags>\n")
         for e in self.elements:
             for tag in e.tarsqi_tags.tags:
