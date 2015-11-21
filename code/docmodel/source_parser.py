@@ -68,6 +68,15 @@ class SourceParser:
         self.sourcedoc.finish()
         return self.sourcedoc
     
+    def parse_string(self, text):
+        """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
+        file object as its single argument and returns the SourceDoc. """
+        self.sourcedoc = SourceDoc(None)
+        # TODO: should this be codecs.open() for non-ascii?
+        self.parser.Parse(text)  # this adds content to the sourcedoc variable
+        self.sourcedoc.finish()
+        return self.sourcedoc
+
     def _handle_xmldecl(self, version, encoding, standalone):
         """Store the XML declaration."""
         self.sourcedoc.xmldecl = (version, encoding, standalone)

@@ -104,13 +104,11 @@ class Tarsqi(ParameterMixin):
     user, docsource and document are filled in during processing."""
 
 
-    def __init__(self, opts, input, output):
+    def __init__(self, opts, infile, outfile):
 
         """Initialize Tarsqi object conform the data source identifier and the processing
         options. Does not set the instance variables related to the document model and the
-        meta data.
-
-        Arguments:
+        meta data. Arguments:
            opts - dictionary of command line options
            input - absolute path
            output - absolute path"""
@@ -119,9 +117,9 @@ class Tarsqi(ParameterMixin):
         # file it may end up being in a different directory.
         os.chdir(TTK_ROOT)
 
-        self.input = input
-        self.output = output
-        self.basename = _basename(input)
+        self.input = infile
+        self.output = outfile
+        self.basename = _basename(infile) if infile else None
         self.parameters = self._read_parameters(opts)
         if self.parameters.has_key('loglevel'):
             logger.set_level(self.parameters['loglevel'])
@@ -149,7 +147,7 @@ class Tarsqi(ParameterMixin):
         for (option, value) in opts:
             parameters[option[2:]] = value
         for (attr, value) in parameters.items():
-            if value == 'True'or value == 'False' or value.isdigit():
+            if value == 'True' or value == 'False' or value.isdigit():
                 parameters[attr] = eval(value)
         return parameters
 
@@ -160,19 +158,33 @@ class Tarsqi(ParameterMixin):
         TarsqiDocument and updates it."""
         if self._skip_file(): return
         self._cleanup_directories()
+        print self.input
         logger.info(self.input)
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
         for (name, wrapper) in self.pipeline:
-            print name, wrapper
             self.apply_component(name, wrapper, self.document)
         os.chdir(TTK_ROOT)
         self.document.print_all(self.output)
 
+    def process_string(self, input_string):
+        """Parse the input string with source parser and create a TarsqiDocument
+        with the document parser. Then the processing itself is driven by the
+        processing parameters set at initialization. Each component is given the
+        TarsqiDocument and updates it. Returns the TarsqiDocument instance."""
+        logger.info(input_string)
+        self.docsource = SourceParser().parse_string(input_string)
+        self.document = self.parser.parse(self.docsource)
+        self.document.add_parameters(self.parameters)
+        for (name, wrapper) in self.pipeline:
+            self.apply_component(name, wrapper, self.document)
+        return self.document
+
     def _skip_file(self):
-        """Return true if file does not match specified extension. Useful when the script
-        is given a directory as input. Probably obsolete, use ignore option instead."""
+        """Return true if file does not match specified extension. Useful when
+        the script is given a directory as input. Probably obsolete, use ignore
+        option instead."""
         extension = self.getopt_extension()
         if not extension: return False
         return self.input.endswith(extension)
@@ -185,49 +197,32 @@ class Tarsqi(ParameterMixin):
                 # should trap these here with an OSError
                 if not file.startswith('.'):
                     os.remove(self.DIR_TMP_DATA + os.sep + file)
-        
 
     def apply_component(self, name, wrapper, document):
-
         """Apply a component if the processing parameters determine that the
-        component needs to be applied. This method passes the TarsqDocument
-        instance to the component wrapper.
-
-        Component-level errors are trapped here if trap_errors is True. Those
-        errors are now trapped here instead of in the component since we do not
-        tell the component what the output file is.
-
-        Arguments:
+        component needs to be applied. This method takes the TarsqDocument,
+        which includes the parameters from the Tarsqi instance, and passes it to
+        the component wrapper. Component-level errors are trapped here if
+        trap_errors is True. Arguments:
            name - string, the name of the component
            wrapper - instance of one of the wrapper classes
-           document - instance of TarsqiDocument
-
-        Wrappers only get a TarsqiDocument, which includes the parameters from
-        the Tarsqi instance. May need to add some kind of dictionary with other
-        needed info.
-
-        """
-
+           document - instance of TarsqiDocument"""
         logger.info(name + '............')
         t1 = time.time()
         if self.getopt_trap_errors():
             try:
                 wrapper(document).process()
             except:
-                logger.error(name + " error on " + infile + "\n\t"
-                             + str(sys.exc_type) + "\n\t"
-                             + str(sys.exc_value) + "\n")
-                # TODO: revisit this since we do not have infile and outfile anymore, does
-                # the TarsqiDocument need to be reset?
-                #shutil.copy(infile, outfile)
+                # TODO: does the TarsqiDocument need to be reset?
+                print  "%s error:\n\t%s\n\t%s\n" \
+                    % (name, sys.exc_type, sys.exc_value)
         else:
             wrapper(document).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
-
     def write_output(self):
-        """Write the xml_document to the output file. First inserts the dct from the
-        docmodel into the XML document. No arguments, no return value."""
+        """Write the xml_document to the output file. First inserts the dct from
+        the docmodel into the XML document. No arguments, no return value."""
         self.document.xmldoc.save_to_file(self.output)
 
     def pretty_print(self):
@@ -237,34 +232,22 @@ class Tarsqi(ParameterMixin):
         print '   document    ', self.xml_document
 
 
-
 class TarsqiError(Exception):
     """Tarsqi Exception class, so far only used in this file."""
     pass
 
 
 def _read_arguments(args):
-
     """ Read the list of arguments given to the tarsqi.py script.  Return a tuple with
     three elements: processing options dictionary, input path and output path."""
-
-    options = ['genre=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=', 
+    options = ['genre=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=',
                'loglevel=', 'ignore=', 'platform=', 'treetagger=']
-
     try:
         (opts, args) = getopt.getopt(args,'', options)
+        return (opts, args)
     except getopt.GetoptError:
         print "ERROR: %s" % sys.exc_value
         sys.exit(_usage_string())
-    if len(args) < 2:
-        raise TarsqiError("missing input or output arguments\n%s" % _usage_string())
-    
-    # Use os.path.abspath here because some components change the working directory
-    # and when some component fails the cwd may not be reset to the root directory
-    input = os.path.abspath(args.pop(0))
-    output = os.path.abspath(args.pop(0))
-    return (opts, input, output)
-
 
 def _usage_string():
     return "Usage: % python tarsqi.py [OPTIONS] INPUT OUTPUT\n" + \
@@ -275,41 +258,36 @@ def _basename(path):
     if basename.endswith('.xml'):
        basename = basename[0:-4]
     return basename
-
             
 def run_tarsqi(args):
-
-    """Main method that is called when the script is executed. It creates a Tarsqi
-    instance and lets it process the input. If the input is a directory, this method will
-    iterate over the contents, setting up TrasqiControlInstances for all files in the
-    directory.
-
-    The arguments are the list of arguments given by the user on the command line. There
-    is no return value."""
-
-    (opts, input, output) = _read_arguments(args)
-
-    begin_time = time.time()
-
-
-    if os.path.isdir(input) and os.path.isdir(output):
-        for file in os.listdir(input):
-            infile = input + os.sep + file
-            outfile = output + os.sep + file
+    """Main method that is called when the script is executed from the command
+    line. It creates a Tarsqi instance and lets it process the input. If the
+    input is a directory, this method will iterate over the contents, setting up
+    TrasqiControlInstances for all files in the directory. The arguments are the
+    list of arguments given by the user on the command line. There is no return
+    value."""
+    (opts, args) = _read_arguments(args)
+    if len(args) < 2:
+        raise TarsqiError("missing input or output arguments\n%s" % _usage_string())
+    # Use os.path.abspath here because some components change the working directory
+    # and when some component fails the cwd may not be reset to the root directory
+    inpath = os.path.abspath(args[0])
+    outpath = os.path.abspath(args[1])
+    t0 = time.time()
+    if os.path.isdir(inpath) and os.path.isdir(outpath):
+        for file in os.listdir(inpath):
+            infile = inpath + os.sep + file
+            outfile = outpath + os.sep + file
             if os.path.isfile(infile):
                 print infile
                 Tarsqi(opts, infile, outfile).process()
-
-    elif os.path.isfile(input):
-        if os.path.exists(output):
-            raise TarsqiError('output file ' + output + ' already exists')
-        Tarsqi(opts, input, output).process()
-
+    elif os.path.isfile(inpath):
+        if os.path.exists(outpath):
+            raise TarsqiError('output file ' + outpath + ' already exists')
+        Tarsqi(opts, inpath, outpath).process()
     else:
         raise TarsqiError('Invalid input and/or output parameters')
-
-    end_time = time.time()
-    logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (end_time - begin_time))
+    logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (t0 - time.time()))
 
 
 def run_profiler(args):
@@ -325,9 +303,13 @@ def test():
                 'data/in/simple-xml/tiny.xml',
                 'out.xml'])
 
-    
-if __name__ == '__main__':
+def process_string(text):
+    (opts, args) = _read_arguments(['--pipeline=PREPROCESSOR,GUTIME,EVITA'])
+    tarsqi = Tarsqi(opts, None, None)
+    return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
 
+
+if __name__ == '__main__':
     try:
         if USE_PROFILER:
             run_profiler(sys.argv[1:])
