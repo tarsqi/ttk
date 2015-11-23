@@ -94,9 +94,7 @@ class GramChunk:
 
     """The subclasses of this class are used to add grammatical features to a
     NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
-    of instances of those classes.
-
-    """
+    of instances of those classes."""
 
     def add_verb_features(self, verbGramFeat):
         """Set grammatical features (tense, aspect, modality and polarity) with the
@@ -118,49 +116,6 @@ class GramChunk:
             "\tPOLARITY: %s\n" % self.polarity + \
             "\tHEAD: %s\n" % self.head.getText() + \
             "\tCLASS: %s\n" % self.evClass
-
-
-    def _matchChunk(self, chunkDescription): 
-        """Match chunk to the patterns in chunkDescription, a dictionary with key-value
-        pairs that match instance variables and their values on GramChunks.
-
-        The value in key-value pairs can be:
-        - an atomic value. E.g., {..., 'headForm':'is', ...} 
-        - a list of possible values. E.g., {..., headForm': forms.have, ...}   
-        In this case, _matchChunk checks whether the chunk feature is
-        included within this list.
-        - a negated value. It is done by introducing it as
-        a second constituent of a 2-position tuple whose initial position
-        is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
-        
-        (R) M: This code breaks on the fourth line, claiming that gramch is None.
-
-        This method is also implemented in the Chunk.Constituent class
-
-        """
-
-        # TODO: started sanitizing this, when finished, also look at the version
-        # on Consituent
-
-        logger.debug("matching chunk to %s" % chunkDescription)
-        for feat in chunkDescription.keys():
-            value = chunkDescription[feat]
-            if type(value) is TupleType:
-                # TODO: this does not do anuything but sometimes throw an error
-                if value[0] == '^':
-                    value = value[1]
-                else:
-                    raise "ERROR specifying description of pattern"
-            elif type(value) is ListType:
-                if self.__getattr__(feat) not in value:
-                    #logger.debug("mismatch with %s: %s" % (feat, self.__getattr__(feat)))
-                    return False
-            else:
-                if self.__getattr__(feat) != value:
-                    #logger.debug("mismatch with %s: %s" % (feat, self.__getattr__(feat)))
-                    return False
-        logger.debug("matched!")
-        return True
 
 
 class GramAChunk(GramChunk):
@@ -745,59 +700,35 @@ class GramVChunk(GramChunk):
         """Return True if the GramVChunk cannot possibly be an event. This is the place
         for performing some simple stoplist-like tests."""
         # TODO: why would any of these ever occur?
-        # TODO: how about avoiding _matchChunk() and just checking self.tense
-        # and self.head.text
-        return \
-            self._matchChunk({'headForm': 'including', 'tense': 'NONE'}) \
-            or self._matchChunk({'headForm': '_'})
+        return ((self.headForm == 'including' and self.tense == 'NONE')
+                or self.headForm == '_')
 
     def nodeIsModalForm(self, nextNode):
-        if self._matchChunk({'headPos': 'MD'}) and nextNode: 
-            return 1
-        else: return 0
+        return self.headPos == 'MD' and nextNode
 
     def nodeIsBeForm(self, nextNode):
-        if self._matchChunk({'headForm': forms.be}) and nextNode:
-            return 1
-        else: return 0
+        return self.headForm in forms.be and nextNode
 
     def nodeIsBecomeForm(self, nextNode):
-        if self.headForm in ['become', 'became'] and nextNode:
-            return 1
-        else: return 0
+        return self.headForm in ['become', 'became'] and nextNode
 
     def nodeIsContinueForm(self, nextNode):
-        if re.compile('continu.*').match(self.headForm) and nextNode:
-            return 1
-        else: return 0
+        return re.compile('continu.*').match(self.headForm) and nextNode
 
     def nodeIsKeepForm(self, nextNode):
-        if re.compile('keep.*|kept').match(self.headForm) and nextNode:
-            return 1
-        else:
-            return 0
+        return re.compile('keep.*|kept').match(self.headForm) and nextNode
 
     def nodeIsHaveForm(self):
-        if self._matchChunk({'headForm': forms.have, 'headPos': ('^', 'MD')}):
-            return 1
-        else: return 0
+        return self.headForm in forms.have and self.headPos is not 'MD'
 
     def nodeIsFutureGoingTo(self):
-        if (len(self.trueChunk) > 1 and
-            self._matchChunk({'headForm':'going', 'preHeadForm': forms.be})):
-            return 1
-        else: return 0
+        return len(self.trueChunk) > 1 and self.headForm == 'going' and self.preHeadForm in forms.be
 
     def nodeIsPastUsedTo(self):
-        if (len(self.trueChunk) == 1 and
-            self._matchChunk({'headForm': 'used', 'headPos': 'VBD'})):
-            return 1
-        else: return 0
+        return len(self.trueChunk) == 1 and self.headForm == 'used' and self.headPos == 'VBD' and False
 
     def nodeIsDoAuxiliar(self):
-        if self._matchChunk({'headForm': forms.do}):
-            return 1
-        else: return 0
+        return self.headForm in forms.do
        
     def normalizeMod(self, form):
         if form == 'ca': return 'can'
