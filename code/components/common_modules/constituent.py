@@ -55,15 +55,16 @@ class Constituent:
         pass
 
     def nextNode(self):
-        """Works only dreamily when called on Sentence elements. If called on a token that
-        is embedded in a chunk, then it should really look into the next chunk is self is
-        a chunk-final token."""
+        """Return the right sibling in the tree or None if there is none. Works nicely
+        when called on Sentence elements. If called on the last token in a chunk, then
+        it returns None even if there is another chunk following."""
+        # TODO: make this work for tokens as well, maybe by adding this method to Token
         try:
             return self.parent[self.position+1]
         except IndexError:
-            return ''
+            return None
 
-    def createEvent(self):
+    def createEvent(self, tarsqidoc):
         """Does nothing except for logging a warning. Event creation is only attempted
         on some sub classes."""
         logger.warn("Unexpected recipient of createEvent")
@@ -98,7 +99,10 @@ class Constituent:
         a second constituent of a 2-position tuple whose initial position
         is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
     
-        This method is also implemented in the chunkAnalyzer.GramChunk class """
+        This method is also implemented in the chunkAnalyzer.GramChunk class and
+        the Chunk class"""
+
+        logger.debug(str(chunkDescription))
         for feat in chunkDescription.keys():
             value = chunkDescription[feat]
             if type(value) is TupleType:

@@ -252,11 +252,11 @@ class FragmentConverter:
         #lid = element.attrs[LID]
         lid = element.attrs.get(LID, 'l0')
         if pos.startswith(POS_ADJ):
-            self.currentToken = AdjectiveToken(self.doc, pos, lid)
+            self.currentToken = AdjectiveToken(self.doc, pos, lid, lex=element)
             if self.currentEvent is not None:
                 self.currentToken.setEventInfo(self.currentEvent.attrs[EID])
         else:
-            self.currentToken = Token(self.doc, pos, lid)
+            self.currentToken = Token(self.doc, pos, lid, lex=element)
         # this is needed for later when tokens and events are swapped,
         # the default is that a token does not contain an event, this
         # can be changed when an event tag is processed

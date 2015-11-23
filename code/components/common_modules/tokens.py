@@ -11,9 +11,10 @@ from components.common_modules.constituent import Constituent
 
 class Token(Constituent):
 
-    def __init__(self, document, pos, lid=0):
+    def __init__(self, document, pos, lid=0, lex=None):
         self.pos = pos
         self.lid = lid
+        self.lex = lex   # an XMLDocElement with tag=lex, from the FragmentConverter
         self.event = None
         self.textIdx = []          # should be None?
         self.document = document
@@ -21,7 +22,7 @@ class Token(Constituent):
         self.parent = None
         self.gramchunk = None
         self.flagCheckedForEvents = 0
-        # added this one to provide a pointer to the XmlDocElement instance.  Made it into
+        # added this one to provide a pointer to the XmlDocElement instance. Made it into
         # a list of all the docelements BK 20080725
         self.lex_tag_list = []
 
@@ -67,7 +68,7 @@ class Token(Constituent):
         """Perhaps needs a non-hard-coded value."""
         return self.pos == 'IN'
     
-    def createEvent(self):
+    def createEvent(self, tarsqidoc):
         """For a regular Token, do not even log this method (since Constituent
         will do that)"""
         pass
@@ -118,8 +119,8 @@ class NewToken(Token):
 
 class AdjectiveToken(Token):
 
-    def __init__(self, document, pos, lid=0):
-        Token.__init__(self, document, pos, lid)
+    def __init__(self, document, pos, lid=0, lex=None):
+        Token.__init__(self, document, pos, lid, lex)
         self.event = None
         self.eid = None
 
@@ -157,12 +158,12 @@ class AdjectiveToken(Token):
             raise AttributeError, name
 
         
-    def createEvent(self):
+    def createEvent(self, tarsqidoc):
         """Ignore adjectives passed in through the main loop for createEvent on the
         Sentence. Potential adjectival events are processed from the VerbChunk."""
         logger.debug("AdjectiveToken.createEvent()")
     
-    def createAdjEvent(self, verbGramFeat=None):
+    def createAdjEvent(self, verbGramFeat=None, tarsqidoc=None):
         """Processes the adjective after a copular verb and make it an event if some
         conditions are met. The conditions are that the adjective needs to have
         a head and an event class."""

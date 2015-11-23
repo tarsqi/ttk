@@ -20,6 +20,24 @@ from components.evita.event import Event
 from components.evita.gramChunk import GramNChunk, GramAChunk, GramVChunkList  
 
 
+DRIBBLE_EVENTS = True
+if DRIBBLE_EVENTS:
+    EVENTS_DRIBBLE = open("dribble-events.txt", 'w')
+
+def dribble(header, text, chunk):
+    if DRIBBLE_EVENTS:
+        toks = chunk.parent.getTokens()
+        p1 = int(toks[0].lex.attrs['begin'])
+        p2 = int(toks[-1].lex.attrs['end'])
+        event_p1 = chunk.dtrs[-1].lex.attrs['begin']
+        event_p2 = chunk.dtrs[-1].lex.attrs['end']
+        text = ' '.join(text.split())
+        sentence = chunk.tarsqidoc.source.text[p1:p2]
+        sentence = ' '.join(sentence.split())
+        EVENTS_DRIBBLE.write("%s\t%s\t%s\t%s:%s\n" % \
+            (header, text, sentence, event_p1, event_p2))
+
+
 class Chunk(Constituent):
 
     """Implements the common behaviour of chunks. Chunks are embedded in sentences and
@@ -144,17 +162,13 @@ class Chunk(Constituent):
         a second constituent of a 2-position tuple whose initial position
         is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
         
-        This method is also implemented in the chunkAnalyzer.GramChunk class
-        """
+        This method is also implemented in the chunkAnalyzer.GramChunk class and
+        on Constituent."""
 
+        logger.debug(str(chunkDescription))
         for feat in chunkDescription.keys():
             value = chunkDescription[feat]
-            #logger.debug("\nVALUE TO MATCH: "+str(feat)+
-            #             "\t|| VALUE in expression: "+
-            #             str(self.__getattr__(feat)))
-            #logger.out('feature', feat, '=', value)
             if type(value) is TupleType:
-                #logger.out('value is a Tuple')
                 if value[0] == '^':
                     newvalue = self._hackToSolveProblemsInValue(value[1])
                     if type(newvalue) is ListType:
@@ -166,23 +180,16 @@ class Chunk(Constituent):
                 else:
                     raise "ERROR specifying description of pattern" 
             elif type(value) is ListType:
-                #logger.out('value is a List')
                 if self.__getattr__(feat) not in value:
+                    # this is where this one differs from the one on Constituent
                     if feat != 'text':
                         return 0
                     else:
-                        #self._getHeadText()
                         if self._getHeadText() not in value:
                             return 0
             else:
-                #logger.out('value is something else')
                 value = self._hackToSolveProblemsInValue(value)
-                #logger.out('value is now', value)
-                feat_on_self = self.__getattr__(feat)
-                #logger.out('feature on self =', feat_on_self)
-                #logger.out('self.event =', self.event)
                 if self.__getattr__(feat) != value:
-                    #logger.out('match failed')
                     return 0
         return 1
 
@@ -334,7 +341,7 @@ class NounChunk(Chunk):
             return True
         return False
 
-    def createEvent(self, verbGramFeat=None):
+    def createEvent(self, verbGramFeat=None, tarsqidoc=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
         event candidate, then conditionally adds it. The verbGramFeat dictionary
         is used when a governing verb hands in its features to a nominal in a
@@ -466,33 +473,39 @@ class VerbChunk(Chunk):
         if GramVCh.nodeIsNotEventCandidate():
             return
 
-        if GramVCh.nodeIsModalForm(self.nextNode()):
+        self_text = self.getText()
+        next_node = self.nextNode()
+        next_text = '' if next_node is None else ' ' + next_node.getText()
+
+        if GramVCh.nodeIsModalForm(next_node):
+            dribble("MODAL", self_text, self)
             logger.debug("Entering checking for modal pattern............")
             substring = self._lookForMultiChunk(patterns.MODAL_FSAs)
             if substring:
                 self._processEventInMultiVChunk(substring)
 
-        elif GramVCh.nodeIsBeForm(self.nextNode()):
-            logger.debug("Entering checking for toBe pattern............")
-            """Looking for BE + NOM Predicative Complement """
+        elif GramVCh.nodeIsBeForm(next_node):
+            # Looking for BE + NOM Predicative Complement
+            dribble("BE", self_text, self)
             logger.debug("Looking for BE + NOM Predicative Complement ")
             substring = self._lookForMultiChunk(patterns.BE_N_FSAs, 'chunked')
             if substring:
                 self._processEventInMultiNChunk(GramVCh, substring)  
             else:
-                """Looking for BE + ADJ Predicative Complement """
+                # Looking for BE + ADJ Predicative Complement
                 logger.debug("Looking for BE + ADJ Predicative Complement ")
                 substring = self._lookForMultiChunk(patterns.BE_A_FSAs, 'chunked')
                 if substring:
                     self._processEventInMultiAChunk(GramVCh, substring)  
                 else:
-                    """Looking for BE + additional VERBAL structure """
+                    # Looking for BE + additional VERBAL structure
                     logger.debug("Looking for BE + VERB Predicative Complement ")
                     substring = self._lookForMultiChunk(patterns.BE_FSAs)
                     if substring:
                         self._processEventInMultiVChunk(substring)
                        
         elif GramVCh.nodeIsHaveForm():
+            dribble("HAVE", self_text, self)
             logger.debug("Entering checking for toHave pattern............")
             substring = self._lookForMultiChunk(patterns.HAVE_FSAs)
             if substring:
@@ -501,6 +514,7 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
 
         elif GramVCh.nodeIsFutureGoingTo():
+            dribble("GOING", self_text, self)
             logger.debug("Entering checking for futureGoingTo pattern............")
             substring = self._lookForMultiChunk(patterns.GOINGto_FSAs)
             if substring:
@@ -509,6 +523,7 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
 
         elif GramVCh.nodeIsPastUsedTo():
+            dribble("USED", self_text, self)
             logger.debug("Entering checking for pastUsedTo pattern............")
             substring = self._lookForMultiChunk(patterns.USEDto_FSAs)
             if substring:
@@ -517,6 +532,7 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
 
         elif GramVCh.nodeIsDoAuxiliar():
+            dribble("DO", self_text, self)
             logger.debug("Entering checking for doAuxiliar pattern............")
             substring = self._lookForMultiChunk(patterns.DO_FSAs)
             if substring:
@@ -524,10 +540,11 @@ class VerbChunk(Chunk):
             else:
                 self._processEventInChunk(GramVCh)
 
-        elif GramVCh.nodeIsBecomeForm(self.nextNode()):
-            """Looking for BECOME + ADJ Predicative Complement e.g., He became famous at
-            the age of 21"""
-            logger.debug("Looking for BECOME + ADJ")
+        elif GramVCh.nodeIsBecomeForm(next_node):
+            dribble("BECOME", self_text, self)
+            # Looking for BECOME + ADJ Predicative Complement e.g., He became famous at
+            # the age of 21
+            logger.debug("Looking for BECOME + ADJ Predicative Complement")
             substring = self._lookForMultiChunk(patterns.BECOME_A_FSAs, 'chunked')
             if substring:
                 logger.debug("BECOME + ADJ found")
@@ -535,9 +552,10 @@ class VerbChunk(Chunk):
             else:
                 self._processEventInChunk(GramVCh)
 
-        elif GramVCh.nodeIsContinueForm(self.nextNode()):
-            """Looking for CONTINUE + ADJ Predicative Complement e.g., Interest rate
-            continued low."""
+        elif GramVCh.nodeIsContinueForm(next_node):
+            dribble("CONTINUE", self_text, self)
+            # Looking for CONTINUE + ADJ Predicative Complement e.g., Interest rate
+            # continued low.
             logger.debug("Looking for CONTINUE + ADJ")
             substring = self._lookForMultiChunk(patterns.CONTINUE_A_FSAs, 'chunked')
             if substring:
@@ -546,9 +564,10 @@ class VerbChunk(Chunk):
             else:
                 self._processEventInChunk(GramVCh)
 
-        elif GramVCh.nodeIsKeepForm(self.nextNode()):
-            """Looking for KEEP + ADJ Predicative Complement e.g., The announcement kept
-            everybody Adj."""
+        elif GramVCh.nodeIsKeepForm(next_node):
+            dribble("KEEP", self_text, self)
+            # Looking for KEEP + ADJ Predicative Complement e.g., The announcement kept
+            # everybody Adj.
             logger.debug("Looking for KEEP + [NChunk] + ADJ ")
             substring = self._lookForMultiChunk(patterns.KEEP_A_FSAs, 'chunked')
             if substring:
@@ -558,15 +577,17 @@ class VerbChunk(Chunk):
                 self._processEventInChunk(GramVCh)
             
         else:
+            dribble("OTHER", self_text, self)
             logger.debug("[1] " + GramVCh.as_extended_string())
             self._processEventInChunk(GramVCh)
 
             
-    def createEvent(self):
+    def createEvent(self, tarsqidoc):
         """Try to create an event in the VerbChunk. Delegates to two methods
         depending on the position of the verb in the chunk."""
 
         logger.debug("VerbChunk.createEvent()")
+        self.tarsqidoc = tarsqidoc
         GramVChList = GramVChunkList(self)
         if GramVChList.do_not_process():
             return
@@ -578,6 +599,9 @@ class VerbChunk(Chunk):
             self._createEventOnRightmostVerb(GramVChList[-1])
         # complex case
         else:
+            #print "complex case"
+            #self.pp()
+            dribble('COMPLEX', '', self)
             lastIdx = len(GramVChList) - 1
             for idx in range(len(GramVChList)):
                 gramVCh = GramVChList[idx]

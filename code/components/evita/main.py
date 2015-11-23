@@ -25,8 +25,9 @@ class Evita (TarsqiComponent):
         filled in during processing."""
         self.NAME = EVITA
         self.xmldoc = None
-        self.doctree = None
-        
+        self.doctree = None    # instance of Document
+        self.tarsqidoc = None  # instance of TarsqiDocument
+
     def process_file(self, infile, outfile):
         """Process a fragment file and write a file with EVENT tags. The two arguments are
         both absolute paths."""
@@ -34,7 +35,7 @@ class Evita (TarsqiComponent):
         self.doctree = FragmentConverter(self.xmldoc, infile).convert()
         self.extractEvents()
         self.xmldoc.save_to_file(outfile)
-        
+
     def process_xmldoc(self, xmldoc):
         """Process an XmlDocument fragment and return one with EVENT tags. Takes an
         instance of XmlDocument as its sole argument."""
@@ -57,6 +58,9 @@ class Evita (TarsqiComponent):
         and doctree variables on the Evita instance are the ones for just one
         element and not for the whole document or string. Events are added to
         the tag repository on the element."""
+        # with this we have direct access to the TarsqiDocument and
+        # extractEvents can then use it
+        self.tarsqidoc = element.doc
         # TODO: instead of this maybe create a doctree directly
         xml_string = _create_xml_string(element)
         self.process_string(xml_string)
@@ -74,7 +78,7 @@ class Evita (TarsqiComponent):
             logger.debug("SENTENCE: %s" % ' '.join(getWordList(sentence)))
             for node in sentence:
                 if not node.flagCheckedForEvents:
-                    node.createEvent()
+                    node.createEvent(tarsqidoc=self.tarsqidoc)
             #print; sentence.pp(tree=True)
         #self.doctree.pp()
 
