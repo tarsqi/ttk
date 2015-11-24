@@ -198,24 +198,6 @@ class ReportGenerator(object):
             self._load_case_results()
             self._write_case_report()
 
-    def purge(self, case, timestamp):
-        """Method to remove all results for the case at the specified
-        timestamp. Removes the results file but does not update the report
-        files. Returns True if a results file was actually removed, False
-        otherwise. Useful to remove all the middle results in a long list of
-        identifal results."""
-        results_file = os.path.join(self.results_dir, case, "%s.tab" % timestamp)
-        if os.path.isfile(results_file):
-            print "Remove %s? (y/n)" % results_file
-            print "?",
-            answer = raw_input()
-            if answer.strip() == 'y':
-                os.remove(results_file)
-                return True
-        else:
-            print "Warning: incorrect case or timestamp"
-        return False
-    
     def _load_case_results(self):
         self.case_results = {}
         for results_file in glob.glob("%s/%s/*.tab" % (self.results_dir, self.case)):
@@ -254,10 +236,24 @@ def generate_report():
 
 def purge_result(args):
     """Delete the results of one particular run of a case, the args parameter is
-    a list of a case (for eaxample 'eveita-vg' and a timestamp. This method will
-    also regenerate the reports."""
-    success = ReportGenerator().purge(args[0], args[1])
-    if success:
+    a list of a case identifier and a timestamp, for example ['evita-vg',
+    '20151124-171435']. This method will also regenerate the reports if a
+    results file was actually removed.."""
+    case, timestamp = args[0], args[1]
+    report_generator = ReportGenerator()
+    results_file = os.path.join(report_generator.results_dir,
+                                case, "%s.tab" % timestamp)
+    results_file_was_removed = False
+    if os.path.isfile(results_file):
+        print "Remove %s? (y/n)" % results_file
+        print "?",
+        answer = raw_input()
+        if answer.strip() == 'y':
+            os.remove(results_file)
+            results_file_was_removed = True
+    else:
+        print "Warning: incorrect case or timestamp"
+    if results_file_was_removed:
         generate_report()
 
     
