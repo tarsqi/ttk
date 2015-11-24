@@ -287,7 +287,7 @@ def run_tarsqi(args):
         Tarsqi(opts, inpath, outpath).process()
     else:
         raise TarsqiError('Invalid input and/or output parameters')
-    logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (t0 - time.time()))
+    logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
 
 
 def run_profiler(args):
@@ -303,8 +303,12 @@ def test():
                 'data/in/simple-xml/tiny.xml',
                 'out.xml'])
 
-def process_string(text):
-    (opts, args) = _read_arguments(['--pipeline=PREPROCESSOR,GUTIME,EVITA'])
+def process_string(text, opts=None):
+    """Run tarsqi on a string, optionally handing in the list of options. Each
+    option is a tuple of option name and a value, for example ('--pipeline',
+    'PREPROCESSOR')."""
+    if opts is None:
+        (opts, args) = _read_arguments(['--pipeline=PREPROCESSOR,GUTIME,EVITA'])
     tarsqi = Tarsqi(opts, None, None)
     return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
 
