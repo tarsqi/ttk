@@ -1,0 +1,268 @@
+# This is a set of cases originally derived from the output of the event
+# dribbler in code/components/common_modules/chunks.py. That file contained all
+# verbal events created for Timebank by TTK as of November 22nd. It was manually
+# paired down from 6445 events to 263 events.
+
+BE	'm	For The World, I'm Nancy Marshalll.	3760:3762
+BE	're	But I do n't think we're at that point yet."	3017:3020
+BE	's	"It's a cosmetic move," said Jonathan S. Gelles of Wertheim Schroder amp Co.	1287:1289
+BE	are	Egyptian and Moroccan troops are already there.	5369:5372
+BE	are	I must say there are no unsettled problems any more.	1149:1152
+BE	are also	The Pope's visit is important, but they are also coming home.	1640:1644
+BE	be	Castro has said that you can be a Communist and still be a Christian.	1560:1562
+BE	been	Analysts have complained that third-quarter corporate earnings have n't been very good, but the effect hit home particularly hard yesterday.	1057:1061
+BE	being	Anheuser noted that "beer industry sales volume is 1989 is following the trend that has characterized the last half of the '80s, with sales volume being essentially flat" while consolidation creates fewer, bigger players.	2590:2595
+BE	can be	Castro has said that you can be a Communist and still be a Christian.	1535:1537
+BE	could be	In a speech delivered at the Pentagon, Bush seemed to suggest that American forces could be in the gulf region for some time.	1397:1399
+BE	had been	It had been due to expire Friday evening.	853:857
+BE	had once been	Just clobbered," said Ulric Weil, an analyst at Weil amp Associates who had once been high on the company.	870:874
+BE	has been	A new report says there has been a dramatic rise in the growth of hate groups in the United States over the past year.	288:292
+BE	has not been	Our company has not been able to cope very effectively with" changes in the marketplace, said Ryosuke Ito, Sansui's president.	3587:3591
+BE	has really established is	"All this has really established is that MCA and the Bronfmans have agreed on a price at which they can be bought out," said Jeffery Logsdon, an analyst with Crowell, Weedon in Los Angeles.	2167:2169
+BE	have been	There have been no arrests in any of the slayings.	1827:1831
+BE	is	A large plant in Covington, Ga., is to come on line next year.	3165:3167
+BE	is	Woodbridge is a holding company owned by Toronto's Thomson family.	1179:1181
+BE	may be	Iraq's first option, of course, may be simply to sit tight and hope it can endure a trade embargo longer than the West can live without Iraqi and Kuwaiti oil.	3510:3512
+BE	may have been	Last Friday's announcement was the first official word that the project was in trouble and that the company's plans for a surge in market share may have been overly optimistic.	4508:4512
+BE	might be	But opponents said the school might be a target for terrorist attacks, complained about its tax exempt status, and wondered why the Saudis are not compelled to allow Christians to worship in their country.	2768:2770
+BE	must be	On days when prices are tumbling, they must be willing to buy shares from sellers when no one else will.	3390:3392
+BE	said had been	The bulk of the pretax charge is a $62 million write-off of capitalized servicing at the mobile home financing subsidiary, which the company said had been a big drain on earnings.	613:617
+BE	said were	This quarter's loss includes pretax charges of $4.9 million on the proposed discontinuation of the company's troubled British subsidiary, and $3.7 million of other write-offs the company said were non-recurring and principally related to inventory, publishing advances and pre-publication costs.	775:779
+BE	should be	Iraq had argued the presidential sites should be off limits as symbols of sovereignty.	2775:2777
+BE	thought was	More problems in Hong Kong for a place, for an economy, that many experts thought was once invincible.	604:607
+BE	to be	Castro has said officially that it's okay to be enthusiastic.	1215:1217
+BE	to be acquired are	The remaining properties to be acquired are the Tropicana Country Club amp Golf Course, a facility jointly owned by Ramada Inc., of Phoenix, Ariz., and the Jaffe family, and a small parcel owned by MGM Grand director James D. Aljian.	877:880
+BE	to have been	The new facility was to have been the world's most advanced cereal manufacturing plant, and Kellogg's largest construction project.	3880:3884
+BE	to ultimately be	In addition to the estimated 45,000 Marines to ultimately be part of Operation Desert Shield, Stealth fighter planes and the aircraft carrier John F. Kennedy are also headed to Saudi Arabia to protect it from Iraqi expansionism.	2716:2718
+BE	to work is	And today, the right to work is equal to r- the right to survival.	1189:1191
+BE	was	A source said the outcome of that session was unclear.	2078:2081
+BE	were	Bond prices were barely higher.	2966:2970
+BE	will be	And Wong Kwan will be lucky to break even.	1123:1125
+BE	will ever be	There are disagreements among experts about how much pressure will be needed to make Saddam Hussein decide he's up against the wall and whether simple economic pressure will ever be enough.	8401:8403
+BE	will probably be	The company said its third-quarter earnings will probably be lower than the 16 cents a share it reported last year, despite a rise in the company's revenue.	7546:7548
+BE	wo n't be	But, he notes, "If everything crumbles totally, that won't be such a problem."	2802:2804
+BE	would be	A senior law enforcement source tells CNN, there is a lot of circumstantial evidence and it would be extraordinary to have all these bits and pieces and there not be a connection.	1341:1343
+BE	would not definitely be	To switch to another vendor's chips, "would not definitely be an option," he said.	1893:1895
+BE	would not necessarily be	UNOS spokeswoman Donna Henry Wright says the new policy would not necessarily be more fair or effective because allowances are already made for the most needy patients.	1079:1081
+BECOME	became	After a short, sharp drop when Asia's financial problems first became clear, the stock market has rebounded and corporate profits have remained healthy.	3249:3255
+BECOME	became	And to protect their reduced capital investment from eroding further, market makers became quicker to lower price quotes when sell programs are in progress.	3272:3278
+BECOME	became	As the yen soared in recent years, Sansui's deepening financial problems became a vicious circle.	3366:3372
+BECOME	became	At one point, when it became clear controllers could not contact the plane, someone said a prayer.	1163:1169
+BECOME	became	Nevertheless, American officials over the weekend became more open in declaring that by destroying Saddam Hussein's military machine they hope to destroy his regime -- a goal likely to be supported by most Americans.	3568:3574
+BECOME	became	Some residents of the mostly white, mostly middle class area became alarmed.	1455:1461
+BECOME	became	The bonds became worthless when the bankrupt thrift was seized by government regulators.	497:503
+BECOME	become	"Whatever capital it (Sansui) needs so it can compete and become a totally global entity capable of competing with the best in the world, that capital will be injected," Mr. Nadir said.	4962:4968
+BECOME	become	Nationwide, there are about ten thousand patients waiting for liver transplants each year and only four thousand organs become available for transplants.	2355:2361
+BECOME	become	With the convergence of communications and information technologies (IT) coupled with the coming of age for the Internet and its related technologies, the stage is set for Malaysians to seize the chance to transform into a knowledge society and become worthy opponents/players in the global market space.	897:903
+BECOME	could become	They are n't being allowed to leave and could become hostages.	7121:7127
+BECOME	do not become	Women do not become victims of armed attack, but they do not have the right to work.	1087:1093
+BECOME	has become	In the business world, the Internet - through intranet and extranet solutions - has become an invaluable tool for companies to harness so as to gain a competitive edge.	1370:1376
+BECOME	has become	Uh, in addition, white power racist music has become uh quite popular in certain sectors.	1792:1798
+BECOME	have become	Many NASA watchers say female astronauts have become part of the agency's routine.	1341:1347
+BECOME	have become	The program also calls for coordination of economic reforms and joint improvement of social programs in the two countries, where many people have become impoverished during the chaotic post-Soviet transition to capitalism.	3730:3736
+BECOME	have become	Women have become the sole support of their families.	1298:1304
+BECOME	to become	Indeed, BellSouth's cellular operations were among the first in the country to become profitable.	5301:5307
+BECOME	to become	Mr. Perlman, who is also acting chief financial officer and the odds-on favorite to become the next chief executive, said the company is achieving "modest positive cash flow from operations, and we expect that to continue into 1990."	1738:1744
+BECOME	will become	"This game is n't over yet , " said Joel D. Gross, a vice president at Donaldson, Lufkin amp Jenrette Securities Corp. "At some point, it will become non-economical for one company.	2956:2962
+BECOME	will become	Health and Human Services Secretary Do- Donna Shalala says patients who need an organ transplant should not have to take a chance that an organ will become available in their local area, nor should patients have to travel to transplant centers far from their homes to improve their chances of getting an organ.	837:843
+BECOME	will become	Trustcorp Inc. will become Society Bank amp Trust when its merger is completed with Society Corp. of Cleveland, the bank said.	224:230
+BECOME	would become	Under an accord signed yesterday, the government and Union Bank of Finland would become major shareholders in the new company, each injecting 100 million Finnish markkaa ($23.5 million).	1269:1275
+CONTINUE	's continuing	Di Giorgio Corp. said it's continuing talks with potential buyers of certain units, but has reached no agreement on any deals.	232:242
+CONTINUE	continue	"We anticipate that steel market conditions will exhibit a further moderate decline in the fourth quarter as the automotive sector remains weak and customers continue to adjust inventories," said Bethlehem Chairman Walter F. Williams.	3245:3253
+CONTINUE	continue	As we regain our leadership level where we have been, and as we continue to put new products into the marketplace and need additional capacity, we will look at resuming our involvement with our plan," he said.	3700:3708
+CONTINUE	continue	If the heavy outflows continue, fund managers will face increasing pressure to sell off some of their junk to pay departing investors in the weeks ahead.	1645:1653
+CONTINUE	continue	We continue to pray and pray hard to God so that there will be no confrontation whereby you will receive thousands of Americans wrapped in sad coffins after you had pushed them into a dark tunnel,'' Saddam said.	3352:3360
+CONTINUE	continued	"The key to Delta's record earnings continued to be excellent passenger revenue growth," said Thomas Roeck, chief financial officer.	1094:1103
+CONTINUE	continued	A small hardcore group under Pol Pot continued to hold out at their headquarters at Anlong Veng in northern Cambodia near the Thai border.	3363:3372
+CONTINUE	continued	Bush also said Thursday that King Hussein assured him Jordan would close the last remaining free port to most Iraqi trade as the economic embargo on materials to Iraq continued unabated.	1292:1301
+CONTINUE	continued	But even continued military success carries political and diplomatic risks for President Bush and the U.S.	1482:1491
+CONTINUE	continued	In setting out his final challenge to Saddam Hussein, Mr. Bush continued the intensive personal diplomacy he began after the invasion llast August.	8300:8309
+CONTINUE	continued	Newsprint results continued to be depressed, the company added, because of industrywide price discounting.	947:956
+CONTINUE	continued	Over the weekend, McCaw continued to call for an auction of LIN.	2702:2711
+CONTINUE	continued	The U.S. military buildup in Saudi Arabia continued at fever pace, with Syrian troops now part of a multinational force camped out in the desert to guard the Saudi kingdom from any new thrust by Iraq.	1548:1557
+CONTINUE	continues	A powerful ice storm continues to maintain its grip.	252:261
+CONTINUE	continues	An intense manhunt conducted by the FBI and the bureau of alcohol, tobacco and firearms continues for Rudolph in the wilderness of western north Carolina.	1877:1886
+CONTINUE	continues	Anheuser said it continues to hold to its earlier-announced goal of a 50% U.S. market share by the mid-1990s.	2901:2910
+CONTINUE	continues	Certainly Saddam Hussein continues to implore his country to fight on.	5457:5466
+CONTINUE	continues	Control Data's semiconductor business, VTC Inc., continues to lose money, the executives acknowledged, but they said they consider some of the technology vital to national defense and so are reluctant to dispose of it.	3338:3347
+CONTINUE	continues	Mr. Roberts continues as treasurer, and Mr. Wonham remains responsible for the offices of comptroller, planning, marketing and general services.	2962:2971
+CONTINUE	continues	The US military buildup in the Persian gulf continues apace, more planes headed from the united states and senior officials say Iraq's president Saddam Hussein can expect punishing air strikes to continue well into the future if he does n't stop building biological and chemical weapons.	232:241
+CONTINUE	continues	The company also said it continues to explore all options concerning the possible sale of National Aluminum's 54.5% stake in an aluminum smelter in Hawesville, Ky.	916:925
+CONTINUE	continues	The company said its industrial unit continues to face margin pressures and lower demand.	545:554
+CONTINUE	continues	said it plans to aggressively discount its major beer brands, setting the stage for a potentially bruising price war as the maturing industry's growth continues to slow.	458:467
+CONTINUE	has continued	In Washington, Pentagon spokesman Pete Williams said Iraq has continued to increase its armed forces in Kuwait and they now number about 160,000.	2956:2965
+CONTINUE	is continuing	Poughkeepsie said it is continuing to try to sell itself, under a June agreement with a dissident-shareholder group.	1171:1181
+CONTINUE	to continue	"We'd like to continue to reduce debt," President Lawrence Perlman said.	1289:1297
+CONTINUE	to continue	In the filing, Crane said that in the past it considered seeking control of Milton Roy, of St. Petersburg, Fla., through a merger or tender offer and that it expects to continue to evaluate an acquisition from time to time.	687:695
+CONTINUE	to continue	Mr. Gore called on Israel to continue taking risks for peace.	716:724
+CONTINUE	to continue	Mr. Perlman, who is also acting chief financial officer and the odds-on favorite to become the next chief executive, said the company is achieving "modest positive cash flow from operations, and we expect that to continue into 1990."	1867:1875
+CONTINUE	to continue	PROGRAM TRADING is being curbed by more securities firms, but big institutional investors are expected to continue the practice, further roiling the stock market.	234:242
+CONTINUE	to continue	That would be a huge problem if it were to continue, because Unisys is betting its business on the assumption that customers want to move away from using operating systems that run on only one manufacturer's equipment and toward systems -- mainly Unix -- that work on almost anyone's machines.	2819:2827
+CONTINUE	to continue	The US military buildup in the Persian gulf continues apace, more planes headed from the united states and senior officials say Iraq's president Saddam Hussein can expect punishing air strikes to continue well into the future if he does n't stop building biological and chemical weapons.	386:394
+CONTINUE	to continue	Wall Street analysts expect the disappointing trend to continue into the fourth quarter and through at least the first two quarters of 1990, when the industry will increasingly see the effect of price erosion in major product lines, such as rolled sheet used for cars, appliances and construction.	827:835
+CONTINUE	will continue	And I hope that, whatever happens today, that our relationships with Russia will continue to be productive and constructive and strong, because that's very important to the future of our peoples.	1242:1250
+CONTINUE	will continue	He also said that the price wars flaring up in parts of the computer industry will continue through next year.	3636:3644
+CONTINUE	will continue	Mr. Schwarz also said costs associated with U.S. Trust's planned move to midtown Manhattan from Wall Street will continue to be a drag on earnings through 1990.	2387:2395
+CONTINUE	will continue	Other dealers added that the blue-chip stocks in general were hit by profit-taking over concerns that London shares will continue posting declines and the uncertainty over sterling given that Mr. Lawson's successor, John Major, had only been in the job one day.	2504:2512
+CONTINUE	will continue	The Midwest Financial subsidiary banks will continue to operate under their current names until early 1990, when each will adopt the First of America name.	642:650
+CONTINUE	will continue	We will continue to do everything we can to establish what has happened.''	1762:1770
+CONTINUE	would continue	The bank also said its effort would continue past the Nov. 1 deadline set in that agreement and that the litigation between the two sides might resume as a result.	1301:1309
+DO	's not done	A UN spokesman says UN secretary general Kofi Annan is on the verge of a breakthrough, but added it's not done yet.	285:289
+DO	can do	You can do that but you're taking a risk.	3472:3474
+DO	could do	President Clinton, meantime, glossed over stern warnings from Moscow on Thursday that US air strikes against Iraq could do serious harm to relations with the Kremlin.	1064:1066
+DO	did	"The non-food operations were largely Mr. Lortie's creation {and} his strategy did n't work," said Steven Holt, a financial analyst with Midland Doherty Ltd.	2171:2174
+DO	did	The executives did n't disclose the size of the expected gain.	3158:3161
+DO	do	"Without some unexpected "coup de theatre", I do n't see what will block the Paribas bid," said Philippe de Cholet, analyst at the brokerage Cholet-Dupont amp Cie.	2455:2457
+DO	do	But I do n't think we're at that point yet."	3002:3004
+DO	do	But we do n't minimize the challenges of the near term."	4321:4323
+DO	do	I do n't think Kellogg can get back to 40% this year," he said.	2169:2171
+DO	do	We do n't need the cash."	2896:2898
+DO	does	"It does n't bode well for coming quarters," said John Jacobson, who follows the steel industry for AUS Consultants.	1079:1083
+DO	does	As Justice Stephen Breyer asked in a strong dissent, ``what sense does it make'' to apply citizenship barriers ``only to fathers and not to mothers in today's world _ where paternity can readily be proved and where women and men both are likely to earn a living in the workplace?''	1620:1624
+DO	does	Because of the glitch, however, the company said it does n't know when its machine will be commercially available.	4178:4182
+DO	does	But Kenneth Leon, a telecommunications analyst with Bear, Stearns amp Co., finds the BellSouth proposal still flawed because the company does n't have to wait five years to begin buying more LIN shares.	4643:4647
+DO	does	Dow Jones amp Co. extended its tender offer of $18 a share, or about $576 million, for the 33% of Telerate Inc. that it does n't already own until 5 p.m. EST, Nov. 6.	404:408
+DO	does	Esselte AB, the Stockholm office supplies company, as expected, proposed to acquire the 22% it doesn't own of its U.S. unit, Esselte Business Systems Inc.	341:345
+DO	does	GM sought U.S. antitrust clearance last week to purchase more than $15 million worth of Jaguar shares but does n't own any yet, according to GM officials here and at the company's Detroit headquarters.	625:629
+DO	does	He said the strength of the world-wide economy is suspect, and does n't see much revenue growth in the cards.	3501:3505
+DO	does	Heritage Media Corp., New York, said it offered to buy the shares of POP Radio Corp. it does n't already own in a stock swap.	332:336
+DO	does	Heritage, which owns 51% of POP's 3.6 million shares outstanding, said it will exchange one share of a new preferred stock for each POP common share it does n't already own.	530:534
+DO	does	Hewlett-Packard affirmed it does n't plan to obtain control of Octel, a Milpitas, Calif., maker of voice-processing systems.	879:883
+DO	does	In addition, the directors said if a bid by Mr. Drabinsky is successful, Cineplex expects Rank Organisation PLC to acquire the 51% of Cineplex's Film House unit it doesn't own, and provide Mr. Drabinsky with additional loan financing.	3474:3478
+DO	does	Kidder Peabody does program trading for its own as well as clients' accounts.	2710:2714
+DO	does	Orkem S.A., a French state-controlled chemical manufacturer, is making a friendly bid of 470 pence ($7.43) a share for the 59.2% of U.K. specialty chemical group Coates Brothers PLC which it does n't already own, the two sides said.	471:475
+DO	has been done	Much of Columbia's junk-bond trading has been done through the high-yield department of its Beverly Hills neighbor, Drexel Burnham Lambert Inc.	1119:1123
+DO	is being done	"This is being done at the suggestion of {Mr. Drabinsky} and to accommodate him, to facilitate his financing arrangements," Ms. Kolber said.	3178:3182
+DO	to do	And Unisys is expected to do little better than break even in the fourth quarter.	4895:4897
+DO	to do	Incidentally, we just show up to do the broadcast, and Cubans want to know what we 're going to tell Americans, in many cases, what their relatives in the United States are going to hear.	396:398
+DO	to do	Once again, I never asked anybody to do anything but tell the truth.	1518:1520
+DO	to do	Reviewing the company's scrape with disaster, Mr. Price conceded it had tried to do too much on its own.	4957:4959
+DO	to do	We will continue to do everything we can to establish what has happened.''	1774:1776
+DO	would do	In a statement, the White House said it would do "whatever is necessary" to ensure compliance with the sanctions.	2186:2188
+GOING	're going	"It makes no sense for us to put money at risk when you know you're going to lose," says Mr. Antolini, of Donaldson Lufkin.	3692:3697
+GOING	're not going	We're not going to dignify the latest false leak with a response.''	1022:1027
+GOING	's going	It's going to be the leading edge technology in personal computers for the next few years.	6523:6528
+GOING	's going	It's going to get bloody."	3383:3388
+GOING	's not going	I think that the mood is fairly gloomy, and I think it's not going to change for a couple of years.	2089:2094
+GOING	are going	Incidentally, we just show up to do the broadcast, and Cubans want to know what we 're going to tell Americans, in many cases, what their relatives in the United States are going to hear.	539:544
+GOING	are going	We are going to maintain our forces in the region for the foreseeable future,'' said spokesman Kenneth Bacon.	2999:3004
+GOING	are going	We're in environments that are going to spend a lot of money on that."	4633:4638
+GOING	are not going	Small nationalist communities are not going to be left on their own this summer,'' said Gerard Rice, a former IRA prisoner who leads anti-Orange protests in a Catholic neighborhood of south Belfast.	3521:3526
+GOING	is going	"We've approached this not as a response to a temporary condition in the industry but as a fundamental change the industry is going through," Mr. Unruh said.	4136:4141
+GOING	is going	But we 're challenging it on the ground that uh the RUC uh have offered an opinion, and this opinion is going to be used as a mechanism for ejecting us from the talks, and uh that's a very serious.	698:703
+GOING	is going	Everyone appears to believe that somehow Cuba is going to change.	1151:1156
+GOING	is going	Jerry Steinman, publisher of Beer Marketers Insights, a trade newsletter, said Anheuser's announcement means "everybody else in the industry is going to have a difficult time reaching their profit objectives."	3554:3559
+GOING	is going	The 486 is going to have a big impact on the industry," said Hewlett-Packard's Mr. Archuleta.	6433:6438
+GOING	is going	The unpredictability of Iraq's leader is a principal reason the U.S. is going to such great lengths to build a mammoth force in and around Saudi Arabia.	9098:9103
+GOING	is going	Those fumes will exhaust themselves, and the manufacturing sector is going to start getting beat up in the spring.''	5266:5271
+GOING	is not going	This bug is not going to have any affect on that at all."	6626:6631
+GOING	is still going	The information-systems industry is still going to be a high-growth business, and we're confident that we have tremendous assets as a company.	4212:4217
+GOING	were going	A spokeswoman for Crum amp Forster said employees were told early this week that numerous staff functions for the personal insurance lines were going to be centralized as a cost-cutting move.	447:452
+GOING	will be always up going	They believe ah it will be always up going up and up ah forever.	1421:1426
+HAVE	've had	It is, in short, the kind of management job many American women say they've had to fight for.	999:1002
+HAVE	are having	We are here this week to witness the rendezvous that Fidel Castro and the Pope are having with history.	182:188
+HAVE	combined have had	Their junk funds combined have had net outflows totaling nearly $500 million, or about 13% of their junk fund assets, in the past two months.	1104:1107
+HAVE	did not have	In an interview from Jordan on ABC, he declined to discuss details, but said: ``I don't think that his majesty would be traveling at this crucial moment if the Iraqi leadership did not have a rational approach to the future.''	6405:6409
+HAVE	do not have	Women do not become victims of armed attack, but they do not have the right to work.	1135:1139
+HAVE	had	A year ago, Benjamin Franklin had profit of $1.8 million, or 23 cents a share.	619:622
+HAVE	had	As of Sept. 30, Philip Morris had 926 million shares outstanding.	752:755
+HAVE	has	"The myths that Japan is not open to concerns from outside has, I think, been demolished at a stroke," Mr. Nadir said.	1150:1153
+HAVE	has	A closing date has n't been set.	633:636
+HAVE	has	ABC's Lisa Stark has more.	292:295
+HAVE	has had	He adds: "Our fund has had {positive} net sales every month for the last three years -- until this month."	3355:3358
+HAVE	has n't had	While Westinghouse hasn't had a nuclear power plant order from a U.S. utility in about a decade, excess capacity is beginning to shrink.	1784:1787
+HAVE	have	And then, asset values of the funds could plunge more than they have so far.	5123:5127
+HAVE	have	I have n't seen a pattern yet , '' said Patricia Hurt, the Essex County prosecutor, who created the task force on Tuesday.	1871:1875
+HAVE	having	In the first days after President Bush announced the dispatching of U.S. troops, they note, the Iraqi leader made several nationwide addresses indirectly -- having them read by a television announcer.	8823:8829
+HAVE	having	Nhek Bunchhay, who had been closely involved in the search for Howes before having to flee the Cambodian capital after a coup d'etat last year, appeared confident he would find Howes' remains.	2152:2158
+HAVE	having	The fund, with a cash cushion of more than 10%, has " met all the redemptions without having to sell one thing," Mr. Litvack says.	3286:3292
+HAVE	might have	The provision, described as "back-end" protection, would require BellSouth to pay a price equivalent to what an outside party might have to pay.	3575:3579
+HAVE	should not have	Health and Human Services Secretary Do- Donna Shalala says patients who need an organ transplant should not have to take a chance that an organ will become available in their local area, nor should patients have to travel to transplant centers far from their homes to improve their chances of getting an organ.	796:800
+HAVE	to be acquired had	Cilcorp said the businesses to be acquired had revenue of $76 million for the year ended March 31.	865:868
+HAVE	to have	A senior law enforcement source tells CNN, there is a lot of circumstantial evidence and it would be extraordinary to have all these bits and pieces and there not be a connection.	1361:1365
+HAVE	to have	Har-Shefi acknowledged she told police interrogators that Rabin was a traitor and that she prayed for him to have a heart attack and die.	1004:1008
+HAVE	to have	In that event, Saddam Hussein appears to have three choices.	5273:5277
+HAVE	to have	Iraq is believed to have the ability to deliver chemical weapons in artillery shells or, perhaps, atop Soviet-made Frog7 missiles.	4884:4888
+HAVE	to have	Pro-republicans hope to have an Australian president by the opening of the 2000 Olympics and the 100th anniversary of Australian federation.	1616:1620
+HAVE	to have	We looked to the United States, we expected you to have the moral edge," says Nasser Tahboub, a Jerusalem-born Jordanian who has an American wife and a doctorate in political science from Duke University.	11747:11751
+HAVE	will also have	We are here because what happens on this island will also have an impact on the United States.	264:268
+HAVE	will have	After the split, the company will have more than 4.7 million shares outstanding.	443:447
+HAVE	will have	And in just a moment Diane Sawyer will have some other news.	2151:2155
+HAVE	will have	But some analysts questioned how much of an impact the retirement package will have, because few jobs will end up being eliminated.	1230:1234
+HAVE	will have	If a bid materializes at that price, shareholders will have every reason to be glad, but the question of financing still remains."	2381:2385
+HAVE	will have	In addition, Unisys set up an unspecified reserve -- apparently $60 million to $70 million -- to cover the minimum amount it will have to pay the government because of its involvement in the defense-procurement scandal.	1851:1855
+HAVE	will have	It will have 11.8 million shares outstanding after the offering, with Healthdyne owning about 65% of the total.	883:887
+HAVE	will have	The notes will have a principal amount of $300 million at maturity.	990:994
+HAVE	will have	Though they insist they are n't trying to lure Saddam Hussein into an attack, officials hope that if he strikes again, the U.S. and its allies will have such an impressive force in place in Saudi Arabia that they will be able to crush him in retaliation.	3364:3368
+HAVE	will have	We will have a reasonably flat year this year," Mr. Schwarz says.	2215:2219
+HAVE	would have	That money also would have to be borrowed.	1704:1708
+HAVE	would have	The second possibility would be to start a fight with Israel, in hopes that all Arabs would have to move behind Iraq in a fight against their common Israeli enemy.	6047:6051
+HAVE	would have	Under its revised proposal, Atlanta-based BellSouth would have a 50% interest in the new cellular company and would be responsible for half of its debt.	3104:3108
+HAVE	would have	While bond investors would have preferred growth to be a little slower, they were cheered by inflation measures in the data that showed prices rising at a modest annual rate of 2.9%.	2457:2461
+HAVE	would have had	Mr. Drabinsky, who would have had the right to vote those shares for two years, said the purchase, subsequently rejected by regulators, was aimed at consolidating his control of the company.	2641:2644
+KEEP	has kept	It is the US economic and political embargo which has kept Cuba in a box.	890:894
+KEEP	have kept	He said Du Pont holds about 23% of the world-wide market, the largest single share, at a time when growing uses for the pigment have kept it in tight supply, although others are now adding low-cost production capacity.	2948:2952
+KEEP	have kept	Some families have kept their glass working secrets for more than two thousand years.	640:644
+KEEP	keep	Also, substantially lower Dutch corporate tax rates helped the company keep its tax outlay flat relative to earnings growth, the company added.	1171:1175
+KEEP	keep	Market makers, to cut costs, slashed inventories of stocks they keep on hand to sell investors when other holders are n't selling.	3116:3120
+KEEP	keeping	The company's strategy for keeping its computer products business profitable -- it recently achieved profitability after several quarters of losses -- calls for a narrow focus and a lid on expenses.	3540:3547
+KEEP	kept	But Sinn Fein leader Gerry Adams kept his party out pending meetings with British Prime Minister Tony Blair 10 days ago and President Clinton last week.	1721:1725
+KEEP	kept	CAGUAS, Puerto Rico (AP) _ Kidnappers kept their promise to kill a store owner they took hostage and police found the man's dismembered and decapitated body Friday wrapped in plastic garbage bags.	327:331
+KEEP	to keep	And powerful political pressures may convince the Conservative government to keep its so-called golden share, which limits any individual holding to 15%, until the restriction expires on Dec. 31, 1990.	1907:1911
+KEEP	to keep	But the administration is n't putting any upper limit on how high the force could go after that, calculating that it would be a mistake to underestimate and an advantage to keep Saddam Hussein guessing.	9447:9451
+KEEP	to keep	LIN Broadcasting surged 4 5/8 to 112 5/8; LIN and BellSouth sweetened their merger agreement in an attempt to keep shareholders from tendering their shares to McCaw Cellular Communications.	6342:6346
+KEEP	to keep	Mr. LeGere attributed the earnings increase to growth in the company's longhaul trucking insurance lines and the ability to keep premium rates firm.	801:805
+KEEP	to keep	Though Mr. Packer has since sold his stake, Courtaulds is moving to keep its institutional shareholders happy.	2087:2091
+KEEP	to keep	With potential inflation counterbalanced by worries about possible price declines, the Fed and its chairman, Alan Greenspan, have suggested that they intend to keep interest rates unchanged until the economy tilts clearly in one direction or another.	2493:2497
+KEEP	will keep	That's what will keep computer makers coming in spite of the irritation of bugs.	6088:6092
+KEEP	would keep	In wooing British lawmakers, GM has pointed out that its willingness to settle for a minority stake would keep Jaguar British-owned and independent.	3511:3515
+OTHER	'd double	He sold the property to five buyers and said he'd double his money.	948:954
+OTHER	'd like	"We'd like to continue to reduce debt," President Lawrence Perlman said.	1281:1285
+OTHER	'd stop	We will not go over a certain level," said David N. McCammon, Ford's vice president for finance, at a news conference yesterday in Dearborn, Mich. "There's some price at which we'd stop bidding."	1775:1779
+OTHER	'll come	We'll come back to Havana later in the broadcast.	1719:1723
+OTHER	're becoming	Attitudes {toward being acquired} are still negative, but they're becoming more positive," Mr. Murasawa said.	4128:4136
+OTHER	're doing	There is, a- at a very deep level in our culture, um I think, a sense of, of ignorance about Islam, a fear about who Muslims are and what they're doing.	1693:1698
+OTHER	're not used	It's not something we're not used to in the industry.	516:520
+OTHER	's doing	You know, since he's been here the stock skyrocketed so, Yeah I think he's doing the right thing.	755:760
+OTHER	've been told	She is, I can assure you, from what I've been told, she's following the thing very closely and taking the view it's our business.	2807:2811
+OTHER	Being	Being 48 is too early to be retired,'' a fit-looking Farkas said on state TV's morning talk show.	385:390
+OTHER	Citing	Citing an example, Sgt.	997:1003
+OTHER	Depending	Depending upon how many warrants and options are exercised prior to completion of the transaction, Heritage would issue between 1.8 million and 2.35 million preferred shares, a Heritage spokesman estimated.	554:563
+OTHER	acquired	Thermo Electron acquired some 6% of Milton Roy's common stock before throwing in the towel and reducing its stake in early September.	1527:1535
+OTHER	are being scaled	Analysts were predicting 1990 BellSouth earnings in the range of $3.90 a share, or $1.9 billion, but now those estimates are being scaled back.	5545:5551
+OTHER	are buying	Factory owners are buying new machinery at a healthy rate this fall, machine-tool makers say.	957:963
+OTHER	be reached	He could n't be reached for comment.	830:837
+OTHER	become bogged	Despite the early indications of success, the allied forces could still suffer greater casualties and become bogged down militarily , especially when they encounter the tough Republican Guard, which is entrenched along the Iraq-Kuwait border.	2365:2371
+OTHER	becomes	And Patrick Mannix, 46, international technical manager, becomes director of group quality programs.	2296:2303
+OTHER	being used	DIG is the vehicle being used to pursue to acquisition.	560:564
+OTHER	could be reached	Neither they nor Mr. McAlpine could be reached for comment.	1668:1675
+OTHER	going	The united states is not authorized to use force before going to the council.	917:922
+OTHER	has used	Prosecutors have told Mr. Antar's attorneys that they believe Mr. Antar's allegedly ill-gotten gains are so great that any money he has used to pay attorneys derives from illegal activities.	2732:2736
+OTHER	means	Some experts now predict Anheuser's entry into the fray means near-term earnings trouble for all the industry players.	1013:1018
+OTHER	means	That means Unisys must pay about $100 million in interest every quarter, on top of $27 million in dividends on preferred stock.	3231:3236
+OTHER	means	That means the convictions stand, a ruling likely to send Keating's lawyers back to state court where they must start over with a new appeal.	910:915
+OTHER	means	This is a new thing...it means that we are willing to talk today _ full stop _ about security,'' Lubrani told Israel's Channel One.	1749:1754
+OTHER	means supervising	It means supervising the rest of the crew in training and leading them in flight.	848:859
+OTHER	measured	Until recently, Kellogg had been telling its sales force and Wall Street that by 1992 it intended to achieve a 50% share of market, measured in dollar volume.	4665:4673
+OTHER	meet	A spokesman said the savings bank may not qualify for the capital requirements because, under the proposed guidelines, its $380 million of preferred stock does n't meet the "core capital" criteria outlined under the new Financial Institutions Reform, Recovery and Enforcement Act of 1989.	844:848
+OTHER	meet	He and Palestinian leader Yasser Arafat meet separately Monday with US Secretary of State Madeleine Albright.	238:242
+OTHER	meet	Loan covenants require that the company achieve specified levels of operating earnings and meet a rolling four-quarter profitability test.	2379:2383
+OTHER	meet	The Portland, Ore., thrift said the restructuring should help it meet new capital standards from the Financial Institution Reform, Recovery and Enforcement Act.	492:496
+OTHER	meeting	Foreign ministers of member-states meeting in the Ethiopian capital agreed to set up a seven-member panel to investigate who shot down Rwandan President Juvenal Habyarimana's plane on April 6, 1994.	407:414
+OTHER	mentioned	While the expansion of the Internet has been a blessing for researchers, students and the just plain curious, the new opportunities mentioned by Mr. Gates are also being used by some rather unsavory characters.	179:188
+OTHER	met	Another highly placed source said the president's son met with Sununu last week after holding a series of conversations about the structure of the White House staff and of the campaign with other Bush loyalists and GOP activists.	1377:1380
+OTHER	met	Officials said the president himself met with Sununu Sunday.	2012:2015
+OTHER	met	The Jordanian monarch met this week with Saddam, but he told reporters he had no message from Baghdad.	6956:6959
+OTHER	met	The fund, with a cash cushion of more than 10%, has " met all the redemptions without having to sell one thing," Mr. Litvack says.	3254:3257
+OTHER	might be extended	Bush told a news conference on Tuesday that the naval barricade now in force might be extended to Jordan's Aqaba ``if it is a hole through which commerce flows'' in and out of Iraq.	7688:7696
+OTHER	might be forced	Funds might be forced to accept lower prices if they expand their selling to the securities of less-creditworthy borrowers.	4949:4955
+OTHER	might be related	New evidence is suggesting that a series of bombings in Atalanta and last month's explosion at an Alabama women's clinic might be related.	245:252
+OTHER	might be scaled	A Kellogg officer, who asked not to be named, said the Memphis project was " pulled in for a reconsideration of costs," an indication that the ambitious plans might be scaled back in any future construction.	3368:3374
+OTHER	might be sold	He indicated that some assets might be sold off to service the debt.	1847:1851
+OTHER	might be targeted	Puerto Rico Police Superintendent Pedro Toledo urged people who might be targeted by kidnappers to be alert.	1195:1203
+OTHER	might calculate	In such an event, Saddam Hussein also might calculate, the Saudis would be under pressure to kick out U.S. troops because of America's close ties with Israel.	6163:6172
+OTHER	might consider filing	Mr. Leon of Bear Stearns speculated that McCaw, in an attempt to buy time, might consider filing an antitrust suit against BellSouth with the Justice Department and U.S. District Judge Harold Greene, who oversees enforcement of the consent decree that broke up the Bell system in 1984.	6110:6116
+OTHER	might drop	If Iraq chooses a simple war of nerves and economic attrition, the Bush administration knows a long stalemate could try the patience of the American public and the West in general, and could open the possibility that moderate Arabs -- even including Saudi Arabia -- might drop out of the effort against Iraq and accept some deal from Saddam Hussein.	7413:7417
+OTHER	might never be built	A company spokesman said it was "possible, but highly unlikely," that the plant might never be built.	3627:3632
+OTHER	might resume	The bank also said its effort would continue past the Nov. 1 deadline set in that agreement and that the litigation between the two sides might resume as a result.	1409:1415
+OTHER	might succeed	Ford might succeed because many shareholders are speculators keen for a full bid or institutional investors unhappy over Jaguar management's handling of its current financial difficulties.	2984:2991

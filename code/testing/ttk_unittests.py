@@ -1,11 +1,17 @@
 """ttk_unittests.py
 
-Simple units tests that ping the system in various ways. All tests now are there
-to confirm that some component adds a tag at the proper spot in a sentence.
+Simple unit tests that ping the system in various ways. All current test just
+confirm that some component adds a tag at the proper spot in a sentence.
+
+They are actually not really unit tests because they test fairly high-level
+functionality like adding particular tags, but it was convenient to use the
+unittest framework.
+
+These test are not intended for extensive testing of coverage.
 
 Usage:
 
-   $ python test.py OPTIONS*
+   $ python ttk_unittests.py OPTIONS*
 
 The following options are available:
 
@@ -25,7 +31,6 @@ import sys, unittest, getopt
 
 import path
 import tarsqi
-
 
 
 class GUTimeTest(unittest.TestCase):
@@ -59,6 +64,7 @@ class EvitaTest(unittest.TestCase):
     def test_01(self): self.run_test("Fido barks.", 5, 10)
     def test_02(self): self.run_test("John sleeps today.", 5, 11)
     def test_03(self): self.run_test("The door is open.", 12, 16)
+    def test_04(self): self.run_test("The war is over.", 4, 7)
 
 
 def check(pipeline, sentence, tag, o1, o2):
