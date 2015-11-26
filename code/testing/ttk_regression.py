@@ -168,9 +168,12 @@ class ReportGenerator(object):
         self.index_fh = open(self.index_file, 'w')
         self.cases = []
         self._init_cases()
-        # the following four are reset for each case
+        # the following are reset for each case
         self.case = None
-        self.case_file = None
+        self.case_input_file = None
+        self.case_input_fh = None
+        self.case_input = None
+        self.case_fh = None
         self.case_fh = None
         self.case_results = None
         
@@ -194,9 +197,19 @@ class ReportGenerator(object):
             self.case = case
             self.case_file = os.path.join(self.html_dir, "cases-%s.html" % case)
             self.case_fh = open(self.case_file, 'w')
-            print self.case_file
+            print "writing", self.case_file
+            self._load_cases()
             self._load_case_results()
             self._write_case_report()
+
+    def _load_cases(self):
+        self.case_input_file = "%s/cases-%s.tab" % (self.cases_dir, self.case)
+        self.case_input_fh = open(self.case_input_file)
+        print "  reading cases in", self.case_input_file
+        self.case_input = {}
+        cases = load_cases(self.case_input_file)
+        for case in load_cases(self.case_input_file):
+            self.case_input[case.identifier] = case
 
     def _load_case_results(self):
         self.case_results = {}
@@ -220,11 +233,20 @@ class ReportGenerator(object):
         self.case_fh.write("  <td>&nbsp;")
         for ts in timestamps:
             self.case_fh.write("  <td>%s" % ts[2:8])
+        self.case_fh.write("  <td>o1")
+        self.case_fh.write("  <td>o2")
+        self.case_fh.write("  <td>fragment")
         for identifier in sorted(identifiers.keys()):
-            self.case_fh.write("<tr>")
+            self.case_fh.write("<tr style=\"white-space:nowrap\">")
             self.case_fh.write("  <td>%s" % identifier)
             for ts in timestamps:
                 self.case_fh.write("  <td>%s" % self.case_results[ts].get(identifier, '&nbsp;'))
+            case = self.case_input[identifier]
+            self.case_fh.write("  <td align=right>%s" % case.o1)
+            self.case_fh.write("  <td align=right>%s" % case.o2)
+            self.case_fh.write("  <td>%s[%s]%s" % (case.sentence[max(case.o1-30,0):case.o1],
+                                                   case.sentence[case.o1:case.o2],
+                                                   case.sentence[case.o2:case.o2+300]))
         self.case_fh.write("</table>")
 
     
@@ -255,6 +277,7 @@ def purge_result(args):
         print "Warning: incorrect case or timestamp"
     if results_file_was_removed:
         generate_report()
+
 
     
 if __name__ == '__main__':
