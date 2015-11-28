@@ -303,12 +303,14 @@ def test():
                 'data/in/simple-xml/tiny.xml',
                 'out.xml'])
 
-def process_string(text, opts=None):
-    """Run tarsqi on a string, optionally handing in the list of options. Each
-    option is a tuple of option name and a value, for example ('--pipeline',
-    'PREPROCESSOR')."""
+def process_string(text, opts=None, pipeline='PREPROCESSOR,GUTIME,EVITA', loglevel=2):
+    """Run tarsqi on a string, optionally handing in the list of options or just
+    the pipeline and/or loglevel options. Each option is a tuple of option name
+    and a value, for example ('--pipeline', 'PREPROCESSOR')."""
     if opts is None:
-        (opts, args) = _read_arguments(['--pipeline=PREPROCESSOR,GUTIME,EVITA'])
+        (opts, args) = _read_arguments(["--pipeline=%s" % pipeline,
+                                        "--loglevel=%s" % loglevel])
+        print opts
     tarsqi = Tarsqi(opts, None, None)
     return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
 

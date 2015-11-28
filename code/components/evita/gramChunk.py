@@ -521,7 +521,6 @@ class GramVChunk(GramChunk):
         self.left = left  
         self.negative = self.negMarks
         self.infinitive = self.infMark
-        
         self.gramFeatures = self.getGramFeatures()
         self.tense = self.getTense()
         self.aspect = self.getAspect()
@@ -530,7 +529,6 @@ class GramVChunk(GramChunk):
         self.polarity = self.getPolarity()
         self.head = self.getHead()
         self.evClass = self.getEventClass()
-
 
     def __str__(self):
         print_string = "<GramVChunk>\n" + \
