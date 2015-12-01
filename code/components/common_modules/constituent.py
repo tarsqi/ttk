@@ -44,15 +44,14 @@ class Constituent:
         else:
             raise AttributeError, name
 
-    def setFlagCheckedForEvents(self):
+    def setCheckedEvents(self):
         if self.parent.__class__.__name__ == 'Sentence':
-            if not self.flagCheckedForEvents:
-                self.flagCheckedForEvents = 1
+            self.checkedEvents = True
         else:
-            self.parent.setFlagCheckedForEvents()
+            self.parent.setCheckedEvents()
 
     def getText(self):
-        pass
+        logger.warn("Unexpected recipient of getText")
 
     def nextNode(self):
         """Return the right sibling in the tree or None if there is none. Works nicely
@@ -65,9 +64,9 @@ class Constituent:
             return None
 
     def createEvent(self, tarsqidoc):
-        """Does nothing except for logging a warning. Event creation is only attempted
-        on some sub classes."""
-        logger.warn("Unexpected recipient of createEvent")
+        """Does nothing except for logging a warning. If this happens something weird is
+        going on. Event creation is only attempted on some sub classes."""
+        logger.warn("Unexpected recipient of createEvent()")
 
     def _hackToSolveProblemsInValue(self, value):
         """From slinket/s2t"""
@@ -330,25 +329,25 @@ class Constituent:
 
     def _identify_substring(self, sentence_slice, fsa_list):
 
-        """Checks whether a token sequnce matches an pattern. Returns a tuple of sub
-        sequence lenght that matched the pattern (where a lenght of 0 indicates no match)
-        and the index of the FSA that applied the succesfull match. This is the method
-        where the FSA is asked to find a substring in the sequence that matches the FSA.
+        """Checks whether a token sequnce matches an pattern. Returns a tuple of the sub
+        sequence length that matched the pattern (where a zero length indicates
+        no match) and the index of the FSA that returned the match. This is the
+        method where the FSA is asked to find a substring in the sequence that
+        matches the FSA.
 
         Arguments:
            sentence_slice - a list of Chunks and Tokens
-           fsa_list - a list of FSAs """
+           fsa_list - a list of FSAs
+
+        """
 
         fsaCounter = -1 
         for fsa in fsa_list:
             fsaCounter += 1
-            #logger.out('Trying FSA', fsa.fsaname)
             lenSubstring = fsa.acceptsShortestSubstringOf(sentence_slice)
-            #logger.out('length of found match', lenSubstring)
             if lenSubstring:
                 return (lenSubstring, fsaCounter)
-        else:
-            return (0, fsaCounter)
+        return (0, fsaCounter)
 
         
     def _extract_quotation(self, fragment):

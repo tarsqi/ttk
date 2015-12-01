@@ -21,7 +21,7 @@ class Token(Constituent):
         self.position = None
         self.parent = None
         self.gramchunk = None
-        self.flagCheckedForEvents = 0
+        self.checkedEvents = False
         # added this one to provide a pointer to the XmlDocElement instance. Made it into
         # a list of all the docelements BK 20080725
         self.lex_tag_list = []
@@ -69,8 +69,11 @@ class Token(Constituent):
         return self.pos == 'IN'
     
     def createEvent(self, tarsqidoc):
-        """For a regular Token, do not even log this method (since Constituent
-        will do that)"""
+        """Do nothing when an AdjectiveToken or Token is asked to create an event.
+        Potential adjectival events are processed from the VerbChunk using the
+        createAdjEvent() method. Do not log a warning since it is normal for a
+        Token to be asked this. Note that a warning is logged on createEvent()
+        on Constituent."""
         pass
 
     def debug_string(self):
@@ -108,7 +111,7 @@ class NewToken(Token):
         self.position = None
         self.parent = None
         self.cachedGramChunk = 0
-        self.flagCheckedForEvents = 0
+        self.checkedEvents = False
         # added this one to provide a pointer to the XmlDocElement instance.  Made it into
         # a list of all the docelements BK 20080725
         self.lex_tag_list = []
@@ -158,17 +161,13 @@ class AdjectiveToken(Token):
             raise AttributeError, name
 
         
-    def createEvent(self, tarsqidoc):
-        """Ignore adjectives passed in through the main loop for createEvent on the
-        Sentence. Potential adjectival events are processed from the VerbChunk."""
-        logger.debug("AdjectiveToken.createEvent()")
-    
     def createAdjEvent(self, verbGramFeat=None, tarsqidoc=None):
         """Processes the adjective after a copular verb and make it an event if some
         conditions are met. The conditions are that the adjective needs to have
         a head and an event class."""
         logger.debug("AdjectiveToken.createAdjEvent(verbGramFeat=%s)" % verbGramFeat)
         if not self.parent.__class__.__name__ == 'Sentence':
+            logger.warn("Unexpected syntax tree")
             return
         self.gramchunk = GramAChunk(self)
         # percolating grammatical features from the copular verb

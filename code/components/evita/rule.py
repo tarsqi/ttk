@@ -5,6 +5,7 @@ class FeatureRule:
     def __init__(self, rule, chunk): 
         self.rule = rule
         self.chunk = chunk
+        #print type(rule), rule
 
         """Info contained in each RULE position:
            ------------------------------------
@@ -104,10 +105,6 @@ class FeatureRule:
             return self.rule[-1]
         else: return 0
 
-#    def matchNodeName(self):
-#        # if no info in self.rule[0], consider the rule match
-#        if not self.rule[0]: return 1
-#        else: return self.checkItem(self.chunkName, self.rule[0])
 
     def matchWord(self, ruleInfo, i):
         # if no ruleInfo, consider the rule match

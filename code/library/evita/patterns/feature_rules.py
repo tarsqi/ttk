@@ -28,19 +28,19 @@ from library.forms import *
 
 # Length 1 rules:
 grammarRules1 = [
-    [None,                                     # Active, simple past    ('asked')
+    ['GR-1-1',                                 # Active, simple past    ('asked')
      None, ('in', verbsPast),
      ('PAST', 'NONE', 'VERB')],    
-    [None,                                     # Active, simple present ('asks') 
+    ['GR-1-2',                                 # Active, simple present ('asks') 
      None, ('in', verbsPresent),
      ('PRESENT', 'NONE', 'VERB')],
-    [None,                                     # infinitive             ('(to) ask') 
+    ['GR-1-3',                                 # infinitive             ('(to) ask') 
      None, ('==', 'VB'),
      ('INFINITIVE', 'NONE', 'VERB')],
-    [None,                                     # past participle        ('asked')
+    ['GR-1-4',                                 # past participle        ('asked')
      None, ('==', 'VBN'),
      ('PASTPART', 'NONE', 'VERB')],
-    [None,                                     # present participle     ('asking')
+    ['GR-1_5',                                 # present participle     ('asking')
      None, ('==', 'VBG'),
      ('PRESPART', 'NONE', 'VERB')],
     ]

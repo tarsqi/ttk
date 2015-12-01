@@ -192,6 +192,7 @@ negative = ["not","n't", "neither"]
 
 det1 = ['a', 'an', 'the', 'as']
 
+definiteDeterminers = ['the', 'this', 'that', 'these', 'those']
 
 
 # POS LISTS

@@ -26,6 +26,16 @@ DRIBBLE = True
 
 
 
+def update_event_checked_marker(constituent_list):
+    """Update Position in sentence, by marking as already checked for EVENT the
+    Tokens and Chunks in constituent_list. These are constituents that are
+    included in a chunk where an event was found."""
+    for item in constituent_list:
+        item.setCheckedEvents()
+
+
+
+
 class Chunk(Constituent):
 
     """Implements the common behaviour of chunks. Chunks are embedded in sentences and
@@ -35,14 +45,14 @@ class Chunk(Constituent):
        phraseType         - string indicating the chunk type, usually 'VG' or 'NG'
        dtrs = []          - a list of Tokens, EventTags and TimexTags
        positionCount = 0
-       position = None
-       parent = None
+       position = None    - index in he parent
+       parent = None      - the parent, an instance of Sentence
        gramchunk = None   - an instance of GramAChunk, GramNChunk or GramVChunk
-       gramchunks = []    - used for verb chunks
+       gramchunks = []    - a list of GramVChunks, used for verb chunks
        event = None
        eid = None
        isEmbedded = 0
-       flagCheckedForEvents = 0
+       checkedEvents = False
 
     """
     
@@ -57,7 +67,7 @@ class Chunk(Constituent):
         self.event = None
         self.eid = None
         self.isEmbedded = 0
-        self.flagCheckedForEvents = 0
+        self.checkedEvents = False
 
     def __len__(self):
         """Returns the lenght of the dtrs variable."""
@@ -201,15 +211,9 @@ class Chunk(Constituent):
     def resetEmbedded(self):
         self.isEmbedded = 0
         
-    def startHead(self):
-        pass
 
-    def startVerbs(self):
-        pass
+    # end of methods from SLinket/S2T version of this class
 
-    def endVerbs(self):
-        pass
-    
     def addToken(self, token):
         token.setParent(self)
         self.dtrs.append(token)
@@ -245,9 +249,6 @@ class Chunk(Constituent):
                 raise "ERROR: unknown item type: "+item.nodeType
         return tokensList
 
-    def startHead(self):
-        pass
-
     def isChunk(self):
         return 1
 
@@ -264,7 +265,7 @@ class Chunk(Constituent):
     def pretty_print(self, indent=0):
         print "%s<%s positionCount=%s position=%s isEmbedded=%s, checked=%s eid=%s>" % \
             (indent * ' ', self.__class__.__name__,
-             self.positionCount, self.position, self.isEmbedded, self.flagCheckedForEvents, self.eid)
+             self.positionCount, self.position, self.isEmbedded, self.checkedEvents, self.eid)
         for tok in self.dtrs:
             tok.pretty_print(indent+2)
 
@@ -284,25 +285,16 @@ class AdjChunk(Chunk):
 
 class NounChunk(Chunk):
 
+    """Behaviour specific to noun chunks. Adds one instance variable self.head which is set to -1."""
+
     def __init__(self, phraseType):
         Chunk.__init__(self, phraseType)
         self.head = -1
-        self.poss = None
+        #self.poss = None
 
     def getHead(self):
+        """Return the last element of the chunk."""
         return self.dtrs[self.head]
-
-    def getPoss(self):
-        return self.dtrs[self.poss]
-
-    def startHead(self):
-        self.head = len(self.dtrs)
-
-    def startPOSS(self):
-        if self.dtrs:
-            self.poss = len(self.dtrs)
-        else:
-            self.poss = 0
 
     def isNounChunk(self):
         """Returns True"""
@@ -313,18 +305,15 @@ class NounChunk(Chunk):
         for token in self.dtrs[:self.head]:
             if token.pos == 'POS' or token.pos == 'PRP$':
                 return True
-            if token.pos in ('DT', 'DET') \
-                    and token.getText() in ['the', 'this', 'that', 'these', 'those']:
+            if token.pos in ('DT', 'DET') and token.getText() in forms.definiteDeterminers:
                 return True
-        # in the slinket/s2t version, the following line used to be included as
-        # an else in the loop above, which seems wrong
         return False
 
     def isEmpty(self):
         """Return True if the chunk is empty, False otherwise."""
         if not self.dtrs:
             # this happened at some point due to a crazy bug in the converter
-            # code (as noted by mv on 11/08/07)
+            # code (as noted on 11/08/07)
             logger.warn("There are no dtrs in the NounChunk")
             return True
         return False
@@ -352,11 +341,8 @@ class VerbChunk(Chunk):
     if DRIBBLE:
         DRIBBLE_FH = open("dribble-VerbChunk.txt", 'w')
 
-    def __init__(self, phraseType):
-        Chunk.__init__(self, phraseType)
-        self.verbs = [-1,-1]
-
     def dribble(self, header, text):
+        """Write information on the sentence that an event was added to."""
         if DRIBBLE:
             toks = self.parent.getTokens()
             p1 = int(toks[0].lex.attrs['begin'])
@@ -369,48 +355,29 @@ class VerbChunk(Chunk):
             line = "%s\t%s\t%s\t%s:%s\n" % (header, text, sentence, e_p1, e_p2)
             VerbChunk.DRIBBLE_FH.write(line)
 
-    def getVerbs(self):
-        return self.dtrs[self.verbs[0]:self.verbs[1]]
-
-    def startVerbs(self):
-        self.verbs[0] = len(self.dtrs)
-
-    def endVerbs(self):
-        self.verbs[1] = len(self.dtrs) -1
-
     def isVerbChunk(self):
-        return 1
+        """Return True."""
+        return True
 
-    def _updatePositionInSentence(self, endPosition):
-        pass
-
-    # The following methods are all from the Evita version. Slinket threw an error when
-    # all methods were included, the culprit being _identify_substring, which overrides a
-    # slightly different method on Chunk and introduces an error, and whose name was
-    # changed a bit for the slinket/s2t version. Need to find better solution.
-    # NOTE: this comment may be obsolete by now
+    # The following methods are all from what was orginally a stand-alone Evita
+    # version of this class.
 
     def XXX_identify_substring(self, sentence_slice, fsa_list):
-        """Almost the same as Chunk._identify_substring, except that the fsa
-        method called is acceptSubstringOf. Method may be obsolete."""
-        fsaCounter = -1 
+        """Similar to Constituent._identify_substring, except that the fsa method called
+        is acceptsSubstringOf() instead of acceptsShortestSubstringOf()."""
+        # TODO: Slinket threw an error when this method was included. Find out
+        # if that is still the case and why this one was needed, that is, why
+        # not use the shortest substring. Update: using this results in two
+        # extra events on the evita-test2.sh regression test.
+        fsaCounter = -1
         for fsa in fsa_list:
-            #logger.out('Trying FSA', fsa.fsaname)
             fsaCounter += 1
-            logger.debug(str(fsa))
             lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
-            ##logger.out('length of found match', lenSubstring)
             if lenSubstring:
                 return (lenSubstring, fsaCounter)
         else:
             return (0, fsaCounter)
 
-    def _updateFlagCheckedForEvents(self, multiChunkEnd):
-        """Update Position in sentence, by marking as already checked for EVENT
-        upcoming Tokens and Chunks that are included in multi-chunk """
-        for item in multiChunkEnd:
-            item.setFlagCheckedForEvents()
-            
     def _getRestSent(self, structure):
         """Obtaining the rest of the sentence, which can be
         in a flat, token-based structure, or chunked."""
@@ -442,7 +409,7 @@ class VerbChunk(Chunk):
     def _processEventInMultiVChunk(self, substring):   
         GramMultiVChunk = GramVChunkList(self._createMultiChunk(substring))[0] 
         self._processEventInChunk(GramMultiVChunk)
-        self._updateFlagCheckedForEvents(substring)
+        map(update_event_checked_marker, substring)
 
     def _processEventInMultiNChunk(self, GramVCh, substring):
         nounChunk = substring[-1]
@@ -451,7 +418,7 @@ class VerbChunk(Chunk):
                             'modality': GramVCh.modality,
                             'polarity': GramVCh.polarity}
         nounChunk.createEvent(verbGramFeatures)
-        self._updateFlagCheckedForEvents(substring)
+        map(update_event_checked_marker, substring)
 
     def _processEventInMultiAChunk(self, GramVCh, substring):
         adjToken = substring[-1]
@@ -460,16 +427,15 @@ class VerbChunk(Chunk):
                             'modality': GramVCh.modality,
                             'polarity': GramVCh.polarity}
         adjToken.createAdjEvent(verbGramFeatures)
-        self._updateFlagCheckedForEvents(substring)
+        map(update_event_checked_marker, substring)
 
     def _processDoubleEventInMultiAChunk(self, GramVCh, substring):
-        """Tagging EVENT in VChunk """
+        """Tagging EVENT in VerbChunk and in AdjectiveToken."""
         logger.debug("[V_2Ev] " + GramVCh.as_extended_string())
         self._processEventInChunk(GramVCh)
-        """Tagging EVENT in AdjToken"""
         adjToken = substring[-1]
         adjToken.createAdjEvent()
-        self._updateFlagCheckedForEvents(substring)
+        map(update_event_checked_marker, substring)
 
         
     def _createEventOnRightmostVerb(self, GramVCh):

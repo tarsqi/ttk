@@ -161,7 +161,7 @@ class TimexTag(Tag):
         self.dtrs = []
         self.positionCount = 0
         self.isEmbedded = 0
-        self.flagCheckedForEvents = 0
+        self.checkedEvents = False
 
     def __len__(self):
         """Returns the lenght of the dtrs variable."""

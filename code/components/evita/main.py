@@ -77,7 +77,7 @@ class Evita (TarsqiComponent):
             #sentence.pp(tree=False)
             logger.debug("SENTENCE: %s" % ' '.join(getWordList(sentence)))
             for node in sentence:
-                if not node.flagCheckedForEvents:
+                if not node.checkedEvents:
                     node.createEvent(tarsqidoc=self.tarsqidoc)
             #print; sentence.pp(tree=True)
         #self.doctree.pp()
