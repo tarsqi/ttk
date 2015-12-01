@@ -20,7 +20,6 @@ import forms
 # =======
 
 chunk_NounChunk = {'nodeType': 'NounChunk'}
-chunk_AdjChunk = {'nodeType': 'AdjChunk'}
 
 particlesInVChunk = {'nodeType':['Token', 'AdjectiveToken'], 'pos': forms.partInVChunks, 'text':('^', forms.det1)}
 particlesInVChunk2 = {'nodeType':'Token', 'pos': forms.partInVChunks2, 'text':('^', forms.det1)}

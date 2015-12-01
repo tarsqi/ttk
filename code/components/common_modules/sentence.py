@@ -133,13 +133,14 @@ class Sentence:
     def getTokens(self):
         """Return the list of tokens in a sentence."""
         # NOTE: seems to be used by the evitaNominalTrainer only
-        # DEBUG: includes event and timex3 tags as well
+        # NOTE: nope, it is also used by VerbChunk.dribble()
+        # TODO: does not deal with event and timex3 tags
         tokenList = []
-        for chunkOrToken in self.dtrs:
-            if chunkOrToken.isToken():
-                tokenList += [chunkOrToken]
-            elif chunkOrToken.isChunk():
-                tokenList += chunkOrToken.dtrs
+        for dtr in self.dtrs:
+            if dtr.isToken():
+                tokenList.append(dtr)
+            elif dtr.isChunk():
+                tokenList += dtr.dtrs
             else:
                 logger.warn("Sentence element that is not a chunk or token")
         return tokenList

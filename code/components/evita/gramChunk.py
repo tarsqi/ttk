@@ -9,12 +9,13 @@ from rule import FeatureRule
 from bayes import BayesEventRecognizer
 from bayes import DisambiguationError
 
-import library.forms as forms
-import library.evita.patterns.feature_rules as evitaFeatureRules
 import utilities.porterstemmer as porterstemmer
 import utilities.binsearch as binsearch
 import utilities.logger as logger
 from utilities.file import open_pickle_file
+
+from library import forms
+from library.evita.patterns.feature_rules import FEATURE_RULES
 
 DEBUG = False
 
@@ -591,51 +592,15 @@ class GramVChunk(GramChunk):
             return None
 
     def getGramFeatures(self):
-        lenChunk = len(self.trueChunk)
-        if lenChunk == 1:
-            for rule in evitaFeatureRules.grammarRules1:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule1pos()
-                if features: return features
-            else: return 0
-        elif lenChunk == 2:
-            for rule in evitaFeatureRules.grammarRules2:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule2pos()
-                if features: return features
-            else: return 0
-        elif lenChunk == 3:
-            for rule in evitaFeatureRules.grammarRules3:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule3pos()
-                if features: return features
-            else: return 0
-        elif lenChunk == 4:
-            for rule in evitaFeatureRules.grammarRules4:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule4pos()
-                if features: return features
-            else: return 0
-        elif lenChunk == 5:
-            for rule in evitaFeatureRules.grammarRules5:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule5pos()
-                if features: return features
-            else: return 0
-        elif lenChunk == 6:
-            for rule in evitaFeatureRules.grammarRules6:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule6pos()
-                if features: return features
-            else: return 0
-        elif lenChunk == 7:
-            for rule in evitaFeatureRules.grammarRules7:
-                myRule = FeatureRule(rule, self.trueChunk)
-                features = myRule.applyRule7pos()
-                if features: return features
-            else: return 0
-        
-        else: return 0
+        """Generates a triple of TENSE, ASPECT and CATEGORY given the tokens of
+        the chunk, which are stored in self.trueChunk. Selects the rules
+        relevant for the length of the chunk and applies them. Returns None if
+        no rule applies."""
+        rules = FEATURE_RULES[len(self.trueChunk)]
+        for rule in rules:
+            features = FeatureRule(rule, self.trueChunk).match()
+            if features: return features
+        return None
 
     def getTense(self):
         if self.gramFeatures:
@@ -723,7 +688,7 @@ class GramVChunk(GramChunk):
         return len(self.trueChunk) > 1 and self.headForm == 'going' and self.preHeadForm in forms.be
 
     def nodeIsPastUsedTo(self):
-        return len(self.trueChunk) == 1 and self.headForm == 'used' and self.headPos == 'VBD' and False
+        return len(self.trueChunk) == 1 and self.headForm == 'used' and self.headPos == 'VBD'
 
     def nodeIsDoAuxiliar(self):
         return self.headForm in forms.do
@@ -742,14 +707,10 @@ class GramVChunk(GramChunk):
     def getPolarity(self):
         if self.negative:
             for item in self.adverbsPre:
+                # verbal chunks containing 'not only' have positive polarity
                 if item.getText() == 'only':
-                    logger.debug("'only' in self.adverbsPre:")
-                    # verbal chunks containing 'not only' have polarity='POS'
                     return "POS"
-            # else: return "NEG" (replaced this with the line below since it did not make sense)
-            return "NEG"
-        else:
-            return "POS"
+        return "NEG" if self.negative else "POS"
         
     def getEventClass(self):
         try:
@@ -794,8 +755,8 @@ class GramVChunk(GramChunk):
             "\tNEGATIVE:" + str(getWordList(self.negative)) + "\n" + \
             "\tINFINITIVE:" + str(getWordList(self.infinitive)) + "\n" + \
             "\tADVERBS-pre:" + str(getWordList(self.adverbsPre)) + "\n" + \
-            "\tADVERBS-post:" + str(getWordList(self.adverbsPost)) + str(getPOSList(self.adverbsPost)) + "\n" + \
-            "\tTRUE CHUNK:" + str(getWordList(self.trueChunk)) + str(getPOSList(self.trueChunk)) + "\n" + \
+            "\tADVERBS-post:%s%s\n" % (getWordList(self.adverbsPost), getPOSList(self.adverbsPost)) + \
+            "\tTRUE CHUNK:%s%s\n" % (getWordList(self.trueChunk), getPOSList(self.trueChunk)) + \
             "\tTENSE:" + self.tense + "\n" + \
             "\tASPECT:" + self.aspect + "\n" + \
             "\tNF_MORPH:" + self.nf_morph + "\n" + \

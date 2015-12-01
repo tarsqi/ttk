@@ -23,6 +23,7 @@ from components.evita.gramChunk import GramNChunk, GramAChunk, GramVChunkList
 # This is another way of capturing messages. It is separate from the logger and
 # operates class based. It is used in VerbChunk to collect data from a run.
 DRIBBLE = True
+#DRIBBLE = False
 
 
 
@@ -33,6 +34,22 @@ def update_event_checked_marker(constituent_list):
     for item in constituent_list:
         item.setCheckedEvents()
 
+def get_tokens(sequence):
+    """Given a sequence of elements which are a slice of a tree, collect all
+    token leaves and return them as a list."""
+    tokens = []
+    for item in sequence:
+        if item.nodeType[-5:] == 'Token':
+            tokens.append(item)
+        elif item.nodeType[-5:] == 'Chunk':
+            tokens += get_tokens(item)
+        elif item.nodeType == 'EVENT':
+            tokens.append(item)
+        elif item.nodeType == 'TIMEX3':
+            tokens += get_tokens(item)
+        else:
+            raise "ERROR: unknown item type: " + item.nodeType
+    return tokens
 
 
 
@@ -46,6 +63,7 @@ class Chunk(Constituent):
        dtrs = []          - a list of Tokens, EventTags and TimexTags
        positionCount = 0
        position = None    - index in he parent
+       head = -1          - the index of the head of the chunk
        parent = None      - the parent, an instance of Sentence
        gramchunk = None   - an instance of GramAChunk, GramNChunk or GramVChunk
        gramchunks = []    - a list of GramVChunks, used for verb chunks
@@ -62,6 +80,7 @@ class Chunk(Constituent):
         self.positionCount = 0
         self.position = None
         self.parent = None
+        self.head = -1
         self.gramchunk = None
         self.gramchunks = []
         self.event = None
@@ -84,6 +103,10 @@ class Chunk(Constituent):
     def __getslice__(self, i, j):
         """Get a slice from the dtrs variable."""
         return self.dtrs[i:j]
+
+    def getHead(self):
+        """Return the head of the chunk (by default the last element)."""
+        return self.dtrs[self.head]
 
 
     def __getattr__(self, name):
@@ -122,11 +145,6 @@ class Chunk(Constituent):
             raise AttributeError, name
 
         
-    def _createMultiChunk(self, multiChunkEnd): # *** MUST GO to Chunk??
-        """for evita."""
-        multiChunkInit = self.getTokens(self)
-        return multiChunkInit + multiChunkEnd
-
     def _processEventInChunk(self, gramChunk=None):
         """Perform a few little checks on the head and check whether there is an
         event class, then add the event to the document. When this is called on
@@ -147,9 +165,9 @@ class Chunk(Constituent):
     
     def _matchChunk(self, chunkDescription):
 
-        """Match the chunk instance to the patterns in chunkDescriptions.
-        chunkDescription is a dictionary with keys-values pairs that match instance
-        variables and their values on GramChunks.
+        """Match the chunk instance to the patterns in chunkDescription, which
+        is a dictionary with keys-values pairs that match instance variables and
+        their values on GramChunks.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...} 
@@ -226,13 +244,13 @@ class Chunk(Constituent):
     def getText(self):
         string = ""
         for token in self.dtrs:
-            string = string+' '+token.getText()
-            #string = string+' '+str(token.getText())
+            string += ' ' + str(token.getText())
         return string
 
-    def getTokens(self, sequence):
+    def XXXgetTokens(self, sequence):
         """Given a sequence of sentence elements, de-chunk it and return a list of plain
         tokens. Used for mapping sentences slices into RegEx-based patterns."""
+        # TODO: obsolete, replaced by get_tokens, but keep it around for now
         tokensList = []
         for item in sequence:
             if item.nodeType[-5:] == 'Token':
@@ -250,17 +268,12 @@ class Chunk(Constituent):
         return tokensList
 
     def isChunk(self):
-        return 1
+        """Returns True."""
+        return True
 
     def isTimex(self):
-        if self.phraseType and self.phraseType[:5] == 'TIMEX':
-            return 1
-        else: return 0
-
-    def isNChHead(self):
-        if self.phraseType and self.phraseType[:4] == 'HEAD':
-            return 1
-        else: return 0
+        """Return True if the chunk is a Timex chunk."""
+        return self.phraseType and self.phraseType[:5] == 'TIMEX'
 
     def pretty_print(self, indent=0):
         print "%s<%s positionCount=%s position=%s isEmbedded=%s, checked=%s eid=%s>" % \
@@ -270,31 +283,10 @@ class Chunk(Constituent):
             tok.pretty_print(indent+2)
 
         
-class AdjChunk(Chunk):
-
-    def __init__(self, phraseType):
-        Chunk.__init__(self, phraseType)
-        self.head = -1
-
-    def getHead(self):
-        return self.dtrs[self.head]
-
-    def isAdjChunk(self):
-        return 1
-    
-
 class NounChunk(Chunk):
 
-    """Behaviour specific to noun chunks. Adds one instance variable self.head which is set to -1."""
-
-    def __init__(self, phraseType):
-        Chunk.__init__(self, phraseType)
-        self.head = -1
-        #self.poss = None
-
-    def getHead(self):
-        """Return the last element of the chunk."""
-        return self.dtrs[self.head]
+    """Behaviour specific to noun chunks, most notably the NounChunk specific
+    code to create events."""
 
     def isNounChunk(self):
         """Returns True"""
@@ -302,10 +294,12 @@ class NounChunk(Chunk):
 
     def isDefinite(self):
         """Return True if self includes a Token that is a POS, PRP$ or a definite determiner."""
+        # TODO: these tags should be defined in forms
         for token in self.dtrs[:self.head]:
-            if token.pos == 'POS' or token.pos == 'PRP$':
-                return True
-            if token.pos in ('DT', 'DET') and token.getText() in forms.definiteDeterminers:
+            if (token.pos == 'POS'
+                or token.pos == 'PRP$'
+                or (token.pos in ('DT', 'DET')
+                   and token.getText() in forms.definiteDeterminers)):
                 return True
         return False
 
@@ -344,7 +338,8 @@ class VerbChunk(Chunk):
     def dribble(self, header, text):
         """Write information on the sentence that an event was added to."""
         if DRIBBLE:
-            toks = self.parent.getTokens()
+            #toks = self.parent.getTokens()
+            toks = get_tokens(self.parent.dtrs)
             p1 = int(toks[0].lex.attrs['begin'])
             p2 = int(toks[-1].lex.attrs['end'])
             e_p1 = self.dtrs[-1].lex.attrs['begin']
@@ -363,8 +358,8 @@ class VerbChunk(Chunk):
     # version of this class.
 
     def XXX_identify_substring(self, sentence_slice, fsa_list):
-        """Similar to Constituent._identify_substring, except that the fsa method called
-        is acceptsSubstringOf() instead of acceptsShortestSubstringOf()."""
+        """Similar to Constituent._identify_substring(), except that this method
+        calls acceptsSubstringOf() instead of acceptsShortestSubstringOf()."""
         # TODO: Slinket threw an error when this method was included. Find out
         # if that is still the case and why this one was needed, that is, why
         # not use the shortest substring. Update: using this results in two
@@ -383,7 +378,8 @@ class VerbChunk(Chunk):
         in a flat, token-based structure, or chunked."""
         logger.debug("Entering _getRestSent")
         if structure == 'flat':
-            restSentence = self.getTokens(self.parent[self.position+1:])
+            #restSentence = self.getTokens(self.parent[self.position+1:])
+            restSentence = get_tokens(self.parent[self.position+1:])
         elif structure == 'chunked':
             restSentence = self.parent[self.position+1:]
         else:
@@ -406,8 +402,9 @@ class VerbChunk(Chunk):
             logger.debug("REJECTED by FSA:" + str(fsaNum))
             return 0
 
-    def _processEventInMultiVChunk(self, substring):   
-        GramMultiVChunk = GramVChunkList(self._createMultiChunk(substring))[0] 
+    def _processEventInMultiVChunk(self, substring):
+        chunk_list = get_tokens(self) + substring
+        GramMultiVChunk = GramVChunkList(chunk_list)[0]
         self._processEventInChunk(GramMultiVChunk)
         map(update_event_checked_marker, substring)
 

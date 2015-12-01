@@ -26,10 +26,8 @@ class Constituent:
     def isChunk(self): return False
     def isVerbChunk(self): return False
     def isNounChunk(self): return False
-    def isAdjChunk(self): return False
     def isTimex(self): return False
     def isEvent(self): return False
-    def isNChHead(self): return False
     def isPreposition(self): return False
     
     def __getattr__(self, name):
