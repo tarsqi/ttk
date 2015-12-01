@@ -247,26 +247,6 @@ class Chunk(Constituent):
             string += ' ' + str(token.getText())
         return string
 
-    def XXXgetTokens(self, sequence):
-        """Given a sequence of sentence elements, de-chunk it and return a list of plain
-        tokens. Used for mapping sentences slices into RegEx-based patterns."""
-        # TODO: obsolete, replaced by get_tokens, but keep it around for now
-        tokensList = []
-        for item in sequence:
-            if item.nodeType[-5:] == 'Token':
-                tokensList.append(item)
-            elif item.nodeType[-5:] == 'Chunk':
-                chunkTokens = self.getTokens(item)
-                tokensList = tokensList + chunkTokens
-            elif item.nodeType == 'EVENT':
-                tokensList.append(item)
-            elif item.nodeType == 'TIMEX3':
-                timexTokens = self.getTokens(item)
-                tokensList = tokensList + timexTokens
-            else:
-                raise "ERROR: unknown item type: "+item.nodeType
-        return tokensList
-
     def isChunk(self):
         """Returns True."""
         return True
@@ -338,7 +318,6 @@ class VerbChunk(Chunk):
     def dribble(self, header, text):
         """Write information on the sentence that an event was added to."""
         if DRIBBLE:
-            #toks = self.parent.getTokens()
             toks = get_tokens(self.parent.dtrs)
             p1 = int(toks[0].lex.attrs['begin'])
             p2 = int(toks[-1].lex.attrs['end'])
@@ -374,11 +353,10 @@ class VerbChunk(Chunk):
             return (0, fsaCounter)
 
     def _getRestSent(self, structure):
-        """Obtaining the rest of the sentence, which can be
-        in a flat, token-based structure, or chunked."""
+        """Obtaining the rest of the sentence, which can be in a flat,
+        token-based structure, or chunked."""
         logger.debug("Entering _getRestSent")
         if structure == 'flat':
-            #restSentence = self.getTokens(self.parent[self.position+1:])
             restSentence = get_tokens(self.parent[self.position+1:])
         elif structure == 'chunked':
             restSentence = self.parent[self.position+1:]

@@ -3,10 +3,10 @@
 import os
 from stat import ST_SIZE
 
-def binarySearchFile(file, key, sep=' ',  cache={}, cacheDepth=-1):
+def binarySearchFile(fh, key, sep=' ',  cache={}, cacheDepth=-1):
     key = key + sep
     keylen = len(key)
-    start, end = 0, os.stat(file.name)[ST_SIZE]
+    start, end = 0, os.stat(fh.name)[ST_SIZE]
     currentDepth = 0
     #count = 0
     while start < end:
@@ -19,10 +19,10 @@ def binarySearchFile(file, key, sep=' ',  cache={}, cacheDepth=-1):
         if cache.get(middle):
             offset, line = cache[middle]
         else:
-            file.seek(max(0, middle - 1))
+            fh.seek(max(0, middle - 1))
             if middle > 0:
-                file.readline()
-            offset, line = file.tell(), file.readline()
+                fh.readline()
+            offset, line = fh.tell(), fh.readline()
             if currentDepth < cacheDepth:
                 cache[middle] = (offset, line)
         #print start, middle, end, offset, line,

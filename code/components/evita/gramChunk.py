@@ -1,3 +1,22 @@
+"""
+
+This module contains classes that add grammatical features to NounChunks,
+VerbChunks and AdjectiveTokens. The grammatical features drive part of the event
+recognition.
+
+It is debatable whether the functionality should be here or whether it should be
+on the classes that these classes are attached to. Thenaming of the classes
+(GramNChunk etcetera) is also unfortunate and it tends to confuse.
+
+Included here is functionality to:
+- look up nominals in WordNet
+- run a simple bayesian classifier
+- check whether a nominal is a potential event
+- check the kind of verb chunk (modal, future)
+- generate the event class
+
+"""
+
 import re
 import string
 import sys
@@ -48,6 +67,7 @@ except:
     wnSomeSensesAreEvents_TXT = open(forms.wnSomeSensesAreEvents_TXT,'r')
     DBM_FILES_OPENED = False
 
+
 # Open pickle files with semcor and verbstem information
 DictSemcorEvent = open_pickle_file(forms.DictSemcorEventPickleFilename)
 DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
@@ -89,6 +109,36 @@ def debug (*args):
     if DEBUG:
         for arg in args: print arg,
         print
+
+## code for lookup in WordNet
+
+def _wnPrimarySenseIsEvent(lemma):
+    """Determine whether primary WN sense is an event."""
+    if DBM_FILES_OPENED:
+        return _lookupLemmaInDBM(lemma, wnPrimSenseIsEvent_DBM)
+    return _lookupLemmaInTXT(lemma, wnPrimSenseIsEvent_TXT)
+
+def _wnAllSensesAreEvents(lemma):
+    """Determine whether all WN senses are events."""
+    if DBM_FILES_OPENED:
+        return _lookupLemmaInDBM(lemma, wnAllSensesAreEvents_DBM)
+    return _lookupLemmaInTXT(lemma, wnAllSensesAreEvents_TXT)
+
+def _wnSomeSensesAreEvents(lemma):
+    """Determine whether some WN senses are events."""
+    if DBM_FILES_OPENED:
+        return _lookupLemmaInDBM(lemma, wnSomeSensesAreEvents_DBM)
+    return _lookupLemmaInTXT(lemma, wnSomeSensesAreEvents_TXT)
+
+def _lookupLemmaInDBM(lemma, dbm):
+    """Look up lemma in database."""
+    # has_key on dbm returns 0 or 1, hence the if-then-else
+    return True if dbm.has_key(lemma) else False
+
+def _lookupLemmaInTXT(lemma, fh):
+    """Look up lemma in text file."""
+    line = binsearch.binarySearchFile(fh, lemma, "\n")
+    return True if line else False
 
         
 class GramChunk:
@@ -132,7 +182,7 @@ class GramAChunk(GramChunk):
         self.nf_morph = "ADJECTIVE"
         self.modality = "NONE"
         self.polarity = "POS"
-        self.head = self.getHead()
+        self.head = adjectivetoken
         self.evClass = self.getEventClass()
 
     def __getattr__(self, name):
@@ -144,14 +194,10 @@ class GramAChunk(GramChunk):
         pass
     
     def getHead(self):
-        """Return the head of the GramAChunk."""
-        # allow for the node to be a chunk or a token
-        # TODO: is this needed?
-        try:
-            head = self.node[-1]
-        except IndexError:
-            head = self.node
-        return head
+        """Return the head of the GramAChunk, which amount to returning the
+        AdjectiveToken that this GramAChunk was created from."""
+        # TODO: it is not sure whether this method is still needed
+        return self.head
 
     def getEventClass(self):
         """Return I_STATE if the head is on a short list of intentional state
@@ -219,7 +265,7 @@ class GramNChunk(GramChunk):
         debug("event candidate?")
         lemma = self.getEventLemma()
         # return True if all WorrdNetsenses are events, no classifier needed
-        if self._wnAllSensesAreEvents(lemma):
+        if _wnAllSensesAreEvents(lemma):
             return True
         # run the classifier if required, fall through on disambiguation error
         if NOM_DISAMB:
@@ -229,10 +275,10 @@ class GramNChunk(GramChunk):
                 debug("  DisambiguationError: %s" % unicode(strerror))
         # check whether primary sense or some of the senses are events
         if NOM_WNPRIMSENSE_ONLY:
-            is_event = self._wnPrimarySenseIsEvent(lemma)
+            is_event = _wnPrimarySenseIsEvent(lemma)
             debug("  primary WordNet sense is event ==> %s" % is_event)
         else:
-            is_event = self._wnSomeSensesAreEvents(lemma)
+            is_event = _wnSomeSensesAreEvents(lemma)
             debug("  some WordNet sense is event ==> %s" % is_event)
         return is_event
 
@@ -252,37 +298,6 @@ class GramNChunk(GramChunk):
             features.append(self.head.pos)
         return features
 
-    def _wnPrimarySenseIsEvent(self, lemma):
-        """Determine whether primary WN sense is an event."""
-        #debug("  GramNChunk._wnPrimarySenseIsEvent(..)")
-        if DBM_FILES_OPENED:
-            return self._lookupLemmaInDBM(lemma, wnPrimSenseIsEvent_DBM)
-        return self._lookupLemmaInTXT(lemma, wnPrimSenseIsEvent_TXT)
-    
-    def _wnAllSensesAreEvents(self, lemma):
-        """Determine whether all WN senses are events."""
-        #debug("  GramNChunk._wnAllSensesAreEvents(..)")
-        if DBM_FILES_OPENED:
-            return self._lookupLemmaInDBM(lemma, wnAllSensesAreEvents_DBM)
-        return self._lookupLemmaInTXT(lemma, wnAllSensesAreEvents_TXT)
-
-    def _wnSomeSensesAreEvents(self, lemma):
-        """Determine whether some WN senses are events."""
-        #debug("  GramNChunk._wnSomeSensesAreEvents(..)")
-        if DBM_FILES_OPENED:
-            return self._lookupLemmaInDBM(lemma, wnSomeSensesAreEvents_DBM)
-        return self._lookupLemmaInTXT(lemma, wnSomeSensesAreEvents_TXT)
-    
-    def _lookupLemmaInDBM(self, lemma, dbm):
-        """Look up lemma in database."""
-        # note that has_key here returns 0 or 1, hence the if-then-else
-        return True if dbm.has_key(lemma) else False
-        
-    def _lookupLemmaInTXT(self, lemma, file):
-        """Look up lemma in text file."""
-        #debug("  GramNChunk._lookupLemmaInTXT", lemma)
-        line = binsearch.binarySearchFile(file, lemma, "\n")
-        return True if line else False
 
 
 class GramVChunkList:

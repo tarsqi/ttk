@@ -132,8 +132,7 @@ class Sentence:
         
     def getTokens(self):
         """Return the list of tokens in a sentence."""
-        # NOTE: seems to be used by the evitaNominalTrainer only
-        # NOTE: nope, it is also used by VerbChunk.dribble()
+        # NOTE: seems to be used by the evita NominalTrainer only
         # TODO: does not deal with event and timex3 tags
         tokenList = []
         for dtr in self.dtrs:
