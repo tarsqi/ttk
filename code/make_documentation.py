@@ -76,13 +76,13 @@ def print_class_documentation(docfile, classes):
         docfile.write('<div class="section">class ' + class_name + "</div>\n")
         docfile.write("<pre>\n")
         docstring = get_docstring(class_object)
-        if docstring:
-            docfile.write(docstring)
         for base_class in class_object.__bases__:
             (module_name, class_name) = get_module_and_class_name(base_class)
             ref = module_name + '.html#' + class_name
-            docfile.write("\n\n<strong>Inherits from: <a href=%s>%s</a></strong>\n" % 
+            docfile.write("<strong>Inherits from: <a href=%s>%s</a></strong>\n" %
                           (ref, str(base_class)))
+        if docstring:
+            docfile.write("\n" + docstring)
         docfile.write("</pre>\n\n")
         functions = get_functions(class_object)
         functions.sort(lambda x, y: cmp(x[0],y[0]))

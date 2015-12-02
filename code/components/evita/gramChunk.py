@@ -5,11 +5,12 @@ VerbChunks and AdjectiveTokens. The grammatical features drive part of the event
 recognition.
 
 It is debatable whether the functionality should be here or whether it should be
-on the classes that these classes are attached to. Thenaming of the classes
-(GramNChunk etcetera) is also unfortunate and it tends to confuse.
+on the classes that these classes are attached to. This module feels like a bit
+of a hodge-podge and the naming of the classes (GramNChunk etcetera) is a bit
+unfortunate and tends to be confusing.
 
 Included here is functionality to:
-- look up nominals in WordNet
+- look up nominals in WordNet (using wordnet module)
 - run a simple bayesian classifier
 - check whether a nominal is a potential event
 - check the kind of verb chunk (modal, future)
@@ -24,12 +25,12 @@ import os
 import anydbm
 from types import ListType, TupleType, InstanceType
 
+import wordnet
 from rule import FeatureRule
 from bayes import BayesEventRecognizer
 from bayes import DisambiguationError
 
 import utilities.porterstemmer as porterstemmer
-import utilities.binsearch as binsearch
 import utilities.logger as logger
 from utilities.file import open_pickle_file
 
@@ -50,22 +51,6 @@ NOM_CONTEXT = True
 # event sense (if NOM_DISAMB is true, this is only a fallback where no training
 # data exists).
 NOM_WNPRIMSENSE_ONLY = True
-
-# Open dbm's with information about nominal events. If that does not work, open
-# all corresponding text files, these are a fallback in case the dbm's are not
-# supported or not available
-try:
-    # these dictionaries are not under git control or bundled with Tarsqi, but
-    # they can be generated with code/library/evita/build_event_nominals2.py
-    wnPrimSenseIsEvent_DBM = anydbm.open(forms.wnPrimSenseIsEvent_DBM,'r')
-    wnAllSensesAreEvents_DBM = anydbm.open(forms.wnAllSensesAreEvents_DBM,'r')
-    wnSomeSensesAreEvents_DBM = anydbm.open(forms.wnSomeSensesAreEvents_DBM,'r')
-    DBM_FILES_OPENED = True
-except:
-    wnPrimSenseIsEvent_TXT = open(forms.wnPrimSenseIsEvent_TXT,'r')
-    wnAllSensesAreEvents_TXT = open(forms.wnAllSensesAreEvents_TXT,'r')
-    wnSomeSensesAreEvents_TXT = open(forms.wnSomeSensesAreEvents_TXT,'r')
-    DBM_FILES_OPENED = False
 
 
 # Open pickle files with semcor and verbstem information
@@ -109,36 +94,6 @@ def debug (*args):
     if DEBUG:
         for arg in args: print arg,
         print
-
-## code for lookup in WordNet
-
-def _wnPrimarySenseIsEvent(lemma):
-    """Determine whether primary WN sense is an event."""
-    if DBM_FILES_OPENED:
-        return _lookupLemmaInDBM(lemma, wnPrimSenseIsEvent_DBM)
-    return _lookupLemmaInTXT(lemma, wnPrimSenseIsEvent_TXT)
-
-def _wnAllSensesAreEvents(lemma):
-    """Determine whether all WN senses are events."""
-    if DBM_FILES_OPENED:
-        return _lookupLemmaInDBM(lemma, wnAllSensesAreEvents_DBM)
-    return _lookupLemmaInTXT(lemma, wnAllSensesAreEvents_TXT)
-
-def _wnSomeSensesAreEvents(lemma):
-    """Determine whether some WN senses are events."""
-    if DBM_FILES_OPENED:
-        return _lookupLemmaInDBM(lemma, wnSomeSensesAreEvents_DBM)
-    return _lookupLemmaInTXT(lemma, wnSomeSensesAreEvents_TXT)
-
-def _lookupLemmaInDBM(lemma, dbm):
-    """Look up lemma in database."""
-    # has_key on dbm returns 0 or 1, hence the if-then-else
-    return True if dbm.has_key(lemma) else False
-
-def _lookupLemmaInTXT(lemma, fh):
-    """Look up lemma in text file."""
-    line = binsearch.binarySearchFile(fh, lemma, "\n")
-    return True if line else False
 
         
 class GramChunk:
@@ -265,7 +220,7 @@ class GramNChunk(GramChunk):
         debug("event candidate?")
         lemma = self.getEventLemma()
         # return True if all WorrdNetsenses are events, no classifier needed
-        if _wnAllSensesAreEvents(lemma):
+        if wordnet.allSensesAreEvents(lemma):
             return True
         # run the classifier if required, fall through on disambiguation error
         if NOM_DISAMB:
@@ -275,10 +230,10 @@ class GramNChunk(GramChunk):
                 debug("  DisambiguationError: %s" % unicode(strerror))
         # check whether primary sense or some of the senses are events
         if NOM_WNPRIMSENSE_ONLY:
-            is_event = _wnPrimarySenseIsEvent(lemma)
+            is_event = wordnet.primarySenseIsEvent(lemma)
             debug("  primary WordNet sense is event ==> %s" % is_event)
         else:
-            is_event = _wnSomeSensesAreEvents(lemma)
+            is_event = wordnet.someSensesAreEvents(lemma)
             debug("  some WordNet sense is event ==> %s" % is_event)
         return is_event
 
@@ -304,7 +259,7 @@ class GramVChunkList:
 
     def __init__(self, node):
         self.node = node
-        self.counter = 0 #To control different subchunks w/in a chunk (e.g., "began to study") 
+        self.counter = 0 # To control different subchunks w/in a chunk (e.g., "began to study") 
         self.gramVChunksList = []
         self.trueChunkLists = [[]]
         self.negMarksLists = [[]]
@@ -312,12 +267,8 @@ class GramVChunkList:
         self.adverbsPreLists = [[]]
         self.adverbsPostLists = [[]]
         self.leftLists = [[]]
-        self.chunkLists = [self.trueChunkLists,
-                      self.negMarksLists,
-                      self.infMarkLists,
-                      self.adverbsPreLists,
-                      self.adverbsPostLists,
-                      self.leftLists]
+        self.chunkLists = [self.trueChunkLists, self.negMarksLists, self.infMarkLists,
+                           self.adverbsPreLists, self.adverbsPostLists, self.leftLists]
         self.distributeInfo()
         self.generateGramVChunks() 
         

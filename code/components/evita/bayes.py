@@ -12,9 +12,14 @@ DEBUG_BAYES = False
 MINIMAL_FREQUENCY = 2.0
 
 
+def _debug(string):
+    """Debugging method"""
+    if DEBUG_BAYES: print string
+
+
 class DisambiguationError(LookupError):
-    """Use a special exception class to distinguish general KeyErrors from errors due to
-    failed disambiguation."""
+    """Use a special exception class to distinguish general KeyErrors from
+    errors due to failed disambiguation."""
     pass
 
 
@@ -33,23 +38,18 @@ class BayesEventRecognizer:
         """Return True if lemma is an event, False if it is not, and raise a
         DisambiguationError if there is not enough data for a decision."""
 
-        self._debug("BayesEventRecognizer.isEvent("+lemma+")")
-
-        try:
-            senseProbData = self.senseProbs[lemma]
-        except KeyError:
-            senseProbData = [0.0, 0.0]
-        self._debug("  " + str(senseProbData))
+        senseProbData = self.senseProbs.get(lemma, [0.0, 0.0])
+        _debug("BayesEventRecognizer.isEvent("+lemma+")")
+        _debug("  " + str(senseProbData))
 
         # calculate probabilities from frequency data, refuse to do anything if
         # frequencies are too low
         frequency = senseProbData[0] + senseProbData[1]
         if frequency < MINIMAL_FREQUENCY:
-            #self._debug("  Sparse data: " + lemma)
             raise DisambiguationError('sparse data for "' + lemma + '"')
         probEvent = senseProbData[1] / frequency
         probNonEvent = 1 - probEvent
-        self._debug("  " + str(probEvent) + " > " + str(probNonEvent))
+        _debug("  " + str(probEvent) + " > " + str(probNonEvent))
 
         # return now if probabilities are absolute
         if probEvent == 1:
@@ -62,16 +62,11 @@ class BayesEventRecognizer:
         for feature in features:
             try:
                 probs = self.condProbs[lemma][feature]
-                self._debug("  "+feature+": "+str(probs))
+                _debug("  "+feature+": "+str(probs))
                 probEvent *= probs[1]
                 probNonEvent *= probs[0]
             except KeyError:
                 pass
 
-        self._debug("  " + str(probEvent) + " > " + str(probNonEvent))
+        _debug("  " + str(probEvent) + " > " + str(probNonEvent))
         return probEvent > probNonEvent
-
-
-    def _debug(self, string):
-        """Debugging method"""
-        if DEBUG_BAYES: print string
