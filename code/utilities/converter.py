@@ -26,27 +26,30 @@ from utilities import logger
 
 class Converter:
 
-    """New Converter class to take the place of FragmentConverter. It
-    takes an XmldDocument and creates a Document, using a much simpler
-    approach than the one in FragmentConverter. This should probably
-    be implemented in document.py as a class named DocumentCreator or
-    perhaps on Document itself.
+    """New Converter class to take the place of FragmentConverter. It takes an
+    XmldDocument and creates a Document, using a much simpler approach than the
+    one in FragmentConverter. This should probably be implemented in document.py
+    as a class named DocumentCreator or perhaps on Document itself.
 
     However, before all this happens some things must be in place:
 
     Test cases for Evita and Slinket (the two consumers of Converter)
     
     Token and AdjectiveToken redesign:
-    - __init__ takes doc and the xmldocelement (the lex, and therefore
-      also lid, pos, lemma)
+    - __init__ takes doc and the xmldocelement (the lex, and therefore also lid,
+      pos, lemma)
     - getText does not go to the doc.nodeList
 
-    All Constituents have a method add_child, which appends to the
-    dtrs list (or whatever variable they have).
+    All Constituents have a method add_child, which appends to the dtrs list (or
+    whatever variable they have).
 
-    Check whether links need to be accounted for. FragmentConverter
-    deals with those but perhaps only because of S2T.  """
+    Check whether links need to be accounted for. FragmentConverter deals with
+    those but perhaps only because of S2T.
 
+    """
+
+    # TODO. THis should currently break because creation of tokens does not
+    # match with the initialization method on the Token class.
     
     def __init__(self, xmldoc, filename=None):
 

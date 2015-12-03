@@ -111,7 +111,7 @@ class GramChunk:
             self.modality = verbGramFeat['modality']
             self.polarity = verbGramFeat['polarity']
 
-    def as_extended_string(self):
+    def as_verbose_string(self):
         """Debugging method to print the GramChunk and its features."""
         return \
             "%s: %s\n" % (self.__class__.__name__, self.node.getText()) + \
@@ -128,9 +128,10 @@ class GramAChunk(GramChunk):
 
     """Contains the grammatical features for an AdjectiveToken."""
 
-    def __init__(self, adjectivetoken):
-        """Initialize with an AdjectiveToken and use default values for most
-        instance variables."""
+    def __init__(self, adjectivetoken, verbGramFeats):
+        """Initialize with an AdjectiveToken and use default values for most instance
+        variables, but percolate grammatical features from the copular verb if
+        they were handed in."""
         self.node = adjectivetoken
         self.tense = "NONE"
         self.aspect = "NONE"
@@ -139,6 +140,7 @@ class GramAChunk(GramChunk):
         self.polarity = "POS"
         self.head = adjectivetoken
         self.evClass = self.getEventClass()
+        self.add_verb_features(verbGramFeats)
 
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
@@ -239,20 +241,12 @@ class GramNChunk(GramChunk):
 
     def _run_classifier(self, lemma):
         """Run the classifier on lemma, using features from the GramNChunk."""
-        features = self._collect_features()
+        features = []
+        if NOM_CONTEXT:
+            features = ['DEF' if self.node.isDefinite() else 'INDEF', self.head.pos]
         is_event = nomEventRec.isEvent(lemma, features)
         debug("  nomEventRec.isEvent(%s) ==> %s" % (lemma, is_event))
         return is_event
-
-    def _collect_features(self):
-        """Collect features for the Bayesian classifier."""
-        features = []
-        if NOM_CONTEXT:
-            def_marker = 'DEF' if self.node.isDefinite() else 'INDEF'
-            features.append(def_marker)
-            features.append(self.head.pos)
-        return features
-
 
 
 class GramVChunkList:
@@ -271,7 +265,7 @@ class GramVChunkList:
                            self.adverbsPreLists, self.adverbsPostLists, self.leftLists]
         self.distributeInfo()
         self.generateGramVChunks() 
-        
+
     def __len__(self):
         return len(self.gramVChunksList)
 
@@ -283,23 +277,22 @@ class GramVChunkList:
 
     def __str__(self):
         if len(self.gramVChunksList) == 0:
-            string = '[]'
-        else:
-            string = ''
-            for i in self.gramVChunksList:
-                node = "\n\tNEGATIVE: " + str(getWordList(i.negMarks)) \
-                    + "\n\tINFINITIVE: "  + str(getWordList(i.infMark)) \
-                    + "\n\tADVERBS-pre: " + str(getWordList(i.adverbsPre)) \
-                    + "\n\tADVERBS-post: " + str(getWordList(i.adverbsPost)) + str(getPOSList(i.adverbsPost)) \
-                    + "\n\tTRUE CHUNK: " + str(getWordList(i.trueChunk)) + str(getPOSList(i.trueChunk)) \
-                    + "\n\tTENSE: " + str(i.tense) \
-                    + "\n\tASPECT: " + str(i.aspect) \
-                    + "\n\tNF_MORPH: " + str(i.nf_morph) \
-                    + "\n\tMODALITY: " + str(i.modality) \
-                    + "\n\tPOLARITY: " + str(i.polarity) \
-                    + "\n\tHEAD: " + str(i.head.getText()) \
-                    + "\n\tCLASS: " + str(i.evClass)
-                string = string + "\n" + node
+            return '[]'
+        string = ''
+        for i in self.gramVChunksList:
+            node = "\n\tNEGATIVE: " + str(getWordList(i.negMarks)) \
+                + "\n\tINFINITIVE: "  + str(getWordList(i.infMark)) \
+                + "\n\tADVERBS-pre: " + str(getWordList(i.adverbsPre)) \
+                + "\n\tADVERBS-post: %s%s" % (getWordList(i.adverbsPost), getPOSList(i.adverbsPost)) \
+                + "\n\tTRUE CHUNK: %s%s" % (getWordList(i.trueChunk), getPOSList(i.trueChunk)) \
+                + "\n\tTENSE: " + str(i.tense) \
+                + "\n\tASPECT: " + str(i.aspect) \
+                + "\n\tNF_MORPH: " + str(i.nf_morph) \
+                + "\n\tMODALITY: " + str(i.modality) \
+                + "\n\tPOLARITY: " + str(i.polarity) \
+                + "\n\tHEAD: " + str(i.head.getText()) \
+                + "\n\tCLASS: " + str(i.evClass) + "\n"
+            string += node
         return string
 
     def do_not_process(self):
@@ -313,28 +306,16 @@ class GramVChunkList:
             return True
         return False
 
-    def _treatMainVerb(self, item, tempNode, itemCounter):
-        self.addInCurrentSublist(self.trueChunkLists, item)
-        self.updateCounter()
-        if (item == tempNode[-1] or
-            self.isFollowedByOnlyAdvs(tempNode[itemCounter+1:])):
-            pass
-        else:
-            self.updateChunkLists()
-
-
     def distributeInfo(self):
-        """ Getting rid of colons and colon-embedded comments
-            e.g., ['ah', ',', 'coming', 'up']  >> ['ah', 'coming', 'up']
-                  ['she', 'has', ',',  'I', 'think', ',', 'to', 'go'] >> ['she', 'has', 'to', 'go']"""
-        tempNode = self.removeColonsFromNode()
-        tempNode = collapse_timex_nodes(tempNode)
+        tempNodes = self.remove_interjections()
+        tempNodes = collapse_timex_nodes(tempNodes)
         itemCounter = 0
-        for item in tempNode:
+        for item in tempNodes:
             if item.pos == 'TO':
                 if itemCounter != 0:
                     try:
-                        if self.trueChunkLists[-1][-1].getText() in ['going', 'used', 'has', 'had', 'have', 'having']:
+                        if self.trueChunkLists[-1][-1].getText() \
+                                in ['going', 'used', 'has', 'had', 'have', 'having']:
                             self.addInCurrentSublist(self.trueChunkLists, item)
                     except: pass
                 else:
@@ -344,28 +325,28 @@ class GramVChunkList:
             elif item.pos == 'MD':
                 self.addInCurrentSublist(self.trueChunkLists, item)
             elif item.pos[0] == 'V':
-                if item == tempNode[-1]:
-                    self._treatMainVerb(item, tempNode, itemCounter)
-                elif (self.isMainVerb(item) and
+                if item == tempNodes[-1]:
+                    self._treatMainVerb(item, tempNodes, itemCounter)
+                elif (item.isMainVerb() and
                       not item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
-                    self._treatMainVerb(item, tempNode, itemCounter)
-                elif (self.isMainVerb(item) and
+                    self._treatMainVerb(item, tempNodes, itemCounter)
+                elif (item.isMainVerb() and
                       item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
                     try:
-                        if (tempNode[itemCounter+1].getText() == 'to' or
-                            tempNode[itemCounter+2].getText() == 'to'):
+                        if (tempNodes[itemCounter+1].getText() == 'to' or
+                            tempNodes[itemCounter+2].getText() == 'to'):
                             self.addInCurrentSublist(self.trueChunkLists, item)
                         else:
-                            self._treatMainVerb(item, tempNode, itemCounter)
+                            self._treatMainVerb(item, tempNodes, itemCounter)
                     except:
-                        self._treatMainVerb(item, tempNode, itemCounter)
+                        self._treatMainVerb(item, tempNodes, itemCounter)
                 else:
                     self.addInCurrentSublist(self.trueChunkLists, item)
             elif item.pos in forms.partAdv:
-                if item != tempNode[-1]:
-                    if len(tempNode) > itemCounter+1:
-                        if (tempNode[itemCounter+1].pos == 'TO' or
-                            self.isFollowedByOnlyAdvs(tempNode[itemCounter:])):
+                if item != tempNodes[-1]:
+                    if len(tempNodes) > itemCounter+1:
+                        if (tempNodes[itemCounter+1].pos == 'TO' or
+                            self.isFollowedByOnlyAdvs(tempNodes[itemCounter:])):
                             self.addInPreviousSublist(self.adverbsPostLists, item)
                         else:
                             self.addInCurrentSublist(self.adverbsPreLists, item)
@@ -375,75 +356,80 @@ class GramVChunkList:
                     self.addInPreviousSublist(self.adverbsPostLists, item)
             else:
                 pass
-            
             itemCounter = itemCounter+1
 
-    def isFollowedByOnlyAdvs(self, sequence):
-        for item in sequence:
-            if item.pos not in forms.partInVChunks2:
-                return 0
+    def _treatMainVerb(self, item, tempNode, itemCounter):
+        self.addInCurrentSublist(self.trueChunkLists, item)
+        self.updateCounter()
+        if (item == tempNode[-1] or
+            self.isFollowedByOnlyAdvs(tempNode[itemCounter+1:])):
+            pass
         else:
-            return 1
-            
-    def removeColonsFromNode(self):
-        nodeList1 = []
-        nodeList2 = []
+            self.updateChunkLists()
+
+    def isFollowedByOnlyAdvs(self, sequence):
+        non_advs = [item for item in sequence if item.pos not in forms.partInVChunks2]
+        return False if non_advs else True
+
+    def remove_interjections(self):
+        """Remove interjections and punctuations from inside a sequence of
+        tokens. Examples:
+        - ['ah', ',', 'coming', 'up']  >> ['ah', 'coming', 'up']
+        - ['she', 'has', ',',  'I', 'think', ',', 'to', 'go'] >> ['she', 'has', 'to', 'go']"""
+        # TODO. In the 6000 tokens of evita-test2.xml, this applies only once,
+        # replacing 'has, I think, been' with 'has been', but that seems like an
+        # error because the input had an extra verb after 'been' ('has, I think,
+        # been demolished'). Could perhaps remove this method. Also, it is a bit
+        # peculiar how 'has, I think, been' ends up as a sequence, find out why.
+        before = []  # nodes before first punctuation
+        after = []   # nodes after last punctuation
         for item in self.node:
             if item.pos not in (',', '"', '``'):
-                nodeList1.append(item)
+                before.append(item)
             else: break
-        for i in range(len(self.node)-1, -1, -1):
-            if self.node[i].pos not in (',', '"', '``'):
-                nodeList2.insert(0, self.node[i])
+        for item in reversed(self.node):
+            if item.pos not in (',', '"', '``'):
+                after.insert(0, item)
             else: break
-            
-        if len(nodeList1) + len(nodeList2) == len(self.node) -1:
-            """ self.node has 1 colon"""
-            tempNodeList = nodeList1 + nodeList2
-        elif len(nodeList1) == len(self.node) and len(nodeList2) == len(self.node):
-            """ self.node has no colon """
-            tempNodeList = nodeList1
+        if len(before) == len(after) == len(self.node):
+            # no punctuations or interjections
+            return before
+        elif len(before) + len(after) == len(self.node) - 1:
+            # one punctuation
+            return before + after
         else:
-            """ self.node has 2 colons"""
-            tempNodeList = nodeList1 + nodeList2
-        return tempNodeList
+            # two punctuations with potential interjection
+            return before + after
 
     def updateCounter(self):
-        self.counter = self.counter+1
+        self.counter += 1
 
     def getNodeName(self):
         if type(self.node) is InstanceType:
-            """Node is a Chunk from chunked input """
+            # Node is a Chunk from chunked input
             return self.node.phraseType
         elif type(self.node) is ListType:
-            """Node is a sequence of chunks and/or tokens
-            from input text (i.e., multi-chunk)"""
+            # Node is a sequence of chunks and/or tokens (i.e., multi-chunk)
             return 'VMX'
         else:
-            """Node is the head element """
+            # Node is the head element
             return "VH"
-
-    def isMainVerb(self, item):
-        if item.pos[0] == 'V' and item.getText() not in forms.auxVerbs:
-            return 1
-        else:
-            return 0
 
     def updateChunkLists(self):
         """Necessary for dealing with chunks containing subchunks e.g., 'remains to be
-        seen'"""
+        seen'."""
         for list in self.chunkLists:
             if len(list) == self.counter:
                 """The presence of a main verb has already updated self.counter"""
                 list.append([])
-                
+
     def addInCurrentSublist(self, list, element):
         if len(list)-self.counter == 1:
             list[self.counter].append(element)
         else:
             """The presence of a main verb has already updated self.counter"""
             pass
-            
+
     def addInPreviousSublist(self, list, element):
         if len(list) == 0 and self.counter == 0:
             list.append([element])
@@ -473,8 +459,6 @@ class GramVChunkList:
                 self.chunkLists[idx].append([])
             elif len(self.chunkLists[idx]) > len(self.chunkLists[idx+1]):
                 self.chunkLists[idx+1].append([])
-            else:
-                pass
 
             
 class GramVChunk(GramChunk):
@@ -498,15 +482,14 @@ class GramVChunk(GramChunk):
         self.evClass = self.getEventClass()
 
     def __str__(self):
-        print_string = "<GramVChunk>\n" + \
-                       "\thead         = %s\n" % ( str(self.head) ) + \
-                       "\tevClass      = %s\n" % ( str(self.evClass) ) + \
-                       "\ttense        = %s\n" % ( str(self.tense) ) + \
-                       "\taspect       = %s\n" % ( str(self.aspect) ) + \
-                       "\tgramFeatures = %s\n" % ( str(self.gramFeatures) )
-        return print_string
-    
-    
+        return \
+            "<GramVChunk>\n" + \
+            "\thead         = %s\n" % ( str(self.head) ) + \
+            "\tevClass      = %s\n" % ( str(self.evClass) ) + \
+            "\ttense        = %s\n" % ( str(self.tense) ) + \
+            "\taspect       = %s\n" % ( str(self.aspect) ) + \
+            "\tgramFeatures = %s\n" % ( str(self.gramFeatures) )
+
     def __getattr__(self, name):  
         """Used by Sentence._match. Needs cases for all instance variables used in the
         pattern matching phase."""
@@ -706,8 +689,7 @@ class GramVChunk(GramChunk):
         except:
             logger.warn("PROBLEM with noun object again. Verify.")
 
-
-    def as_extended_string(self):
+    def as_verbose_string(self):
         if self.node == None:
             opening_string = 'GramVChunk: None'
         else:

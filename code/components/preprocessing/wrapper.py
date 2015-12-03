@@ -17,7 +17,7 @@ from library.tarsqi_constants import PREPROCESSOR
 from components.common_modules.document import Document
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
-from components.common_modules.tokens import Token, NewToken, AdjectiveToken
+from components.common_modules.tokens import Token, AdjectiveToken
 
 from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
@@ -236,8 +236,8 @@ def export_tags_to_doctree(tarsqi_element):
         elif t.name == 'lex':
             p1 = t.begin
             p2 = t.end
-            # TODO: use Token instead and add NewToken functionality to Token
-            tok = NewToken(doctree, t.id, tarsqi_doc.text(p1,p2), t.attrs['pos'], t.attrs['lemma'], p1, p2)
+            tok = Token(doctree, t.attrs['pos'], t.id)
+            tok.text = tarsqi_doc.text(p1,p2)
             currentSentence.add(tok)
             
     #doctree.pretty_print()

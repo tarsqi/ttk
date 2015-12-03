@@ -12,16 +12,21 @@ from components.common_modules.constituent import Constituent
 class Token(Constituent):
 
     def __init__(self, document, pos, lid=0, lex=None):
+        """Initialize with Document instance, a part-of-speech, an identifier and a
+        instance of XmlDocElement with tag=lex (from the FragmentConverter). Some
+        instance variables will be filled in later, depending on what the Token
+        is used for."""
         self.pos = pos
         self.lid = lid
-        self.lex = lex   # an XMLDocElement with tag=lex, from the FragmentConverter
+        self.lex = lex
         self.event = None
-        self.textIdx = []          # should be None?
+        self.textIdx = None
         self.document = document
         self.position = None
         self.parent = None
         self.gramchunk = None
         self.checkedEvents = False
+        self.text = None
         # added this one to provide a pointer to the XmlDocElement instance. Made it into
         # a list of all the docelements BK 20080725
         self.lex_tag_list = []
@@ -51,23 +56,35 @@ class Token(Constituent):
             raise AttributeError, name
 
     def setTextNode(self, docLoc):
+        """An essential step taken by the converter to fill in the textIdx, which the
+        initialization method on Token had not done."""
         self.textIdx = docLoc
 
     def getText(self):
-        return self.document.nodeList[self.textIdx]
+        """Return the text of the token, taking it from the node list on the
+        document."""
+        if self.text is None:
+            self.text = self.document.nodeList[self.textIdx]
+        return self.text
 
     def document(self):
-        """For some reason, tokens have a document variable. Use this variable and avoid
-        looking all the way up the tree"""
+        """Tokens have a document variable. Use this variable and avoid looking all the
+        way up the tree."""
         return self.document
 
     def isToken(self):
-        return 1
+        """Returns True"""
+        return True
+
+    def isMainVerb(self):
+        """Return True if self is a main verb and False if not."""
+        return self.pos[0] == 'V' and self.getText() not in forms.auxVerbs
 
     def isPreposition(self):
-        """Perhaps needs a non-hard-coded value."""
+        """Return True if self is a preposition and False if not."""
+        # TODO: perhaps needs a non-hard-coded value.
         return self.pos == 'IN'
-    
+
     def createEvent(self, tarsqidoc):
         """Do nothing when an AdjectiveToken or Token is asked to create an event.
         Potential adjectival events are processed from the VerbChunk using the
@@ -77,12 +94,8 @@ class Token(Constituent):
         pass
 
     def debug_string(self):
-        try:
-            event_val = self.event
-        except AttributeError:
-            event_val = None
-        return "%s: %s %s Event:%s" % \
-               (self.__class__.__name__, self.getText(), self.pos, str(event_val))
+        return "<%s: %s %s event=%s>" % \
+            (self.__class__.__name__, self.getText(), self.pos, self.event)
 
     def pp(self):
         self.pretty_print()
@@ -94,30 +107,6 @@ class Token(Constituent):
         print "%s<%s lid=\"%s\" pos=\"%s\" text=\"%s\"%s>" % \
             (indent * ' ', self.__class__.__name__,
              self.lid, self.pos, self.getText(), event_string)
-
-
-class NewToken(Token):
-    """Playpen to put in some functionality that should replace what is in Token."""
-
-    def __init__(self, document, id, text, pos, stem, begin, end):
-
-        self.document = document
-        self.text = text
-        self.pos = pos
-        self.lid = id
-
-        self.event = None
-        self.textIdx = []          # should be None? -> probably not, it is a slice
-        self.position = None
-        self.parent = None
-        self.cachedGramChunk = 0
-        self.checkedEvents = False
-        # added this one to provide a pointer to the XmlDocElement instance.  Made it into
-        # a list of all the docelements BK 20080725
-        self.lex_tag_list = []
-
-    def getText(self):
-        return self.text
 
 
 class AdjectiveToken(Token):
@@ -161,33 +150,25 @@ class AdjectiveToken(Token):
             raise AttributeError, name
 
         
-    def createAdjEvent(self, verbGramFeat=None, tarsqidoc=None):
-        """Processes the adjective after a copular verb and make it an event if some
-        conditions are met. The conditions are that the adjective needs to have
-        a head and an event class."""
-        logger.debug("AdjectiveToken.createAdjEvent(verbGramFeat=%s)" % verbGramFeat)
+    def createAdjEvent(self, verbGramFeats=None, tarsqidoc=None):
+        """Processes the adjective after a copular verb and make it an event if the
+        adjective has an event class."""
+        logger.debug("AdjectiveToken.createAdjEvent(verbGramFeat=%s)" % verbGramFeats)
         if not self.parent.__class__.__name__ == 'Sentence':
             logger.warn("Unexpected syntax tree")
             return
-        self.gramchunk = GramAChunk(self)
-        # percolating grammatical features from the copular verb
-        self.gramchunk.add_verb_features(verbGramFeat)
-        logger.debug(self.gramchunk.as_extended_string())
+        self.gramchunk = GramAChunk(self, verbGramFeats)
+        logger.debug(self.gramchunk.as_verbose_string())
         self._processEventInToken()
 
     def _processEventInToken(self):
-        """Perform a few little checks on the head and check whether there is an event
-        class, then add the event to self.document. This method is similar to
-        Chunk._processEventInChunk()."""
-        # TODO: the second test seems useless given that this is an adjective,
-        # why is it there?
-        if (self.gramchunk.head
-            and self.gramchunk.head.getText() not in forms.be
-            and self.gramchunk.evClass):
+        """Check whether there is an event class and add the event to self.document if
+        there is one. There is a sister of this method on Chunk."""
+        if self.gramchunk.evClass:
             self.document.addEvent(Event(self.gramchunk))
 
     def isAdjToken(self):
-        return 1
+        return True
 
     def doc(self):
         return self.parent.document()

@@ -17,7 +17,7 @@ from library.timeMLspec import EVENTID, EIID, CLASS, EVENT, TIMEX
 from utilities import logger
 from components.common_modules.constituent import Constituent
 from components.evita.event import Event
-from components.evita.gramChunk import GramNChunk, GramAChunk, GramVChunkList  
+from components.evita.gramChunk import GramNChunk, GramVChunkList
 
 
 # This is another way of capturing messages. It is separate from the logger and
@@ -65,7 +65,7 @@ class Chunk(Constituent):
        position = None    - index in he parent
        head = -1          - the index of the head of the chunk
        parent = None      - the parent, an instance of Sentence
-       gramchunk = None   - an instance of GramAChunk, GramNChunk or GramVChunk
+       gramchunk = None   - an instance of GramNChunk or GramVChunk
        gramchunks = []    - a list of GramVChunks, used for verb chunks
        event = None
        eid = None
@@ -302,7 +302,7 @@ class NounChunk(Chunk):
             # TODO: find out why "print self.gramchunk" gives an error
             self.gramchunk = GramNChunk(self)
             self.gramchunk.add_verb_features(verbGramFeat)
-            logger.debug(self.gramchunk.as_extended_string())
+            logger.debug(self.gramchunk.as_verbose_string())
             # Even if preceded by a BE or a HAVE form, only tagging N Chunks headed by an
             # eventive noun E.g., "was an intern" will NOT be tagged
             if self.gramchunk.isEventCandidate():
@@ -406,7 +406,7 @@ class VerbChunk(Chunk):
 
     def _processDoubleEventInMultiAChunk(self, GramVCh, substring):
         """Tagging EVENT in VerbChunk and in AdjectiveToken."""
-        logger.debug("[V_2Ev] " + GramVCh.as_extended_string())
+        logger.debug("[V_2Ev] " + GramVCh.as_verbose_string())
         self._processEventInChunk(GramVCh)
         adjToken = substring[-1]
         adjToken.createAdjEvent()
@@ -526,7 +526,7 @@ class VerbChunk(Chunk):
             
         else:
             self.dribble("OTHER", self_text)
-            logger.debug("[1] " + GramVCh.as_extended_string())
+            logger.debug("[1] " + GramVCh.as_verbose_string())
             self._processEventInChunk(GramVCh)
 
 
@@ -539,7 +539,7 @@ class VerbChunk(Chunk):
         GramVChList = GramVChunkList(self)
         if GramVChList.do_not_process():
             return
-        logger.debug(GramVChList[-1].as_extended_string())
+        logger.debug(GramVChList[-1].as_verbose_string())
         logger.debug("len(GramVChList) ==> %d" % len(GramVChList))
 
         # simple case
@@ -556,6 +556,6 @@ class VerbChunk(Chunk):
                 if idx == lastIdx:
                     self._createEventOnRightmostVerb(gramVCh)
                 else:
-                    logger.debug("[Not Last] " + gramVCh.as_extended_string())
+                    logger.debug("[Not Last] " + gramVCh.as_verbose_string())
                     if not gramVCh.isAuxVerb():
                         self._processEventInChunk(gramVCh)
