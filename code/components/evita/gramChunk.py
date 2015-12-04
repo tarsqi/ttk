@@ -142,14 +142,6 @@ class GramAChunk(GramChunk):
         self.evClass = self.getEventClass()
         self.add_verb_features(verbGramFeats)
 
-    def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance variables used in the
-        pattern matching phase."""
-        # TODO: why doesn't this do anything?
-        # if name == 'class': return self.evClass
-        # return None
-        pass
-    
     def getHead(self):
         """Return the head of the GramAChunk, which amount to returning the
         AdjectiveToken that this GramAChunk was created from."""
@@ -182,13 +174,6 @@ class GramNChunk(GramChunk):
         self.head = self.node.getHead()
         self.evClass = self.getEventClass()
 
-    def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance variables used in the
-        pattern matching phase."""
-        if name == 'class': return self.evClass
-        # TODO: how does this work?
-        return None
-    
     def getEventClass(self):
         """Get the event class for the GramChunk. For nominals, the event class
         is always OCCURRENCE."""
@@ -442,7 +427,8 @@ class GramVChunkList:
         self.normalizeLists()
         lenLists = len(self.trueChunkLists)
         for idx in range(lenLists):
-            gramVCh = GramVChunk(self.trueChunkLists[idx],
+            gramVCh = GramVChunk(self.node,
+                                 self.trueChunkLists[idx],
                                  self.negMarksLists[idx],
                                  self.infMarkLists[idx],
                                  self.adverbsPreLists[idx],
@@ -463,7 +449,8 @@ class GramVChunkList:
             
 class GramVChunk(GramChunk):
 
-    def __init__(self, tCh, negMk, infMk, advPre, advPost, left): 
+    def __init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost, left):
+        self.node = verbchunk
         self.trueChunk = tCh  
         self.negMarks = negMk  
         self.infMark = infMk  
@@ -480,6 +467,13 @@ class GramVChunk(GramChunk):
         self.polarity = self.getPolarity()
         self.head = self.getHead()
         self.evClass = self.getEventClass()
+        # the following four are added so that the pattern matcher can access
+        # these embedded variables directly (this used to be done in a nasty
+        # __getattr__ method)
+        self.headForm = self.head.getText()
+        self.headPos = self.head.pos
+        self.preHead = self.getPreHead()
+        self.preHeadForm = self.preHead.getText() if self.preHead else ''
 
     def __str__(self):
         return \
@@ -489,37 +483,6 @@ class GramVChunk(GramChunk):
             "\ttense        = %s\n" % ( str(self.tense) ) + \
             "\taspect       = %s\n" % ( str(self.aspect) ) + \
             "\tgramFeatures = %s\n" % ( str(self.gramFeatures) )
-
-    def __getattr__(self, name):  
-        """Used by Sentence._match. Needs cases for all instance variables used in the
-        pattern matching phase."""
-        if name == 'headForm':
-            #logger.debug("(V) HEAD FORM: "+self.head.getText())
-            try:
-                return self.head.getText()
-            except AttributeError:
-                # when there is no head
-                return ''
-        elif name == 'headPos':
-            #logger.debug("(V) HEAD POS: "+self.head.pos)
-            try:
-                return self.head.pos
-            except AttributeError:
-                # when there is no head
-                return ''
-        elif name == 'preHeadForm':
-            if self.getPreHead():
-                #logger.debug("(V) PRE-HEAD FORM: "+self.getPreHead().getText())
-                return self.getPreHead().getText()
-            else: return ''
-        elif name == 'aspect':
-            #logger.debug("(V) ASPECT: "+self.aspect)
-            return self.aspect
-        elif name == 'tense':
-            #logger.debug("(V) TENSE: "+self.tense)
-            return self.tense
-        else: 
-            pass
 
     def isAuxVerb(self):
         if string.lower(self.head.getText()) in forms.auxVerbs:

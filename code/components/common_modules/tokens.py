@@ -62,7 +62,7 @@ class Token(Constituent):
 
     def getText(self):
         """Return the text of the token, taking it from the node list on the
-        document."""
+        document if it is not available on the text instance variable."""
         if self.text is None:
             self.text = self.document.nodeList[self.textIdx]
         return self.text

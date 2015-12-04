@@ -22,9 +22,7 @@ from components.evita.gramChunk import GramNChunk, GramVChunkList
 
 # This is another way of capturing messages. It is separate from the logger and
 # operates class based. It is used in VerbChunk to collect data from a run.
-DRIBBLE = True
-#DRIBBLE = False
-
+DRIBBLE = False
 
 
 def update_event_checked_marker(constituent_list):
@@ -50,7 +48,6 @@ def get_tokens(sequence):
         else:
             raise "ERROR: unknown item type: " + item.nodeType
     return tokens
-
 
 
 class Chunk(Constituent):
@@ -151,14 +148,13 @@ class Chunk(Constituent):
         a NounChunk, then there is no GramChunk handed in and it will be
         retrieved from the gramchunk instance variable, when it is called from
         VerbChunk, then the GramChunk will be handed in."""
-        doc = self.document()
         gchunk = self.gramchunk if gramChunk is None else gramChunk
         # TODO: the second and third test seem relevant for verbs only
         if (gchunk.head
             and gchunk.head.getText() not in forms.be
             and gchunk.head.getText() not in forms.spuriousVerb
             and gchunk.evClass):
-            doc.addEvent(Event(gchunk))
+            self.document().addEvent(Event(gchunk))
 
     # the next methods (up to, but not including endVerbs) were all taken from the
     # slinket/s2t version.
@@ -299,7 +295,6 @@ class NounChunk(Chunk):
         predicatve complement."""
         logger.debug("NounChunk.createEvent(verbGramFeat=%s)" % verbGramFeat)
         if not self.isEmpty():
-            # TODO: find out why "print self.gramchunk" gives an error
             self.gramchunk = GramNChunk(self)
             self.gramchunk.add_verb_features(verbGramFeat)
             logger.debug(self.gramchunk.as_verbose_string())
@@ -541,14 +536,9 @@ class VerbChunk(Chunk):
             return
         logger.debug(GramVChList[-1].as_verbose_string())
         logger.debug("len(GramVChList) ==> %d" % len(GramVChList))
-
-        # simple case
         if len(GramVChList) == 1:
             self._createEventOnRightmostVerb(GramVChList[-1])
-        # complex case
         else:
-            #print "complex case"
-            #self.pp()
             self.dribble('COMPLEX', '')
             lastIdx = len(GramVChList) - 1
             for idx in range(len(GramVChList)):
