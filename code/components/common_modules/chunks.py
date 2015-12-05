@@ -105,13 +105,14 @@ class Chunk(Constituent):
         """Return the head of the chunk (by default the last element)."""
         return self.dtrs[self.head]
 
-
-    def __getattr__(self, name):
-
+    def XXX__getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
         pattern matching phase. This is almost identical to the same method on Token, do
         this a bit more elegantly."""
-
+        # TODO: removing this method did not seem to make a difference. Perhaps
+        # it was moved to GramNChunk, which was changed to allow removing
+        # __getattr__. When matching functionality shifts back to Chunk, may
+        # need to go through that excercise again.
         if name == 'nodeType':
             return self.__class__.__name__
         if name == 'nodeName':
@@ -120,7 +121,6 @@ class Chunk(Constituent):
             return None
         if name == 'pos':
             return None
-
         if name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
@@ -137,10 +137,8 @@ class Chunk(Constituent):
             if name == POS:
                 return doc.taggedEventsDict[self.eid].get(POS,'NONE')
             return doc.taggedEventsDict[self.eid][name]
-
         else:
             raise AttributeError, name
-
         
     def _processEventInChunk(self, gramChunk=None):
         """Perform a few little checks on the head and check whether there is an
@@ -156,7 +154,7 @@ class Chunk(Constituent):
             and gchunk.evClass):
             self.document().addEvent(Event(gchunk))
 
-    # the next methods (up to, but not including endVerbs) were all taken from the
+    # the next methods (up to, but not including addToken) were all taken from the
     # slinket/s2t version.
     
     def _matchChunk(self, chunkDescription):
@@ -174,12 +172,17 @@ class Chunk(Constituent):
         a second constituent of a 2-position tuple whose initial position
         is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
         
-        This method is also implemented in the chunkAnalyzer.GramChunk class and
-        on Constituent."""
+        This method is also implemented on Constituent."""
 
+        # TODO: removing this method had no impact on Evita, find out why, but
+        # note that it might impact Slinket
+
+        print chunkDescription
         logger.debug(str(chunkDescription))
         for feat in chunkDescription.keys():
             value = chunkDescription[feat]
+            #print feat
+            #print feat, type(value), value
             if type(value) is TupleType:
                 if value[0] == '^':
                     newvalue = self._hackToSolveProblemsInValue(value[1])
@@ -194,6 +197,8 @@ class Chunk(Constituent):
             elif type(value) is ListType:
                 if self.__getattr__(feat) not in value:
                     # this is where this one differs from the one on Constituent
+                    #print 'feature text matters!'
+                    #print feat, type(value), value
                     if feat != 'text':
                         return 0
                     else:
@@ -224,7 +229,6 @@ class Chunk(Constituent):
 
     def resetEmbedded(self):
         self.isEmbedded = 0
-        
 
     # end of methods from SLinket/S2T version of this class
 

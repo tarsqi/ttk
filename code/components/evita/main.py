@@ -61,7 +61,7 @@ class Evita (TarsqiComponent):
         # with this we have direct access to the TarsqiDocument and
         # extractEvents can then use it
         self.tarsqidoc = element.doc
-        # TODO: instead of this maybe create a doctree directly
+        # TODO: instead of this create a doctree directly
         xml_string = _create_xml_string(element)
         self.process_string(xml_string)
         _import_event_tags(self.xmldoc, element)

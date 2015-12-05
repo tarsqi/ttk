@@ -18,12 +18,7 @@ Included here is functionality to:
 
 """
 
-import re
-import string
-import sys
-import os
-import anydbm
-from types import ListType, TupleType, InstanceType
+from types import ListType, InstanceType
 
 import wordnet
 from rule import FeatureRule
@@ -339,9 +334,7 @@ class GramVChunkList:
                         self.addInCurrentSublist(self.adverbsPostLists, item)
                 else:
                     self.addInPreviousSublist(self.adverbsPostLists, item)
-            else:
-                pass
-            itemCounter = itemCounter+1
+            itemCounter += 1
 
     def _treatMainVerb(self, item, tempNode, itemCounter):
         self.addInCurrentSublist(self.trueChunkLists, item)
@@ -405,23 +398,23 @@ class GramVChunkList:
         seen'."""
         for list in self.chunkLists:
             if len(list) == self.counter:
-                """The presence of a main verb has already updated self.counter"""
+                # The presence of a main verb has already updated self.counter
                 list.append([])
 
-    def addInCurrentSublist(self, list, element):
-        if len(list)-self.counter == 1:
-            list[self.counter].append(element)
+    def addInCurrentSublist(self, tokens, element):
+        if len(tokens) - self.counter == 1:
+            tokens[self.counter].append(element)
         else:
-            """The presence of a main verb has already updated self.counter"""
+            # The presence of a main verb has already updated self.counter
             pass
 
-    def addInPreviousSublist(self, list, element):
-        if len(list) == 0 and self.counter == 0:
-            list.append([element])
-        elif len(list) >= self.counter-1:
-            list[self.counter-1].append(element)
+    def addInPreviousSublist(self, tokens, element):
+        if len(tokens) == 0 and self.counter == 0:
+            tokens.append([element])
+        elif len(tokens) >= self.counter-1:
+            tokens[self.counter-1].append(element)
         else:
-            logger.error("ERROR: list should be longer")
+            logger.warn("list should be longer")
 
     def generateGramVChunks(self):
         self.normalizeLists()
@@ -434,11 +427,8 @@ class GramVChunkList:
                                  self.adverbsPreLists[idx],
                                  self.adverbsPostLists[idx],
                                  self.leftLists[idx])
-            self.addToGramVChunksList(gramVCh)
+            self.gramVChunksList.append(gramVCh)
 
-    def addToGramVChunksList(self, chunk):
-        self.gramVChunksList.append(chunk)
-     
     def normalizeLists(self):
         for idx in range(len(self.chunkLists)-1):
             if len(self.chunkLists[idx]) < len(self.chunkLists[idx+1]):
@@ -485,10 +475,7 @@ class GramVChunk(GramChunk):
             "\tgramFeatures = %s\n" % ( str(self.gramFeatures) )
 
     def isAuxVerb(self):
-        if string.lower(self.head.getText()) in forms.auxVerbs:
-            return 1
-        else:
-            return 0
+        return True if self.head.getText().lower() in forms.auxVerbs else False
 
     def getHead(self):
         if self.trueChunk:
@@ -515,37 +502,30 @@ class GramVChunk(GramChunk):
         return None
 
     def getTense(self):
-        if self.gramFeatures:
-            return self.gramFeatures[0]
-        else:
-            """If no Tense is found for the current chunk (generally due to a POS tagging
-            problem), estimate it from the head of the chunk"""
-            if len(self.trueChunk) > 1 and self.getHead():
-                return GramVChunkList([self.getHead()])[0].tense  
-            else:
-                return 'NONE'
+        """Return the tense of the GramVChunk."""
+        return self.get_gram_feature('tense', 0, 'NONE')
 
     def getAspect(self):
-        if self.gramFeatures:
-            return self.gramFeatures[1]
-        else:
-            """If no Aspect is found for the current chunk (generally due to a POS tagging
-            problem), estimate it from the head of the chunk"""
-            if len(self.trueChunk) > 1 and self.getHead():
-                return GramVChunkList([self.getHead()])[0].aspect 
-            else:
-                return 'UNKNOWN'
+        """Return the aspect of the GramVChunk."""
+        return self.get_gram_feature('aspect', 1, 'UNKNOWN')
 
     def getNf_morph(self):
+        """Return the nf_morph of the GramVChunk."""
+        return self.get_gram_feature('nf_morph', 2, 'UNKNOWN')
+
+    def get_gram_feature(self, feature, idx, default):
+        """Return the value of the grammatical feature given the feature name (which is
+        one of tense, aspect and nf_morph), the index in the self.gramFeatures
+        dictionary and a default value."""
+        # TODO: in rare cases there is no gramFeatures dictionary, we then get
+        # the feature from the first GramVChunk (not quite sure how exactly this
+        # works) or from the default value
         if self.gramFeatures:
-            return self.gramFeatures[2]
+            return self.gramFeatures[idx]
+        elif len(self.trueChunk) > 1 and self.getHead():
+            return getattr(GramVChunkList([self.getHead()])[0], feature)
         else:
-            """If no Nf_morph is found for the current chunk (generally due to a POS
-            tagging problem), estimate it from the head of the chunk"""
-            if len(self.trueChunk) > 1 and self.getHead():
-                return GramVChunkList([self.getHead()])[0].nf_morph 
-            else:
-                return 'UNKNOWN'
+            return default
 
     def getModality(self):
         modal = ''
@@ -566,10 +546,7 @@ class GramVChunk(GramChunk):
                     modal = modal+' have to'
                 else:
                     modal = modal+' '+self.normalizeHave(item.getText())+' to' 
-        if modal:
-            return string.strip(modal)
-        else:
-            return 'NONE'
+        return modal.strip() if modal else 'NONE'
 
     def nodeIsNotEventCandidate(self):
         """Return True if the GramVChunk cannot possibly be an event. This is the place
@@ -585,22 +562,26 @@ class GramVChunk(GramChunk):
         return self.headForm in forms.be and nextNode
 
     def nodeIsBecomeForm(self, nextNode):
-        return self.headForm in ['become', 'became'] and nextNode
+        return self.headForm in forms.become and nextNode
 
     def nodeIsContinueForm(self, nextNode):
-        return re.compile('continu.*').match(self.headForm) and nextNode
+        return forms.RE_continue.match(self.headForm) and nextNode
 
     def nodeIsKeepForm(self, nextNode):
-        return re.compile('keep.*|kept').match(self.headForm) and nextNode
+        return forms.RE_keep.match(self.headForm) and nextNode
 
     def nodeIsHaveForm(self):
         return self.headForm in forms.have and self.headPos is not 'MD'
 
     def nodeIsFutureGoingTo(self):
-        return len(self.trueChunk) > 1 and self.headForm == 'going' and self.preHeadForm in forms.be
+        return len(self.trueChunk) > 1 \
+            and self.headForm == 'going' \
+            and self.preHeadForm in forms.be
 
     def nodeIsPastUsedTo(self):
-        return len(self.trueChunk) == 1 and self.headForm == 'used' and self.headPos == 'VBD'
+        return len(self.trueChunk) == 1 \
+            and self.headForm == 'used' \
+            and self.headPos == 'VBD'
 
     def nodeIsDoAuxiliar(self):
         return self.headForm in forms.do
@@ -623,20 +604,18 @@ class GramVChunk(GramChunk):
                 if item.getText() == 'only':
                     return "POS"
         return "NEG" if self.negative else "POS"
-        
+
     def getEventClass(self):
+        """Return the event class for the nominal, using the regeluar expressions
+        in the library."""
         try:
-            headString = self.head.getText()
+            head = self.head.getText()
         except AttributeError:
-            # This is used when the head is None, which can be the case for some weird
-            # (and incorrect) chunks, like [to/TO] (MV 11//08/07)
+            # This is used when the head is None, which can be the case for some
+            # weird (and incorrect) chunks, like [to/TO] (MV 11//08/07)
+            logger.warn("Cannot assign class to incorrect chunk")
             return None
-        # may want to use forms.be (MV 11/08/07)
-        if headString in ['was', 'were', 'been']:
-            head = 'is'
-        else:
-            head = DictVerbStems.get(headString, headString.lower())
-        # this was indented, which was probably not the idea (MV 11/8/07)
+        head = 'is' if head in forms.be else DictVerbStems.get(head, head.lower())
         try:
             if forms.istateprog.match(head): return  'I_STATE'
             elif forms.reportprog.match(head): return 'REPORTING'
@@ -650,7 +629,7 @@ class GramVChunk(GramChunk):
             elif forms.stateprog.match(head): return 'STATE'
             else: return 'OCCURRENCE'
         except:
-            logger.warn("PROBLEM with noun object again. Verify.")
+            logger.warn("Error running event class patterns")
 
     def as_verbose_string(self):
         if self.node == None:

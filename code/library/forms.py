@@ -103,6 +103,14 @@ auxVerbs = be + have + do + allMod + ["s", "re", "m", "ve", "d"]
 
 spuriousVerb = ['_', '-', "'", '"', ')', '(', 'uh']
 
+become = ['become', 'became']
+
+
+RE_continue = re.compile('continu.*')
+
+RE_keep = re.compile('keep.*|kept')
+
+
 
 # VERB types:
 

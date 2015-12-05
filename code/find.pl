@@ -5,7 +5,8 @@ $fancy = shift;
 
 @commands = ("grep -n -e '$pattern' *.py",
              "grep -n -e '$pattern' */*.py",
-             "grep -n -e '$pattern' */*/*.py");
+             "grep -n -e '$pattern' */*/*.py",
+             "grep -n -e '$pattern' */*/*/*.py");
 
 foreach $command (@commands) {
     print "\n>>> $command\n\n";
