@@ -51,17 +51,17 @@ class ArgLinker (TarsqiComponent):
         return alllinks
 
     def _crawl(self, sent, objs=None):
-    	if objs is None: objs = set()
-	for obj in sent:
-		if obj not in objs:
-			objs.add(obj)
-			self._crawl(obj, objs)
-	return objs
+        if objs is None: objs = set()
+            for obj in sent:
+                if obj not in objs:
+                    objs.add(obj)
+                    self._crawl(obj, objs)
+        return objs
 
     def _find_by_lid(self, sent, lid):
-    	toks = [tok for tok in self._crawl(sent) if hasattr(tok, 'lid')]
-	toks = [tok for tok in toks if tok.lid == lid]
-	return toks[0]
+        toks = [tok for tok in self._crawl(sent) if hasattr(tok, 'lid')]
+        toks = [tok for tok in toks if tok.lid == lid]
+        return toks[0]
 
     def process(self, infile, outfile, depfile):
         """Run the ArgLinker on the input file and write the results to the
@@ -145,15 +145,15 @@ class ArgLinker (TarsqiComponent):
                     
     def _check_pair(self, noun, verb, sentence):
         # Make a list of relation types not to cross, for now just include punctuation
-	#print 'in _check_pair...'
-	#print noun, verb, sentence
-	#sentence.pretty_print()
-	#n = self._find_by_lid(sentence, noun)
-	#v = self._find_by_lid(sentence, verb)
-	#print 'Noun: '
-	#n.pretty_print()
-	#print 'Verb: '
-	#v.pretty_print()
+        #print 'in _check_pair...'
+        #print noun, verb, sentence
+        #sentence.pretty_print()
+        #n = self._find_by_lid(sentence, noun)
+        #v = self._find_by_lid(sentence, verb)
+        #print 'Noun: '
+        #n.pretty_print()
+        #print 'Verb: '
+        #v.pretty_print()
         return True
 
     def _create_arglinks(self, sentence, alinks):
@@ -175,9 +175,9 @@ class ArgLinker (TarsqiComponent):
         # check whether the argument is not an empty NG
         if len(argument) > 0:
             arg_head = argument
-	    import ldebug
-	    ldebug.object = event
-	    #assert False
+            import ldebug
+            ldebug.object = event
+            #assert False
             if arg_head.isToken():
                 pred = 'eventID="' + event.eid + '"'
                 arg = 'argID="' + arg_head.lid + '"'

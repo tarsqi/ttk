@@ -57,13 +57,13 @@ class ArgLinkerWrapper:
                 # now it just copies the example file to the output of
                 # the arglinker
                 #os.system("cp %s %s" % (TTK_ROOT + os.sep + 'wsj_0001.mrg.dep.pos', tmp2file))
-		dp_prog = os.path.join(TTK_ROOT, 'utilities', 'depParser', 'depParse-wrapper')
-		dp_input = tmp1file
-		dp_output = tmp2file
-		dp_model = os.path.join(TTK_ROOT, 'utilities', 'depParser', 'base.vp3.model')
-		os.system("%s %s %s %s" % (dp_prog, dp_input, dp_output, dp_model) )
+                dp_prog = os.path.join(TTK_ROOT, 'utilities', 'depParser', 'depParse-wrapper')
+                dp_input = tmp1file
+                dp_output = tmp2file
+                dp_model = os.path.join(TTK_ROOT, 'utilities', 'depParser', 'base.vp3.model')
+                os.system("%s %s %s %s" % (dp_prog, dp_input, dp_output, dp_model) )
                 self.parser.process(infile, outfile, dp_output)
-		#os.system('/home/j/llc/wellner/depParser/depParseDecode.native -input /home/j/llc/wellner/depParser/ex-data/ -output <some output directory> -out-suffix ".DEP" -model /home/j/llc/wellner/depParser/base.vp3.model')
+                #os.system('/home/j/llc/wellner/depParser/depParseDecode.native -input /home/j/llc/wellner/depParser/ex-data/ -output <some output directory> -out-suffix ".DEP" -model /home/j/llc/wellner/depParser/base.vp3.model')
                 # retrieve result - this is done in main.py
             
 
