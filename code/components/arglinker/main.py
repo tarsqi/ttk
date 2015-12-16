@@ -51,11 +51,12 @@ class ArgLinker (TarsqiComponent):
         return alllinks
 
     def _crawl(self, sent, objs=None):
-        if objs is None: objs = set()
-            for obj in sent:
-                if obj not in objs:
-                    objs.add(obj)
-                    self._crawl(obj, objs)
+        if objs is None:
+            objs = set()
+        for obj in sent:
+            if obj not in objs:
+                objs.add(obj)
+                self._crawl(obj, objs)
         return objs
 
     def _find_by_lid(self, sent, lid):
