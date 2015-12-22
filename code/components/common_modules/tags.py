@@ -126,8 +126,8 @@ class EventTag(Tag):
         
     def pretty_print(self, indent=0):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'), self.attrs.get('class'))
-        print "%s<%s eid=%s eiid=%s class=%s>" % \
-              ( indent * ' ', self.name, str(eid), str(eiid), str(cl) )
+        print "%s<%s position=%s eid=%s eiid=%s class=%s>" % \
+              ( indent * ' ', self.name, self.position, str(eid), str(eiid), str(cl) )
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
@@ -160,7 +160,7 @@ class TimexTag(Tag):
         self.attrs = attrs
         self.dtrs = []
         self.positionCount = 0
-        self.isEmbedded = 0
+        self.XXXisEmbedded = 0
         self.checkedEvents = False
 
     def __len__(self):
@@ -213,11 +213,11 @@ class TimexTag(Tag):
                 string += ' '+str(dtr.getText())
         return string
 
-    def setEmbedded(self):
-        self.isEmbedded = 1
+    def XXXsetEmbedded(self):
+        self.XXXisEmbedded = 1
 
-    def resetEmbedded(self):
-        self.isEmbedded = 0
+    def XXXresetEmbedded(self):
+        self.XXXisEmbedded = 0
 
     def pretty_print(self, indent=0):
         (tid, type, val) = (self.attrs.get('tid'), self.attrs.get('TYPE'), self.attrs.get('VAL'))

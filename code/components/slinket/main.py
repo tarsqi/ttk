@@ -93,6 +93,26 @@ class Slinket (TarsqiComponent):
             add_link(SLINK, slink.attrs, self.xmldoc_closingtag)
 
         
+    def process_doctree(self, doctree):
+
+        def add_link(tagname, attrs):
+            pass
+
+        # find alinks and slinks
+        self.doctree = doctree
+        self._build_event_dictionary2()
+        doctree.pp()
+        for sentence in self.doctree:
+            self._find_links(self.doctree, sentence)
+
+        # export links from the document tree into the xml document
+        for alink in self.doctree.alink_list:
+            add_link(ALINK, alink.attrs)
+        for slink in self.doctree.slink_list:
+            add_link(SLINK, slink.attrs)
+        print self.doctree.slink_list
+
+
     def _build_event_dictionary(self):
 
         """Creates a dictionary with events on the self.doctree variable and adds event lists to
@@ -120,6 +140,24 @@ class Slinket (TarsqiComponent):
             sentence.set_event_list()
 
         
+    def _build_event_dictionary2(self):
+        """Creates a dictionary with events on the self.doctree variable and
+        adds event lists to all sentences in self.doctree."""
+        events = self.doctree.get_events()
+        self.doctree.taggedEventsDict = {}
+        for event in events:
+            eid = event.attrs[EID]
+            self.doctree.taggedEventsDict[eid] = event.attrs
+            pos = event.dtrs[0].pos
+            epos = self.doctree.taggedEventsDict[eid][POS]
+            form = event.dtrs[0].getText()
+            self.doctree.taggedEventsDict[eid][FORM] = form
+            self.doctree.taggedEventsDict[eid][EPOS] = epos
+            self.doctree.taggedEventsDict[eid][POS] = pos
+        for sentence in self.doctree:
+            sentence.set_event_list()
+
+
     def _find_links(self, doc, sentence):
 
         """For each event in the sentence, check whether an Alink or Slink can be created for
@@ -178,12 +216,14 @@ class Slinket (TarsqiComponent):
         forwardFSAs = event_expr.slinkingContexts('forward')
         if forwardFSAs:
             slink_created = evNode.find_forward_slink(forwardFSAs)
+            #print 'forward', slink_created
 
         if not slink_created:
             backwardFSAs = event_expr.slinkingContexts('backwards')
             if backwardFSAs:
                 logger.debug("PROCESS for BACKWARD slinks")
                 slink_created = evNode.find_backward_slink(backwardFSAs)
+                #print 'backward', slink_created
             
         if not slink_created:
             reportingFSAs = event_expr.slinkingContexts('reporting')

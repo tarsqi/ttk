@@ -58,10 +58,10 @@ class Chunk(Constituent):
     Instance variables
        phraseType         - string indicating the chunk type, usually 'VG' or 'NG'
        dtrs = []          - a list of Tokens, EventTags and TimexTags
-       positionCount = 0
-       position = None    - index in he parent
+       positionCount = 0  - used when looping through the dtrs list
+       position = None    - index in the parent's daughters list
        head = -1          - the index of the head of the chunk
-       parent = None      - the parent, an instance of Sentence
+       parent = None      - the parent, an instance of Sentence typically
        gramchunk = None   - an instance of GramNChunk or GramVChunk
        gramchunks = []    - a list of GramVChunks, used for verb chunks
        event = None
@@ -82,7 +82,7 @@ class Chunk(Constituent):
         self.gramchunks = []
         self.event = None
         self.eid = None
-        self.isEmbedded = 0
+        self.XXXisEmbedded = 0
         self.checkedEvents = False
 
     def __len__(self):
@@ -105,7 +105,7 @@ class Chunk(Constituent):
         """Return the head of the chunk (by default the last element)."""
         return self.dtrs[self.head]
 
-    def XXX__getattr__(self, name):
+    def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
         pattern matching phase. This is almost identical to the same method on Token, do
         this a bit more elegantly."""
@@ -113,6 +113,7 @@ class Chunk(Constituent):
         # it was moved to GramNChunk, which was changed to allow removing
         # __getattr__. When matching functionality shifts back to Chunk, may
         # need to go through that excercise again.
+        # NOTE: removing it crashed Slinket
         if name == 'nodeType':
             return self.__class__.__name__
         if name == 'nodeName':
@@ -177,7 +178,7 @@ class Chunk(Constituent):
         # TODO: removing this method had no impact on Evita, find out why, but
         # note that it might impact Slinket
 
-        print chunkDescription
+        #print chunkDescription
         logger.debug(str(chunkDescription))
         for feat in chunkDescription.keys():
             value = chunkDescription[feat]
@@ -222,13 +223,13 @@ class Chunk(Constituent):
             if item.isEvent():
                 return item
         return None
-            
-    def setEmbedded(self):
-        """Keeping track of chunks embedded within other chunks, for parsing purposes"""
-        self.isEmbedded = 1
 
-    def resetEmbedded(self):
-        self.isEmbedded = 0
+    def XXXsetEmbedded(self):
+        """Keeping track of chunks embedded within other chunks, for parsing purposes"""
+        self.XXXisEmbedded = 1
+
+    def XXXresetEmbedded(self):
+        self.XXXisEmbedded = 0
 
     # end of methods from SLinket/S2T version of this class
 
@@ -256,9 +257,9 @@ class Chunk(Constituent):
         return self.phraseType and self.phraseType[:5] == 'TIMEX'
 
     def pretty_print(self, indent=0):
-        print "%s<%s positionCount=%s position=%s isEmbedded=%s, checked=%s eid=%s>" % \
+        print "%s<%s position=%s checkedEvents=%s event=%s eid=%s>" % \
             (indent * ' ', self.__class__.__name__,
-             self.positionCount, self.position, self.isEmbedded, self.checkedEvents, self.eid)
+             self.position, self.checkedEvents, self.event, self.eid)
         for tok in self.dtrs:
             tok.pretty_print(indent+2)
 

@@ -24,6 +24,7 @@ POS = 'pos'
 
 POS_ADJ = 'JJ'
 POS_CD = 'CD'
+POS_PREP = 'IN'
 
 
 # TimeBank Processing

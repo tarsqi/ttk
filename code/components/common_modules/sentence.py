@@ -12,8 +12,8 @@ class Sentence:
         dtrs - a list of Chunks and Tokens
         chunkIndex - an integer
         eventList - a list of (eLoc, eid) tuples
-        position - an integer, reflecting the offset in the document 
-        positionCount - an integer, reflecting the current position in the sentence 
+        position - position in the Document parent (first sentence is 0)
+        positionCount - used when looping through the daughters
         parent - a Document
         embeddedTags - a list
 
@@ -42,22 +42,32 @@ class Sentence:
         if index is None:
             logger.warn("Given index to __getitem__ in Sentence is None")
             return None
-        else:
-            return self.dtrs[index]
+        return self.dtrs[index]
 
     def __setitem__(self, idx, element):
-        """Set an element in the dtrs variable. The idx value is intended to be a slice
-        so element should be alist."""
+        """Set an element in the dtrs variable. In practice, idx is a slice and element
+        a list."""
         self.dtrs[idx] = element
 
-    def __getslice__(self, i, j):
-        """Get a slice from the dtrs variable."""
-        return self.dtrs[i:j]
+    def isAdjToken(self):
+        # TODO: this is really a nasty hack and Sentence should be a sub class
+        # of Constituent, but I do not want to do that till I have sorted out
+        # the __getattr__ stuff.
+        return False
 
-    #def __setslice__(self, i, j, seq):
-    #    """Set a slice in the dtrs variable. Deprecated in 2.6, __setitem__ should
-    #    now do the trick."""
-    #    self.dtrs[i:j] = seq
+    def isEvent(self):
+        # TODO: see the note on isAdjToken()
+        return False
+
+    def get_events(self, result=None):
+        # TODO: see the note on isAdjToken()
+        if result is None:
+            result = []
+        for dtr in self.dtrs:
+            if dtr.isEvent():
+                result.append(dtr)
+            dtr.get_events(result)
+        return result
 
     def document(self):
         """Return the document that the sentence is in."""
@@ -106,14 +116,14 @@ class Sentence:
         in the sentence. This is used by Slinket."""
         self.eventList = self.get_event_list()
 
-    def trackEmbedding(self, tag):
+    def XXXtrackEmbedding(self, tag):
         """Tracks embedding of event and timex tags relative to other chunks. Used when
         (i) a chunk is embedded in a timex, event or other chunk, (ii) an event is found
         inside a timex or other event, or (iii) a timex is found inside another timex or
         an event."""
         self.embeddedTags.append(tag)
 
-    def hasEmbedded(self, tag):
+    def XXXhasEmbedded(self, tag):
         """Returns True if the given tag occurs in the last position of the
         embeddedTags list, return False otherwise.
         Arguments
@@ -123,7 +133,7 @@ class Sentence:
         else:
             return False
 
-    def removeEmbedded(self, tag):
+    def XXXremoveEmbedded(self, tag):
         """Remove the last element of the embeddedTags list if it matches the
         given tag name.
         Arguments
@@ -146,14 +156,13 @@ class Sentence:
 
     def pretty_print(self, tree=True):
         """Pretty print the sentence by pretty printing all daughters"""
-        print self
-        print "   parent        = %s" % self.parent
-        print "   chunkIndex    = %s" % self.chunkIndex
-        print "   position      = %s" % self.position
-        print "   positionCount = %s" % self.positionCount
-        print "   eventList     = %s" % self.eventList
+        print "  parent        = %s" % self.parent
+        print "  chunkIndex    = %s" % self.chunkIndex
+        print "  position      = %s" % self.position
+        print "  eventList     = %s" % self.eventList
+        print "  embeddedTags  = %s" % self.embeddedTags
         if tree:
-            print "\nTREE:"
+            print
             for dtr in self.dtrs:
                 dtr.pretty_print(indent=2)
 

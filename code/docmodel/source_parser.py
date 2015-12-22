@@ -130,7 +130,10 @@ class SourceDoc:
         self.tags = TagRepository()
         self.offset = 0
         self.tag_number = 0
-        
+
+    def __getitem__(self, i):
+        return self.text[i]
+
     def add_opening_tag(self, name, attrs):
         """Add an opening tag."""
         self.tag_number += 1

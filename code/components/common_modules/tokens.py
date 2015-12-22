@@ -2,7 +2,7 @@
 
 from library import forms
 from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT
-from library.timeMLspec import EPOS, MOD, POL, EVENTID, EIID, CLASS
+from library.timeMLspec import EPOS, POS_PREP, MOD, POL, EVENTID, EIID, CLASS
 from utilities import logger
 from components.evita.event import Event
 from components.evita.gramChunk import GramNChunk, GramAChunk, GramVChunkList
@@ -12,17 +12,18 @@ from components.common_modules.constituent import Constituent
 class Token(Constituent):
 
     def __init__(self, document, pos, lid=0, lex=None):
-        """Initialize with Document instance, a part-of-speech, an identifier and a
-        instance of XmlDocElement with tag=lex (from the FragmentConverter). Some
-        instance variables will be filled in later, depending on what the Token
-        is used for."""
+        """Initialize with Document instance, a part-of-speech, an identifier
+        and an instance of XmlDocElement with tag=lex (which came from the
+        FragmentConverter). Some instance variables will be filled in later,
+        depending on what the Token is used for."""
         self.pos = pos
         self.lid = lid
         self.lex = lex
+        self.dtrs = []
         self.event = None
         self.textIdx = None
         self.document = document
-        self.position = None
+        self.position = None       # does not appear to be used on Token
         self.parent = None
         self.gramchunk = None
         self.checkedEvents = False
@@ -82,15 +83,15 @@ class Token(Constituent):
 
     def isPreposition(self):
         """Return True if self is a preposition and False if not."""
-        # TODO: perhaps needs a non-hard-coded value.
-        return self.pos == 'IN'
+        # TODO: note that this returns False if self is 'to' as in 'to the barn'
+        return self.pos == POS_PREP
 
     def createEvent(self, tarsqidoc):
-        """Do nothing when an AdjectiveToken or Token is asked to create an event.
-        Potential adjectival events are processed from the VerbChunk using the
-        createAdjEvent() method. Do not log a warning since it is normal for a
-        Token to be asked this. Note that a warning is logged on createEvent()
-        on Constituent."""
+        """Do nothing when an AdjectiveToken or Token is asked to create an
+        event. Potential adjectival events are processed from the VerbChunk
+        using the createAdjEvent() method. Do not log a warning since it is
+        normal for a Token to be asked this. Note that this method exists
+        because a warning is logged on createEvent() on Constituent."""
         pass
 
     def debug_string(self):
@@ -103,8 +104,10 @@ class Token(Constituent):
     def pretty_print(self, indent=0):
         event_string = ''
         if self.event:
-            event_string = ' event="' + str(self.event_tag.attrs) + '"'
-        print "%s<%s lid=\"%s\" pos=\"%s\" text=\"%s\"%s>" % \
+            eid = self.event_tag.attrs.get('eid')
+            eiid = self.event_tag.attrs.get('eiid')
+            event_string = " eid=%s eiid=%s" % (eid, eiid)
+        print "%s<%s lid=%s pos=%s text=%s%s>" % \
             (indent * ' ', self.__class__.__name__,
              self.lid, self.pos, self.getText(), event_string)
 
@@ -113,8 +116,9 @@ class AdjectiveToken(Token):
 
     def __init__(self, document, pos, lid=0, lex=None):
         Token.__init__(self, document, pos, lid, lex)
-        self.event = None
-        self.eid = None
+        self.event = None      # set to True if self is wrapped in an EventTag
+        self.eid = None        # the eid of the EventTag
+        self.event_tag = None  # contains the EventTag
 
     def __getattr__(self, name):
         """(Slinket method) Used by Sentence._match. Needs cases for all instance

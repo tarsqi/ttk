@@ -5,11 +5,6 @@ evita only loads some verbal event cases.
 
 Usage:
 
-$ python ttk_regression.py --create-event-vg-cases
-
-   Creates test cases from cases/input/timebank-events-vg.txt and puts them in
-   cases/cases-evita-vg.tab
-   
 $ python ttk_regression.py --evita
 
    Runs all available Evita tests and stores the results in directories
@@ -22,9 +17,13 @@ $ python ttk_regression.py --report
    
 $ python ttk_regression.py --purge TEST_CASE TIMESTAMP
 
-   Purge the resuts data for a particular test case at a particular timestamp.
+   Purge the resuts data for a particular test case at a particular timestamp
+   and update the report. An example test case would be evita-vg.
 
+$ python ttk_regression.py --create-event-vg-cases
 
+   Creates test cases from cases/input/timebank-events-vg.txt and puts them in
+   cases/cases-evita-vg.tab. THis needs to be run only once.
 
 Each line in a file with test cases represents one case, where a case is a
 single string associated with two offsets. The line is tab-separated and has the

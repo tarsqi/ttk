@@ -5,9 +5,224 @@ import re
 from xml.sax.saxutils import escape, quoteattr
 
 from utilities.xml_utils import emptyContentString
+from components.common_modules.sentence import Sentence
+from components.common_modules.chunks import NounChunk, VerbChunk
+from components.common_modules.tokens import Token, AdjectiveToken
+from components.common_modules.tags import EventTag, InstanceTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import ALINK, SLINK, TLINK
+from library.timeMLspec import POS_ADJ
+
+
+def create_document_from_tarsqi_doc_element(element):
+    """Return an instance of Document, using the tags in element, which is an
+    instance of TarsqiDocElement or a subclass."""
+    top_node = Node(begin=element.begin, end=element.end)
+    for tag in (element.tarsqi_tags.find_tags('s') +
+                element.tarsqi_tags.find_tags('NG') +
+                element.tarsqi_tags.find_tags('VG') +
+                element.tarsqi_tags.find_tags('lex') +
+                element.tarsqi_tags.find_tags('EVENT') +
+                element.tarsqi_tags.find_tags('TIMEX3')):
+        top_node.insert(tag)
+    top_node.set_positions()
+    # TODO: merge 2nd and 3rd arguments?
+    doc = Document(element.doc.source.filename, element.doc, element)
+    top_node.add_to_doc(doc, doc)
+    doc.sentenceList = doc.dtrs
+    #doc.pp()
+    return doc
+
+
+class Node(object):
+
+    """This class is used to build a temporary hierarchical structure from instances
+    of docmodel.source_parser.Tag. It is also used to turn that structure into a
+    Document instance, with Sentence, NounChunk, VerbChunk, AdjectiveToken,
+    Token, TimexTag and EventTag elements in the hierarchy."""
+
+    # Having a higher order means that a tag x will be including tag y if x and
+    # y have the same extent.
+    order = { 'Document': 5, 's': 4, 'NG': 3,'VG': 3, 'EVENT': 2, 'TIMEX3': 2, 'lex': 1 }
+
+    def __init__(self, tag=None, name='Document', parent=None, begin=None, end=None):
+        self.name = name
+        self.document = None
+        self.parent = parent
+        self.position = None     # position in the parent's dtr list
+        self.dtrs = []
+        self.begin = begin
+        self.end = end
+        self.tag = tag
+        if tag is not None:
+            self.begin = tag.begin
+            self.end = tag.end
+            self.name = tag.name
+
+    def __str__(self):
+        lemma = ''
+        if self.tag is not None and self.tag.attrs.has_key('lemma'):
+            lemma = ' "' + self.tag.attrs['lemma'] + '"'
+        return "<Node %s %d-%d%s>" % (self.name, self.begin, self.end, lemma)
+
+    def insert(self, tag):
+        """Insert a tag in the node. This could be insertion in one of the node's
+        daughters, or insertion in the node's daughters list. Print a warning if
+        the tag cannot be inserted."""
+        # first check if tag offsets fit in self offsets
+        if tag.begin < self.begin or tag.end > self.end:
+            print "WARNING: cannot insert tag because " \
+                + "its boundaries are outside of the nodes boundaries"
+        # add tag as first daughter if there are no daughters
+        elif not self.dtrs:
+            self.dtrs.append(Node(tag, parent=self))
+        else:
+            # find the index of the daughter that the tag would fit in and
+            # insert the tag into the daughter
+            idx = self._find_dtr_idx(tag)
+            if idx is not None:
+                self._insert_tag_into_dtr(tag, idx)
+            else:
+                # otherwise, find the insert point for the tag and insert it in
+                # the dtrs list
+                dtrs_idx = self._find_gap_idx(tag)
+                if dtrs_idx is not None:
+                    self.dtrs.insert(dtrs_idx, Node(tag, parent=self))
+                else:
+                    # otherwise, find the span of dtrs that the tag includes,
+                    # replace the span with the tag and insert the span into the
+                    # tag
+                    span = self._find_span_idx(tag)
+                    if span:
+                        self._replace_span_with_tag(tag, span)
+                    else:
+                        # print warning if the tag cannot be inserted
+                        print "WARNING: cannot insert tag because it overlaps with other tags."
+
+    def _insert_tag_into_dtr(self, tag, idx):
+        """Insert the tag into the dtr at self.dtrs[idx]. But take care of the situation
+        where the dtr and the tag have the same extent, in which case we need to
+        check the specified order and perhaps replace the dtr with the tag and
+        insert the dtr into the tag."""
+        dtr = self.dtrs[idx]
+        if dtr.begin == tag.begin and dtr.end == tag.end:
+            if Node.order.get(dtr.name) > Node.order.get(tag.name):
+                dtr.insert(tag)
+            else:
+                new_dtr = Node(tag, parent=self)
+                new_dtr.dtrs = [dtr]
+                dtr.parent = new_dtr
+                self.dtrs[idx] = new_dtr
+        else:
+            dtr.insert(tag)
+
+    def _replace_span_with_tag(self, tag, span):
+        """Replace the span of dtrs with the tag and add the span as dtrs to the tag."""
+        span_elements = [self.dtrs[i] for i in span]
+        new_node = Node(tag, parent=self)
+        new_node.dtrs = span_elements
+        for element in span_elements:
+            element.parent = new_node
+        self.dtrs[span[0]:span[-1]+1] = [new_node]
+
+    def _find_dtr_idx(self, tag):
+        """Return the idex of the daughter node that can include the tag, return
+        None is there is no such node."""
+        for i in range(len(self.dtrs)):
+            dtr = self.dtrs[i]
+            if dtr.begin <= tag.begin and dtr.end >= tag.end:
+                return i
+        return None
+
+    def _find_gap_idx(self, tag):
+        """Return the index in the daughters list where the tag can be inserted,
+        meaning that tag.begin is after the end of the previous element and that
+        tag.end is before the begin of the next element. Return None if there is
+        no point where the tag can be inserted."""
+        for i in range(len(self.dtrs)):
+            dtr = self.dtrs[i]
+            # the tag fits in the gap before the dtr, we already know that the
+            # tag does not overlap with previous dtrs (next case), so we can
+            # return the index
+            if dtr.begin >= tag.end:
+                return i
+            # this takes care of the case where the tag overlaps with a dtr, in
+            # which case the tag does not fit in a gap
+            if dtr.end > tag.begin:
+                return None
+        # if we fall through we can return the last offset
+        return i + 1
+
+    def _find_span_idx(self, tag):
+        """Returns a list of indices of the dtrs that fit inside the tag. Returns an
+        empty list if there are no dtrs that fit. Also returns an empty list if
+        the begin or end of the tag is inside a dtr (this indicates a crossing
+        tag, the case where the tag is inside one dtr was already dealt
+        with)."""
+        span = []
+        for i in range(len(self.dtrs)):
+            dtr = self.dtrs[i]
+            # the daughter fits in the tag, append it to the span
+            if dtr.begin >= tag.begin and dtr.end <= tag.end:
+                span.append(i)
+            # the begin or end of the tag is inside of a daughter, in that case
+            # we have a crossing dependendy and don't really want this to
+            # succeed
+            if dtr.begin < tag.begin < dtr.end \
+               or dtr.begin < tag.end < dtr.end:
+                return []
+        return span
+
+    def set_positions(self):
+        """For each daughter, set its position variable to its index in the
+        self.dtrs list, the recurse for the daughter. These positions will later
+        be handed in to the Document elements (Sentence, VerbChunk, EventTag,
+        Token etcetera)."""
+        for idx in range(len(self.dtrs)):
+            dtr = self.dtrs[idx]
+            dtr.position = idx
+            dtr.set_positions()
+
+    def add_to_doc(self, doc_element, document):
+        for dtr in self.dtrs:
+            doc_element_dtr = dtr.as_doc_element(document)
+            doc_element_dtr.parent = doc_element
+            if doc_element_dtr.isAdjToken() and doc_element.isEvent():
+                doc_element_dtr.event = True
+                doc_element_dtr.event_tag = doc_element
+            doc_element.dtrs.append(doc_element_dtr)
+            dtr.add_to_doc(doc_element_dtr, document)
+
+    def as_doc_element(self, document):
+        """Create an instance of Sentence, NounChunk, VerbChunk, EventTag,
+        TimexTag, Token or AdjectiveToken."""
+        if self.name == 's':
+            doc_element = Sentence()
+        elif self.name == 'NG':
+            doc_element = NounChunk('NG')
+        elif self.name == 'VG':
+            doc_element = VerbChunk('VG')
+        elif self.name == 'lex':
+            pos = self.tag.attrs['pos']
+            word = document.tarsqidoc.source[self.begin:self.end]
+            if pos.startswith(POS_ADJ):
+                doc_element = AdjectiveToken(document, pos)
+            else:
+                doc_element = Token(document, pos)
+            doc_element.text = word
+        elif self.name == 'EVENT':
+            doc_element = EventTag(self.tag.attrs)
+        elif self.name == 'TIMEX3':
+            doc_element = TimexTag(self.tag.attrs)
+        doc_element.position = self.position
+        return doc_element
+
+    def pp(self, indent=0):
+        print "%s%s" % (indent * '  ', self)
+        for dtr in self.dtrs:
+            dtr.pp(indent + 1)
+
 
 
 class Document:
@@ -15,7 +230,11 @@ class Document:
     """Implements the shallow tree that is input to some of the Tarsqi components.
 
     Instance variables
-    
+
+        tarsqidoc - the TarsqiDocument instance that the document is part of
+                    (this is the link back to the SourceDoc with the text)
+        tarsqidocelement
+
         nodeList - a list of strings, each representing a document element
         sentenceList - a list of Sentences
         nodeCounter - an integer
@@ -52,10 +271,13 @@ class Document:
     position in the document it occurrs)."""
 
 
-    def __init__(self, fileName):
+    def __init__(self, fileName, tarsqidoc=None, tarsqidocelement=None):
         """Initialize all dictionaries, list and counters and set the file name."""
+        self.tarsqidoc = tarsqidoc
+        self.tarsqidocelement = tarsqidocelement
         self.nodeList = []
         self.sentenceList = []
+        self.dtrs = []                    # used intially as stand in for sentenceList by Node
         self.nodeCounter = 0
         self.sourceFileName = fileName
         self.taggedEventsDict = {}        # used by slinket's event parser
@@ -80,10 +302,6 @@ class Document:
     def __getitem__(self, index):
         """Indexing occurs on the sentenceList variable."""
         return self.sentenceList[index]
-
-    def __getslice__(self, i, j):
-        """Slice from the sentenceList variable."""
-        return self.sentenceList[i:j]
 
     def addDocNode(self, string):
         """Add a node to the document's nodeList. Inserts it at the location
@@ -189,8 +407,18 @@ class Document:
             self.slink_list.append(SlinkTag(linkAttrs))
         elif linkType == TLINK:
             self.tlink_list.append(TlinkTag(linkAttrs))
-                                   
-        
+
+
+    def get_events(self, result=None):
+        # TODO: this is also defined on Sentence and Document
+        if result is None:
+            result = []
+        for dtr in self.dtrs:
+            if dtr.isEvent():
+                result.append(dtr)
+            dtr.get_events(result)
+        return result
+
     def _getNextTimexID(self):
         tids = []
         re_tid = re.compile('tid="t(\d+)"')
@@ -257,31 +485,26 @@ class Document:
         """Pretty printer that prints all instance variables and a neat representation of
         the sentence list."""
         print "\n<Document sourceFilename=%s>\n" % self.sourceFileName
-        print 'nodeCounter', self.nodeCounter
-        print 'taggedEventsDict =', self.taggedEventsDict
-        #self.pretty_print_tagged_events_dict()
-        print 'instanceCounter =', self.instanceCounter
-        print 'insertDict =', self.insertDict
-        print 'eventCount =', self.eventCount
-        print 'alinkCount =', self.alinkCount
-        print 'slinkCount =', self.slinkCount
-        print 'tlinkCount =', self.tlinkCount
-        print 'linkCount =', self.linkCount
-        print 'postionCount =', self.positionCount
-        print 'nodeList[:10] =', self.nodeList[:10]
-        print 'sentenceList[:2] =', self.sentenceList[:2]
-        print 'event_dict =', self.event_dict
-        print 'instance_dict =', self.instance_dict
-        print 'alink_list =', self.alink_list
-        print 'slink_list =', self.slink_list
-        print 'tlink_list =', self.tlink_list
+        print "  len(nodeList)=%s len(sentenceList)=%s" \
+            % (len(self.nodeList), len(self.sentenceList))
+        print "  nodeCounter=%s instanceCounter=%s eventCount=%s postionCount=%s" \
+            % (self.nodeCounter, self.instanceCounter, self.eventCount, self.positionCount)
+        print "  alinkCount=%s slinkCount=%s tlinkCount=%s" \
+            % (self.alinkCount, self.slinkCount, self.tlinkCount)
+        self.pretty_print_tagged_events_dict()
+        print '  insertDict =', self.insertDict
+        print "  len(event_dict)=%s len(instance_dict)=%s" \
+            % (len(self.event_dict), len(self.instance_dict))
+        print '  alink_list =', self.alink_list
+        print '  slink_list =', self.slink_list
+        print '  tlink_list =', self.tlink_list
         self.pretty_print_sentences()
 
     def pretty_print_tagged_events_dict(self):
-        print 'taggedEventsDict'
+        print '  taggedEventsDict'
         eids = sorted(self.taggedEventsDict.keys())
         for eid in eids:
-            print ' ', eid, '=> {',
+            print '   ', eid, '=> {',
             attrs = self.taggedEventsDict[eid].keys()
             attrs.sort()
             for attr in attrs:
