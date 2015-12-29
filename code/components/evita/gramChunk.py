@@ -110,13 +110,10 @@ class GramChunk:
         """Debugging method to print the GramChunk and its features."""
         return \
             "%s: %s\n" % (self.__class__.__name__, self.node.getText()) + \
-            "\tTENSE: %s\n" % self.tense + \
-            "\tASPECT: %s\n" % self.aspect + \
-            "\tNF_MORPH: %s\n" % self.nf_morph + \
-            "\tMODALITY: %s\n" % self.modality + \
-            "\tPOLARITY: %s\n" % self.polarity + \
-            "\tHEAD: %s\n" % self.head.getText() + \
-            "\tCLASS: %s\n" % self.evClass
+            "\tTENSE=%s ASPECT=%s HEAD=%s CLASS=%s\n" \
+            % (self.tense, self.aspect, self.head.getText(), self.evClass) + \
+            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" % (self.nf_morph, self.modality, self.polarity) + \
+            "\tHEAD=%s CLASS=%s\n" % (self.head.getText(), self.evClass)
 
 
 class GramAChunk(GramChunk):
@@ -642,15 +639,12 @@ class GramVChunk(GramChunk):
             head_string = ''
         return \
             opening_string + "\n" + \
+            "\tTENSE=%s ASPECT=%s HEAD=%s CLASS=%s\n" \
+            % (self.tense, self.aspect, self.head.getText(), self.evClass) + \
+            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" \
+            % (self.nf_morph, self.modality, self.polarity) + \
             "\tNEGATIVE:" + str(getWordList(self.negative)) + "\n" + \
             "\tINFINITIVE:" + str(getWordList(self.infinitive)) + "\n" + \
             "\tADVERBS-pre:" + str(getWordList(self.adverbsPre)) + "\n" + \
             "\tADVERBS-post:%s%s\n" % (getWordList(self.adverbsPost), getPOSList(self.adverbsPost)) + \
-            "\tTRUE CHUNK:%s%s\n" % (getWordList(self.trueChunk), getPOSList(self.trueChunk)) + \
-            "\tTENSE:" + self.tense + "\n" + \
-            "\tASPECT:" + self.aspect + "\n" + \
-            "\tNF_MORPH:" + self.nf_morph + "\n" + \
-            "\tMODALITY:" + self.modality + "\n" + \
-            "\tPOLARITY:" + self.polarity + "\n" + \
-            "\tHEAD:" + head_string + "\n" + \
-            "\tCLASS:" + str(self.evClass)
+            "\tTRUE CHUNK:%s%s\n" % (getWordList(self.trueChunk), getPOSList(self.trueChunk))

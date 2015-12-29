@@ -1,4 +1,4 @@
-from string import lower
+#from string import lower
 
 from library.timeMLspec import EIID, TENSE, ASPECT, EPOS, POL, MOD, CLASS, POS, FORM, STEM
 from library.timeMLspec import VERB, NOUN, ADJECTIVE
@@ -8,8 +8,7 @@ from utilities import logger
 
 class EventExpression:
 
-    """Class that wraps an event in a way that's convenient for
-    Slinket.
+    """Class that wraps an event in a way that's convenient for Slinket.
 
     Instance variables:
 
@@ -33,17 +32,21 @@ class EventExpression:
                     be used
        
     """
-    
-    def __init__(self, eid, locInSent, eventNum, dict):
+
+    # TODO: move this class to main.py, it is not worthy of having its own
+    # module and many if not all of the needed imports are done there as well.
+
+
+    def __init__(self, eid, locInSent, eventNum, event_attributes):
         """Set all attributes, using default values if appropriate.
         Arguments:
            eid - a string
            locInSent - an integer
            eventNum - an integer
            dict - a dictionary with event attributes"""
-        self.isSlinking = 0
-        self.dict = dict
-        logger.debug("DICT VALUE:"+str(self.dict))
+        self.locInSent = locInSent
+        self.eventNum = eventNum
+        self.dict = event_attributes
         self.eid = eid
         self.eiid = self.get_event_attribute(EIID)
         self.tense = self.get_event_attribute(TENSE)
@@ -54,65 +57,60 @@ class EventExpression:
         self.evClass = self.get_event_attribute(CLASS)
         self.pos = self.get_event_attribute(POS)
         self.form = self.get_event_attribute(FORM)
-        self.locInSent = locInSent
-        self.eventNum = eventNum 
+        #self.isSlinking = 0
+
+    def as_verbose_string(self):
+        return \
+            "%s: %s\n" % (self.__class__.__name__, self.form) + \
+            "\tpos=%s TENSE=%s ASPECT=%s CLASS=%s\n" \
+            % (self.pos, self.tense, self.aspect, self.evClass) + \
+            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" \
+            % (self.nf_morph, self.modality, self.polarity) + \
+            "\tCLASS=%s locInSent=%s eventNum=%s\n" \
+            % (self.evClass, self.locInSent, self.eventNum)
 
     def get_event_attribute(self, attr, optional=False):
-        """Return the value of an attribute from self.dict. If the attribute
-        is not in the dictionary, then (i) return a default value, and
-        (ii) write an error if the attribute is not optinal.
-        Arguments:
-           attr - a string
-           optional - a boolean"""
-        try:
-            return self.dict[attr]
-        except KeyError:
-            if not optional:
-                logger.error("No %s attribute for current event" % attr)
-            if attr == POL: return 'POS'
-            return None
+        """Return the value of an attribute 'attr' from self.dict. If the attribute is
+        not in the dictionary, then (i) return a default value if there is one,
+        and (ii) write an error if the attribute is not optional."""
+        val = self.dict.get(attr)
+        if val is None and not optional:
+            logger.error("No %s attribute for current event" % attr)
+        if val is None and attr == POL:
+            val = 'POS'
+        return val
+
+    def pp(self):
+        self.pretty_print()
         
     def pretty_print(self):
-        """Print all attributes to the log file."""
-        logger.debug(str(self))
-        logger.debug("eid: "+self.eid)
-        logger.debug("eiid: "+self.eiid)
-        logger.debug("tense: "+self.tense)
-        logger.debug("aspect: "+self.aspect)
-        logger.debug("epos: "+self.nf_morph) #("nf_morph: "+self.nf_morph)
-        logger.debug("polarity: "+str(self.polarity))
-        logger.debug("modality: "+str(self.modality))
-        logger.debug("evClass: "+self.evClass)
-        logger.debug("pos: "+self.pos)
-        logger.debug("form: "+self.form)
-        logger.debug("locInSent: "+str(self.locInSent))
-        logger.debug("eventNum: "+str(self.eventNum))
+        print self.as_verbose_string()
 
     def can_introduce_alink(self):
-        """Returns True if the EventExpression instance can introduce an
-        Alink, False otherwise. This ability is determined by a
-        dictionary lookup."""
-        if self.nf_morph == VERB and lower(self.form) in SLINKET_DICTS.alinkVerbsDict.keys():
-            return True
-        if self.nf_morph == NOUN and lower(self.form) in SLINKET_DICTS.alinkNounsDict.keys():
-            return True
+        """Returns True if the EventExpression instance can introduce an Alink, False
+        otherwise. This ability is determined by dictionary lookup."""
+        form = self.form.lower()
+        if self.nf_morph == VERB:
+            return SLINKET_DICTS.alinkVerbsDict.has_key(form)
+        if self.nf_morph == NOUN:
+            return SLINKET_DICTS.alinkNounsDict.has_key(form)
         return False
 
     def can_introduce_slink(self):
-        """Returns True if the EventExpression instance can introduce an
-        Slink, False otherwise. This ability is determined by a
-        dictionary lookup."""
-        if self.nf_morph == VERB and lower(self.form) in SLINKET_DICTS.slinkVerbsDict.keys():
-            return True
-        if self.nf_morph == NOUN and lower(self.form) in SLINKET_DICTS.slinkNounsDict.keys():
-            return True
-        if self.nf_morph == ADJECTIVE and lower(self.form) in SLINKET_DICTS.slinkAdjsDict.keys():
-            return True
+        """Returns True if the EventExpression instance can introduce an Slink, False
+        otherwise. This ability is determined by dictionary lookup."""
+        form = self.form.lower()
+        if self.nf_morph == VERB:
+            return SLINKET_DICTS.slinkVerbsDict.has_key(form)
+        if self.nf_morph == NOUN:
+            return SLINKET_DICTS.slinkNounsDict.has_key(form)
+        if self.nf_morph == ADJECTIVE:
+            return SLINKET_DICTS.slinkAdjsDict.has_key(form)
         return False
 
     def alinkingContexts(self, key):
         """Returns the list of alink patterns from the dictionary."""
-        form = lower(self.form)
+        form = self.form.lower()
         if self.nf_morph == VERB:
             pattern_dictionary = SLINKET_DICTS.alinkVerbsDict
         elif self.nf_morph == NOUN:
@@ -121,14 +119,10 @@ class EventExpression:
             logger.warn("SLINKS of type "+str(key)+" for EVENT form "+str(form)+" should be in the dict")
             return []
         return pattern_dictionary.get(form,{}).get(key,[])
-        #if pattern_dictionary.has_key(form):
-        #    return pattern_dictionary[form].get(key,[])
-        #else:
-        #    return []
         
     def slinkingContexts(self, key):
         """Returns the list of slink patterns from the dictionary."""
-        form = lower(self.form)
+        form = self.form.lower()
         if self.nf_morph == VERB:
             pattern_dictionary = SLINKET_DICTS.slinkVerbsDict
         elif self.nf_morph == NOUN:
@@ -139,7 +133,3 @@ class EventExpression:
             logger.warn("SLINKS of type "+str(key)+" for EVENT form "+str(form)+" should be in the dict")
             return []
         return pattern_dictionary.get(form,{}).get(key,[])
-        #if pattern_dictionary.has_key(form):
-        #    return pattern_dictionary[form].get(key,[])
-        #else:
-        #    return []

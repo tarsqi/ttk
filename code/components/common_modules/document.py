@@ -27,10 +27,12 @@ def create_document_from_tarsqi_doc_element(element):
                 element.tarsqi_tags.find_tags('TIMEX3')):
         top_node.insert(tag)
     top_node.set_positions()
+    top_node.set_event_markers()
     # TODO: merge 2nd and 3rd arguments?
     doc = Document(element.doc.source.filename, element.doc, element)
     top_node.add_to_doc(doc, doc)
     doc.sentenceList = doc.dtrs
+    #top_node.pp()
     #doc.pp()
     return doc
 
@@ -52,6 +54,7 @@ class Node(object):
         self.parent = parent
         self.position = None     # position in the parent's dtr list
         self.dtrs = []
+        self.event_dtr = None
         self.begin = begin
         self.end = end
         self.tag = tag
@@ -184,6 +187,13 @@ class Node(object):
             dtr.position = idx
             dtr.set_positions()
 
+    def set_event_markers(self):
+        """Set the self.event_dtrs variable if one of the dtrs is an event."""
+        # NOTE: this is problematic if there is more than one event
+        for dtr in self.dtrs:
+            self.event_dtr = dtr if dtr.name == 'EVENT' else None
+            dtr.set_event_markers()
+
     def add_to_doc(self, doc_element, document):
         for dtr in self.dtrs:
             doc_element_dtr = dtr.as_doc_element(document)
@@ -216,6 +226,10 @@ class Node(object):
         elif self.name == 'TIMEX3':
             doc_element = TimexTag(self.tag.attrs)
         doc_element.position = self.position
+        if self.event_dtr is not None:
+            doc_element.event = 1
+            doc_element.eid = self.event_dtr.tag.attrs['eid']
+            doc_element.eiid = self.event_dtr.tag.attrs['eiid']
         return doc_element
 
     def pp(self, indent=0):

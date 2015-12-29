@@ -49,7 +49,7 @@ class Constituent:
             self.parent.setCheckedEvents()
 
     def getText(self):
-        logger.warn("Unexpected recipient of getText")
+        logger.warn("Unexpected recipient of getText: %s" % self)
 
     def nextNode(self):
         """Return the right sibling in the tree or None if there is none. Works nicely
@@ -109,7 +109,7 @@ class Constituent:
         This method is also implemented in the chunkAnalyzer.GramChunk class and
         the Chunk class"""
 
-        logger.debug(str(chunkDescription))
+        #logger.debug(str(chunkDescription))
         for feat in chunkDescription.keys():
             value = chunkDescription[feat]
             if type(value) is TupleType:
@@ -167,10 +167,9 @@ class Constituent:
 
         
     def find_forward_alink(self, fsa_reltype_groups):
-
         """Search for an alink to the right of the event. Return True
         is event was found, False otherwise."""
-
+        logger.debug("len(fsa_reltype_groups) = %s" % len(fsa_reltype_groups))
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
         alinkedEventContext = self.parent[self.position+1:]
@@ -237,6 +236,7 @@ class Constituent:
                [ [ [fsa, fsa, ...], [fsa, fsa, ...], ...],
                  [ reltype, reltype, ... ] ] """
 
+        logger.debug("len(fsa_reltype_groups) = %s" % len(fsa_reltype_groups))
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
         event_context = self.parent[self.position+1:]
@@ -351,9 +351,12 @@ class Constituent:
 
         fsaCounter = -1 
         for fsa in fsa_list:
+            logger.debug("Applying FSA %s" % fsa.fsaname)
+            #print "Applying FSA %s" % fsa.fsaname
             fsaCounter += 1
             lenSubstring = fsa.acceptsShortestSubstringOf(sentence_slice)
             if lenSubstring:
+                logger.debug("FSA %s matched" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
         return (0, fsaCounter)
 

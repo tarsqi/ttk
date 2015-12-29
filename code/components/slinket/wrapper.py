@@ -11,27 +11,16 @@ from utilities import logger
 
 
 class SlinketWrapper:
+    """Wrapper for Slinket."""
 
-    """Wrapper for Slinket. """
-
-
-    def __init__(self, document):
-
+    def __init__(self, tarsqi_document):
         self.component_name = SLINKET
-        self.document = document
-        
+        self.document = tarsqi_document
         
     def process(self):
-
-        """Retrieve the XmlDocument and hand it to Slinket for processing. Slinket
-        processing will update this slice when events are added."""
-
+        """Create a Document instance for each TarsqiDocElement hand them to Slinket for
+        processing. Slinket processing will update the tags in the TarsqiDocElement when
+        slinks are added."""
         for element in self.document.elements:
-            #element.tarsqi_tags.pp()
             doc = document.create_document_from_tarsqi_doc_element(element)
-            Slinket().process_doctree(doc)
-
-        #xmldocs = [self.document.xmldoc]
-        #for xmldoc in xmldocs:
-        #    xmldoc.reset()
-        #    Slinket().process_xmldoc(xmldoc)
+            Slinket().process_doctree(doc, element)

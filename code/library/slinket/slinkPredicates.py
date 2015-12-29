@@ -36,6 +36,8 @@ Each entry in the Predicate Dictionaries has the following structure:
 
 """
 
+# TODO: it looks like when these dictionaries are pickled, the values of
+# 'acceptance' and 'acceptances' are going to be equal. Check this out.
 
 nounDict = {
     #ABILITY

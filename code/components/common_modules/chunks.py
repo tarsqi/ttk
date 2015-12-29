@@ -178,11 +178,9 @@ class Chunk(Constituent):
         # TODO: removing this method had no impact on Evita, find out why, but
         # note that it might impact Slinket
 
-        #print chunkDescription
-        logger.debug(str(chunkDescription))
+        #logger.debug(str(chunkDescription))
         for feat in chunkDescription.keys():
             value = chunkDescription[feat]
-            #print feat
             #print feat, type(value), value
             if type(value) is TupleType:
                 if value[0] == '^':
@@ -219,6 +217,8 @@ class Chunk(Constituent):
     def embedded_event(self):
         """Returns the embedded event of the chunk if it has one, returns None
         otherwise."""
+        # TODO: check whether this is needed outside of the arglinker
+        # NOTE: yes, it is used to get the events for slinket
         for item in self:
             if item.isEvent():
                 return item
@@ -336,13 +336,14 @@ class VerbChunk(Chunk):
     # The following methods are all from what was orginally a stand-alone Evita
     # version of this class.
 
-    def XXX_identify_substring(self, sentence_slice, fsa_list):
+    def _identify_substring(self, sentence_slice, fsa_list):
         """Similar to Constituent._identify_substring(), except that this method
         calls acceptsSubstringOf() instead of acceptsShortestSubstringOf()."""
         # TODO: Slinket threw an error when this method was included. Find out
         # if that is still the case and why this one was needed, that is, why
-        # not use the shortest substring. Update: using this results in two
-        # extra events on the evita-test2.sh regression test.
+        # not use the shortest substring.
+        # NOTE: Using this results in two extra events on the evita-test2.sh
+        # regression test. Also, it does not crash SLinket anymore.
         fsaCounter = -1
         for fsa in fsa_list:
             fsaCounter += 1
@@ -369,7 +370,7 @@ class VerbChunk(Chunk):
         sentence: either a flat, token-level representation or a chunked one."""
         logger.debug("Entering _lookForMultiChunk")
         restSentence = self._getRestSent(STRUCT)
-        if STRUCT == 'flat':                                                  
+        if STRUCT == 'flat':
             for item in restSentence:
                 logger.debug("\t "+item.getText()+" "+item.pos)
         lenSubstring, fsaNum = self._identify_substring(restSentence, FSA_set)
@@ -523,10 +524,10 @@ class VerbChunk(Chunk):
             else:
                 self.dribble("KEEP", self_text)
                 self._processEventInChunk(GramVCh)
-            
+
         else:
             self.dribble("OTHER", self_text)
-            logger.debug("[1] " + GramVCh.as_verbose_string())
+            logger.debug("General case")
             self._processEventInChunk(GramVCh)
 
 
@@ -534,13 +535,13 @@ class VerbChunk(Chunk):
         """Try to create an event in the VerbChunk. Delegates to two methods
         depending on the position of the verb in the chunk."""
 
-        logger.debug("VerbChunk.createEvent()")
         self.tarsqidoc = tarsqidoc
         GramVChList = GramVChunkList(self)
         if GramVChList.do_not_process():
             return
-        logger.debug(GramVChList[-1].as_verbose_string())
-        logger.debug("len(GramVChList) ==> %d" % len(GramVChList))
+        logger.debug("len(GramVChList) = %d" % len(GramVChList))
+        for gramchunk in GramVChList:
+            logger.debug(gramchunk.as_verbose_string())
         if len(GramVChList) == 1:
             self._createEventOnRightmostVerb(GramVChList[-1])
         else:
