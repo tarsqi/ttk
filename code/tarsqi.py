@@ -34,13 +34,6 @@ USAGE
       --stanford-parser=PATH
              path to the Stanford parser
 
-      --content_tag=STRING|BOOLEAN
-             Influences whether and how the default document parser uses a content tag to
-             limit what part of the document will be processed. If True, the parser will
-             use a list of tags defined in the docmodel.parsers module. If False, it will
-             not use a tag, if a string, it will use that tag with this name. The default
-             is True.
-         
       --trap-errors=BOOLEAN
              set error trapping, errors are trapped by default
          
@@ -158,7 +151,6 @@ class Tarsqi(ParameterMixin):
         TarsqiDocument and updates it."""
         if self._skip_file(): return
         self._cleanup_directories()
-        print self.input
         logger.info(self.input)
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
@@ -166,7 +158,10 @@ class Tarsqi(ParameterMixin):
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
         os.chdir(TTK_ROOT)
-        self.document.print_all(self.output)
+        try:
+            self.document.print_all(self.output)
+        except:
+            print "ERROR printing output"
 
     def process_string(self, input_string):
         """Parse the input string with source parser and create a TarsqiDocument
