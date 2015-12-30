@@ -21,7 +21,8 @@ class TarsqiDocument(ParameterMixin):
        elements - list of TarsqiDocElements
        metadata - a dictionary
        parameters - parameter dictionary from the Tasqi instance
-       
+       counters - a set of counters used to create unique identifiers
+
     Note that more variables will be needed. Currently, several wrappers use data from
     the Tarsqi instance, should check what these data are and get them elsewhere,
     potentially by adding them here.
@@ -39,6 +40,7 @@ class TarsqiDocument(ParameterMixin):
         self.elements = []
         self.metadata = metadata
         self.parameters = {}
+        self.counters = { 'TIMEX3': 0, 'EVENT': 0 }
 
     def __str__(self):
         return "<%s on '%s'>" % (self.__class__, self.source.filename)
@@ -66,8 +68,12 @@ class TarsqiDocument(ParameterMixin):
                 print "\nWARNING: there is no xmldoc to print"
             else:
                 self.xmldoc.pp()
-        if elements: 
+        if elements:
             for e in self.elements: e.pp()
+
+    def next_event_id(self):
+        self.counters['EVENT'] += 1
+        return "e%d" % self.counters['EVENT']
 
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file fname."""

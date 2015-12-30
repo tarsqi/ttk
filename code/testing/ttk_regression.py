@@ -23,7 +23,7 @@ $ python ttk_regression.py --purge TEST_CASE TIMESTAMP
 $ python ttk_regression.py --create-event-vg-cases
 
    Creates test cases from cases/input/timebank-events-vg.txt and puts them in
-   cases/cases-evita-vg.tab. THis needs to be run only once.
+   cases/cases-evita-vg.tab. This needs to be run only once.
 
 Each line in a file with test cases represents one case, where a case is a
 single string associated with two offsets. The line is tab-separated and has the
@@ -74,7 +74,7 @@ class Case(object):
         return "%s [%d:%d] -- %s[%s]%s" \
             % (self.identifier, o1, o2, s[:o1], s[o1:o2], s[o2:])
 
-    
+
 def create_name_generator(names):
     """Creates a function that generates unique names given an input string"""
     def name_generator(name):

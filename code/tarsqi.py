@@ -21,10 +21,10 @@ USAGE
 
       --genre=GENRE_NAME
              the genre of the file, None by default
-         
+
       --pipeline=LIST
              comma-separated list of Tarsqi components, defaults to the full pipeline
-      
+
       --perl=PATH
              path to the Perl executable
 
@@ -36,10 +36,10 @@ USAGE
 
       --trap-errors=BOOLEAN
              set error trapping, errors are trapped by default
-         
+
       --loglevel=LEVEL
              set log level to an integer from 0 to 4
-      
+
       --ignore=REGEXP
              determines wat files in a directory are skipped
 

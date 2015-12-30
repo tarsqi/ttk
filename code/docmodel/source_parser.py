@@ -415,10 +415,12 @@ class Tag:
     def is_closing_tag(self): return False
 
     def in_layer_format(self):
+        begin = " begin=\"%s\"" % self.begin if self.begin >= 0 else ''
+        end = " end=\"%s\"" % self.end if self.end >= 0 else ''
         nodes = '' if not self.nodes else " targets=\"%s %s\"" % (self.nodes[0], self.nodes[-1])
-        return "<%s id=%s begin=\"%s\" end=\"%s\"%s%s />" % \
+        return "<%s id=%s%s%s%s%s />" % \
             (self.name, quoteattr(str(self.id)), 
-             self.begin, self.end, nodes, self.attributes_as_string())
+             begin, end, nodes, self.attributes_as_string())
 
     def as_lex_xml_string(self, text):
         return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \

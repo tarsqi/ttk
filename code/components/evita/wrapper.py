@@ -24,4 +24,4 @@ class EvitaWrapper:
         approach that assumes that all document elements are processed the same
         way."""
         for element in self.document.elements:
-            Evita().process_element(element)
+            Evita(self.document).process_element(element)

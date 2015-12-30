@@ -382,11 +382,15 @@ class Document:
         return self
 
     def addEvent(self, event):
-        """Adds an Event to the document."""
-        eventID = self._getNextEventID()
+        """Adds an Event to the XML document."""
+        # with the current implementation, there is always one instance per
+        # event, so we just reuse the eventID for theinstanceID.
+        # TODO: delete this once we update the TarsqiDocElement directly
+        eventID = self.tarsqidoc.next_event_id()
+        instanceID = "ei%s" % eventID[1:]
         event.attrs["eid"] = eventID 
         for instance in event.instanceList:
-            instance.attrs["eiid"] = self._getNextInstanceID()
+            instance.attrs["eiid"] = instanceID
             instance.attrs["eventID"] = eventID
         event.addToXmlDoc()
 
@@ -449,24 +453,13 @@ class Document:
             next_id = 1
         return "t%d" % next_id
 
-    def _getNextEventID(self):
-        """Increment eventCount and return a new unique eid. Assumes that all events are
-        added using this method, otherwise, non-unique eids could be assigned."""
-        self.eventCount += 1
-        return "e"+str(self.eventCount) 
-        
-    def _getNextInstanceID(self):
-        """Increment eventCount and return a new unique eiid. Assumes that all instances
-        are added using this method, otherwise, non-unique eiids could be assigned."""
-        self.instanceCounter += 1
-        return "ei"+str(self.instanceCounter)
-
     def _getNextLinkID(self, linkType):
         """Return a unique lid. The linkType argument is one of {ALINK,SLINK,TLINK} and
         has no influence over the lid that is returned but determines what link counter is
         incremented. Assumes that all links are added using the link counters in the
         document. Breaks down if there are already links added without using those
         counters. """
+        # TODO: move this to TarsqiDocument
         if linkType == ALINK:
             return self._getNextAlinkID()
         elif linkType == SLINK:
@@ -478,16 +471,19 @@ class Document:
 
     def _getNextAlinkID(self):
         """Increment alinkCount and return a new unique lid."""
+        # TODO: move this to TarsqiDocument
         self.alinkCount += 1
         return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
     
     def _getNextSlinkID(self):
         """Increment slinkCount and return a new unique lid."""
+        # TODO: move this to TarsqiDocument
         self.slinkCount += 1
         return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
 
     def _getNextTlinkID(self):
         """Increment tlinkCount and return a new unique lid."""
+        # TODO: move this to TarsqiDocument
         self.tlinkCount += 1
         return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
 

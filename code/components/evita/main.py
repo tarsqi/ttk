@@ -20,13 +20,13 @@ class Evita (TarsqiComponent):
     """Class that implements Evita's event recognizer. Instance variables: NAME: a string,
     doctree: a Document instance. """
 
-    def __init__(self):
+    def __init__(self, tarsqidoc=None):
         """Set the NAME instance variable. The xmldoc and doctree variables are
         filled in during processing."""
         self.NAME = EVITA
         self.xmldoc = None
-        self.doctree = None    # instance of Document
-        self.tarsqidoc = None  # instance of TarsqiDocument
+        self.doctree = None         # instance of Document
+        self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
 
     def process_file(self, infile, outfile):
         """Process a fragment file and write a file with EVENT tags. The two arguments are
@@ -43,12 +43,15 @@ class Evita (TarsqiComponent):
         self.doctree = FragmentConverter(self.xmldoc).convert()
         self.extractEvents()
         return self.xmldoc
-        
+
     def process_string(self, xmlstring):
         """Process a fragment string and return a string with EVENT tags. Takes a string
         as its sole argument, throws an error if this string is not well-formed XML."""
         self.xmldoc = Parser().parse_string(xmlstring)
         self.doctree = FragmentConverter(self.xmldoc).convert()
+        # added to hand in the tarsqi document
+        # TODO: see comment below
+        self.doctree.tarsqidoc = self.tarsqidoc
         self.extractEvents()
         return self.xmldoc.toString()
 
@@ -60,6 +63,7 @@ class Evita (TarsqiComponent):
         the tag repository on the element."""
         # with this we have direct access to the TarsqiDocument and
         # extractEvents can then use it
+        # TODO: this did not seem to work and therefore added to process_string
         self.tarsqidoc = element.doc
         # TODO: instead of this create a doctree directly
         xml_string = _create_xml_string(element)
