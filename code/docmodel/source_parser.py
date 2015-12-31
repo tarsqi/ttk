@@ -398,7 +398,7 @@ class Tag:
     def __str__(self):
         nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
         #if nodes: print self.nodes
-        return "<Tag %s %s %d-%d %s%s>" % \
+        return "<Tag %s %s %d:%d %s%s>" % \
                (self.name, self.id, self.begin, self.end, nodes, str(self.attrs))
 
     def __cmp__(self, other):

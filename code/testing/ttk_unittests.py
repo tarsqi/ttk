@@ -15,15 +15,16 @@ Usage:
 
 The following options are available:
 
-   --gutime  run the GUTime tests
-   --evita   run the Evita tests
+   --gutime   run the GUTime tests
+   --evita    run the Evita tests
+   --slinket  run the Slinket tests
 
 Without options all test will run.
 
 Examples:
 
-   $ python test.py --evita
-   $ python test.py --gutime --evita
+   $ python ttk_unittests.py --evita
+   $ python ttk_unittests.py --gutime --evita
 
 """
 
@@ -31,6 +32,9 @@ import sys, unittest, getopt
 
 import path
 import tarsqi
+
+from cases.unit_test_cases_slinket import SIMPLE, COUNTER_FACTIVE, EVIDENTIAL
+from cases.unit_test_cases_slinket import FACTIVE, MODAL, NEG_EVIDENTIAL
 
 
 class GUTimeTest(unittest.TestCase):
@@ -107,18 +111,46 @@ class SlinketTest(unittest.TestCase):
     def setUpClass(cls):
         cls.pipeline = 'PREPROCESSOR,EVITA,SLINKET'
 
-    def t(self, s, name, e1, e2, reltype, tag=True, feature=None):
-        # the feature=None is there as a place holder for when we start testing
-        # features like class, modality and polarity
-        result = check_link(self.pipeline, s, 'SLINK', e1, e2, reltype)
+    def run_test(self, slinket_test, tag=True):
+        (rel, fname, rule, e1, e2, sentence) = slinket_test[:6]
+        if len(slinket_test) > 6:
+            tag = slinket_test[6]
+        test_name = "%s-%s" % (rel, rule)
+        result = check_link(self.pipeline, sentence, 'SLINK', e1, e2, rel)
         self.assertTrue(result) if tag else self.assertFalse(result)
 
-    def test_01a(self): self.t("John saw the miners build a fence.",
-                               'SLINK', (5,8), (20,25), 'EVIDENTIAL')
-    def test_01b(self): self.t("He said the dogs slept.",
-                               'SLINK', (3,7), (17,22), 'EVIDENTIAL')
-    def test_02a(self): self.t("He wanted to walk.",
-                               'SLINK', (3,9), (13,17), 'MODAL')
+    # The tests are read from cases/unit_test_cases_slinket.py, but note that
+    # selecting what tests from that file are used is a manual process.
+
+    def test_simple_01(self): self.run_test(SIMPLE[0])
+    def test_simple_02(self): self.run_test(SIMPLE[1])
+    def test_simple_03(self): self.run_test(SIMPLE[2])
+    def test_simple_04(self): self.run_test(SIMPLE[3])
+    def test_counter_factive_01(self): self.run_test(COUNTER_FACTIVE[0])
+    def test_counter_factive_02(self): self.run_test(COUNTER_FACTIVE[1])
+    def test_counter_factive_03(self): self.run_test(COUNTER_FACTIVE[2])
+    def test_counter_factive_04(self): self.run_test(COUNTER_FACTIVE[3])
+    def test_counter_factive_05(self): self.run_test(COUNTER_FACTIVE[4])
+    def test_counter_factive_06(self): self.run_test(COUNTER_FACTIVE[5])
+    def test_evidential_01(self): self.run_test(EVIDENTIAL[0])
+    def test_evidential_02(self): self.run_test(EVIDENTIAL[1])
+    def test_evidential_03(self): self.run_test(EVIDENTIAL[2])
+    def test_evidential_04(self): self.run_test(EVIDENTIAL[3])
+    def test_evidential_05(self): self.run_test(EVIDENTIAL[4])
+    def test_evidential_06(self): self.run_test(EVIDENTIAL[5])
+    def test_factive_01(self): self.run_test(FACTIVE[0])
+    def test_factive_02(self): self.run_test(FACTIVE[1])
+    def test_factive_03(self): self.run_test(FACTIVE[2])
+    def test_factive_04(self): self.run_test(FACTIVE[3])
+    def test_factive_05(self): self.run_test(FACTIVE[4])
+    def test_modal_01(self): self.run_test(MODAL[0])
+    def test_modal_02(self): self.run_test(MODAL[1])
+    def test_modal_03(self): self.run_test(MODAL[2])
+    def test_modal_04(self): self.run_test(MODAL[3])
+    def test_neg_evidential_01(self): self.run_test(NEG_EVIDENTIAL[0])
+    #def test_neg_evidential_02(self): self.run_test(NEG_EVIDENTIAL[1])
+    #def test_neg_evidential_03(self): self.run_test(NEG_EVIDENTIAL[2])
+    #def test_neg_evidential_04(self): self.run_test(NEG_EVIDENTIAL[3])
 
 
 def check(pipeline, sentence, tag, o1, o2):
@@ -132,7 +164,8 @@ def check(pipeline, sentence, tag, o1, o2):
     return False
 
 def check_link(pipeline, sentence, tagname, e1_offsets, e2_offsets, reltype):
-    """Returns True if there is a link tagname that ..."""
+    """Returns True if there is a link of type tagname (SLINK, ALINK or TLINK) with
+    the specified relation type and event locations."""
     options = [('--pipeline', pipeline), ('--loglevel', '1')]
     td = tarsqi.process_string(sentence, options)
     link_tags = td.elements[0].tarsqi_tags.find_tags(tagname)
@@ -145,16 +178,17 @@ def check_link(pipeline, sentence, tagname, e1_offsets, e2_offsets, reltype):
         relType = link_tag.attrs['relType']
         e1 = select_event(eiid1, event_tags)
         e2 = select_event(eiid2, event_tags)        
-        return (e1.begin == e1_offsets[0] and e1.end == e1_offsets[1]
-                and e2.begin == e2_offsets[0] and e2.end == e2_offsets[1]
-                and relType == reltype)
+        if (e1.begin == e1_offsets[0] and e1.end == e1_offsets[1]
+            and e2.begin == e2_offsets[0] and e2.end == e2_offsets[1]
+            and relType == reltype):
+            return True
+    return False
 
 def select_event(eiid, event_tags):
     for event_tag in event_tags:
         if event_tag.attrs['eiid'] == eiid:
             return event_tag
     return None
-
             
 def test_all():
     test_gutime()
