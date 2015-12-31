@@ -1,23 +1,19 @@
+"""Main module for the Slinket component.
+
+Responsible for the top-level processing of Slinket. Most functionality is in
+the Chunk class.
+
 """
 
-Main module for the Slinket component.
-
-Responsible for the top-level processing of Slinket.
-
-"""
-
-from EventExpression import EventExpression
 
 from components.common_modules.component import TarsqiComponent
 from library.slinket.main import SLINKET_DICTS
 from library.tarsqi_constants import SLINKET
+from library.timeMLspec import VERB, NOUN, ADJECTIVE
 from library.timeMLspec import ALINK, SLINK, EVENT, INSTANCE
 from library.timeMLspec import EID, EIID, EVENTID, POS, EPOS, FORM
+from library.timeMLspec import TENSE, ASPECT, POL, MOD, CLASS, STEM
 from utilities import logger
-from utilities.converter import FragmentConverter
-from docmodel.xml_parser import Parser, XmlDocElement
-from docmodel.xml_parser import create_content_string
-
 
 
 class Slinket (TarsqiComponent):
@@ -36,31 +32,26 @@ class Slinket (TarsqiComponent):
 
     """
 
-    
+
     def __init__(self):
         """Load the Slinket dictionaries if they have not been loaded yet."""
         self.NAME = SLINKET
         self.doctree = None
         SLINKET_DICTS.load()
-        
-    def process_file(self, infile, outfile):
-        """Run Slinket on the input file and write the results to the output file."""
-        pass
 
     def process_doctree(self, doctree, tarsqidocelement):
         """Find alinks and slinks in dcotree and export them to tarsqidocelement."""
         self.doctree = doctree
         self.docelement = tarsqidocelement
         self._build_event_dictionary()
-        #doctree.pp()
         for sentence in self.doctree:
             self._find_links(self.doctree, sentence)
         for alink in self.doctree.alink_list:
-            self.add_link(ALINK, alink.attrs)
+            self._add_link(ALINK, alink.attrs)
         for slink in self.doctree.slink_list:
-            self.add_link(SLINK, slink.attrs)
+            self._add_link(SLINK, slink.attrs)
 
-    def add_link(self, tagname, attrs):
+    def _add_link(self, tagname, attrs):
         """Add the link to the TagRepository instance on the TarsqiDocElement."""
         logger.debug("Adding %s: %s" % (tagname, attrs))
         self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
@@ -103,7 +94,7 @@ class Slinket (TarsqiComponent):
         effect."""
         evNode = self.currSent[event_expr.locInSent]
         if evNode is None:
-            logger.warning("No event node found at locInSent")
+            logger.error("No node found at locInSent=%s" % event_expr.locInSent)
             return
         forwardFSAs = event_expr.alinkingContexts('forward')
         if forwardFSAs:
@@ -141,3 +132,128 @@ class Slinket (TarsqiComponent):
                 logger.debug("Applying REPORTING slink FSAs")
                 slink_created = evNode.find_reporting_slink(reportingFSAs)
             logger.debug("reporting slink created = %s" % slink_created)
+
+
+
+class EventExpression:
+
+    """Class that wraps an event in a way that's convenient for Slinket.
+
+    Instance variables:
+
+       dict
+       eid
+       eiid
+       tense
+       aspect
+       nf_morph
+       polarity
+       modality
+       evClass
+       pos
+       form
+
+       locInSent - idx of node bearing event tag in the document, wrt to its
+                   sentence parent node.
+       eventNum - position of event in sentence.eventList (needed for
+                  potential slinking w/ previous or next events in list)
+       isSlinking - an integer, set to 0 at initialization, does not seem to
+                    be used
+    """
+
+    def __init__(self, eid, locInSent, eventNum, event_attributes):
+        """Set all attributes, using default values if appropriate.
+        Arguments:
+           eid - a string
+           locInSent - an integer
+           eventNum - an integer
+           dict - a dictionary with event attributes"""
+        self.locInSent = locInSent
+        self.eventNum = eventNum
+        self.dict = event_attributes
+        self.eid = eid
+        self.eiid = self.get_event_attribute(EIID)
+        self.tense = self.get_event_attribute(TENSE)
+        self.aspect = self.get_event_attribute(ASPECT)
+        self.nf_morph = self.get_event_attribute(EPOS)
+        self.polarity = self.get_event_attribute(POL, optional=True)
+        self.modality = self.get_event_attribute(MOD, optional=True)
+        self.evClass = self.get_event_attribute(CLASS)
+        self.pos = self.get_event_attribute(POS)
+        self.form = self.get_event_attribute(FORM)
+        #self.isSlinking = 0
+
+    def as_verbose_string(self):
+        return \
+            "%s: %s\n" % (self.__class__.__name__, self.form) + \
+            "\tpos=%s TENSE=%s ASPECT=%s CLASS=%s\n" \
+            % (self.pos, self.tense, self.aspect, self.evClass) + \
+            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" \
+            % (self.nf_morph, self.modality, self.polarity) + \
+            "\tCLASS=%s locInSent=%s eventNum=%s\n" \
+            % (self.evClass, self.locInSent, self.eventNum)
+
+    def get_event_attribute(self, attr, optional=False):
+        """Return the value of an attribute 'attr' from self.dict. If the attribute is
+        not in the dictionary, then (i) return a default value if there is one,
+        and (ii) write an error if the attribute is not optional."""
+        val = self.dict.get(attr)
+        if val is None and not optional:
+            logger.error("No %s attribute for current event" % attr)
+        if val is None and attr == POL:
+            val = 'POS'
+        return val
+
+    def pp(self):
+        self.pretty_print()
+
+    def pretty_print(self):
+        print self.as_verbose_string()
+
+    def can_introduce_alink(self):
+        """Returns True if the EventExpression instance can introduce an Alink, False
+        otherwise. This ability is determined by dictionary lookup."""
+        form = self.form.lower()
+        if self.nf_morph == VERB:
+            return SLINKET_DICTS.alinkVerbsDict.has_key(form)
+        if self.nf_morph == NOUN:
+            return SLINKET_DICTS.alinkNounsDict.has_key(form)
+        return False
+
+    def can_introduce_slink(self):
+        """Returns True if the EventExpression instance can introduce an Slink, False
+        otherwise. This ability is determined by dictionary lookup."""
+        form = self.form.lower()
+        if self.nf_morph == VERB:
+            return SLINKET_DICTS.slinkVerbsDict.has_key(form)
+        if self.nf_morph == NOUN:
+            return SLINKET_DICTS.slinkNounsDict.has_key(form)
+        if self.nf_morph == ADJECTIVE:
+            return SLINKET_DICTS.slinkAdjsDict.has_key(form)
+        return False
+
+    def alinkingContexts(self, key):
+        """Returns the list of alink patterns from the dictionary."""
+        form = self.form.lower()
+        if self.nf_morph == VERB:
+            pattern_dictionary = SLINKET_DICTS.alinkVerbsDict
+        elif self.nf_morph == NOUN:
+            pattern_dictionary = SLINKET_DICTS.alinkNounsDict
+        else:
+            logger.warn("SLINKS of type "+str(key)+" for EVENT form "+str(form)+" should be in the dict")
+            return []
+        return pattern_dictionary.get(form,{}).get(key,[])
+
+    def slinkingContexts(self, key):
+        """Returns the list of slink patterns from the dictionary."""
+        form = self.form.lower()
+        if self.nf_morph == VERB:
+            pattern_dictionary = SLINKET_DICTS.slinkVerbsDict
+        elif self.nf_morph == NOUN:
+            pattern_dictionary = SLINKET_DICTS.slinkNounsDict
+        elif self.nf_morph == ADJECTIVE:
+            pattern_dictionary = SLINKET_DICTS.slinkAdjsDict
+        else:
+            logger.warn("SLINKS of type "+str(key)+" for EVENT form "+str(form)+" should be in the dict")
+            return []
+        return pattern_dictionary.get(form,{}).get(key,[])

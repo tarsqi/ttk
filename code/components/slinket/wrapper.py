@@ -16,11 +16,11 @@ class SlinketWrapper:
     def __init__(self, tarsqi_document):
         self.component_name = SLINKET
         self.document = tarsqi_document
-        
+
     def process(self):
         """Create a Document instance for each TarsqiDocElement hand them to Slinket for
         processing. Slinket processing will update the tags in the TarsqiDocElement when
         slinks are added."""
         for element in self.document.elements:
-            doc = document.create_document_from_tarsqi_doc_element(element)
-            Slinket().process_doctree(doc, element)
+            doctree = document.create_document_from_tarsqi_doc_element(element)
+            Slinket().process_doctree(doctree, element)
