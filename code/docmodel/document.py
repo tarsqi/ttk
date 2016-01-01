@@ -11,13 +11,9 @@ class TarsqiDocument(ParameterMixin):
     elements variable, at this point just a list of TarsqiDocElements. Elements will be
     typed and include the source string and a dictionary of tags. 
 
-    For now we also use an XmlDocument so we interface easier with the old approach, but
-    the idea is that the xmldoc variable is going ot be phased out.
-
     Instance Variables:
        source - instance of DocSource
-       xmldoc - instance of XmlDocument (used for now for heritage code)
-       doctree - instance of Document (to replace xmldoc)
+       doctree - instance of Document
        elements - list of TarsqiDocElements
        metadata - a dictionary
        parameters - parameter dictionary from the Tasqi instance
@@ -34,9 +30,8 @@ class TarsqiDocument(ParameterMixin):
     Also note that we may need a tarsqi_tags variable, to store those tags that are not
     internal to any of the elements. """
     
-    def __init__(self, docsource, metadata, xmldoc=None):
+    def __init__(self, docsource, metadata):
         self.source = docsource
-        self.xmldoc = xmldoc
         self.elements = []
         self.metadata = metadata
         self.parameters = {}
@@ -54,7 +49,7 @@ class TarsqiDocument(ParameterMixin):
     def text(self, p1, p2):
         return self.source.text[p1:p2]
 
-    def pp(self, source=True, xmldoc=True, elements=True):
+    def pp(self, source=True, elements=True):
         print "\n", self, "\n"
         for key, value in self.metadata.items():
             print "   metadata.%-17s  -->  %s" % (key, value)
@@ -62,12 +57,6 @@ class TarsqiDocument(ParameterMixin):
             print "   parameters.%-15s  -->  %s" % (key, value)
         if source:
             self.source.pp()
-        if xmldoc:
-            # xmldoc is being phased out so we won't always be able to print it
-            if self.xmldoc is None:
-                print "\nWARNING: there is no xmldoc to print"
-            else:
-                self.xmldoc.pp()
         if elements:
             for e in self.elements: e.pp()
 
@@ -146,23 +135,19 @@ class TarsqiDocument(ParameterMixin):
 
             
 class TarsqiDocElement:
-
     """Contains a slice from a TarsqiDocument. The slice is determined by the begin
     and end instance variables and the content of text is the slice from the
     source document. The slice includes the tags that are relevant to this
     element. These tags have offsets that are relative to the entire document,
-    these can be translated into local offsets using self.begin.
-
-    """
+    these can be translated into local offsets using self.begin."""
 
     ELEMENT_ID = 0
     
-    def __init__(self, tarsqidoc, begin, end, xmldoc=None):
+    def __init__(self, tarsqidoc, begin, end):
         self._assign_identifier()
         self.doc = tarsqidoc
         self.begin = begin
         self.end = end
-        self.xmldoc = xmldoc
         self.source_tags = TagRepository()
         self.tarsqi_tags = TagRepository()
 
@@ -185,9 +170,7 @@ class TarsqiDocElement:
         """Add all tags from a TagRepostitory (handed in from the SourceDoc) that fall
         within the scope of this element. Also includes tags whose begin is
         before and whose end is after the element. Makes a shallow copy of the
-        Tag from the SourceDoc TagRepository.
-
-        """
+        Tag from the SourceDoc TagRepository."""
         # note that tag_repository is also available in self.doc.source.tags
         for t in tag_repository.tags:
             if (t.begin >= self.begin and t.end <= self.end) \
@@ -207,13 +190,14 @@ class TarsqiDocElement:
             print "  source_tag  %s" % tag
         for tag in self.tarsqi_tags.tags:
             print "  tarsqi_tag  %s" % tag
-        
+
     
 class TarsqiDocParagraph(TarsqiDocElement):
 
-    def __init__(self, begin, end, text, xmldoc=None):
-        TarsqiDocElement.__init__(self, begin, end, text, xmldoc)
+    def __init__(self, begin, end, text):
+        TarsqiDocElement.__init__(self, begin, end, text)
 
-    def is_paragraph(): return True
+    def is_paragraph():
+        return True
 
     

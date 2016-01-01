@@ -29,9 +29,7 @@ from xml.dom.minidom import parse
 
 from ttk_path import TTK_ROOT
 from library.tarsqi_constants import GUTIME
-from utilities.xml_utils import merge_tags_from_files, merge_tags_from_xmldocs
 from utilities import logger
-from docmodel.xml_parser import Parser, XmlDocument, XmlDocElement
 
 
 class GUTimeWrapper:
@@ -87,7 +85,6 @@ def _run_gutime(fin, fout):
     p = subprocess.Popen(command, shell=True,
                          stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
     (fh_in, fh_out, fh_errors) = (p.stdin, p.stdout, p.stderr)
-    #(fh_in, fh_out, fh_errors) = os.popen3(command)
     for line in fh_errors:
         logger.warn(line)
 
@@ -103,5 +100,4 @@ def _import_timex_tags(fname, element):
             p2 = int(lexes[-1].getAttribute('end'))
             timex_type = timex.getAttribute('TYPE')
             timex_value = timex.getAttribute('VAL')
-            #print p1, p2, timex_type, timex_value, timex
             element.add_timex(p1, p2, timex_type, timex_value)

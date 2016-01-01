@@ -28,12 +28,9 @@ def create_document_from_tarsqi_doc_element(element):
         top_node.insert(tag)
     top_node.set_positions()
     top_node.set_event_markers()
-    # TODO: merge 2nd and 3rd arguments?
     doc = Document(element.doc.source.filename, element.doc, element)
+    # recursively import all nodes into the doc, but skip the topnode itself
     top_node.add_to_doc(doc, doc)
-    doc.sentenceList = doc.dtrs
-    #top_node.pp()
-    #doc.pp()
     return doc
 
 
@@ -252,7 +249,6 @@ class Document:
         tarsqidocelement
 
         nodeList - a list of strings, each representing a document element
-        sentenceList - a list of Sentences
         nodeCounter - an integer
         sourceFileName  an absolute path
         taggedEventsDict - a dictionary containing tagged event in the input
@@ -292,8 +288,7 @@ class Document:
         self.tarsqidoc = tarsqidoc
         self.tarsqidocelement = tarsqidocelement
         self.nodeList = []
-        self.sentenceList = []
-        self.dtrs = []                    # used intially as stand in for sentenceList by Node
+        self.dtrs = []
         self.nodeCounter = 0
         self.sourceFileName = fileName
         self.taggedEventsDict = {}        # used by slinket's event parser
@@ -312,12 +307,12 @@ class Document:
         self.positionCount = 0            # obsolete?
 
     def __len__(self):
-        """Length is determined by the length of the sentenceList."""
-        return len(self.sentenceList)
+        """Length is determined by the length of the dtrs list."""
+        return len(self.dtrs)
 
     def __getitem__(self, index):
-        """Indexing occurs on the sentenceList variable."""
-        return self.sentenceList[index]
+        """Indexing occurs on the dtrs variable."""
+        return self.dtrs[index]
 
     def addDocNode(self, string):
         """Add a node to the document's nodeList. Inserts it at the location
@@ -341,10 +336,10 @@ class Document:
         self.nodeCounter = self.nodeCounter + 1
                 
     def addSentence(self, sentence):
-        """Append a Sentence to the sentenceList and sets the parent feature of the
+        """Append a Sentence to the dtrs list and sets the parent feature of the
         sentence to the document. Also increments the positionCount."""
         sentence.setParent(self)
-        self.sentenceList.append(sentence)
+        self.dtrs.append(sentence)
         self.positionCount += 1
 
     def addTimex(self, timex):
@@ -416,7 +411,7 @@ class Document:
 
         Also adds alinks, slinks and tlinks to the link lists. This is to make sure that
         for example the main function of Slinket can easily access newly created links in
-        the Document and insert them in the XmlDocument.
+        the Document.
         
         Note that TLinks are added directly to the xml document and not to the
         Document. Evita and Slinket are not yet updated to add to the xmldoc and hence
@@ -503,10 +498,9 @@ class Document:
 
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation of
-        the sentence list."""
+        the sentences."""
         print "\n<Document sourceFilename=%s>\n" % self.sourceFileName
-        print "  len(nodeList)=%s len(sentenceList)=%s" \
-            % (len(self.nodeList), len(self.sentenceList))
+        print "  len(nodeList)=%s len(dtrs)=%s" % (len(self.nodeList), len(self.dtrs))
         print "  nodeCounter=%s instanceCounter=%s eventCount=%s postionCount=%s" \
             % (self.nodeCounter, self.instanceCounter, self.eventCount, self.positionCount)
         print "  alinkCount=%s slinkCount=%s tlinkCount=%s" \
@@ -533,7 +527,7 @@ class Document:
 
     def pretty_print_sentences(self):
         count = 0
-        for sentence in self.sentenceList:
+        for sentence in self:
             count = count + 1
             print "\nSENTENCE " + str(count) + "\n"
             sentence.pretty_print()

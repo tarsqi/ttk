@@ -20,10 +20,9 @@ class Evita (TarsqiComponent):
     doctree: a Document instance."""
 
     def __init__(self, tarsqidoc=None):
-        """Set the NAME instance variable. The xmldoc and doctree variables are
-        filled in during processing."""
+        """Set the NAME instance variable. The doctree variables is filled in during
+        processing."""
         self.NAME = EVITA
-        self.xmldoc = None
         self.doctree = None         # instance of Document
         self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
 

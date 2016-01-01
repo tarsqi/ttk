@@ -153,16 +153,12 @@ class Tarsqi(ParameterMixin):
         self._cleanup_directories()
         logger.info(self.input)
         self.docsource = SourceParser().parse_file(self.input)
-        self.docsource.pp()
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
         os.chdir(TTK_ROOT)
-        try:
-            self.document.print_all(self.output)
-        except:
-            print "ERROR printing output"
+        self.write_output()
 
     def process_string(self, input_string):
         """Parse the input string with source parser and create a TarsqiDocument
@@ -217,9 +213,12 @@ class Tarsqi(ParameterMixin):
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
     def write_output(self):
-        """Write the xml_document to the output file. First inserts the dct from
-        the docmodel into the XML document. No arguments, no return value."""
-        self.document.xmldoc.save_to_file(self.output)
+        """Write the xml_TarsqiDocument to the output file."""
+        # TODO: this may forget about the DCT, check that
+        try:
+            self.document.print_all(self.output)
+        except:
+            print "ERROR printing output"
 
     def pretty_print(self):
         print self

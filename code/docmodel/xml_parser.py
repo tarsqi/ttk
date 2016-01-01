@@ -105,7 +105,7 @@ class XmlDocument:
         self.elements = []
         self.tags = {}
         self.last_index = -1
-        
+
     def __getitem__(self,i):
         """Get item from the elements variable."""
         return self.elements[i]

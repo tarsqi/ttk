@@ -11,6 +11,8 @@ import os, sys, popen2, time, re
 import wx
 import wx.html
 
+from xml.sax.saxutils import escape
+
 from tarsqi import Tarsqi
 from ttk_path import TTK_ROOT
 from demo.display import HtmlGenerator
@@ -18,7 +20,6 @@ from docmodel.model import DocumentModel
 from docmodel.xml_parser import Parser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, CLASSIFIER, LINK_MERGER
-from utilities.xml_utils import protect_text
 
 
 # User choices for the document type and other processing options.  Note: need to use
@@ -287,7 +288,7 @@ class ControlFrame(TarsqiFrame):
         dlg.Destroy()
 
     def WriteTextToFile(self, text, filename):
-        text = protect_text(text)
+        text = escape(text)
         file = open(self.file_path, "w")
         #file.write('<?xml version="1.0" ?>' + "\n")
         file.write("<DOC>\n")

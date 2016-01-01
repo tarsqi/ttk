@@ -1,9 +1,7 @@
 
 import re
 import time
-from xml.sax.saxutils import escape
 
-from docmodel.xml_parser import Parser
 from docmodel.document import TarsqiDocument
 from docmodel.document import TarsqiDocParagraph
 import utilities.logger as logger
@@ -34,7 +32,6 @@ class DefaultParser:
     Instance variables:
        sourcedoc - a SourceDoc instance
        elements - a list with TarsqiDocParagraph elements
-       xmldoc - an XmlDocument instance
        metadata - a dictionary"""
 
     
@@ -45,11 +42,10 @@ class DefaultParser:
 
     def parse(self, sourcedoc):
         """Return an instance of TarsqiDocument. Use self.content_tag to determine what
-        part of the suorce to take. Populate the TarsqiDocument with the following
-        content: (i) sourcedoc: the SourceDoc instance that was created by the
-        SourceParser, (ii) elements: a list of TarsqiDocParagraphs, (iii) xmldoc: an
-        XmlDocument, this is being phased out, (iv) metadata: a dictionary with now one
-        element, the DCT, which is set to today."""
+        part of the source to take and populate the TarsqiDocument with: (i)
+        sourcedoc: the SourceDoc instance that was created by the SourceParser,
+        (ii) elements: a list of TarsqiDocParagraphs, (iii) metadata: a
+        dictionary with now one element, the DCT, which is set to today."""
         self.sourcedoc = sourcedoc
         self.target_tag = self._find_target_tag()
         offset_adjustment = self.target_tag.begin if self.target_tag else 0
@@ -60,8 +56,7 @@ class DefaultParser:
         tarsqidoc = TarsqiDocument(self.sourcedoc, metadata)
         element_offsets = split_paragraph(text, offset_adjustment)
         for (p1, p2) in element_offsets:
-            xmldoc = Parser().parse_string("<TEXT>%s</TEXT>" % escape(text[p1:p2]))
-            para = TarsqiDocParagraph(tarsqidoc, p1, p2, xmldoc)
+            para = TarsqiDocParagraph(tarsqidoc, p1, p2)
             para.add_source_tags(self.sourcedoc.tags)
             para.source_tags.index()
             tarsqidoc.elements.append(para)
@@ -100,9 +95,8 @@ class DefaultParser:
 
 
 def split_paragraph(text, adjustment=0):
-
-    """Very simplistic way to split a paragraph into more than one paragraph, simply by
-    looking for an empty line."""
+    """Very simplistic way to split a paragraph into more than one paragraph, simply
+    by looking for an empty line."""
 
     text_end = len(text)
     (par_begin, par_end) = (None, None)
@@ -167,43 +161,32 @@ def slurp_token(text, offset):
 
 
 class TimebankParser(DefaultParser):
-
-    """The parser for Timebank documents. All it does is overwriting the get_dct() method."""
+    """The parser for Timebank documents. All it does is overwriting the get_dct()
+    method."""
     
-    def get_dct(self, xmldoc=None):
-        """Takes an XmlDocument, extracts the document creation time, and returns it as
-        a string of the form YYYYMMDD. Depending on the source, the DCT can be
-        found in one of the following tags: DOCNO, DATE_TIME, PUBDATE or FILEID."""
+    def get_dct(self):
+        """Extracts the document creation time, and returns it as a string of the form
+        YYYYMMDD. Depending on the source, the DCT can be found in one of the
+        following tags: DOCNO, DATE_TIME, PUBDATE or FILEID."""
         result = self._get_doc_source()
         if result is None:
             # dct defaults to today if we cannot find the DOCNO tag in the document
             return get_today()
         source_identifier, content = result
-        if source_identifier == 'ABC':
+        if source_identifier in ('ABC', 'CNN', 'PRI', 'VOA'):
             return content[3:11]
         elif source_identifier == 'AP':
             dct = self._parse_tag_content("(?:AP-NR-)?(\d+)-(\d+)-(\d+)", 'FILEID')
-            # if the previous failed, the DCT will be YYYYMMDD, if it succeeded
-            # it will be YYMMDD
+            # the DCT format is YYYYMMDD or YYMMDD
             return dct if len(dct) == 8 else '19' + dct
-        elif source_identifier == 'APW':
+        elif source_identifier in ('APW', 'NYT'):
             return self._parse_tag_content("(\d+)/(\d+)/(\d+)", 'DATE_TIME')
-        elif source_identifier == 'CNN':
-            return content[3:11]
-        elif source_identifier == 'NYT':
-            return self._parse_tag_content("(\d+)/(\d+)/(\d+)", 'DATE_TIME')
-        elif source_identifier == 'PRI':
-            return content[3:11]
         elif source_identifier == 'SJMN':
             pubdate_content = self._get_tag_content('PUBDATE')
             return '19' + pubdate_content
-        elif source_identifier == 'VOA':
-            return content[3:11]
         elif source_identifier == 'WSJ':
             return '19' + content[3:9]
-        elif source_identifier == 'ea':
-            return '19' + content[2:8]
-        elif source_identifier == 'ed':
+        elif source_identifier in ('ea', 'ed'):
             return '19' + content[2:8]
 
     def _get_doc_source(self):
@@ -231,7 +214,6 @@ class TimebankParser(DefaultParser):
 
 
 class ATEEParser(DefaultParser):
-
     """The parser for ATEE document."""
 
     def get_dct(self):
@@ -242,7 +224,6 @@ class ATEEParser(DefaultParser):
 
 
 class RTE3Parser(DefaultParser):
-
     """The parser for RTE3 documents, does not differ yet from the default
     parser."""
     

@@ -16,7 +16,8 @@ import os
 from types import ClassType, FunctionType, MethodType
 
 from docmodel.xml_parser import Parser
-from utilities.converter import FragmentConverter
+# TODO: why does this import not work??
+#from utilities.converter import FragmentConverter
 from modules import MODULES
 
 

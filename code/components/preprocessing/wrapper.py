@@ -128,8 +128,7 @@ class PreprocessorWrapper:
 
     def chunk_text(self, text):
         """Takes a list of sentences and return the same sentences with chunk tags
-        inserted. May need to do something with things like &, <, >, and others, see
-        xml_utils.protect_text."""
+        inserted. May need to do something with things like &, <, >, and others."""
         t1 = time()
         chunked_text = chunk_sentences(text)
         self.chunk_time += time() - t1

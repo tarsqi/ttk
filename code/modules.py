@@ -45,7 +45,6 @@ import components.preprocessing.wrapper
 import components.s2t.main
 import components.s2t.wrapper
 
-import components.slinket.EventExpression
 import components.slinket.main
 import components.slinket.wrapper
 
@@ -110,7 +109,6 @@ MODULES = [
     components.s2t.main,
     components.s2t.wrapper,
 
-    components.slinket.EventExpression,
     components.slinket.main,
     components.slinket.wrapper,
 
