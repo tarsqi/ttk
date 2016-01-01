@@ -4,10 +4,8 @@ Contains the S2tWrapper.
 
 """
 
-from ttk_path import TTK_ROOT
 from library.tarsqi_constants import S2T
 from components.s2t.main import Slink2Tlink
-from utilities import logger
 
 
 class S2tWrapper:

@@ -1,8 +1,7 @@
 import os
 import cPickle
 
-from ttk_path import TTK_ROOT
-
+TTK_ROOT = os.environ['TTK_ROOT']
 DIR_DICTS = os.path.join(TTK_ROOT, 'library', 'slinket', 'dictionaries')
 
 

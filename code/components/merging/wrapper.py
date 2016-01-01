@@ -12,7 +12,6 @@ USE_HERITAGE_CODE = True
 
 import os, subprocess
 
-from ttk_path import TTK_ROOT
 from library.tarsqi_constants import LINK_MERGER
 
 if USE_HERITAGE_CODE:
@@ -24,6 +23,7 @@ if USE_HERITAGE_CODE:
 else:
     from components.merging.main import LinkMerger
 
+TTK_ROOT = os.environ['TTK_ROOT']
 
 
 class MergerWrapper:

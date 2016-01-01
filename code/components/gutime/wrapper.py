@@ -27,9 +27,10 @@ wrapper or obsolete. They are kept around for reference.
 import os, subprocess, codecs
 from xml.dom.minidom import parse
 
-from ttk_path import TTK_ROOT
 from library.tarsqi_constants import GUTIME
 from utilities import logger
+
+TTK_ROOT = os.environ['TTK_ROOT']
 
 
 class GUTimeWrapper:

@@ -14,13 +14,13 @@ import wx.html
 from xml.sax.saxutils import escape
 
 from tarsqi import Tarsqi
-from ttk_path import TTK_ROOT
 from demo.display import HtmlGenerator
 from docmodel.model import DocumentModel
 from docmodel.xml_parser import Parser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, CLASSIFIER, LINK_MERGER
 
+TTK_ROOT = os.environ['TTK_ROOT']
 
 # User choices for the document type and other processing options.  Note: need to use
 # strings here, wxPython on OSX is forgiving if we use True instead of 'True' but wxPython

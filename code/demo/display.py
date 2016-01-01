@@ -23,10 +23,11 @@ events, timexes and tlinks:
     
 """
 
-from ttk_path import TTK_ROOT
+import os
 from docmodel.xml_parser import Parser, create_dct_element
 from library.tarsqi_constants import BLINKER, SLINKET, S2T, CLASSIFIER
 
+TTK_ROOT = os.environ['TTK_ROOT']
 
 class HtmlGenerator:
 

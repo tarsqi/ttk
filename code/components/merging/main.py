@@ -7,11 +7,12 @@ Main module for the TLink merging component.
 import os
 import time
 
-from ttk_path import TTK_ROOT
 from components.common_modules.component import TarsqiComponent
 from library.tarsqi_constants import LINK_MERGER
 from utilities import logger
 from utilities.sputlink.main import ConstraintPropagator
+
+TTK_ROOT = os.environ['TTK_ROOT']
 
 DEBUGGING = False
 

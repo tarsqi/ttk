@@ -8,7 +8,6 @@ input to the analysis and documentation creation scripts.
 """
 
 import tarsqi
-import ttk_path
 
 import components.arglinker.wrapper
 import components.arglinker.main
@@ -71,7 +70,6 @@ import utilities.sputlink.utils
 MODULES = [
     
     tarsqi,
-    ttk_path,
 
     components.arglinker.wrapper,
     components.arglinker.main,

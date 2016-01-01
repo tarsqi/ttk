@@ -57,7 +57,13 @@ VARIABLES:
 
 import sys, os, time, types, getopt
 
-from ttk_path import TTK_ROOT
+scriptPath = os.path.abspath(__file__)
+TTK_ROOT = os.path.dirname(scriptPath)
+os.environ['TTK_ROOT'] = TTK_ROOT
+
+# TODO: need to get rid of this by recompiling all FSA's
+sys.path[1:1] = [ os.path.join(TTK_ROOT,'utilities') ]
+
 from components import COMPONENTS
 from docmodel.source_parser import SourceParser
 from docmodel.main import create_parser, get_default_pipeline
@@ -79,19 +85,16 @@ class Tarsqi(ParameterMixin):
 
     Instance variables:
         
-       input - absolute path
-       output - absolute path
-       basename - basename of input file
-       parameters - dictionary with processing options
-
-       parser - a genre-specific document parsers
-       pipeline - list of name-wrapper pairs
-       components - dictionary of components
-
-       docsource - instance of DocSource
-       document - instance of TarsqiDocument
-       
-       DIR_TMP_DATA - path
+       input         -  absolute path
+       output        -  absolute path
+       basename      -  basename of input file
+       parameters    -  dictionary with processing options
+       parser        -  a genre-specific document parsers
+       pipeline      -  list of name-wrapper pairs
+       components    -  dictionary of components
+       docsource     -  instance of DocSource
+       document      -  instance of TarsqiDocument
+       DIR_TMP_DATA  -  path
        
     The first seven instance variables are initialized using the arguments provided by the
     user, docsource and document are filled in during processing."""

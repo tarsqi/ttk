@@ -9,7 +9,6 @@ from time import time
 from types import StringType, TupleType
 from xml.sax.saxutils import escape, quoteattr
 
-from ttk_path import TTK_ROOT
 from utilities import logger
 from docmodel.source_parser import Tag
 from library.tarsqi_constants import PREPROCESSOR

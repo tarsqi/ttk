@@ -17,13 +17,9 @@ and some compiled regular expressions:
 
 """
 
-import os
-import sys
-import re
-import shelve
-import pickle
+import os, sys, re, shelve, pickle
 
-from ttk_path import TTK_ROOT
+TTK_ROOT = os.environ['TTK_ROOT']
 
 def group(*choices):
     return '(' + '|'.join(choices) + ')'

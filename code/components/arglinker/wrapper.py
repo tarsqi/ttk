@@ -6,14 +6,12 @@ Contains the ArgLinker wrapper.
 
 import os, os.path
 
-from ttk_path import TTK_ROOT
-
 from library.tarsqi_constants import ARGLINKER
 from components.arglinker.main import ArgLinker
-
 from docmodel.xml_parser import Parser
 from utilities.converter import FragmentConverter
 
+TTK_ROOT = os.environ['TTK_ROOT']
 
 # set this one to True if we want to use the simplistic Python version
 USE_SIMPLE_LINKER = False

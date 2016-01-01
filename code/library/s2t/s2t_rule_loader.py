@@ -1,18 +1,15 @@
 import os
 import re
 
-from ttk_path import TTK_ROOT
-
+TTK_ROOT = os.environ['TTK_ROOT']
 
 S2T_RULES = os.path.join(TTK_ROOT, 'library', 's2t', 's2t_rules.txt')
-
 
 re_ruleNum = re.compile('ruleNum=(\d+)')
 re_event = re.compile('(event*)=(.*)')
 re_subevent = re.compile('(subevent*)=(.*)')
 re_reltype = re.compile('(.*)=(.*)')
 re_attribute = re.compile('(.*)=(.*)')
-
 
 
 class S2TRule:

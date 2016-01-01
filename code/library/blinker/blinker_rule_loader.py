@@ -1,8 +1,7 @@
 import os
 import re
 
-from ttk_path import TTK_ROOT
-#TTK_ROOT = '/home/j/llc/arum/projects/timeml/blinker/ttk/code'
+TTK_ROOT = os.environ['TTK_ROOT']
 
 DIR_SYNTACTIC_RULES = os.path.join(TTK_ROOT, 'library', 'blinker', 'syntactic_rules')
 DIR_LEXICAL_RULES = os.path.join(TTK_ROOT, 'library', 'blinker', 'lexical_rules')
