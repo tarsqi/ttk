@@ -1,8 +1,0 @@
-<TARSQITEST>
-<INFO date='2008-12-09-15-23-05' />
-
-<TEST module='preprocessor'>
-</TEST>
-
-
-</TARSQITEST>

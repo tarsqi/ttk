@@ -1,7 +1,0 @@
-<TARSQITEST>
-<INFO date='2008-12-08-15-58' />
-
-<TESTINGERROR module='evita'> [Errno 17] File exists: '/home/j/marc/timeml/tarsqi/code/TTK/cvs/ttk/code/testing_new/suites/evita/reports/2008-12-08-15-58' </TESTINGERROR>
-
-
-</TARSQITEST>
