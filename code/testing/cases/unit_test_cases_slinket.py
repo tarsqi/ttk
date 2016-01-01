@@ -39,6 +39,12 @@ SIMPLE = [
 ]
 
 
+ALINKS = [
+
+    ('CONTINUES', None, None, (5,14), (18,22), "They continued to walk.")
+]
+
+
 COUNTER_FACTIVE = [
 
     ('COUNTER_FACTIVE', 'AP900815-0044.xml', 'toClause1', (39,47), (51,58),

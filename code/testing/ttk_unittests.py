@@ -34,7 +34,7 @@ import path
 import tarsqi
 
 from cases.unit_test_cases_slinket import SIMPLE, COUNTER_FACTIVE, EVIDENTIAL
-from cases.unit_test_cases_slinket import FACTIVE, MODAL, NEG_EVIDENTIAL
+from cases.unit_test_cases_slinket import FACTIVE, MODAL, NEG_EVIDENTIAL, ALINKS
 
 
 class GUTimeTest(unittest.TestCase):
@@ -111,12 +111,12 @@ class SlinketTest(unittest.TestCase):
     def setUpClass(cls):
         cls.pipeline = 'PREPROCESSOR,EVITA,SLINKET'
 
-    def run_test(self, slinket_test, tag=True):
+    def run_test(self, slinket_test, link='SLINK', tag=True):
         (rel, fname, rule, e1, e2, sentence) = slinket_test[:6]
         if len(slinket_test) > 6:
             tag = slinket_test[6]
         test_name = "%s-%s" % (rel, rule)
-        result = check_link(self.pipeline, sentence, 'SLINK', e1, e2, rel)
+        result = check_link(self.pipeline, sentence, link, e1, e2, rel)
         self.assertTrue(result) if tag else self.assertFalse(result)
 
     # The tests are read from cases/unit_test_cases_slinket.py, but note that
@@ -126,6 +126,7 @@ class SlinketTest(unittest.TestCase):
     def test_simple_02(self): self.run_test(SIMPLE[1])
     def test_simple_03(self): self.run_test(SIMPLE[2])
     def test_simple_04(self): self.run_test(SIMPLE[3])
+    def test_alinks_01(self): self.run_test(ALINKS[0], link='ALINK')
     def test_counter_factive_01(self): self.run_test(COUNTER_FACTIVE[0])
     def test_counter_factive_02(self): self.run_test(COUNTER_FACTIVE[1])
     def test_counter_factive_03(self): self.run_test(COUNTER_FACTIVE[2])
@@ -174,7 +175,10 @@ def check_link(pipeline, sentence, tagname, e1_offsets, e2_offsets, reltype):
         return False
     for link_tag in link_tags:
         eiid1 = link_tag.attrs['eventInstanceID']
-        eiid2 = link_tag.attrs['subordinatedEventInstance']
+        if tagname == 'ALINK':
+            eiid2 = link_tag.attrs['relatedToEventInstance']
+        elif tagname == 'SLINK':
+            eiid2 = link_tag.attrs['subordinatedEventInstance']
         relType = link_tag.attrs['relType']
         e1 = select_event(eiid1, event_tags)
         e2 = select_event(eiid2, event_tags)        
