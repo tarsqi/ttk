@@ -72,7 +72,7 @@ class Instance:
 
     def __init__(self, event):
         self.event = event
-        self.attrs = { "eiid": None, "eventID": None, "signalID": None, 
+        self.attrs = { "eiid": None, "eventID": None,
                        "cardinality": None, "modality": None, "polarity": "POS", 
                        "tense": "NONE", "aspect": "NONE", "pos": "NONE" }
 

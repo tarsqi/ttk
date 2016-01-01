@@ -19,6 +19,7 @@ class Constituent:
         return self.document()
 
     def document(self):
+        # TODO: this is weird, why is it like this?
         return self.parent.document()
 
     def isToken(self): return False

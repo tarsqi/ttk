@@ -9,16 +9,15 @@ from xml.sax.saxutils import escape, quoteattr
 
 from components.evita.gramChunk import getWordList, getPOSList
 from components.common_modules.component import TarsqiComponent
-from docmodel.xml_parser import Parser
+from components.common_modules.document import create_document_from_tarsqi_doc_element
 from library.tarsqi_constants import EVITA
 from utilities import logger
-from utilities.converter import FragmentConverter
 
 
 class Evita (TarsqiComponent):
 
     """Class that implements Evita's event recognizer. Instance variables: NAME: a string,
-    doctree: a Document instance. """
+    doctree: a Document instance."""
 
     def __init__(self, tarsqidoc=None):
         """Set the NAME instance variable. The xmldoc and doctree variables are
@@ -28,64 +27,29 @@ class Evita (TarsqiComponent):
         self.doctree = None         # instance of Document
         self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
 
-    def process_file(self, infile, outfile):
-        """Process a fragment file and write a file with EVENT tags. The two arguments are
-        both absolute paths."""
-        self.xmldoc = Parser().parse_file(open(infile,'r'))
-        self.doctree = FragmentConverter(self.xmldoc, infile).convert()
-        self.extractEvents()
-        self.xmldoc.save_to_file(outfile)
-
-    def process_xmldoc(self, xmldoc):
-        """Process an XmlDocument fragment and return one with EVENT tags. Takes an
-        instance of XmlDocument as its sole argument."""
-        self.xmldoc = xmldoc
-        self.doctree = FragmentConverter(self.xmldoc).convert()
-        self.extractEvents()
-        return self.xmldoc
-
-    def process_string(self, xmlstring):
-        """Process a fragment string and return a string with EVENT tags. Takes a string
-        as its sole argument, throws an error if this string is not well-formed XML."""
-        self.xmldoc = Parser().parse_string(xmlstring)
-        self.doctree = FragmentConverter(self.xmldoc).convert()
-        # added to hand in the tarsqi document
-        # TODO: see comment below
-        self.doctree.tarsqidoc = self.tarsqidoc
-        self.extractEvents()
-        return self.xmldoc.toString()
-
     def process_element(self, element):
-        """Process an instance of docmodel.document.TarsqiDocParagraph. Note
-        that contrary to the other processing methods, in this case the xmldoc
-        and doctree variables on the Evita instance are the ones for just one
+        """Process an instance of docmodel.document.TarsqiDocParagraph. Note that
+        contrary to the other processing methods (preprocessor and gutime), in
+        this case the doctree variable on the Evita instance is for just one
         element and not for the whole document or string. Events are added to
         the tag repository on the element."""
-        # with this we have direct access to the TarsqiDocument and
-        # extractEvents can then use it
-        # TODO: this did not seem to work and therefore added to process_string
         self.tarsqidoc = element.doc
-        # TODO: instead of this create a doctree directly
-        xml_string = _create_xml_string(element)
-        self.process_string(xml_string)
-        _import_event_tags(self.xmldoc, element)
-        #print xml_string
-        #self.xmldoc.pp()
-        #self.doctree.pp()
-        #print self.xmldoc.toString()
+        self.doctree = create_document_from_tarsqi_doc_element(element)
+        self.doctree.tarsqidoc = self.tarsqidoc
+        self.extractEvents()
 
     def extractEvents(self):
         """Loop through all sentences in self.doctree and through all nodes in each
         sentence and determine if the node contains an event."""
         for sentence in self.doctree:
-            #sentence.pp(tree=False)
             logger.debug("SENTENCE: %s" % ' '.join(getWordList(sentence)))
             for node in sentence:
                 if not node.checkedEvents:
                     node.createEvent(tarsqidoc=self.tarsqidoc)
-            #print; sentence.pp(tree=True)
-        #self.doctree.pp()
 
+
+# TODO: the following code is obsolete, but parts of it may be useful and could
+# be added to TarsqiDocElement
 
 def  _create_xml_string(element):
     """Creates an XML string with <DOC>, <s>, <NG>, <VG> and <lex> tags. It does
@@ -162,26 +126,3 @@ class Stack(object):
         self.ng_end = None
         self.vg_end = None
         self.indent = 0
-
-def _import_event_tags(xmldoc, doc_element):
-    """Find all the information for each event in the XmlDocument and add it to the
-    document element. This involves merging information from the EVENT tag, the
-    MAKEINSTANCE tag and the embedded lex tag (for the offsets)."""
-    current_event = None
-    xmlelement = xmldoc.elements[0]
-    while xmlelement:
-        if xmlelement.content.startswith('<EVENT'):
-            current_event = xmlelement.attrs
-        if xmlelement.content.startswith('<lex') and current_event:
-            current_event['begin'] = xmlelement.attrs['begin']
-            current_event['end'] = xmlelement.attrs['end']
-        if xmlelement.content.startswith('<MAKEINSTANCE') and current_event:
-            current_event.update(xmlelement.attrs)
-            current_event = { k:v for k,v in current_event.items()
-                              if v is not None and k is not 'eventID' }
-            #print current_event
-            begin = int(current_event.pop('begin'))
-            end = int(current_event.pop('end'))
-            doc_element.add_event(begin, end, current_event)
-            current_event = None
-        xmlelement = xmlelement.get_next()

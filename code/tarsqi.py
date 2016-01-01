@@ -153,6 +153,7 @@ class Tarsqi(ParameterMixin):
         self._cleanup_directories()
         logger.info(self.input)
         self.docsource = SourceParser().parse_file(self.input)
+        self.docsource.pp()
         self.document = self.parser.parse(self.docsource)
         self.document.add_parameters(self.parameters)
         for (name, wrapper) in self.pipeline:

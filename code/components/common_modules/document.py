@@ -205,7 +205,7 @@ class Node(object):
             dtr.add_to_doc(doc_element_dtr, document)
 
     def as_doc_element(self, document):
-        """Create an instance of Sentence, NounChunk, VerbChunk, EventTag,
+        """Create from the node an instance of Sentence, NounChunk, VerbChunk, EventTag,
         TimexTag, Token or AdjectiveToken."""
         if self.name == 's':
             doc_element = Sentence()
@@ -230,6 +230,8 @@ class Node(object):
             doc_element.event = 1
             doc_element.eid = self.event_dtr.tag.attrs['eid']
             doc_element.eiid = self.event_dtr.tag.attrs['eiid']
+        doc_element.begin = self.begin
+        doc_element.end = self.end
         return doc_element
 
     def pp(self, indent=0):
@@ -382,17 +384,25 @@ class Document:
         return self
 
     def addEvent(self, event):
-        """Adds an Event to the XML document."""
+        """Takes an instance of evita.event.Event and adds it to the tagrepository on
+        the TarsqiDocElement."""
+        # TODO: this combines the information from the event and the instance
+        # and it is here because of the legacy difference between events and
+        # instances, at some point event and instance will be merged
+        event_attrs = dict(event.attrs)
+        event_attrs.update(event.instanceList[0].attrs)
         # with the current implementation, there is always one instance per
-        # event, so we just reuse the eventID for theinstanceID.
-        # TODO: delete this once we update the TarsqiDocElement directly
-        eventID = self.tarsqidoc.next_event_id()
-        instanceID = "ei%s" % eventID[1:]
-        event.attrs["eid"] = eventID 
-        for instance in event.instanceList:
-            instance.attrs["eiid"] = instanceID
-            instance.attrs["eventID"] = eventID
-        event.addToXmlDoc()
+        # event, so we just reuse the event identifier for the instance
+        eid = self.tarsqidoc.next_event_id()
+        eiid = "ei%s" % eid[1:]
+        event_attrs['eid'] = eid
+        event_attrs['eiid'] = eiid
+        event_attrs = { k:v for k,v in event_attrs.items()
+                        if v is not None and k is not 'eventID' }
+        # TODO: this assumes the event is always the last one, which may not
+        # always be true
+        token = event.tokenList[-1]
+        self.tarsqidocelement.add_event(token.begin, token.end, event_attrs)
 
         
     def addLink(self, linkAttrs, linkType):

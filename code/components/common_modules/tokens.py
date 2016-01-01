@@ -20,6 +20,8 @@ class Token(Constituent):
         self.lid = lid
         self.lex = lex
         self.dtrs = []
+        self.begin = None
+        self.end = None
         self.event = None
         self.textIdx = None
         self.document = document

@@ -38,6 +38,8 @@ class EventTag(Tag):
         self.name = EVENT
         self.nodeType = EVENT
         self.dtrs = []
+        self.begin = None
+        self.end = None
         self.attrs = attrs
         self.eid = attrs[EID]
         self.eClass = attrs[CLASS]
@@ -159,6 +161,8 @@ class TimexTag(Tag):
         self.name = TIMEX
         self.attrs = attrs
         self.dtrs = []
+        self.begin = None
+        self.end = None
         self.positionCount = 0
         self.XXXisEmbedded = 0
         self.checkedEvents = False

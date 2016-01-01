@@ -77,6 +77,8 @@ class Chunk(Constituent):
         self.positionCount = 0
         self.position = None
         self.parent = None
+        self.begin = None
+        self.end = None
         self.head = -1
         self.gramchunk = None
         self.gramchunks = []
