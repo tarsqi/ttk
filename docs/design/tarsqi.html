@@ -1,0 +1,346 @@
+<html>
+
+<head>
+
+<style>
+body { width: 820px; }
+.spacy li { margin-top: 10pt; margin-bottom: 10pt; }
+.example { padding: 5pt; background: #eeeeee; border: thin dotted grey; }
+.image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
+.indent { margin-left: 10pt; }
+table.spacy { margin-top: 10pt; margin-bottom: 10pt; }
+table.pythonclass { border: thin solid grey; border-collapse: collapse; width: 400pt; }
+table.pythonclass td  { vertical-align: top; padding: 3pt; }
+table.pythonclass td.name  { font-weight: bold; border: thin solid grey; }
+table.pythonclass td.attribute::after  { content: ':'; }
+</style>
+
+</head>
+
+<body>
+
+<h1>Overview of the TARSQI Toolkit</h1>
+
+<p>Marc Verhagen, December 2015<p>
+
+<p>This document gives a high-level overview of the TARSQI Toolkit code.</p>
+
+
+<h2>Top-level Processing</h2>
+
+<p>The top-level processing chain is implemented in tarsqi.py in the Tarsqi
+class, which upon initialization does the following:</p>
+
+<ol class="spacy">
+
+<li>Read the parameters. These are read from settings.txt but can also be
+overridden on the command line invocation.
+
+<li>Create a pipeline from the --pipeline parameter. A pipeline is a list of
+pairs where each pair has the name of the component and the Python class that
+implements it.
+
+<li>Select the source parser. There are four parsers defined in
+docmodel.parsers: DefaultParser, TimebankParser, ATEEParser and RTE3Parser. The
+choice of parser is guided by the --genre parameter.
+
+</ol>
+
+<p>There is an instance of the Tarsqi class for each document processed. Actual
+processing occurs through the Tarsqi.process() method, which does the following
+things:</p>
+
+<ol class="spacy">
+
+<li>The class docmodel.source_parser.SourceParser parses the input file using
+parse_file(filename) and returns an instance of docmodel.source_parser.SourceDoc
+which includes two instance variables: text and tags with as values a unicode
+string and an instance of docmodel.source_parser.TagRepository:
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">docmodel.source_parser.DocSource</td>
+</tr>
+<tr>
+  <td class="attribute">text</td>
+  <td>unicode string</td>
+</tr>  
+<tr>
+  <td class="attribute">tags</td>
+  <td>
+    <table class="pythonclass">
+      <tr>
+	<td class="name" colspan="2">docmodel.source_parser.TagRepository</td>
+      </tr>
+      <tr>
+	<td class="attribute">tags</td>
+	<td>list of instances of docmodel.source_parser.Tag</td>
+      </tr>  
+      <tr>
+	<td class="attribute">opening_tags</td>
+	<td>dictionary of instances of docmodel.source_parser.Tag, indexed on
+	opening offsets</td>
+      </tr>  
+      <tr>
+	<td class="attribute">closing_tags</td>
+	<td>dictionary of tag names, indexed on closing offsets and opening
+	offsets</td>
+      </tr>  
+    </table>
+  </td>
+</tr>  
+</table>
+
+The input is assumed to be an XML file with inline XML tags and the SourceParser
+turns it into the primary text data (text without tags) and a dictionary of tags
+with character offsets pointing into the primary data. Here is a minimal example
+as an illustration:
+
+<pre class="example indent">
+&lt;?xml version="1.0" ?>
+&lt;text>One &lt;noun>tag&lt;/noun> only.&lt;/text>
+</pre>
+
+For this text, the opening tags dictionary is as follows:
+
+<pre class="example indent">
+{1: [&lt;docmodel.source_parser.Tag instance at 0x107ac3638>], 
+ 5: [&lt;docmodel.source_parser.Tag instance at 0x107ac3518>]}
+</pre>
+
+Which indicates that there are opening tags at positions 1 and 5, and in both
+cases there is only one tag at that offset. Instances of Tag contain the name of
+the tag, its attributes and its begin and end offsets. The closing tags
+dictionary for the above example is:
+
+<pre class="example indent">
+{8: {5: {u'noun': True}}, 14: {1: {u'text': True}}}
+</pre>
+
+This dictionary says that at character offset 8 we close a noun tag that was
+opened at offset 5. The TagRepository class has convenience methods to access
+tags.
+
+<li>One of the parsers from docmodel.parsers is then used to take the DocSource
+instance and create an instance of docmodel.document.TarsqiDocument.
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">docmodel.document.TarsqiDocument</td>
+</tr>
+<tr>
+  <td class="attribute">source</td>
+  <td>an instance of docmodel.source_parser.DocSource</td>
+</tr>
+<tr>
+  <td class="attribute">metadata</td>
+  <td>a dictionary</td>
+</tr>
+<tr>
+  <td class="attribute">parameters</td>
+  <td>a dictionary</td>
+</tr>
+<tr>
+  <td class="attribute">elements</td>
+  <td>a list of instances of docmodel.document.TarsqiDocElement</td>
+</tr>
+</table>
+
+The DefaultParser does some minimal processing of the source document,
+extracting a document creation time and putting it in the metadata dictionary
+under the 'dct' key and splitting the document into paragraphs and putting each
+paragraph in the elements list. Paragraphs are instances of TarsqiDocParagraph,
+a subclass of TarsqiDocElement, which has the following structure:
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">docmodel.document.TarsqiDocElement</td>
+</tr>
+<tr>
+  <td class="attribute">doc</td>
+  <td>an instance of docmodel.document.TarsqiDocument</td>
+</tr>  
+<tr>
+  <td class="attribute">begin</td>
+  <td>the beginning offset in doc.source</td>
+</tr>
+<tr>
+  <td class="attribute">end</td>
+  <td>the ending offset in doc.source</td>
+</tr>
+<tr>
+  <td class="attribute">source_tags</td>
+  <td>an instance of docmodel.source_parser.TagRepository, containing a subset
+  of the tags in the source document, namely those that span part or all of the
+  paragraph</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqi_tags</td>
+  <td>an instance of docmodel.source_parser.TagRepository, initially empty</td>
+</tr>
+</table>
+
+<li>Add the parameters from the settings.txt file and the command line options
+to the TarsqiDocument.
+
+<li>Apply components as specified in the pipeline. Recall that on initialization
+the Tarsqi class creates a pipeline of components from the user's --pipeline
+option. If we had used a command line invocation like
+
+<pre class="example indent">
+$ python tarsqi.py --pipeline=PREPROCESSOR,GUTIME,EVITA in.xml out.xml
+</pre>
+
+then the pipeline as stored in the Tarsqi instance would be
+
+<pre class="example indent">
+[('PREPROCESSOR', &lt;class components.preprocessing.wrapper.PreprocessorWrapper at 0x10514a668>), 
+ ('GUTIME', &lt;class components.gutime.wrapper.GUTimeWrapper at 0x1051c36d0>), 
+ ('EVITA', &lt;class components.evita.wrapper.EvitaWrapper at 0x1051c3ce8>)]
+</pre>
+
+The code for all components is wrapped in special wrapper classes. All that the
+wrappers are required to have are (1) an initialization method that takes the
+TarsqiDocument as its sole argument and (2) a process() method which has the
+side effect of changing the TarsqiDocument instance. Components update the
+TarsqiDocument by updating the TagRepository instances inside the
+TarsqiDocElement instances in the elements list. In some cases, another data
+structure is updated first and then the results are exported to the
+TarsqiDocElements.
+
+<li>Print results. The Tarsqi class does this by asking the TarsqiDocument to
+print the source string and all tags to a document, which in turn is done by
+retrieving the source and the source tags from the DocSource instance and the
+added Tarsqi tags from the TagRepository in the tarsqi_tags attributes on
+TarsqiDocElements. The output is written to one file with both the primary data
+and the tags. For example, take the example input below.
+
+<pre class="example indent">
+&lt;?xml version="1.0" ?>
+&lt;text>He sleeps on Friday.&lt;/text>
+</pre>
+
+And suppose we have a pipeline that includes the preprocessor, GUTime and
+Evita. Then the output will be:
+
+<pre class="example indent">
+&lt;ttk>
+&lt;text>
+He sleeps on Friday.
+&lt;/text>
+&lt;source_tags>
+  &lt;text id="1" begin="1" end="21" />
+&lt;/source_tags>
+&lt;ttk_tags>
+  &lt;lex id="l1" begin="1" end="3" lemma="he" pos="PP" />
+  &lt;NG id="c1" begin="1" end="3" targets="l1 l1" />
+  &lt;lex id="l2" begin="4" end="10" lemma="sleep" pos="VBZ" />
+  &lt;VG id="c2" begin="4" end="10" targets="l2 l2" />
+  &lt;lex id="l3" begin="11" end="13" lemma="on" pos="IN" />
+  &lt;lex id="l4" begin="14" end="20" lemma="Friday" pos="NNP" />
+  &lt;NG id="c3" begin="14" end="20" targets="l4 l4" />
+  &lt;lex id="l5" begin="20" end="21" lemma="." pos="." />
+  &lt;s id="s1" begin="1" end="21" targets="l1 l5" />
+  &lt;TIMEX3 id="1" begin="14" end="20" type="DATE" value="" />
+  &lt;EVENT id="2" begin="4" end="10" polarity="POS" pos="VERB" eiid="ei1"
+         tense="PRESENT" eid="e1" aspect="NONE" class="OCCURRENCE" />
+&lt;/ttk_tags>
+&lt;/ttk>
+</pre>
+
+Note that the EVENT tag will actually be printed on one line only, it is split
+over two lines here for readability.
+
+</ol>
+
+
+<h2>The Preprocessor</h2>
+
+<p>The PreprocessorWrapper loops through the TarsiDocElements. For each element,
+it extracts the source text and then runs the tokenizer, tagger and chunker on
+that text. The tokenizer takes this text and returns a list of pairs, where each
+pair is either ('&lt;s>', None) for sentence boundaries or a pair of a string and a
+TokenizedLex instance (which has begin and end instance variables):</p>
+
+<pre class="example indent">
+[('&lt;s>', None),
+ (u'Fido', &lt;components.preprocessing.tokenizer.TokenizedLex instance at 0x110844998>),
+ (u'barks', &lt;components.preprocessing.tokenizer.TokenizedLex instance at 0x110844ab8>),
+ (u'.', &lt;components.preprocessing.tokenizer.TokenizedLex instance at 0x110844b48>)]
+</pre>
+
+<p>Since the tokenizer runs in isolation on the text of an element, it assignes
+offsets starting at 0 to the text. The PreprocessWrappers adjusts these so that
+the offsets point into the correct spot in the full text source of the
+document.</p>
+
+<p>The tagger is then fed a vertical string consisting of the first element of
+all pairs (the s tag or a string):</p>
+
+<pre class="example indent">
+&lt;s>
+Fido
+barks
+.
+</pre>
+
+The tagger returns a list with as many elements as lines, where each element is
+either an s tag or a tab-separated triple of string, part-of-speech tag and
+lemma:</p>
+
+<pre class="example indent">
+['&lt;s>', 
+ 'Fido\tNP\tFido', 
+ 'barks\tVVZ\tbark', 
+ '.\tSENT\t.']
+</pre>
+
+<p>The PreprocessorWrapper then takes this list and merges it with the list of
+pairs that came out of the tokenizer and creates the following structure:</p>
+
+<pre class="example indent">
+[[('Fido', 'NNP', 'Fido', 1, 5), 
+  ('barks', 'VBZ', 'bark', 6, 11), 
+  ('.', '.', '.', 11, 12)]]
+</pre>
+
+<p>Note that the s tags have disappeared and that instead we now have a list of
+sublists, with one sublist for each sentence. Another thing that happens at this
+transformation stage is some normalization of tag names. The chunker adds NG and
+VG tags to the sublists.</p>
+
+<pre class="example indent">
+[['&lt;NG>', ('Fido', 'NNP', 'Fido', 1, 5), '&lt;/NG>', 
+  '&lt;VG>', ('barks', 'VBZ', 'bark', 6, 11), '&lt;/VG>', 
+  ('.', '.', '.', 11, 12)]]
+</pre>
+
+<p>Finally, the information in this data structure is exported to the
+tarsqi_tags TagRepository on the TarsqiDocElement, where the opening_tags and
+closing_tags dictionaries now look as follows:</p>
+
+<pre class="example indent">
+{ 1: [&lt;docmodel.source_parser.Tag instance at 0x1033c9830>, 
+      &lt;docmodel.source_parser.Tag instance at 0x1033c98c0>, 
+      &lt;docmodel.source_parser.Tag instance at 0x1033c9e18>],
+  6: [&lt;docmodel.source_parser.Tag instance at 0x1033c9a70>, 
+      &lt;docmodel.source_parser.Tag instance at 0x1033c9cf8>],
+ 11: [&lt;docmodel.source_parser.Tag instance at 0x1033c9ef0>] }
+</pre>
+
+<pre class="example indent">
+{  5: { 1: {'lex': True, 'NG': True}}
+  11: { 6: {'lex': True, 'VG': True}}, 
+  12: { 1: {'s': True}, 
+       11: {'lex': True}} }
+</pre>
+
+
+<h2>GUTime</h2>
+
+<h2>Evita</h2>
+
+
+
+</body>
+</html>
