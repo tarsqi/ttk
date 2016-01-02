@@ -35,9 +35,6 @@ ConstituentClassNames = ['Constituent', 'Chunk', 'NounChunk', 'VerbChunk', 'Toke
 ChunkClassNames = ['Chunk', 'NounChunk', 'VerbChunk']
 EventConstituentClassNames = ChunkClassNames + ['AdjectiveToken'] 
 
-# Classes declared in Tag.py and used by timeMLparser.py, eventParser.py
-TagClassNames = ['EventTag', 'InstanceTag', 'TimexTag', 'SignalTag', 'TlinkTag', 'SlinkTag', 'AlinkTag']
-
 FORM = 'form'
 
 

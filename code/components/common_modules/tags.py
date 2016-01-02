@@ -7,7 +7,7 @@ NOT YET PROPERLY DOCUMENTED
 """
 
 
-from library.timeMLspec import EVENT, INSTANCE, TIMEX, SIGNAL, ALINK, SLINK, TLINK
+from library.timeMLspec import EVENT, INSTANCE, TIMEX, ALINK, SLINK, TLINK
 from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import CLASS, TENSE, ASPECT, EPOS, MOD, POL, FORM, STEM, POS
 from components.common_modules.constituent import Constituent
@@ -33,8 +33,7 @@ class EventTag(Tag):
     
     def __init__(self, attrs):
         """ The nodeType attribute is set to the same value as name because some methods
-         ask for a nodeType attribute, which used to be dealt with by __getattr__ which
-         I'm trying to get rid of. (MV 2007/06/13)"""
+        ask for a nodeType attribute."""
         self.name = EVENT
         self.nodeType = EVENT
         self.dtrs = []
@@ -54,12 +53,12 @@ class EventTag(Tag):
         """Returns an element from the dtrs variable."""
         return self.dtrs[index]
 
-    def __getslice__(self, i, j):
+    def XXX__getslice__(self, i, j):
         """Get a slice from the dtrs variable."""
         return self.dtrs[i:j]
 
-    def X__getattr__(self, name):
-
+    def XXX__getattr__(self, name):
+        # TODO: remove this once it is established that blinker and s2t work
         if trackGetAttrUse:
             print "*** EventTag.__getattr__", name
     
@@ -105,7 +104,7 @@ class EventTag(Tag):
 
     def isEvent(self):
         return True
-        
+
     def addTokenInfo(self, token):   
         #logger.debug("MY CURRENT attrs: "+str(self.attrs))
         self.token = token
@@ -164,7 +163,6 @@ class TimexTag(Tag):
         self.begin = None
         self.end = None
         self.positionCount = 0
-        self.XXXisEmbedded = 0
         self.checkedEvents = False
 
     def __len__(self):
@@ -179,14 +177,13 @@ class TimexTag(Tag):
         """Get a slice from the dtrs variable."""
         return self.dtrs[i:j]
 
-    def X__getattr__(self, name):
-        """This method causes weird problems. The code seems to run okay without it, but
-        it is used, typically for nodeType. Investigate what it is used for and eliminate
-        that use, which was already done for nodeType."""
-
+    def XXX__getattr__(self, name):
+        # TODO. This method caused weird problems. The code seems to run okay
+        # without it, but it is used, typically for nodeType. Investigate what
+        # it is used for and eliminate that use, which was already done for
+        # nodeType.
         if trackGetAttrUse:
             print "*** TimexTag.__getattr__", name
-
         if name == 'eventStatus':
             return '0'
         elif name in ['text', FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL,
@@ -217,29 +214,12 @@ class TimexTag(Tag):
                 string += ' '+str(dtr.getText())
         return string
 
-    def XXXsetEmbedded(self):
-        self.XXXisEmbedded = 1
-
-    def XXXresetEmbedded(self):
-        self.XXXisEmbedded = 0
-
     def pretty_print(self, indent=0):
         (tid, type, val) = (self.attrs.get('tid'), self.attrs.get('TYPE'), self.attrs.get('VAL'))
         print "%s<%s tid=%s TYPE=%s VAL=%s>" % \
               ( indent * ' ', self.name, str(tid), str(type), str(val) )
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
-            
-        
-class SignalTag(Tag):
-
-    """
-    Instance variables
-       name - a string"""
-    
-    def __init__(self):
-        """Initializa=e the name of the tag."""
-        self.name = SIGNAL
 
         
 class TlinkTag(Tag):

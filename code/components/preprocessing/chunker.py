@@ -10,7 +10,6 @@ Usage
 """
 
 from types import StringType
-    
 
 
 # CHUNK TYPES
@@ -88,9 +87,7 @@ def is_final_tag(cat, tag):
 # MAIN METHOD
 
 def chunk_sentences(sentences):
-
     """Return a list of sentences with chunk tags added."""
-
     return [Sentence(s).chunk() for s in sentences]
 
 
@@ -102,18 +99,13 @@ class Sentence:
     """The work horse for the chunker."""
     
     def __init__(self, sentence):
-
         """Set sentence variable and initialize chunk_tags dictionary."""
-        
         self.sentence = sentence
         self.chunk_tags = { 'b': {}, 'e': {} }
 
-
     def chunk(self):
-
         """Chunk self.sentence. Updates the variable and returns it. Scans
         through the sentence, advancing the index if a chunk is found."""
-
         idx = 0
         while idx < len(self.sentence) - 1:
             tag = self.sentence[idx][1]
@@ -141,7 +133,6 @@ class Sentence:
     
 
     def consume_chunk(self, chunk_type, idx):
-
         """Read constituent of class chunk_type, starting at index
         idx. Returns idx if no constituent could be read, returns the
         index after the end of the consitutent otherwise."""
@@ -184,18 +175,13 @@ class Sentence:
 
         
     def set_tags(self, chunk_type, begin_idx, end_idx):
-
         """Store beginning and ending position of the hunk in the chunk_tags
         dictionary."""
-        
         self.chunk_tags['b'][begin_idx] = chunk_type
         self.chunk_tags['e'][end_idx] = chunk_type
 
-
     def import_chunks(self):
-
         """Add chunk tags to the sentence variable."""
-        
         new_sentence = []
         idx = 0
         for token in self.sentence:
@@ -211,7 +197,6 @@ class Sentence:
 
         
     def fix_common_errors(self):
-
         """Phase 2 of processing. Fix some common errors."""
 
         self.fix_VBGs()
@@ -229,7 +214,6 @@ class Sentence:
         
 
     def fix_VBGs(self):
-
         """The TreeTagger tends to tag some adjectives as gerunds, as a result
         we get
         
@@ -254,7 +238,6 @@ class Sentence:
 
 
     def is_VB_VBG_NN(self, idx):
-
         """Return True if starting at idx, we have the pattern "NOT_BE VBG
         </VG> <NG> NN", return False otherwise."""
 
@@ -281,7 +264,6 @@ class Sentence:
             print ss
             if type(t) == StringType:
                 in_chunk = not in_chunk
-
 
 
 if __name__ == '__main__':

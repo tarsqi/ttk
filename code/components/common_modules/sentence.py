@@ -15,13 +15,10 @@ class Sentence:
         position - position in the Document parent (first sentence is 0)
         positionCount - used when looping through the daughters
         parent - a Document
-        embeddedTags - a list
 
     The eventList variable stores (eLoc, eid) tuples of each tagged event in the sentence,
     the eLoc is the location of the event inside the embedding constituent, usually a
-    chunk). The embeddedTags variable is a stack to keep track of all currently open
-    elements, in order to deal with multiple embedding of the same element type; e.g.,
-    <T3><Chk><T3><Chk> ... </Chk></T3></Chk></T3>"""
+    chunk)."""
 
     def __init__(self):
         """Initialize all instance variables to 0, None or the empty list."""
@@ -31,7 +28,6 @@ class Sentence:
         self.position = None
         self.positionCount = 0
         self.parent = None
-        self.embeddedTags = []
         
     def __len__(self):
         """Returns length of dtrs variable."""
@@ -116,30 +112,6 @@ class Sentence:
         in the sentence. This is used by Slinket."""
         self.eventList = self.get_event_list()
 
-    def XXXtrackEmbedding(self, tag):
-        """Tracks embedding of event and timex tags relative to other chunks. Used when
-        (i) a chunk is embedded in a timex, event or other chunk, (ii) an event is found
-        inside a timex or other event, or (iii) a timex is found inside another timex or
-        an event."""
-        self.embeddedTags.append(tag)
-
-    def XXXhasEmbedded(self, tag):
-        """Returns True if the given tag occurs in the last position of the
-        embeddedTags list, return False otherwise.
-        Arguments
-           tag - a string indicating the tag name"""
-        if self.embeddedTags and self.embeddedTags[-1] == tag:
-            return True
-        else:
-            return False
-
-    def XXXremoveEmbedded(self, tag):
-        """Remove the last element of the embeddedTags list if it matches the
-        given tag name.
-        Arguments
-           tag - string indicating the tag name"""
-        self.embeddedTags = self.embeddedTags[:-1]
-        
     def getTokens(self):
         """Return the list of tokens in a sentence."""
         # NOTE: seems to be used by the evita NominalTrainer only
@@ -160,7 +132,6 @@ class Sentence:
         print "  chunkIndex    = %s" % self.chunkIndex
         print "  position      = %s" % self.position
         print "  eventList     = %s" % self.eventList
-        print "  embeddedTags  = %s" % self.embeddedTags
         if tree:
             print
             for dtr in self.dtrs:

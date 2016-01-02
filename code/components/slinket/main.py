@@ -29,14 +29,17 @@ class Slinket (TarsqiComponent):
     Instance variables:
        NAME - a string
        doctree - a Document
-
+       docelement - a tarsqiDocElement
     """
 
 
     def __init__(self):
-        """Load the Slinket dictionaries if they have not been loaded yet."""
+        """Initialize Slinket. Sets doctree and docelement to None, these are added by
+        process_doctree()."""
         self.NAME = SLINKET
         self.doctree = None
+        self.docelement = None
+        # Load the Slinket dictionaries if they have not been loaded yet
         SLINKET_DICTS.load()
 
     def process_doctree(self, doctree, tarsqidocelement):
@@ -46,15 +49,7 @@ class Slinket (TarsqiComponent):
         self._build_event_dictionary()
         for sentence in self.doctree:
             self._find_links(self.doctree, sentence)
-        for alink in self.doctree.alink_list:
-            self._add_link(ALINK, alink.attrs)
-        for slink in self.doctree.slink_list:
-            self._add_link(SLINK, slink.attrs)
-
-    def _add_link(self, tagname, attrs):
-        """Add the link to the TagRepository instance on the TarsqiDocElement."""
-        logger.debug("Adding %s: %s" % (tagname, attrs))
-        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
+        self._add_links_to_docelement()
 
     def _build_event_dictionary(self):
         """Creates a dictionary with events on the self.doctree variable and
@@ -76,23 +71,22 @@ class Slinket (TarsqiComponent):
     def _find_links(self, doc, sentence):
         """For each event in the sentence, check whether an Alink or Slink can be
         created for it."""
-        self.currSent = sentence
         eventNum = -1
-        for (eLocation, eid) in self.currSent.eventList:
+        for (eLocation, eid) in sentence.eventList:
             eventNum += 1
             event_expr = EventExpression(eid, eLocation, eventNum, doc.taggedEventsDict[eid])
             logger.debug(event_expr.as_verbose_string())
             if event_expr.can_introduce_alink():
                 logger.debug("Alink candidate: " + event_expr.form)
-                self._find_alink(event_expr)
+                self._find_alink(sentence, event_expr)
             if event_expr.can_introduce_slink():
                 logger.debug("Slink candidate: " + event_expr.form)
-                self._find_lexically_based_slink(event_expr)
+                self._find_lexically_based_slink(sentence, event_expr)
 
-    def _find_alink(self, event_expr):
+    def _find_alink(self, sentence, event_expr):
         """Try to find an alink with event_expr as the trigger, alinks are created as a side
         effect."""
-        evNode = self.currSent[event_expr.locInSent]
+        evNode = sentence[event_expr.locInSent]
         if evNode is None:
             logger.error("No node found at locInSent=%s" % event_expr.locInSent)
             return
@@ -104,12 +98,12 @@ class Slinket (TarsqiComponent):
             if backwardFSAs:
                 evNode.find_backward_alink(backwardFSAs)
 
-    def _find_lexically_based_slink(self, event_expr):
+    def _find_lexically_based_slink(self, sentence, event_expr):
         """Try to find lexically based Slinks for an instance of EventExpression using
         forward, backward and reporting FSA paterns. No return value, if an
         Slink is found, it will be created by the chunk that embeds the Slink
         triggering event."""
-        evNode = self.currSent[event_expr.locInSent]
+        evNode = sentence[event_expr.locInSent]
         if evNode is None:
             logger.error("No node found at locInSent=%s" % event_expr.locInSent)
             return
@@ -133,6 +127,17 @@ class Slinket (TarsqiComponent):
                 slink_created = evNode.find_reporting_slink(reportingFSAs)
             logger.debug("reporting slink created = %s" % slink_created)
 
+    def _add_links_to_docelement(self):
+        for alink in self.doctree.alink_list:
+            self._add_link(ALINK, alink.attrs)
+        for slink in self.doctree.slink_list:
+            self._add_link(SLINK, slink.attrs)
+
+    def _add_link(self, tagname, attrs):
+        """Add the link to the TagRepository instance on the TarsqiDocElement."""
+        logger.debug("Adding %s: %s" % (tagname, attrs))
+        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
+
 
 
 class EventExpression:
@@ -140,34 +145,28 @@ class EventExpression:
     """Class that wraps an event in a way that's convenient for Slinket.
 
     Instance variables:
-
-       dict
+       dict        -  dictionary of event attributes
        eid
        eiid
        tense
        aspect
-       nf_morph
-       polarity
-       modality
-       evClass
-       pos
-       form
-
-       locInSent - idx of node bearing event tag in the document, wrt to its
-                   sentence parent node.
-       eventNum - position of event in sentence.eventList (needed for
-                  potential slinking w/ previous or next events in list)
-       isSlinking - an integer, set to 0 at initialization, does not seem to
-                    be used
+       nf_morph    -  VERB, NOUN or ADJECTIVE, sometimes called epos
+       polarity    -  optional attribute (that is, it can be None)
+       modality    -  optional attribute (that is, it can be None)
+       evClass     -  the event class
+       pos         -  the part-of-speech of the event token
+       form        -  the actual string
+       locInSent   -  idx of node bearing event tag in the document, wrt to its
+                      sentence parent node.
+       eventNum    -  position of event in sentence.eventList (needed for
+                      potential slinking with previous or next events in list)
     """
 
     def __init__(self, eid, locInSent, eventNum, event_attributes):
-        """Set all attributes, using default values if appropriate.
-        Arguments:
-           eid - a string
-           locInSent - an integer
-           eventNum - an integer
-           dict - a dictionary with event attributes"""
+        """Set all attributes, using default values if appropriate. The arguments are:
+        an identifier string, an integer reflecting the location of the event in
+        the sentence, an integer reflecting the position of the event on the
+        eventList on the sentence and a dictionary with event attributes."""
         self.locInSent = locInSent
         self.eventNum = eventNum
         self.dict = event_attributes
@@ -181,7 +180,6 @@ class EventExpression:
         self.evClass = self.get_event_attribute(CLASS)
         self.pos = self.get_event_attribute(POS)
         self.form = self.get_event_attribute(FORM)
-        #self.isSlinking = 0
 
     def as_verbose_string(self):
         return \

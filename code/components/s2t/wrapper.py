@@ -10,7 +10,7 @@ from components.s2t.main import Slink2Tlink
 
 class S2tWrapper:
 
-    """Wraps the S2T components. See ComponentWrapper for the instance variables."""
+    """Wraps the S2T components."""
 
     
     def __init__(self, document):

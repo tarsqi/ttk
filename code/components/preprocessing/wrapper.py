@@ -17,15 +17,15 @@ from components.common_modules.document import Document
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
 from components.common_modules.tokens import Token, AdjectiveToken
-
 from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
 
 
-
 class TagId:
     """Class to provide fresh identifers for lex, ng, vg and s tags."""
+    # TODO: reset these to 0 when processing a new document, probably in the
+    # wrapper's process() method
     ids = { 's': 0, 'c': 0, 'l': 0 }
     @classmethod
     def next(cls, prefix):
@@ -44,12 +44,13 @@ def initialize_treetagger(treetagger_dir):
 def normalizePOS(pos):
     """Some simple modifications of the TreeTagger POS tags."""
     if pos == 'SENT':
-        pos ='.'
+        pos = '.'
     elif pos[0] == 'V':
         if pos[1] in ['V', 'H']:
             if len(pos) > 2:
                 rest = pos[2:]
-            else: rest = ''
+            else:
+                rest = ''
             pos = 'VB' + rest
     elif pos == "NP":
         pos = "NNP"
@@ -64,7 +65,7 @@ def adjust_lex_offsets(tokens, offset):
     the file, not to the beginning of some random string. This procedure is used to
     increment offsets on instances of TokenizedLex."""
     for token in tokens:
-        if token[1] is None:  # skip the s tags
+        if token == ('<s>', None):  # skip the s tags
             continue
         token[1].begin += offset
         token[1].end += offset
@@ -74,10 +75,10 @@ class PreprocessorWrapper:
     
     """Wrapper for the preprocessing components."""
 
-    def __init__(self, document):
+    def __init__(self, tarsqidocument):
         """Set component_name, add the TarsqiDocument and initialize the TreeTagger."""
         self.component_name = PREPROCESSOR
-        self.document = document
+        self.document = tarsqidocument
         self.treetagger_dir = self.document.getopt('treetagger')
         self.treetagger = initialize_treetagger(self.treetagger_dir)
         self.tokenize_time = 0
@@ -85,11 +86,9 @@ class PreprocessorWrapper:
         self.chunk_time = 0
 
     def process(self):
-        """Retrieve the elements from the tarsqiDocument and hand these as strings to the
+        """Retrieve the elements from the TarsqiDocument and hand these as strings to the
         preprocessing chain. The result is a shallow tree with sentences and tokens. These
-        are inserted into the element's xmldoc. TODO: remove xmldoc. Note that for simple
-        documents with just one element, updating the xmldoc in the element also updates
-        the xmldoc in the TarsqiDocument."""
+        are inserted into the element's tarsqi_tags TagRepositories."""
         for element in self.document.elements:
             tokens = self.tokenize_text(element.get_text())
             adjust_lex_offsets(tokens, element.begin)
@@ -159,15 +158,9 @@ class PreprocessorWrapper:
         return text    
 
 
-
 def export(text, tarsqi_element):
-    """Export preprocessing information to the tag repository ad the doctree."""
-    export_text_to_tags(text, tarsqi_element)
-    export_tags_to_doctree(tarsqi_element)
-    
-
-def export_text_to_tags(text, tarsqi_element):
-    """Updates the TagRepository with the text that is the result of preprocessing."""
+    """Export preprocessing information to the tag repository. Updates the
+    TagRepository with the text that is the result of preprocessing."""
 
     ctag = None
 
@@ -208,42 +201,9 @@ def export_text_to_tags(text, tarsqi_element):
     tarsqi_element.tarsqi_tags.index()
 
 
-def export_tags_to_doctree(tarsqi_element):
-    """Build an instance of Document in the doctree variable, using the tags in the
-    tarsqi_tags repository."""
-
-    element_name = tarsqi_element.__class__.__name__ + ':' + str(tarsqi_element.id)
-    tarsqi_element.doctree = Document(element_name)
-    doctree = tarsqi_element.doctree
-    tarsqi_doc = tarsqi_element.doc
-
-    currentSentence = Sentence()
-    chunks = []
-
-    for t in tarsqi_element.tarsqi_tags.tags:
-
-        if t.name == 's':
-            insert_chunks(currentSentence, chunks)
-            chunks = []
-            doctree.addSentence(currentSentence)
-            currentSentence = Sentence()
-
-        elif t.name in ('NG', 'VG'):
-            chunks.append(t)
-
-        elif t.name == 'lex':
-            p1 = t.begin
-            p2 = t.end
-            tok = Token(doctree, t.attrs['pos'], t.id)
-            tok.text = tarsqi_doc.text(p1,p2)
-            currentSentence.add(tok)
-            
-    #doctree.pretty_print()
-
-
 def insert_chunks(sentence, chunks):
     """For each chunk, find the lexes that are part of it, add them to the chunk, and
-    replace the sequences of lex tags in the sentence woth the chunk."""
+    replace the sequences of lex tags in the sentence with the chunk."""
 
     def find_lex_in_sentence(lid):
         idx = 0

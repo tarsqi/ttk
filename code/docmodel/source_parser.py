@@ -380,6 +380,9 @@ class Tag:
     # TODO: the way this deals with identifiers is not right and this needs to
     # be revisited. The main problem is that existing identifiers may clash with
     # newly made ones.
+
+    # TODO: update the comment string, it still refers to XmlDocument and
+    # perhaps other stuff that is not correct anymore.
     
     IDENTIFIER = 0
     

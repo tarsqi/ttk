@@ -33,7 +33,7 @@ def update_event_checked_marker(constituent_list):
         item.setCheckedEvents()
 
 def get_tokens(sequence):
-    """Given a sequence of elements which are a slice of a tree, collect all
+    """Given a sequence of elements which is a slice of a tree, collect all
     token leaves and return them as a list."""
     tokens = []
     for item in sequence:
@@ -66,7 +66,6 @@ class Chunk(Constituent):
        gramchunks = []    - a list of GramVChunks, used for verb chunks
        event = None
        eid = None
-       isEmbedded = 0
        checkedEvents = False
 
     """
@@ -84,7 +83,6 @@ class Chunk(Constituent):
         self.gramchunks = []
         self.event = None
         self.eid = None
-        self.XXXisEmbedded = 0
         self.checkedEvents = False
 
     def __len__(self):
@@ -225,13 +223,6 @@ class Chunk(Constituent):
             if item.isEvent():
                 return item
         return None
-
-    def XXXsetEmbedded(self):
-        """Keeping track of chunks embedded within other chunks, for parsing purposes"""
-        self.XXXisEmbedded = 1
-
-    def XXXresetEmbedded(self):
-        self.XXXisEmbedded = 0
 
     # end of methods from SLinket/S2T version of this class
 
