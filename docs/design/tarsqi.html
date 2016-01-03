@@ -11,9 +11,9 @@ img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: blo
 .indent { margin-left: 10pt; }
 table.spacy { margin-top: 10pt; margin-bottom: 10pt; }
 table.pythonclass { border: thin solid grey; border-collapse: collapse; width: 400pt; }
-table.pythonclass td  { vertical-align: top; padding: 3pt; }
-table.pythonclass td.name  { font-weight: bold; border: thin solid grey; }
-table.pythonclass td.attribute::after  { content: ':'; }
+table.pythonclass td  { vertical-align: top; padding: 3pt; padding-left: 6pt; }
+table.pythonclass td.name  { font-weight: bold; border: thin solid grey; padding-left: 3pt;}
+table.pythonclass td.attribute { }
 </style>
 
 </head>
@@ -398,11 +398,7 @@ are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
         alink_list - a list of AlinkTags
         slink_list - a list of SlinkTags
         tlink_list - a list of TlinkTags
-
         eventCount - an integer
-        alinkCount - an integer
-        slinkCount - an integer
-        tlinkCount - an integer
         linkCount - an integer
         positionCount - an integer
 
@@ -421,10 +417,6 @@ are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
 <tr>
   <td class="attribute">nodeList</td>
   <td>a list of strings, each representing a document element</td>
-</tr>
-<tr>
-  <td class="attribute">nodeCounter</td>
-  <td></td>
 </tr>
 <tr>
   <td class="attribute">sourceFileName</td>
@@ -461,24 +453,6 @@ are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
 <tr>
   <td class="attribute"></td>
   <td></td>
-</tr>
-<tr>
-  <td class="attribute">begin</td>
-  <td>the beginning offset in doc.source</td>
-</tr>
-<tr>
-  <td class="attribute">end</td>
-  <td>the ending offset in doc.source</td>
-</tr>
-<tr>
-  <td class="attribute">source_tags</td>
-  <td>an instance of docmodel.source_parser.TagRepository, containing a subset
-  of the tags in the source document, namely those that span part or all of the
-  paragraph</td>
-</tr>
-<tr>
-  <td class="attribute">tarsqi_tags</td>
-  <td>an instance of docmodel.source_parser.TagRepository, initially empty</td>
 </tr>
 </table>
 

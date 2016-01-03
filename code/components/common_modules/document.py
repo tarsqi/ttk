@@ -244,12 +244,10 @@ class Document:
 
     Instance variables
 
-        tarsqidoc - the TarsqiDocument instance that the document is part of
-                    (this is the link back to the SourceDoc with the text)
-        tarsqidocelement
+        tarsqidoc         -  the TarsqiDocument instance that the document is part of
+        tarsqidocelement  -  the TarsqiDocElement that the document tree was made for
 
         nodeList          -  a list of strings, each representing a document element
-        nodeCounter       -  an integer
         sourceFileName    -  an absolute path
         taggedEventsDict  -  a dictionary containing tagged event in the input
         insertDict        -  dictionary (integer --> string)
@@ -261,9 +259,6 @@ class Document:
         tlink_list     -  a list of TlinkTags
 
         eventCount     -  an integer
-        alinkCount     -  an integer
-        slinkCount     -  an integer
-        tlinkCount     -  an integer
         linkCount      -  an integer
         positionCount  -  an integer
 
@@ -286,9 +281,8 @@ class Document:
         """Initialize all dictionaries, list and counters and set the file name."""
         self.tarsqidoc = tarsqidoc
         self.tarsqidocelement = tarsqidocelement
-        self.nodeList = []
+        self.nodeList = []                # just here so we can find the text of a Token
         self.dtrs = []
-        self.nodeCounter = 0
         self.sourceFileName = fileName
         self.taggedEventsDict = {}        # used by slinket's event parser
         self.insertDict = {}              # filled in by Evita
@@ -298,9 +292,6 @@ class Document:
         self.slink_list = []
         self.tlink_list = []
         self.eventCount = 0
-        self.alinkCount = 0
-        self.slinkCount = 0 
-        self.tlinkCount = 0 
         self.linkCount = 1                # used by S2T
         self.positionCount = 0            # obsolete?
 
@@ -313,26 +304,9 @@ class Document:
         return self.dtrs[index]
 
     def addDocNode(self, string):
-        """Add a node to the document's nodeList. Inserts it at the location
-        indicated by the nodeCounter.
-        Arguments
-           string - a string representing a tag or text"""
-        # could probably add it by appending it to nodeList
-        self.nodeList.insert(self.nodeCounter, string)
-        self.nodeCounter += 1
+        """Append a node string to the document's nodeList."""
+        self.nodeList.append(string)
 
-    def addDocLink(self, loc, string):
-        """Add a node to the document's nodeList. Inserts it at the specified location and
-        not at the ned of the document (as indicated by noedeCounter. Still increments the
-        nodeCounter because the document grows by one element. This is much like
-        addDocNode, but it used for adding nodes that were not in the input but that were
-        created by a Tarsqi component.
-        Arguments
-           loc - an integer, iundicating the location of the insert point
-           string - a string representing a tag or text"""
-        self.nodeList.insert(loc, string)
-        self.nodeCounter += 1
-                
     def addSentence(self, sentence):
         """Append a Sentence to the dtrs list and sets the parent feature of the
         sentence to the document. Also increments the positionCount."""
@@ -396,39 +370,20 @@ class Document:
         # always be true
         token = event.tokenList[-1]
         self.tarsqidocelement.add_event(token.begin, token.end, event_attrs)
-
         
     def addLink(self, linkAttrs, linkType):
-
-        """Add an Alink or Slink to the document. Adds it at the end of the document, that
-        is, at the position indicated by the instance variable nodeCount. This means that
-        the resulting file is not valid XML, but this is not problematic since the file is
-        a fragment that is inserted back into the whole file. This will break down though
-        is the fragment happens to be the outermost tag of the input file. This method
-        should probably use addDocLink instead of addDocNode.
-
-        Also adds alinks, slinks and tlinks to the link lists. This is to make sure that
-        for example the main function of Slinket can easily access newly created links in
-        the Document.
-        
-        Note that TLinks are added directly to the xml document and not to the
-        Document. Evita and Slinket are not yet updated to add to the xmldoc and hence
-        need this method.
-
-        Arguments
-           linkAttrs - dictionary of attributes
-           linkType - 'ALINK' | 'SLINK' """
-
-        linkAttrs['lid'] = self._getNextLinkID(linkType)
+        """Add a link of type linkType with its attributes to the document by appending
+        them to self.alink_list, self.slink_list or self.tlink_list. This allows
+        other code, for example the main function of Slinket, to easily access
+        newly created links in the Document Also adds an XML string that
+        represents the link to the nodeList variable. The linkType argument
+        is'ALINK', 'SLINK' or 'TLINK' and linkAttrs is a dictionary of
+        attributes."""
+        linkAttrs['lid'] = self.tarsqidoc.next_link_id(linkType)
         self.addDocNode(emptyContentString(linkType, linkAttrs))
-
-        if linkType == ALINK:
-            self.alink_list.append(AlinkTag(linkAttrs))
-        elif linkType == SLINK:
-            self.slink_list.append(SlinkTag(linkAttrs))
-        elif linkType == TLINK:
-            self.tlink_list.append(TlinkTag(linkAttrs))
-
+        if linkType == ALINK: self.alink_list.append(AlinkTag(linkAttrs))
+        elif linkType == SLINK: self.slink_list.append(SlinkTag(linkAttrs))
+        elif linkType == TLINK: self.tlink_list.append(TlinkTag(linkAttrs))
 
     def get_events(self, result=None):
         # TODO: this is also defined on Sentence and Document
@@ -440,56 +395,6 @@ class Document:
             dtr.get_events(result)
         return result
 
-    def _getNextTimexID(self):
-        tids = []
-        re_tid = re.compile('tid="t(\d+)"')
-        for node in self.nodeList:
-            if node.startswith('<TIMEX3'):
-                match = re_tid.search(node)
-                if match:
-                    id = match.group(1)
-                    tids.append(int(id))
-        tids.sort()
-        try:
-            next_id = tids[-1] + 1
-        except IndexError:
-            next_id = 1
-        return "t%d" % next_id
-
-    def _getNextLinkID(self, linkType):
-        """Return a unique lid. The linkType argument is one of {ALINK,SLINK,TLINK} and
-        has no influence over the lid that is returned but determines what link counter is
-        incremented. Assumes that all links are added using the link counters in the
-        document. Breaks down if there are already links added without using those
-        counters. """
-        # TODO: move this to TarsqiDocument
-        if linkType == ALINK:
-            return self._getNextAlinkID()
-        elif linkType == SLINK:
-            return self._getNextSlinkID()
-        elif linkType == TLINK:
-            return self._getNextSlinkID()
-        else:
-            logger.error("Could not create link ID for link type" + str(linkType))
-
-    def _getNextAlinkID(self):
-        """Increment alinkCount and return a new unique lid."""
-        # TODO: move this to TarsqiDocument
-        self.alinkCount += 1
-        return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
-    
-    def _getNextSlinkID(self):
-        """Increment slinkCount and return a new unique lid."""
-        # TODO: move this to TarsqiDocument
-        self.slinkCount += 1
-        return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
-
-    def _getNextTlinkID(self):
-        """Increment tlinkCount and return a new unique lid."""
-        # TODO: move this to TarsqiDocument
-        self.tlinkCount += 1
-        return "l"+str(self.alinkCount + self.slinkCount + self.tlinkCount)
-
     def pp(self):
         """Short form of pretty_print()"""
         self.pretty_print()
@@ -499,10 +404,7 @@ class Document:
         the sentences."""
         print "\n<Document sourceFilename=%s>\n" % self.sourceFileName
         print "  len(nodeList)=%s len(dtrs)=%s" % (len(self.nodeList), len(self.dtrs))
-        print "  nodeCounter=%s eventCount=%s postionCount=%s" \
-            % (self.nodeCounter, self.eventCount, self.positionCount)
-        print "  alinkCount=%s slinkCount=%s tlinkCount=%s" \
-            % (self.alinkCount, self.slinkCount, self.tlinkCount)
+        print "  eventCount=%s postionCount=%s" % (self.eventCount, self.positionCount)
         self.pretty_print_tagged_events_dict()
         print '  insertDict =', self.insertDict
         print "  len(event_dict)=%s len(instance_dict)=%s" \

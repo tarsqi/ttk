@@ -287,7 +287,7 @@ class TagRepository:
 
     def all_tags(self):
         return self.tags
-    
+
     def add_tmp_tag(self, tagInstance):
         """Add a OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
@@ -359,50 +359,28 @@ class TagRepository:
         for offset, dict in sorted(self.closing_tags.items()):
             print "  %5d " % offset, dict
 
-        
-        
+
 class Tag:
 
-    """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
-    attributes. Identifiers are created in two ways. When a tag is generated from the XML
-    parsers, the id is generated as the text is parsed, so tags that occur earlier in the
-    text have a lower id. This is the case for the tags that are in the input
-    document. Tags that are added by Tarsqi processing receive an id by incrementing the
-    IDENTIFIER class variable while looping through the XmlDocument. With this, we loose
-    the nice property that tag ids reflect text order (although this would still be the
-    case the first time Tags are added from the XmlDocument, but there may be several
-    passes)."""
+    """A Tag has a name, an id, a begin offset, an end offset and a dictionary
+    of attributes. The id is handed in by the code that creates the Tag which
+    could be: (1) the code that parses the source document, in which case
+    identifiers are numbered depending on text position, (2) the preprocessor
+    code, which assigns identifiers for lex, ng, vg and s tags, or (3) one of
+    the components that creates tarsqi tags, in which case the identifier is
+    None because special identifiers like eid, eiid, tid and lid are used."""
 
-    # TODO: self.nodes is now a list of two identifier strings, but should be a
-    # list with all elements, which would be similar to targets in GRAF. Could
-    # also consider making it a list of Tag objects.
-
-    # TODO: the way this deals with identifiers is not right and this needs to
-    # be revisited. The main problem is that existing identifiers may clash with
-    # newly made ones.
-
-    # TODO: update the comment string, it still refers to XmlDocument and
-    # perhaps other stuff that is not correct anymore.
-    
-    IDENTIFIER = 0
-    
-    def __init__(self, id, name, o1, o2, attrs):
+    def __init__(self, identifier, name, o1, o2, attrs):
         """Initialize id, name, begin, end and attrs instance variables."""
-        if id is None:
-            Tag.IDENTIFIER += 1
-            id = Tag.IDENTIFIER
-        self.id = id
+        self.id = identifier
         self.name = name
         self.begin = o1
         self.end = o2
-        self.nodes = []   # filled in later for tags that point to other layers. 
         self.attrs = attrs
 
     def __str__(self):
-        nodes = '' if not self.nodes else "nodes=%s:%s " % (self.nodes[0], self.nodes[-1])
-        #if nodes: print self.nodes
-        return "<Tag %s %s %d:%d %s%s>" % \
-               (self.name, self.id, self.begin, self.end, nodes, str(self.attrs))
+        return "<Tag %s %s %d:%d %s>" % \
+               (self.name, self.id, self.begin, self.end, str(self.attrs))
 
     def __cmp__(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with an
@@ -420,10 +398,9 @@ class Tag:
     def in_layer_format(self):
         begin = " begin=\"%s\"" % self.begin if self.begin >= 0 else ''
         end = " end=\"%s\"" % self.end if self.end >= 0 else ''
-        nodes = '' if not self.nodes else " targets=\"%s %s\"" % (self.nodes[0], self.nodes[-1])
-        return "<%s id=%s%s%s%s%s />" % \
-            (self.name, quoteattr(str(self.id)), 
-             begin, end, nodes, self.attributes_as_string())
+        identifier = "" if self.id is None else " id=" + quoteattr(str(self.id))
+        return "<%s%s%s%s%s />" % \
+            (self.name, identifier, begin, end, self.attributes_as_string())
 
     def as_lex_xml_string(self, text):
         return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \
@@ -465,9 +442,9 @@ class ClosingTag(Tag):
     def is_closing_tag(self):
         return True
 
-
                  
-class TarsqiInputError(Exception): pass
+class TarsqiInputError(Exception):
+    pass
 
 
         

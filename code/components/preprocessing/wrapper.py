@@ -175,7 +175,6 @@ def export(text, tarsqi_element):
                     ctag = Tag(TagId.next('c'), token[1:-1], None, None, {})
                 else:
                     ctag.end = last_ltag.end
-                    ctag.nodes.append("%s" % (last_ltag.id))
                     tarsqi_element.tarsqi_tags.append(ctag)
                     ctag = None
 
@@ -184,10 +183,8 @@ def export(text, tarsqi_element):
                 tarsqi_element.tarsqi_tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]
-                    stag.nodes.append("%s" % (ltag.id))
                 if ctag is not None and ctag.begin is None:
                     ctag.begin = ltag.begin
-                    ctag.nodes.append("%s" % (ltag.id))
                 last_end_offset = token[4]
                 last_ltag = ltag
 
@@ -195,33 +192,6 @@ def export(text, tarsqi_element):
                 logger.warn('Unexpected token type')
 
         stag.end = last_ltag.end
-        stag.nodes.append("%s" % (last_ltag.id))
         tarsqi_element.tarsqi_tags.append(stag)
 
     tarsqi_element.tarsqi_tags.index()
-
-
-def insert_chunks(sentence, chunks):
-    """For each chunk, find the lexes that are part of it, add them to the chunk, and
-    replace the sequences of lex tags in the sentence with the chunk."""
-
-    def find_lex_in_sentence(lid):
-        idx = 0
-        for l in sentence:
-            if l.isToken() and l.lid == lid: return idx
-            idx += 1
-        return -1
-
-    def chunk_class(tag):
-        if tag == 'NG': return NounChunk
-        if tag == 'VG': return VerbChunk
-
-    for c in chunks:
-        lex1 = find_lex_in_sentence(c.nodes[0])
-        lex2 = find_lex_in_sentence(c.nodes[-1])
-        if c.name in ('NG', 'VG'):
-            c_class = chunk_class(c.name)
-            chunk = c_class(c.name)
-            for i in range(lex1, lex2+1):
-                chunk.addToken(sentence[i])
-            sentence[lex1:lex2+1] = [chunk]

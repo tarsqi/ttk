@@ -39,9 +39,6 @@ and GramVChunk control application of these rules.
 
 """
 
-# TODO: note that GramVChunk may be phased out, in which case the documentation
-# string above needs to be changed.
-
 
 from library.forms import *
 

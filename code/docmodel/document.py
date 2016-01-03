@@ -28,24 +28,25 @@ class TarsqiDocument(ParameterMixin):
     'getopt' and all they do is access parameters.
 
     Also note that we may need a tarsqi_tags variable, to store those tags that are not
-    internal to any of the elements. """
-    
+    internal to any of the elements."""
+
     def __init__(self, docsource, metadata):
         self.source = docsource
         self.elements = []
         self.metadata = metadata
         self.parameters = {}
-        self.counters = { 'TIMEX3': 0, 'EVENT': 0 }
+        self.counters = { 'TIMEX3': 0, 'EVENT': 0,
+                          'ALINK': 0, 'SLINK': 0, 'TLINK': 0 }
 
     def __str__(self):
         return "<%s on '%s'>" % (self.__class__, self.source.filename)
-        
+
     def add_parameters(self, parameter_dictionary):
         self.parameters = parameter_dictionary
-        
+
     def get_dct(self):
         return self.metadata.get('dct')
-    
+
     def text(self, p1, p2):
         return self.source.text[p1:p2]
 
@@ -63,6 +64,21 @@ class TarsqiDocument(ParameterMixin):
     def next_event_id(self):
         self.counters['EVENT'] += 1
         return "e%d" % self.counters['EVENT']
+
+    def next_timex_id(self):
+        self.counters['TIMEX3'] += 1
+        return "t%d" % self.counters['TIMEX3']
+
+    def next_link_id(self, link_type):
+        """Return a unique lid. The link_type argument is one of {ALINK,SLINK,TLINK} and
+         determines what link counter is incremented. The lid itself is the sum
+         of all the link counts. Assumes that all links are added using the link
+         counters in the document. Breaks down if there are already links added
+         without using those counters."""
+        self.counters[link_type] += 1
+        return "l%d" % (self.counters['ALINK']
+                        + self.counters['SLINK']
+                        + self.counters['TLINK'])
 
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file fname."""
@@ -177,9 +193,8 @@ class TarsqiDocElement:
                     or (t.begin <= self.begin and t.end >= self.end):
                 self.source_tags.append(copy(t))
 
-    def add_timex(self, begin, end, timex_type, timex_value):
-        self.tarsqi_tags.add_tag('TIMEX3', begin, end,
-                                 {'type': timex_type, 'value': timex_value})
+    def add_timex(self, begin, end, attrs):
+        self.tarsqi_tags.add_tag('TIMEX3', begin, end, attrs)
 
     def add_event(self, begin, end, attrs):
         self.tarsqi_tags.add_tag('EVENT', begin, end, attrs)

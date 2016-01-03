@@ -99,6 +99,7 @@ def _import_timex_tags(fname, element):
         if lexes:
             p1 = int(lexes[0].getAttribute('begin'))
             p2 = int(lexes[-1].getAttribute('end'))
-            timex_type = timex.getAttribute('TYPE')
-            timex_value = timex.getAttribute('VAL')
-            element.add_timex(p1, p2, timex_type, timex_value)
+            attrs = { 'tid': timex.getAttribute('tid'),
+                      'type': timex.getAttribute('TYPE'),
+                      'val': timex.getAttribute('VAL') }
+            element.add_timex(p1, p2, attrs)
