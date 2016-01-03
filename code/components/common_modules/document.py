@@ -248,25 +248,24 @@ class Document:
                     (this is the link back to the SourceDoc with the text)
         tarsqidocelement
 
-        nodeList - a list of strings, each representing a document element
-        nodeCounter - an integer
-        sourceFileName  an absolute path
-        taggedEventsDict - a dictionary containing tagged event in the input
-        instanceCounter - an integer
-        insertDict - dictionary (integer --> string)
+        nodeList          -  a list of strings, each representing a document element
+        nodeCounter       -  an integer
+        sourceFileName    -  an absolute path
+        taggedEventsDict  -  a dictionary containing tagged event in the input
+        insertDict        -  dictionary (integer --> string)
 
-        event_dict - dictionary (eid --> EventTag)
-        instance_dict a dictionary (eiid --> InstanceTag)
-        alink_list - a list of AlinkTags
-        slink_list - a list of SlinkTags
-        tlink_list - a list of TlinkTags
+        event_dict     -  dictionary (eid --> EventTag)
+        instance_dict  -  a dictionary (eiid --> InstanceTag)
+        alink_list     -  a list of AlinkTags
+        slink_list     -  a list of SlinkTags
+        tlink_list     -  a list of TlinkTags
 
-        eventCount - an integer
-        alinkCount - an integer
-        slinkCount - an integer
-        tlinkCount - an integer
-        linkCount - an integer
-        positionCount - an integer
+        eventCount     -  an integer
+        alinkCount     -  an integer
+        slinkCount     -  an integer
+        tlinkCount     -  an integer
+        linkCount      -  an integer
+        positionCount  -  an integer
 
     The taggedEventsDicts is used by Slinket, storing events indexed on event IDs, its
     function can probably be taken over by the event_dict variable. The insertDict
@@ -292,7 +291,6 @@ class Document:
         self.nodeCounter = 0
         self.sourceFileName = fileName
         self.taggedEventsDict = {}        # used by slinket's event parser
-        self.instanceCounter = 0
         self.insertDict = {}              # filled in by Evita
         self.event_dict = {}              # next five created by the FragmentConverter
         self.instance_dict = {}
@@ -321,19 +319,19 @@ class Document:
            string - a string representing a tag or text"""
         # could probably add it by appending it to nodeList
         self.nodeList.insert(self.nodeCounter, string)
-        self.nodeCounter = self.nodeCounter + 1 
+        self.nodeCounter += 1
 
     def addDocLink(self, loc, string):
         """Add a node to the document's nodeList. Inserts it at the specified location and
         not at the ned of the document (as indicated by noedeCounter. Still increments the
-        nodeCounter becasue the document grows by one element. This is much like
+        nodeCounter because the document grows by one element. This is much like
         addDocNode, but it used for adding nodes that were not in the input but that were
         created by a Tarsqi component.
         Arguments
            loc - an integer, iundicating the location of the insert point
            string - a string representing a tag or text"""
         self.nodeList.insert(loc, string)
-        self.nodeCounter = self.nodeCounter + 1
+        self.nodeCounter += 1
                 
     def addSentence(self, sentence):
         """Append a Sentence to the dtrs list and sets the parent feature of the
@@ -501,8 +499,8 @@ class Document:
         the sentences."""
         print "\n<Document sourceFilename=%s>\n" % self.sourceFileName
         print "  len(nodeList)=%s len(dtrs)=%s" % (len(self.nodeList), len(self.dtrs))
-        print "  nodeCounter=%s instanceCounter=%s eventCount=%s postionCount=%s" \
-            % (self.nodeCounter, self.instanceCounter, self.eventCount, self.positionCount)
+        print "  nodeCounter=%s eventCount=%s postionCount=%s" \
+            % (self.nodeCounter, self.eventCount, self.positionCount)
         print "  alinkCount=%s slinkCount=%s tlinkCount=%s" \
             % (self.alinkCount, self.slinkCount, self.tlinkCount)
         self.pretty_print_tagged_events_dict()

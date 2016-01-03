@@ -4,6 +4,7 @@
 
 <style>
 body { width: 820px; }
+img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: block; }
 .spacy li { margin-top: 10pt; margin-bottom: 10pt; }
 .example { padding: 5pt; background: #eeeeee; border: thin dotted grey; }
 .image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
@@ -56,6 +57,8 @@ things:</p>
 parse_file(filename) and returns an instance of docmodel.source_parser.SourceDoc
 which includes two instance variables: text and tags with as values a unicode
 string and an instance of docmodel.source_parser.TagRepository:
+
+<img src="images/sourceparser.png"/ height="75">
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -123,6 +126,8 @@ tags.
 
 <li>One of the parsers from docmodel.parsers is then used to take the DocSource
 instance and create an instance of docmodel.document.TarsqiDocument.
+
+<img src="images/defaultparser.png"/ height="75">
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -257,9 +262,13 @@ over two lines here for readability.
 <h2>The Preprocessor</h2>
 
 <p>The PreprocessorWrapper loops through the TarsiDocElements. For each element,
-it extracts the source text and then runs the tokenizer, tagger and chunker on
-that text. The tokenizer takes this text and returns a list of pairs, where each
-pair is either ('&lt;s>', None) for sentence boundaries or a pair of a string and a
+it extracts the source text, runs the tokenizer, tagger and chunker on that text
+and then exports the results back to the TarsqiDocElements.</p>
+
+<img src="images/preprocessing.png" height="250"/>
+
+<p>The tokenizer takes the text and returns a list of pairs, where each pair is
+either ('&lt;s>', None) for sentence boundaries or a pair of a string and a
 TokenizedLex instance (which has begin and end instance variables):</p>
 
 <pre class="example indent">
@@ -338,7 +347,140 @@ closing_tags dictionaries now look as follows:</p>
 
 <h2>GUTime</h2>
 
+<p>The GUTimeWrapper takes the content of all TarsqiDocElements in the
+TarsqiDocument and creates the input needed by
+code/components/gutime/TimeTag.pl, which is the wrapper around TempEx.pm in the
+same directory. The input required by TimeTag.pl is a file with content as follows:
+
+<pre class="example indent">
+&lt;DOC>
+&lt;DATE>20160102&lt;/DATE>
+&lt;s>
+   &lt;lex id="l1" begin="1" end="5" pos="NNP">Fido&lt;/lex>
+   &lt;lex id="l2" begin="6" end="11" pos="NNS">barks&lt;/lex>
+   &lt;lex id="l3" begin="12" end="14" pos="IN">on&lt;/lex>
+   &lt;lex id="l4" begin="15" end="21" pos="NNP">Monday&lt;/lex>
+   &lt;lex id="l5" begin="21" end="22" pos=".">.&lt;/lex>
+&lt;/s>
+&lt;/DOC>
+</pre>
+
+<p>The DOC root and the DATE tag are required, the latter being the way that the
+DCT is handed to GUTime. Otherwise, only s and lex tags are allowed. GUTime does
+not require the lex tags to have the begin and end attributes, but it is okay
+for them to be there. Any kind of spacing between the tags is allowed. The
+wrapper creates the above file in a temporary data directory code/data/tmp
+(which is emptied at the beginning of each tarsqi.py invocation) and then uses
+the Python subprocess module to run the Perl script. The output is put in the
+same temporary directory and is exactly like the input except that TIMEX3 tags
+are added:</p>
+
+<pre class="example indent">
+&lt;DOC>
+&lt;DATE>&lt;TIMEX3 VAL="20160102">20160102&lt;/TIMEX3>&lt;/DATE>
+&lt;s>
+   &lt;lex id="l1" begin="1" end="5" pos="NNP">Fido&lt;/lex>
+   &lt;lex id="l2" begin="6" end="11" pos="NNS">barks&lt;/lex>
+   &lt;lex id="l3" begin="12" end="14" pos="IN">on&lt;/lex>
+   &lt;TIMEX3 tid="t1" TYPE="DATE">&lt;lex id="l4" begin="15" end="21" pos="NNP">Monday&lt;/lex>&lt;/TIMEX3>
+   &lt;lex id="l5" begin="21" end="22" pos=".">.&lt;/lex>
+&lt;/s>
+&lt;/DOC>
+</pre>
+
+<p>Similar to what happened with the preprocessor results, the new TIMEX3 tags
+are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
+
 <h2>Evita</h2>
+
+        event_dict - dictionary (eid --> EventTag)
+        instance_dict a dictionary (eiid --> InstanceTag)
+        alink_list - a list of AlinkTags
+        slink_list - a list of SlinkTags
+        tlink_list - a list of TlinkTags
+
+        eventCount - an integer
+        alinkCount - an integer
+        slinkCount - an integer
+        tlinkCount - an integer
+        linkCount - an integer
+        positionCount - an integer
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">components.common_modules.document.Document</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqidoc</td>
+  <td>an instance of docmodel.document.TarsqiDocument</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqidocelement</td>
+  <td>the TarsqDocElement that the document tree is created for</td>
+</tr>
+<tr>
+  <td class="attribute">nodeList</td>
+  <td>a list of strings, each representing a document element</td>
+</tr>
+<tr>
+  <td class="attribute">nodeCounter</td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute">sourceFileName</td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute">taggedEventsDict</td>
+  <td>a dictionary containing tagged event in the input</td>
+</tr>
+<tr>
+  <td class="attribute">insertDict</td>
+  <td>dictionary (integer --> string)</td>
+</tr>
+<tr>
+  <td class="attribute"></td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute"></td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute"></td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute"></td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute"></td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute"></td>
+  <td></td>
+</tr>
+<tr>
+  <td class="attribute">begin</td>
+  <td>the beginning offset in doc.source</td>
+</tr>
+<tr>
+  <td class="attribute">end</td>
+  <td>the ending offset in doc.source</td>
+</tr>
+<tr>
+  <td class="attribute">source_tags</td>
+  <td>an instance of docmodel.source_parser.TagRepository, containing a subset
+  of the tags in the source document, namely those that span part or all of the
+  paragraph</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqi_tags</td>
+  <td>an instance of docmodel.source_parser.TagRepository, initially empty</td>
+</tr>
+</table>
 
 
 

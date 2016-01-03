@@ -16,7 +16,7 @@ The input required by TimeTag.pl looks as follows:
    </DOC>
 
 The DOC root is required and so is the DATE tag. Otherwise, only s and lex tags
-are allowed. Note that any kind of spacing between the tags is allowed.
+are allowed. Any kind of spacing between the tags is allowed.
 
 Note that the directory that this wrapper is in has two unused files: gutime.pl
 and postTempEx.pl. Much of the functionality in those files is either in this
