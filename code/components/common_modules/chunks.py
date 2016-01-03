@@ -58,7 +58,6 @@ class Chunk(Constituent):
     Instance variables
        phraseType         - string indicating the chunk type, usually 'VG' or 'NG'
        dtrs = []          - a list of Tokens, EventTags and TimexTags
-       positionCount = 0  - used when looping through the dtrs list
        position = None    - index in the parent's daughters list
        head = -1          - the index of the head of the chunk
        parent = None      - the parent, an instance of Sentence typically
@@ -73,7 +72,6 @@ class Chunk(Constituent):
     def __init__(self, phraseType):
         self.phraseType = phraseType
         self.dtrs = []
-        self.positionCount = 0
         self.position = None
         self.parent = None
         self.begin = None
@@ -229,7 +227,6 @@ class Chunk(Constituent):
     def addToken(self, token):
         token.setParent(self)
         self.dtrs.append(token)
-        self.positionCount += 1
 
     def setEventInfo(self, eid):
         self.event = 1

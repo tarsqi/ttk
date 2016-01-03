@@ -13,7 +13,6 @@ class Sentence:
         chunkIndex - an integer
         eventList - a list of (eLoc, eid) tuples
         position - position in the Document parent (first sentence is 0)
-        positionCount - used when looping through the daughters
         parent - a Document
 
     The eventList variable stores (eLoc, eid) tuples of each tagged event in the sentence,
@@ -26,7 +25,6 @@ class Sentence:
         self.chunkIndex = 0
         self.eventList = [] 
         self.position = None
-        self.positionCount = 0
         self.parent = None
         
     def __len__(self):
@@ -76,7 +74,6 @@ class Sentence:
            chunkOrToken - a Chunk or a Token"""
         chunkOrToken.setParent(self)
         self.dtrs.append(chunkOrToken)
-        self.positionCount += 1
 
     def setParent(self, parent):
         """Set the parent feature of the sentence to the document. Also copies the
@@ -84,7 +81,6 @@ class Sentence:
         Arguments
            parent - a Document"""
         self.parent = parent
-        self.position = parent.positionCount
 
     def storeEventLocation(self, evLoc, eid):
         """Appends a tuple of event location and event id to the eventList.

@@ -13,7 +13,6 @@ class Constituent:
 
     def setParent(self, parent):
         self.parent = parent
-        self.position = parent.positionCount
 
     def doc(self):
         return self.document()

@@ -171,7 +171,7 @@ class SourceDoc:
         print "\nXMLDECL:", self.xmldecl
         print "COMMENTS:", self.comments
         print "PROCESSING:", self.processing_instructions
-    
+
     def print_source(self, filename):
         """Print the source string to a file, using the utf-8 encoding."""
         fh = open(filename, 'w')
@@ -187,7 +187,7 @@ class SourceDoc:
                 fh.write("\t%s=\"%s\"" % (attr, val.replace('"','&quot;')))
             fh.write("\n")
 
-           
+
     def print_xml(self, filename):
 
         """Print self as an inline XML file. This should work on all input that did

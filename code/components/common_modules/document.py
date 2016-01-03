@@ -28,7 +28,7 @@ def create_document_from_tarsqi_doc_element(element):
         top_node.insert(tag)
     top_node.set_positions()
     top_node.set_event_markers()
-    doc = Document(element.doc.source.filename, element.doc, element)
+    doc = Document(element.doc, element)
     # recursively import all nodes into the doc, but skip the topnode itself
     top_node.add_to_doc(doc, doc)
     return doc
@@ -213,11 +213,8 @@ class Node(object):
         elif self.name == 'lex':
             pos = self.tag.attrs['pos']
             word = document.tarsqidoc.source[self.begin:self.end]
-            if pos.startswith(POS_ADJ):
-                doc_element = AdjectiveToken(document, pos)
-            else:
-                doc_element = Token(document, pos)
-            doc_element.text = word
+            token_class =  AdjectiveToken if pos.startswith(POS_ADJ) else Token
+            doc_element = token_class(document, word, pos)
         elif self.name == 'EVENT':
             doc_element = EventTag(self.tag.attrs)
         elif self.name == 'TIMEX3':
@@ -247,53 +244,26 @@ class Document:
         tarsqidoc         -  the TarsqiDocument instance that the document is part of
         tarsqidocelement  -  the TarsqiDocElement that the document tree was made for
 
-        nodeList          -  a list of strings, each representing a document element
-        sourceFileName    -  an absolute path
+        fname             -  an absolute path
         taggedEventsDict  -  a dictionary containing tagged event in the input
-        insertDict        -  dictionary (integer --> string)
 
-        event_dict     -  dictionary (eid --> EventTag)
-        instance_dict  -  a dictionary (eiid --> InstanceTag)
-        alink_list     -  a list of AlinkTags
-        slink_list     -  a list of SlinkTags
+        alink_list     -  a list of AlinkTags, filled in by Slinket
+        slink_list     -  a list of SlinkTags, filled in by Slinket
         tlink_list     -  a list of TlinkTags
 
-        eventCount     -  an integer
-        linkCount      -  an integer
-        positionCount  -  an integer
-
-    The taggedEventsDicts is used by Slinket, storing events indexed on event IDs, its
-    function can probably be taken over by the event_dict variable. The insertDict
-    variable is used by Evita. It keeps track of event and instance tags that need to be
-    inserted and indexes them on the index in the nodeList where they need to be inserted.
-
-    The variables event_dict, instance_dict, alink_list, slink_list and tlink_list are
-    filled in by the FragmentConverter.
-
-    The counters are incremented when elements are added, most counters are used to create
-    unique ids for newly created tags. The positionCount is incremented when a sentence or
-    a timex is added to the document (using addSentence or addTimex). It is used so the
-    position variable can be set on Sentences (that is, the Sentence knows at what
-    position in the document it occurrs)."""
+    The taggedEventsDicts is used by Slinket, storing events indexed on event IDs.
+    """
 
 
-    def __init__(self, fileName, tarsqidoc=None, tarsqidocelement=None):
+    def __init__(self, tarsqidoc=None, tarsqidocelement=None):
         """Initialize all dictionaries, list and counters and set the file name."""
         self.tarsqidoc = tarsqidoc
         self.tarsqidocelement = tarsqidocelement
-        self.nodeList = []                # just here so we can find the text of a Token
         self.dtrs = []
-        self.sourceFileName = fileName
         self.taggedEventsDict = {}        # used by slinket's event parser
-        self.insertDict = {}              # filled in by Evita
-        self.event_dict = {}              # next five created by the FragmentConverter
-        self.instance_dict = {}
         self.alink_list = []
         self.slink_list = []
         self.tlink_list = []
-        self.eventCount = 0
-        self.linkCount = 1                # used by S2T
-        self.positionCount = 0            # obsolete?
 
     def __len__(self):
         """Length is determined by the length of the dtrs list."""
@@ -303,16 +273,11 @@ class Document:
         """Indexing occurs on the dtrs variable."""
         return self.dtrs[index]
 
-    def addDocNode(self, string):
-        """Append a node string to the document's nodeList."""
-        self.nodeList.append(string)
-
     def addSentence(self, sentence):
         """Append a Sentence to the dtrs list and sets the parent feature of the
-        sentence to the document. Also increments the positionCount."""
+        sentence to the document."""
         sentence.setParent(self)
         self.dtrs.append(sentence)
-        self.positionCount += 1
 
     def addTimex(self, timex):
         """Applied when a timex cannot be added to a Chunk or a Sentence, probably
@@ -320,7 +285,6 @@ class Document:
         # NOTE: this is probably wrong, test it with a document where
         # the DCT will not end up in a sentence tag
         timex.setParent(self)
-        self.positionCount += 1
     
     def hasEventWithAttribute(self, eid, att):
         """Returns the attribute value if the taggedEventsDict has an event with the given
@@ -375,12 +339,9 @@ class Document:
         """Add a link of type linkType with its attributes to the document by appending
         them to self.alink_list, self.slink_list or self.tlink_list. This allows
         other code, for example the main function of Slinket, to easily access
-        newly created links in the Document Also adds an XML string that
-        represents the link to the nodeList variable. The linkType argument
-        is'ALINK', 'SLINK' or 'TLINK' and linkAttrs is a dictionary of
-        attributes."""
+        newly created links in the Document. The linkType argument is'ALINK',
+        'SLINK' or 'TLINK' and linkAttrs is a dictionary of attributes."""
         linkAttrs['lid'] = self.tarsqidoc.next_link_id(linkType)
-        self.addDocNode(emptyContentString(linkType, linkAttrs))
         if linkType == ALINK: self.alink_list.append(AlinkTag(linkAttrs))
         elif linkType == SLINK: self.slink_list.append(SlinkTag(linkAttrs))
         elif linkType == TLINK: self.tlink_list.append(TlinkTag(linkAttrs))
@@ -402,13 +363,9 @@ class Document:
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation of
         the sentences."""
-        print "\n<Document sourceFilename=%s>\n" % self.sourceFileName
-        print "  len(nodeList)=%s len(dtrs)=%s" % (len(self.nodeList), len(self.dtrs))
-        print "  eventCount=%s postionCount=%s" % (self.eventCount, self.positionCount)
+        print "\n<Document filename=%s>\n" % self.tarsqidoc.source.filename
+        print "  len(dtrs)=%s" % (len(self.dtrs))
         self.pretty_print_tagged_events_dict()
-        print '  insertDict =', self.insertDict
-        print "  len(event_dict)=%s len(instance_dict)=%s" \
-            % (len(self.event_dict), len(self.instance_dict))
         print '  alink_list =', self.alink_list
         print '  slink_list =', self.slink_list
         print '  tlink_list =', self.tlink_list

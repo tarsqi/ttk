@@ -162,7 +162,6 @@ class TimexTag(Tag):
         self.dtrs = []
         self.begin = None
         self.end = None
-        self.positionCount = 0
         self.checkedEvents = False
 
     def __len__(self):
@@ -199,11 +198,9 @@ class TimexTag(Tag):
     def add(self, chunkOrToken):
         chunkOrToken.setParent(self)
         self.dtrs.append(chunkOrToken)
-        self.positionCount += 1
 
     def setParent(self, parent):
         self.parent = parent
-        self.position = parent.positionCount
 
     def getText(self):
         string = ""

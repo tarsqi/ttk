@@ -393,15 +393,6 @@ are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
 
 <h2>Evita</h2>
 
-        event_dict - dictionary (eid --> EventTag)
-        instance_dict a dictionary (eiid --> InstanceTag)
-        alink_list - a list of AlinkTags
-        slink_list - a list of SlinkTags
-        tlink_list - a list of TlinkTags
-        eventCount - an integer
-        linkCount - an integer
-        positionCount - an integer
-
 <table class="pythonclass indent spacy">
 <tr>
   <td class="name" colspan="2">components.common_modules.document.Document</td>
@@ -415,44 +406,20 @@ are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
   <td>the TarsqDocElement that the document tree is created for</td>
 </tr>
 <tr>
-  <td class="attribute">nodeList</td>
-  <td>a list of strings, each representing a document element</td>
-</tr>
-<tr>
-  <td class="attribute">sourceFileName</td>
-  <td></td>
-</tr>
-<tr>
   <td class="attribute">taggedEventsDict</td>
   <td>a dictionary containing tagged event in the input</td>
 </tr>
 <tr>
-  <td class="attribute">insertDict</td>
-  <td>dictionary (integer --> string)</td>
+  <td class="attribute">alink_list</td>
+  <td>a list of AlinkTags</td>
 </tr>
 <tr>
-  <td class="attribute"></td>
-  <td></td>
+  <td class="attribute">slink_list</td>
+  <td>a list of SlinkTags</td>
 </tr>
 <tr>
-  <td class="attribute"></td>
-  <td></td>
-</tr>
-<tr>
-  <td class="attribute"></td>
-  <td></td>
-</tr>
-<tr>
-  <td class="attribute"></td>
-  <td></td>
-</tr>
-<tr>
-  <td class="attribute"></td>
-  <td></td>
-</tr>
-<tr>
-  <td class="attribute"></td>
-  <td></td>
+  <td class="attribute">tlink_list</td>
+  <td>a list of TlinkTags</td>
 </tr>
 </table>
 

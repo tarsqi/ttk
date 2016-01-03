@@ -11,13 +11,14 @@ from components.common_modules.constituent import Constituent
 
 class Token(Constituent):
 
-    def __init__(self, document, pos, lid=0, lex=None):
+    def __init__(self, document, word, pos, lid=None, lex=None):
         """Initialize with Document instance, a part-of-speech, an identifier
         and an instance of XmlDocElement with tag=lex (which came from the
         FragmentConverter). Some instance variables will be filled in later,
         depending on what the Token is used for."""
-        self.pos = pos
         self.lid = lid
+        self.text = word
+        self.pos = pos
         self.lex = lex
         self.dtrs = []
         self.begin = None
@@ -29,10 +30,6 @@ class Token(Constituent):
         self.parent = None
         self.gramchunk = None
         self.checkedEvents = False
-        self.text = None
-        # added this one to provide a pointer to the XmlDocElement instance. Made it into
-        # a list of all the docelements BK 20080725
-        self.lex_tag_list = []
 
     def __getitem__(self, index):
         if index == 0:
@@ -64,10 +61,7 @@ class Token(Constituent):
         self.textIdx = docLoc
 
     def getText(self):
-        """Return the text of the token, taking it from the node list on the
-        document if it is not available on the text instance variable."""
-        if self.text is None:
-            self.text = self.document.nodeList[self.textIdx]
+        """Return the text of the token."""
         return self.text
 
     def document(self):
@@ -116,8 +110,8 @@ class Token(Constituent):
 
 class AdjectiveToken(Token):
 
-    def __init__(self, document, pos, lid=0, lex=None):
-        Token.__init__(self, document, pos, lid, lex)
+    def __init__(self, document, word, pos, lid=None, lex=None):
+        Token.__init__(self, document, word, pos, lid, lex)
         self.event = None      # set to True if self is wrapped in an EventTag
         self.eid = None        # the eid of the EventTag
         self.event_tag = None  # contains the EventTag
