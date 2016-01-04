@@ -1,9 +1,10 @@
 """Contains functionality specific to sentences in a document."""
 
 from utilities import logger
+from components.common_modules.constituent import Constituent
 
 
-class Sentence:
+class Sentence(Constituent):
 
     """A Sentence is a top-level element of a Document. It contains a list of Chunks and
     Tokens.
@@ -43,25 +44,10 @@ class Sentence:
         a list."""
         self.dtrs[idx] = element
 
-    def isAdjToken(self):
-        # TODO: this is really a nasty hack and Sentence should be a sub class
-        # of Constituent, but I do not want to do that till I have sorted out
-        # the __getattr__ stuff.
-        return False
-
-    def isEvent(self):
-        # TODO: see the note on isAdjToken()
-        return False
-
-    def get_events(self, result=None):
-        # TODO: see the note on isAdjToken()
-        if result is None:
-            result = []
-        for dtr in self.dtrs:
-            if dtr.isEvent():
-                result.append(dtr)
-            dtr.get_events(result)
-        return result
+    def __getattr__(self, name):
+        """This is here so that an unknown attribute is not dealt with by
+        __getattr__ on Constituent, with possibly unwelcome results."""
+        raise AttributeError, name
 
     def document(self):
         """Return the document that the sentence is in."""
