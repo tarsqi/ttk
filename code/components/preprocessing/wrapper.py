@@ -23,14 +23,18 @@ from treetaggerwrapper import TreeTagger
 
 
 class TagId:
-    """Class to provide fresh identifers for lex, ng, vg and s tags."""
-    # TODO: reset these to 0 when processing a new document, probably in the
-    # wrapper's process() method
-    ids = { 's': 0, 'c': 0, 'l': 0 }
+    """Class to provide fresh identifiers for lex, ng, vg and s tags."""
+
+    IDENTIFIERS = { 's': 0, 'c': 0, 'l': 0 }
+
     @classmethod
     def next(cls, prefix):
-        cls.ids[prefix] += 1
-        return "%s%d" % (prefix, cls.ids[prefix])
+        cls.IDENTIFIERS[prefix] += 1
+        return "%s%d" % (prefix, cls.IDENTIFIERS[prefix])
+
+    @classmethod
+    def reset(cls):
+        cls.IDENTIFIERS = { 's': 0, 'c': 0, 'l': 0 }
 
 
 treetagger = None
@@ -89,6 +93,7 @@ class PreprocessorWrapper:
         """Retrieve the elements from the TarsqiDocument and hand these as strings to the
         preprocessing chain. The result is a shallow tree with sentences and tokens. These
         are inserted into the element's tarsqi_tags TagRepositories."""
+        TagId.reset()
         for element in self.document.elements:
             tokens = self.tokenize_text(element.get_text())
             adjust_lex_offsets(tokens, element.begin)
@@ -179,7 +184,8 @@ def export(text, tarsqi_element):
                     ctag = None
 
             elif type(token) == TupleType:
-                ltag = Tag(TagId.next('l'), 'lex', token[3], token[4], { 'lemma': token[2], 'pos': token[1] })
+                ltag = Tag(TagId.next('l'), 'lex', token[3], token[4],
+                           { 'lemma': token[2], 'pos': token[1] })
                 tarsqi_element.tarsqi_tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]
