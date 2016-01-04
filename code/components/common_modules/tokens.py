@@ -11,15 +11,12 @@ from components.common_modules.constituent import Constituent
 
 class Token(Constituent):
 
-    def __init__(self, document, word, pos, lid=None, lex=None):
-        """Initialize with Document instance, a part-of-speech, an identifier
-        and an instance of XmlDocElement with tag=lex (which came from the
-        FragmentConverter). Some instance variables will be filled in later,
-        depending on what the Token is used for."""
-        self.lid = lid
+    def __init__(self, document, word, pos):
+        """Initialize with Document instance, the word and a part-of-speech. Some
+        instance variables will be filled in later, depending on what the Token
+        is used for."""
         self.text = word
         self.pos = pos
-        self.lex = lex
         self.dtrs = []
         self.begin = None
         self.end = None
@@ -54,11 +51,6 @@ class Token(Constituent):
             return None
         else:
             raise AttributeError, name
-
-    def setTextNode(self, docLoc):
-        """An essential step taken by the converter to fill in the textIdx, which the
-        initialization method on Token had not done."""
-        self.textIdx = docLoc
 
     def getText(self):
         """Return the text of the token."""
@@ -110,8 +102,8 @@ class Token(Constituent):
 
 class AdjectiveToken(Token):
 
-    def __init__(self, document, word, pos, lid=None, lex=None):
-        Token.__init__(self, document, word, pos, lid, lex)
+    def __init__(self, document, word, pos):
+        Token.__init__(self, document, word, pos)
         self.event = None      # set to True if self is wrapped in an EventTag
         self.eid = None        # the eid of the EventTag
         self.event_tag = None  # contains the EventTag

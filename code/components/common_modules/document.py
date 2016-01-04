@@ -213,7 +213,7 @@ class Node(object):
         elif self.name == 'lex':
             pos = self.tag.attrs['pos']
             word = document.tarsqidoc.source[self.begin:self.end]
-            token_class =  AdjectiveToken if pos.startswith(POS_ADJ) else Token
+            token_class = AdjectiveToken if pos.startswith(POS_ADJ) else Token
             doc_element = token_class(document, word, pos)
         elif self.name == 'EVENT':
             doc_element = EventTag(self.tag.attrs)

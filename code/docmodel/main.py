@@ -12,7 +12,7 @@ import os
 
 from docmodel.parsers import DefaultParser, TimebankParser, ATEEParser, RTE3Parser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
-from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER, ARGLINKER
+from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER
 
 
 PARSERS = {

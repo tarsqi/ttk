@@ -277,8 +277,8 @@ class NounChunk(Chunk):
     def isEmpty(self):
         """Return True if the chunk is empty, False otherwise."""
         if not self.dtrs:
-            # this happened at some point due to a crazy bug in the converter
-            # code (as noted on 11/08/07)
+            # this happened at some point due to a crazy bug in some old code
+            # that does not exist anymore
             logger.warn("There are no dtrs in the NounChunk")
             return True
         return False

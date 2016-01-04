@@ -9,9 +9,6 @@ input to the analysis and documentation creation scripts.
 
 import tarsqi
 
-import components.arglinker.wrapper
-import components.arglinker.main
-
 import components.blinker.compare
 import components.blinker.main
 import components.blinker.wrapper
@@ -70,9 +67,6 @@ import utilities.sputlink.utils
 MODULES = [
     
     tarsqi,
-
-    components.arglinker.wrapper,
-    components.arglinker.main,
 
     components.blinker.compare,
     components.blinker.main,

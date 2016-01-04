@@ -6,13 +6,13 @@ Responsible for loading the libraries and other top-level processing.
 
 import re
 
-from docmodel.xml_parser import Parser, XmlDocElement, create_dct_element
-from utilities.converter import FragmentConverter
+from docmodel.xml_parser import create_dct_element
 from utilities import logger
 from library.tarsqi_constants import BLINKER
 from library.timeMLspec import TIMEX, EIID, TID, POL
 from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
+from components.common_modules.document import create_document_from_tarsqi_doc_element
 from components.blinker.compare import compare_date
 
 
@@ -36,71 +36,35 @@ class Blinker (TarsqiComponent):
        rules - a BlinkerRuleDictionary
        rule2_index - a dictionary, quick access to type 2 rules
        dct - a string of the form YYYYMMDD, representing the document creation time
-       xmldoc - an XmlDocument, created by xml_parser.Parser
-       doctree - a Document, created by converter.FragmentConverter"""
+       doctree - a Document"""
 
-    def __init__(self):
-
+    def __init__(self, tarsqidoc):
         """Set component name and load rules into a BlinkerRuleDictionary
         object, this object knows where the rules are stored."""
-
         self.NAME = BLINKER
+        self.doctree = None         # instance of Document
+        self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
         self.rules = BlinkerRuleDictionary()
         self.rule2_index = {}
         #self.rules.pp_ruletype(3)
         self._populate_rule2_index()
-
         
     def _populate_rule2_index(self):
-
         """Rules of type 2 (timex-signal-event) can be simply put in a
         hash keyed on the signals."""
-
         for rule in self.rules[2]:
             relation = rule.get_attribute('relation')[0]  # vals are now lists
             signal = rule.get_attribute('signal')[0]
             self.rule2_index[signal] = relation
-
             
-    def process_file(self, infile, outfile, dct):
-
-        """Apply all Blinker rules to the input file. Parses the xml
-        file with xml_parser.Parser and converts it to a shallow tree
-        with converter.FragmentConverter. Then applies the Blinker
-        rules. Curently only applies rules of type 2.
-
-        Arguments
-           infile - an absolute path
-           outfile - an absolute path
-        No return value."""
-
-        xmlfile = open(infile, "r")
+    def process_element(self, element, dct):
+        """Apply all Blinker rules to the element. Creates a Document instance and then
+        applies the Blinker rules. Curently only applies rules of type 2."""
         self.dct = dct
-        self.xmldoc = Parser().parse_file(xmlfile)
-        self.doctree = FragmentConverter(self.xmldoc, infile).convert(user=BLINKER)
-        #self.print_doctree(BLINKER)
-        self._run_blinker()
-        self.xmldoc.save_to_file(outfile)
-
-
-    def process_xmldoc(self, xmldoc, dct):
-
-        """Apply all Blinker rules to the input file. Parses the xml
-        file with xml_parser.Parser and converts it to a shallow tree
-        with converter.FragmentConverter. Then applies the Blinker
-        rules. Curently only applies rules of type 2.
-
-        Arguments
-           infile - an absolute path
-           outfile - an absolute path
-        No return value."""
-
-        self.dct = dct
-        self.xmldoc = xmldoc
-        self.doctree = FragmentConverter(self.xmldoc).convert()
+        self.doctree = create_document_from_tarsqi_doc_element(element)
         #self.pp_doctree(BLINKER)
         self._run_blinker()
-        #self.xmldoc.save_to_file(outfile)
+
 
 
     def _run_blinker(self):

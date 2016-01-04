@@ -100,7 +100,7 @@ class TarsqiDocument(ParameterMixin):
         fh.write("<text>%s</text>\n" % self.source.text)
         fh.write("<source_tags>\n")
         for tag in self.source.tags.tags:
-            fh.write("  %s\n" % tag.in_layer_format())
+            fh.write("  %s\n" % tag.as_ttk_tag())
         fh.write("</source_tags>\n")
         fh.write("<ttk_tags>\n")
         fh.write("  <TIMEX3 tid=\"t0\" type=\"DATE\" value=\"%s\"" % self.metadata['dct']
@@ -109,7 +109,7 @@ class TarsqiDocument(ParameterMixin):
             fh.write("  <doc_element type=\"%s\" begin=\"%s\" end=\"%s\">\n"
                      % (e.__class__.__name__, e.begin, e.end))
             for tag in e.tarsqi_tags.tags:
-                fh.write("    %s\n" % tag.in_layer_format())
+                fh.write("    %s\n" % tag.as_ttk_tag())
             fh.write("  </doc_element>\n")
         fh.write("</ttk_tags>\n")
         fh.write("</ttk>\n")
@@ -118,7 +118,7 @@ class TarsqiDocument(ParameterMixin):
         """Prints all the tags from the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
         for tag in self.source.tags.tags:
-            fh.write(tag.in_layer_format()+"\n")
+            fh.write(tag.as_ttk_tag()+"\n")
 
     def print_tarsqi_tags(self, fname=None):
         """Prints all the tarsqi tags added to the source documents to a layer file."""
@@ -126,7 +126,7 @@ class TarsqiDocument(ParameterMixin):
         fh.write("<ttk>\n")
         for e in self.elements:
             for tag in e.tarsqi_tags.tags:
-                fh.write('  ' + tag.in_layer_format() + "\n")
+                fh.write('  ' + tag.as_ttk_tag() + "\n")
         fh.write("</ttk>\n")
 
     def _print_tags(self, tag_repository, fname=None):
@@ -134,7 +134,7 @@ class TarsqiDocument(ParameterMixin):
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
         for e in self.elements:
             for tag in tag_repository.tags:
-                fh.write(tag.in_layer_format()+"\n")
+                fh.write(tag.as_ttk_tag()+"\n")
 
     def list_of_sentences(self):
         sentences = []

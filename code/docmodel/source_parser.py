@@ -197,9 +197,7 @@ class SourceDoc:
         that were printed as <SOME_TAG/> will be printed as two tags. There are
         no provisions for crossing tags. Therefore, the code is also not set up
         to deal with tags added to the tags repository since those may have
-        introduced crossing tags.
-
-        """
+        introduced crossing tags."""
 
         # TODO: check what happens when input is not an xml file
         # TODO: add xmldec, processing instructions and comments
@@ -395,7 +393,8 @@ class Tag:
 
     def is_closing_tag(self): return False
 
-    def in_layer_format(self):
+    def as_ttk_tag(self):
+        """Return the tag as a tag in the Tarsqi output format."""
         begin = " begin=\"%s\"" % self.begin if self.begin >= 0 else ''
         end = " end=\"%s\"" % self.end if self.end >= 0 else ''
         identifier = "" if self.id is None else " id=" + quoteattr(str(self.id))

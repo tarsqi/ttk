@@ -19,8 +19,8 @@ class TarsqiComponent:
         logger.error("TarsqiComponent.process() not overridden")
 
     def pp_doctree(self, componentName):
-        """Print the result of the document tree created by the converter utility. Assumes
-        there is a doctree instance variable that contains a Document object."""
+        """Print the document tree. Assumes there is a doctree instance variable that
+        contains a Document object."""
         print "\n--------- DOCUMENT TREE for %s ----------" % componentName
         self.doctree.pretty_print()
 

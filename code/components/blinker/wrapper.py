@@ -17,9 +17,9 @@ class BlinkerWrapper:
         self.dct = self.document.get_dct()
         
     def process(self):
-        """Retrieve the XmlDocument and hand it to Evita for processing. Blinker
-        processing will update this slice when events are added."""
-        xmldocs = [self.document.xmldoc]
-        for xmldoc in xmldocs:
-            xmldoc.reset()
-            Blinker().process_xmldoc(xmldoc, self.dct)
+        """Hand in all document elements to Blinker for processing. Document elements are
+        instances of docmodel.document.TarsqiDocParagraph (which is a subclass
+        of TarsqiDocElement). Assumes that all
+        document elements are processed the same way."""
+        for element in self.document.elements:
+            Blinker(self.document).process_element(element, self.dct)
