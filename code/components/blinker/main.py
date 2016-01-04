@@ -6,7 +6,7 @@ Responsible for loading the libraries and other top-level processing.
 
 import re
 
-from docmodel.xml_parser import create_dct_element
+#from docmodel.xml_parser import create_dct_element
 from utilities import logger
 from library.tarsqi_constants import BLINKER
 from library.timeMLspec import TIMEX, EIID, TID, POL

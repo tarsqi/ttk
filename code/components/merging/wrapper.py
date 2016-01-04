@@ -19,7 +19,7 @@ if USE_HERITAGE_CODE:
     from library.timeMLspec import RELTYPE, EVENT_INSTANCE_ID, TIME_ID
     from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME, CONFIDENCE
     from utilities import logger
-    from docmodel.xml_parser import Parser
+    #from docmodel.xml_parser import Parser
 else:
     from components.merging.main import LinkMerger
 

@@ -7,7 +7,7 @@ class that takes care of applying s2t-rules to each SLINK.
 
 """
 
-from docmodel.xml_parser import Parser
+#from docmodel.xml_parser import Parser
 from utilities import logger
 from components.common_modules.component import TarsqiComponent
 from library.tarsqi_constants import S2T

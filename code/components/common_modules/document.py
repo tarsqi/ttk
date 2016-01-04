@@ -4,7 +4,6 @@ import sys
 import re
 from xml.sax.saxutils import escape, quoteattr
 
-from utilities.xml_utils import emptyContentString
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
 from components.common_modules.tokens import Token, AdjectiveToken
