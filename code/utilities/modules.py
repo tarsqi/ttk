@@ -7,6 +7,10 @@ input to the analysis and documentation creation scripts.
 
 """
 
+import sys
+
+sys.path.insert(0, '..')
+
 import tarsqi
 
 import components.blinker.compare

@@ -31,6 +31,9 @@ WRITE_FUNCTION_SOURCES = False
 # underscore) are included.
 PRINT_PRIVATE_FUNCTIONS = True
 
+# directory where the document ation is written
+DOCUMENTATION_DIR = os.path.join('..', '..', 'docs', 'code')
+
 
 javascript_code = \
 """<script language="JavaScript" type="text/JavaScript">
@@ -49,7 +52,7 @@ FUNCTION_ID = 0
 
 def print_module_documentation(module):
     print module.__name__
-    filename = os.path.join('..', 'docs', 'code', 'modules', module.__name__+'.html')
+    filename = os.path.join(DOCUMENTATION_DIR, 'modules', module.__name__+'.html')
     docfile = open(filename,'w')
     docfile.write("<html>\n<head>\n")
     docfile.write('<link href="../css/module.css" rel="stylesheet" type="text/css">'+"\n")
@@ -164,7 +167,7 @@ def get_function_name(fun):
         return fun.__name__ + ' (imported)'
     
 def print_function_code(id, name, fun):
-    filename = os.path.join('..', 'docs', 'code', 'functions', "%s.html" % id)
+    filename = os.path.join(DOCUMENTATION_DIR, 'functions', "%s.html" % id)
     funfile = open(filename, "w")
     funfile.write("<html>\n<head>\n")
     funfile.write('<link href="../css/function.css" rel="stylesheet" type="text/css">'+"\n")
@@ -243,7 +246,7 @@ def trim(docstring, linenum=1):
 
 if __name__ == '__main__':
 
-    filename = os.path.join('..', 'docs', 'code', 'index.html')
+    filename = os.path.join(DOCUMENTATION_DIR, 'index.html')
     indexfile = open(filename,'w')
     indexfile.write("<html>\n<head>\n")
     indexfile.write("<link rel=\"stylesheet\" href=\"css/list.css\"> \n")
