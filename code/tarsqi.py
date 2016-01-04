@@ -193,26 +193,22 @@ class Tarsqi(ParameterMixin):
                 if not file.startswith('.'):
                     os.remove(self.DIR_TMP_DATA + os.sep + file)
 
-    def apply_component(self, name, wrapper, document):
-        """Apply a component if the processing parameters determine that the
-        component needs to be applied. This method takes the TarsqDocument,
-        which includes the parameters from the Tarsqi instance, and passes it to
-        the component wrapper. Component-level errors are trapped here if
-        trap_errors is True. Arguments:
-           name - string, the name of the component
-           wrapper - instance of one of the wrapper classes
-           document - instance of TarsqiDocument"""
+    def apply_component(self, name, wrapper, tarsqidocument):
+        """Apply a component by taking the TarsqDocument, which includes the
+        parameters from the Tarsqi instance, and passing it to the component
+        wrapper. Component-level errors are trapped here if --trap-errors is
+        True. If errors are trapped, it is still possible that partial results
+        were written to the TagRepositories in the TarsqiDocument."""
         logger.info(name + '............')
         t1 = time.time()
         if self.getopt_trap_errors():
             try:
-                wrapper(document).process()
+                wrapper(tarsqidocument).process()
             except:
-                # TODO: does the TarsqiDocument need to be reset?
                 print  "%s error:\n\t%s\n\t%s\n" \
                     % (name, sys.exc_type, sys.exc_value)
         else:
-            wrapper(document).process()
+            wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
     def write_output(self):

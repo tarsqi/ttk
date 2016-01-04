@@ -119,7 +119,7 @@ def run_evita():
     true = 0
     false = 0
     for case in cases:
-        result = check('PREPROCESSOR,EVITA', case.sentence, 'EVENT', case.o1, case.o2)
+        result = check_tag('PREPROCESSOR,EVITA', case.sentence, 'EVENT', case.o1, case.o2)
         fh.write("%s\t%s\n" % (case.identifier, '+' if result is True else '-'))
         if result is True: true += 1
             #print identifier, result
@@ -130,16 +130,15 @@ def run_evita():
             # break
     print "True=%s False=%s" % (true, false)
     
-def check(pipeline, sentence, tag, o1, o2):
+def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
-    # TODO: this is the same function as in ttk_unittests.py
+    # NOTE: this is the same function as in ttk_unittests.py
     options = [('--pipeline', pipeline), ('--loglevel', '1')]
     td = tarsqi.process_string(sentence, options)
     tags = td.elements[0].tarsqi_tags.find_tags(tag)
     for t in tags:
         if t.begin == o1 and t.end == o2:
             return True
-    #td.pp(); exit()
     return False, tags
 
 def load_tagger():

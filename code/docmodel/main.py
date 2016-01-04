@@ -1,12 +1,8 @@
-"""Initialization of parsers responsible for document-level parsing.
-
-This module is responsible for creating document source parsers. That is,
-parsers that take an instance of SourceDoc and create an instance of
-TarsqiDocument.
-
 """
 
-# TODO: consider moving this code to parsers.py
+Initialization of parsers responsible for document-level parsing.
+
+"""
 
 import os
 

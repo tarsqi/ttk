@@ -134,10 +134,10 @@ class GramAChunk(GramChunk):
         self.evClass = self.getEventClass()
         self.add_verb_features(verbGramFeats)
 
-    def getHead(self):
+    def XXXgetHead(self):
         """Return the head of the GramAChunk, which amount to returning the
         AdjectiveToken that this GramAChunk was created from."""
-        # TODO: it is not sure whether this method is still needed
+        print 'getHead'
         return self.head
 
     def getEventClass(self):

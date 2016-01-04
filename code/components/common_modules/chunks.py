@@ -201,11 +201,10 @@ class NounChunk(Chunk):
 
     def isDefinite(self):
         """Return True if self includes a Token that is a POS, PRP$ or a definite determiner."""
-        # TODO: these tags should be defined in forms
         for token in self.dtrs[:self.head]:
-            if (token.pos == 'POS'
-                or token.pos == 'PRP$'
-                or (token.pos in ('DT', 'DET')
+            if (token.pos == forms.possessiveEndingTag
+                or token.pos == forms.possessivePronounTag
+                or (token.pos in forms.determinerTags
                    and token.getText() in forms.definiteDeterminers)):
                 return True
         return False
@@ -264,12 +263,9 @@ class VerbChunk(Chunk):
 
     def _identify_substring(self, sentence_slice, fsa_list):
         """Similar to Constituent._identify_substring(), except that this method
-        calls acceptsSubstringOf() instead of acceptsShortestSubstringOf()."""
-        # TODO: Slinket threw an error when this method was included. Find out
-        # if that is still the case and why this one was needed, that is, why
-        # not use the shortest substring.
-        # NOTE: Using this results in two extra events on the evita-test2.sh
-        # regression test. Also, it does not crash SLinket anymore.
+        calls acceptsSubstringOf() instead of acceptsShortestSubstringOf(). In
+        some tests, for example evita-test2.sh, this version results in extra
+        events."""
         fsaCounter = -1
         for fsa in fsa_list:
             fsaCounter += 1

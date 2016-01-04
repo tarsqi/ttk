@@ -329,7 +329,6 @@ class XmlDocument:
                 string = escape(string)
             elif element.is_opening_tag() and element.tag == 'lex':
                 string = element.as_xml_tag()
-            # TODO: get the encoding from the TarsqiDocument
             # TODO: these are not unicode strings, find where that happened
             if type(string) != UnicodeType:
                 string = unicode(string, 'utf-8', 'replace')

@@ -47,7 +47,7 @@ class GUTimeTest(unittest.TestCase):
 
     def t(self, sentence, o1, o2):
         message = "%s[%s]%s" % (sentence[:o1], sentence[o1:o2], sentence[o2:])
-        self.assertTrue(check(self.pipeline, sentence, 'TIMEX3', o1, o2), message)
+        self.assertTrue(check_tag(self.pipeline, sentence, 'TIMEX3', o1, o2), message)
 
     def test_01(self): self.t("It is June 5th.", 6, 14)
     def test_02(self): self.t("John sleeps today.", 12, 17)
@@ -70,7 +70,7 @@ class EvitaTest(unittest.TestCase):
         start testing features like class, modality and polarity."""
         message = "%s - %s[%s]%s" % (name, s[:o1], s[o1:o2], s[o2:])
         message += ' - FALSE NEGATIVE' if tag else ' - FALSE POSITIVE'
-        result = check(self.pipeline, s, 'EVENT', o1, o2)
+        result = check_tag(self.pipeline, s, 'EVENT', o1, o2)
         self.assertTrue(result, message) if tag else self.assertFalse(result, message)
 
     def test_01a(self): self.t('NOUN', "The war is over.", 4, 7)
@@ -154,8 +154,9 @@ class SlinketTest(unittest.TestCase):
     #def test_neg_evidential_04(self): self.run_test(NEG_EVIDENTIAL[3])
 
 
-def check(pipeline, sentence, tag, o1, o2):
+def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
+    # NOTE: this is the same function as in ttk_regression.py
     options = [('--pipeline', pipeline), ('--loglevel', '1')]
     td = tarsqi.process_string(sentence, options)
     tags = td.elements[0].tarsqi_tags.find_tags(tag)

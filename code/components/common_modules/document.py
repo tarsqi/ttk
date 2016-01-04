@@ -347,7 +347,7 @@ class Document:
         elif linkType == TLINK: self.tlink_list.append(TlinkTag(linkAttrs))
 
     def get_events(self, result=None):
-        # TODO: this is also defined on Sentence and Document
+        # TODO: this is also defined on Constituent
         if result is None:
             result = []
         for dtr in self.dtrs:

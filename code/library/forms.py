@@ -202,6 +202,11 @@ definiteDeterminers = ['the', 'this', 'that', 'these', 'those']
 # POS LISTS
 # =========
 
+possessiveEndingTag = 'POS'
+possessivePronounTag = 'PRP$'
+
+determinerTags = ['DT', 'DET']
+
 partAdv = ['RB', 'RP', 'RBR']
 
 # particle POS that may be found within verbal chunks

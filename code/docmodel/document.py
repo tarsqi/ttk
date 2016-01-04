@@ -140,7 +140,6 @@ class TarsqiDocument(ParameterMixin):
         sentences = []
         sentence = []
         for element in self.elements:
-            # TODO: delegate to TarsqiDocParagraph?
             for t in element.tarsqi_tags.tags:
                 if t.name == 's':
                     if sentence:

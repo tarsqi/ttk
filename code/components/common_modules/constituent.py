@@ -67,7 +67,7 @@ class Constituent:
         logger.warn("Unexpected recipient of createEvent()")
 
     def get_events(self, result=None):
-        # TODO: this is also defined on Sentence and Document
+        # TODO: this is also defined on Document
         if result is None:
             result = []
         for dtr in self.dtrs:

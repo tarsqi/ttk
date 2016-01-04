@@ -1,6 +1,11 @@
+"""
 
-import re
-import time
+This module contains document source parsers. That is, parsers that take an
+instance of SourceDoc and create an instance of TarsqiDocument.
+
+"""
+
+import re, time
 
 from docmodel.document import TarsqiDocument
 from docmodel.document import TarsqiDocParagraph

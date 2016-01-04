@@ -196,7 +196,7 @@ class ControlFrame(TarsqiFrame):
         return box
 
     def CreateOptionsBox(self, panel):
-        # TODO: add code to guess a document type from the file path,
+        # need to add code to guess a document type from the file path,
         # rather than just using simple-xml
         (box1, self.choice_InputType) = \
             self.CreateLabeledChoiceField(panel, "Document Type", CHOICES_DOCUMENT_TYPE, 0)
