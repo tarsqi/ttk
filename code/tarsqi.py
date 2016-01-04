@@ -216,8 +216,7 @@ class Tarsqi(ParameterMixin):
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
     def write_output(self):
-        """Write the xml_TarsqiDocument to the output file."""
-        # TODO: this may forget about the DCT, check that
+        """Write the TarsqiDocument to the output file."""
         try:
             self.document.print_all(self.output)
         except:

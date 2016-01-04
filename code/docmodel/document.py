@@ -103,9 +103,14 @@ class TarsqiDocument(ParameterMixin):
             fh.write("  %s\n" % tag.in_layer_format())
         fh.write("</source_tags>\n")
         fh.write("<ttk_tags>\n")
+        fh.write("  <TIMEX3 tid=\"t0\" type=\"DATE\" value=\"%s\"" % self.metadata['dct']
+                 + " functionInDocument=\"CREATION_TIME\"/>\n")
         for e in self.elements:
+            fh.write("  <doc_element type=\"%s\" begin=\"%s\" end=\"%s\">\n"
+                     % (e.__class__.__name__, e.begin, e.end))
             for tag in e.tarsqi_tags.tags:
-                fh.write("  %s\n" % tag.in_layer_format())
+                fh.write("    %s\n" % tag.in_layer_format())
+            fh.write("  </doc_element>\n")
         fh.write("</ttk_tags>\n")
         fh.write("</ttk>\n")
 

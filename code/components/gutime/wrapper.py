@@ -101,5 +101,5 @@ def _import_timex_tags(fname, element):
             p2 = int(lexes[-1].getAttribute('end'))
             attrs = { 'tid': timex.getAttribute('tid'),
                       'type': timex.getAttribute('TYPE'),
-                      'val': timex.getAttribute('VAL') }
+                      'value': timex.getAttribute('VAL') }
             element.add_timex(p1, p2, attrs)
