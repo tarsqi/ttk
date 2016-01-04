@@ -455,8 +455,7 @@ class GramVChunk(GramChunk):
         self.head = self.getHead()
         self.evClass = self.getEventClass()
         # the following four are added so that the pattern matcher can access
-        # these embedded variables directly (this used to be done in a nasty
-        # __getattr__ method)
+        # these embedded variables directly
         self.headForm = self.head.getText()
         self.headPos = self.head.pos
         self.preHead = self.getPreHead()

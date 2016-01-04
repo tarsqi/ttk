@@ -1,4 +1,4 @@
-""" Module FSA -- methods to manipulate finite-state automata
+"""Module FSA -- methods to manipulate finite-state automata
 
 Created by: Oliver Steele // Modified and enlarged by: Roser Sauri
 
@@ -89,48 +89,43 @@ objects (d).
              ')'
              ] )
 
-    In other words, the elements of the FSA vocabulary can be
-    conceived as clusters of attribute-value pairs, and represented
-    using python dictionars. The format of the value in each key-value
-    pair can be:
+    In other words, the elements of the FSA vocabulary can be conceived as
+    clusters of attribute-value pairs, and represented using python
+    dictionars. The format of the value in each key-value pair can be:
 
     -- An atomic element. E.g., {..., 'headForm':'is', ...}
 
-    -- A list of possible values. E.g., {..., headForm': ['have',
-    'has', 'had'], ...}  In this case, it is checked whether the value
-    of the input is included within that list of value candidates.
+    -- A list of possible values. E.g., {..., headForm': ['have', 'has', 'had'],
+    ...}  In this case, it is checked whether the value of the input is included
+    within that list of value candidates.
 
-    -- A negated value or list of values. Negation is represented by
-    means of a 2-place tuple, whose initial position is the caret
-    symbol '^', and its second position is either an atomic value or a
-    list of atomic values that need not match the value of the input
-    object. E.g.,
-        {..., 'headPos':('^', 'MD') ...}, or
-        {..., 'headPos':('^', ['MD', 'RB']) ...}
+    -- A negated value or list of values. Negation is represented by means of a
+    2-place tuple, whose initial position is the caret symbol '^', and its
+    second position is either an atomic value or a list of atomic values that
+    need not match the value of the input object. E.g., {..., 'headPos':('^',
+    'MD') ...}, or {..., 'headPos':('^', ['MD', 'RB']) ...}
 
     On the other hand, input objects can be represented as:
 
     -- Python dictionaries, like the FSA vocabulary. 
 
-    -- Instances of classes describing grammatical objects, customized
-    by the particular application using the current FSA module. E.g.,
-    Noun Chunks, Verb Chunks, Lexical tokens, etc, in Evita. In this
-    case, the only additional requirement is creating, within the
-    class, a method capable of mapping the FSA vocabulary items (of
-    the format described above) into your instance. As example, refer
-    to the use of the function _matchChunk, specific for Evita, which
-    is called from labelMatches function (this module) and described
-    in the Chunk class (Chunk.py)).
+    -- Instances of classes describing grammatical objects, customized by the
+    particular application using the current FSA module. E.g., Noun Chunks, Verb
+    Chunks, Lexical tokens, etc, in Evita. In this case, the only additional
+    requirement is creating, within the class, a method capable of mapping the
+    FSA vocabulary items (of the format described above) into your instance. As
+    example, refer to the use of the function matchConsituent, specific for
+    Evitaand Slinket, which is called from labelMatches function (this module)
+    and described in the Chunk class (Chunk.py)).
 
     
 Additional notes on the use of compileOP:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-The metacharacters allowed here are the same as for compileRE: '*',
-'?', '+', '.', '|', '(', and '). Note however that these
-metacharacters need to be represented as independent items of the
-list. This could be improved, but we leave it for later when we are
-all unemployed and bored to death.
+The metacharacters allowed here are the same as for compileRE: '*', '?', '+',
+'.', '|', '(', and '). Note however that these metacharacters need to be
+represented as independent items of the list. This could be improved, but we
+leave it for later when we are all unemployed and bored to death.
 
    -------------------
 4. Accepting sequences
@@ -164,19 +159,18 @@ following methods:
     >>> fsa3.acceptsSubstringOf(['a', 'very', 'nice', 'movie', 'theater'])
     4
     
-Both functions, accepts and acceptsSubstringOf, can be used with any
-of the FSA vocabulary and input format described in (a)-(d) sections
-above.
+Both functions, accepts and acceptsSubstringOf, can be used with any of the FSA
+vocabulary and input format described in (a)-(d) sections above.
 
    ---------------------------------
 5. Determinizing and minimizing FSAs
    ---------------------------------
 
-FSAs can be determinized, to create equivalent FSAs (FSAs accepting
-the same language) with unique successor states for each input, and
-minimized, to create an equivalent deterministic FSA with the smallest
-number of states. FSAs can also be complemented, intersected, unioned,
-and so forth as described under 'FSA Functions' below.
+FSAs can be determinized, to create equivalent FSAs (FSAs accepting the same
+language) with unique successor states for each input, and minimized, to create
+an equivalent deterministic FSA with the smallest number of states. FSAs can
+also be complemented, intersected, unioned, and so forth as described under 'FSA
+Functions' below.
 
 
 =======================
@@ -282,10 +276,9 @@ UNIVERSAL_FSA is an FSA that accepts S*, where S is any object.
   ----------------------
 
 FSA is initialized with a list of states, an alphabet, a list of transition, an
-initial state, and a list of final states. If fsa is an FSA, fsa.tuple()
-returns these values in that order, i.e. (states, alphabet, transitions,
-initialState, finalStates). They're also available as fields of fsa with those
-names.
+initial state, and a list of final states. If fsa is an FSA, fsa.tuple() returns
+these values in that order, i.e. (states, alphabet, transitions, initialState,
+finalStates). They're also available as fields of fsa with those names.
 
 Each element of transition is a tuple of a start state, an end state, and a
 label: (startState, endSTate, label).
@@ -335,7 +328,7 @@ April 2005:
 
 - Added functionality of compileOP and related functions (Roser)
 - Enlarged module documentation. (Roser)
-        
+
 """
 
 
@@ -1335,8 +1328,8 @@ def labelMatches(label, input):
                         #print ">>> input is InstanceType and class is in Constituent...."
                         #print "EVITA: LABEL in FSA (2): "+str(label)
                         #print ">>> input is ", input
-                        #logger.out('forwarding to input._matchChunk')
-                        return input._matchChunk(label)
+                        #logger.out('forwarding to input.matchConstituent')
+                        return input.matchConstituent(label)
                 elif type(input) is DictType:
                         """ Open to other dictionary-based object matching applications"""
                         #print "NON-EVITA: LABEL in FSA (2): "+str(label)

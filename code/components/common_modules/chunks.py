@@ -105,13 +105,7 @@ class Chunk(Constituent):
 
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
-        pattern matching phase. This is almost identical to the same method on Token, do
-        this a bit more elegantly."""
-        # TODO: removing this method did not seem to make a difference. Perhaps
-        # it was moved to GramNChunk, which was changed to allow removing
-        # __getattr__. When matching functionality shifts back to Chunk, may
-        # need to go through that excercise again.
-        # NOTE: removing it crashed Slinket
+        pattern matching phase. A similar method is used on Token. Used by Slinket"""
         if name == 'nodeType':
             return self.__class__.__name__
         if name == 'nodeName':
@@ -153,76 +147,18 @@ class Chunk(Constituent):
             and gchunk.evClass):
             self.document().addEvent(Event(gchunk))
 
-    # the next methods (up to, but not including addToken) were all taken from the
-    # slinket/s2t version.
-    
-    def _matchChunk(self, chunkDescription):
-
-        """Match the chunk instance to the patterns in chunkDescription, which
-        is a dictionary with keys-values pairs that match instance variables and
-        their values on GramChunks.
-
-        The value in key-value pairs can be:
-        - an atomic value. E.g., {..., 'headForm':'is', ...} 
-        - a list of possible values. E.g., {..., headForm': forms.have, ...}   
-        In this case, _matchChunk checks whether the chunk feature is
-        included within this list.
-        - a negated value. It is done by introducing it as
-        a second constituent of a 2-position tuple whose initial position
-        is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
-        
-        This method is also implemented on Constituent."""
-
-        # TODO: removing this method had no impact on Evita, find out why, but
-        # note that it might impact Slinket
-
-        #logger.debug(str(chunkDescription))
-        for feat in chunkDescription.keys():
-            value = chunkDescription[feat]
-            #print feat, type(value), value
-            if type(value) is TupleType:
-                if value[0] == '^':
-                    newvalue = self._hackToSolveProblemsInValue(value[1])
-                    if type(newvalue) is ListType:
-                        if self.__getattr__(feat) in newvalue:
-                            return 0
-                    else:
-                        if self.__getattr__(feat) == newvalue:
-                            return 0
-                else:
-                    raise "ERROR specifying description of pattern" 
-            elif type(value) is ListType:
-                if self.__getattr__(feat) not in value:
-                    # this is where this one differs from the one on Constituent
-                    #print 'feature text matters!'
-                    #print feat, type(value), value
-                    if feat != 'text':
-                        return 0
-                    else:
-                        if self._getHeadText() not in value:
-                            return 0
-            else:
-                value = self._hackToSolveProblemsInValue(value)
-                if self.__getattr__(feat) != value:
-                    return 0
-        return 1
-
-
     def _getHeadText(self):
+        """Get the text string og the head of the chunk. Used by matchConstituent."""
         headText = string.split(self.getText())[-1]
         return headText.strip()
 
     def embedded_event(self):
         """Returns the embedded event of the chunk if it has one, returns None
-        otherwise."""
-        # TODO: check whether this is needed outside of the arglinker
-        # NOTE: yes, it is used to get the events for slinket
+        otherwise. It is used to get the events for slinket"""
         for item in self:
             if item.isEvent():
                 return item
         return None
-
-    # end of methods from SLinket/S2T version of this class
 
     def addToken(self, token):
         token.setParent(self)

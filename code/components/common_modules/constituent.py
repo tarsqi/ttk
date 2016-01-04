@@ -31,7 +31,7 @@ class Constituent:
     def isPreposition(self): return False
     
     def __getattr__(self, name):
-        """Used by node._matchChunk. Needs cases for all instance variables used in the
+        """Used by node._matchConstituent. Needs cases for all instance variables used in the
         pattern matching phase."""
         if name == 'nodeType':
             return self.__class__.__name__
@@ -76,61 +76,48 @@ class Constituent:
             dtr.get_events(result)
         return result
 
-    def _hackToSolveProblemsInValue(self, value):
-        """From slinket/s2t"""
-        #logger.out('self is a', self.__class__.__name__, '; value =', value)
-        if type(value) is ListType:
-            if len(value) == 2 and value[0] == '' and value[1] == '':
-                return [',']
-            else:
-                return value
-        elif type(value) is StringType:
-            if value == '':
-                return '"'
-            else:
-                return value
-        else:
-            return value
 
-    def _matchChunk(self, chunkDescription):
-        """Match the chunk instance to the patterns in chunkDescriptions.
-        chunkDescription is a dictionary with keys-values pairs that match instance
-        variables and their values on GramChunks.
+    def matchConstituent(self, description):
+
+        """Match the chunk instance to the patterns in description, which is a
+        dictionary with keys-values pairs that match instance variables and
+        their values on the constituent.
 
         The value in key-value pairs can be:
         - an atomic value. E.g., {..., 'headForm':'is', ...}
         - a list of possible values. E.g., {..., headForm': forms.have, ...}
-        In this case, _matchChunk checks whether the chunk feature is
-        included within this list.
+          In this case, matchConstituent checks whether the chunk feature is
+          included within this list.
         - a negated value. It is done by introducing it as
-        a second constituent of a 2-position tuple whose initial position
-        is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
-    
-        This method is also implemented in the chunkAnalyzer.GramChunk class and
-        the Chunk class"""
+          a second constituent of a 2-position tuple whose initial position
+          is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
 
-        #logger.debug(str(chunkDescription))
-        for feat in chunkDescription.keys():
-            value = chunkDescription[feat]
+        This is a specialized version of the matchDict method in utiities/FSA.py
+        and it is intended to deal with Chunks and Tokens."""
+
+        for feat in description.keys():
+            value = description[feat]
             if type(value) is TupleType:
                 if value[0] == '^':
-                    newvalue = self._hackToSolveProblemsInValue(value[1])
-                    if type(newvalue) is ListType:
-                        if self.__getattr__(feat) in newvalue:
-                            return 0
+                    if type(value[1]) is ListType:
+                        if self.__getattr__(feat) in value[1]:
+                            return False
                     else:
-                        if self.__getattr__(feat) == newvalue:
-                            return 0
+                        if self.__getattr__(feat) == value[1]:
+                            return False
                 else:
                     raise "ERROR specifying description of pattern"
             elif type(value) is ListType:
                 if self.__getattr__(feat) not in value:
-                    return 0
+                    if self.isChunk() and feat == 'text':
+                        if self._getHeadText() not in value:
+                            return False
+                    else:
+                        return False
             else:
-                value = self._hackToSolveProblemsInValue(value)
                 if self.__getattr__(feat) != value:
-                    return 0
-        return 1
+                    return False
+        return True
 
 
     def get_event(self):

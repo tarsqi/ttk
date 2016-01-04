@@ -38,8 +38,8 @@ class Token(Constituent):
         return 1
 
     def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance
-        variables used in the pattern matching phase."""
+        """Used by Sentence._match. Needs cases for all instance variables used in the
+        pattern matching phase."""
         if name == 'nodeType':
             return self.__class__.__name__
         elif name == 'text':
@@ -78,8 +78,8 @@ class Token(Constituent):
         """Do nothing when an AdjectiveToken or Token is asked to create an
         event. Potential adjectival events are processed from the VerbChunk
         using the createAdjEvent() method. Do not log a warning since it is
-        normal for a Token to be asked this. Note that this method exists
-        because a warning is logged on createEvent() on Constituent."""
+        normal for a Token to be asked this, without this method a method with
+        the same name on COnsituent would log a warning."""
         pass
 
     def debug_string(self):
@@ -109,20 +109,19 @@ class AdjectiveToken(Token):
         self.event_tag = None  # contains the EventTag
 
     def __getattr__(self, name):
-        """(Slinket method) Used by Sentence._match. Needs cases for all instance
-        variables used in the pattern matching phase."""
-
+        """Used by Sentence._match. Needs cases for all instance variables used in the
+        pattern matching phase."""
+        # TODO: this can probably be moved to Token and replace the method there
         if name == 'nodeType':
             return self.__class__.__name__
-        if name == 'text':
+        elif name == 'text':
             return self.getText()
-        if name == 'pos':
+        elif name == 'pos':
             return self.pos
-        if name == 'nodeName':
+        elif name == 'nodeName':
             return self.pos
-
         # this is used by slinket/s2t in case the adjective is an event
-        if name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
+        elif name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
                     EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None

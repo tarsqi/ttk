@@ -14,6 +14,7 @@ from components.common_modules.constituent import Constituent
 from utilities import logger
 
 # just here for now to track when __getattr__ is used (MV)
+trackGetAttrUse = False
 trackGetAttrUse = True
 
 
@@ -53,17 +54,13 @@ class EventTag(Tag):
         """Returns an element from the dtrs variable."""
         return self.dtrs[index]
 
-    def XXX__getslice__(self, i, j):
-        """Get a slice from the dtrs variable."""
-        return self.dtrs[i:j]
-
     def XXX__getattr__(self, name):
-        # TODO: remove this once it is established that blinker and s2t work
+        # TODO: remove this once it is established that blinker and s2t work, it
+        # does not appear to be used for Evita and for Slinket the attributes
+        # that this is used for are just __nonzero__, __str__ and __repr__.
         if trackGetAttrUse:
             print "*** EventTag.__getattr__", name
-    
         doc = self.document()
-
         if name == 'eventStatus':
             return '1'
         elif name == TENSE:
@@ -188,6 +185,8 @@ class TimexTag(Tag):
         elif name in ['text', FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL,
                       EVENTID, EIID, CLASS]: #NF_MORPH, 
             return None
+        else:
+            raise AttributeError, name
 
     def isTimex(self):
         return True
