@@ -22,7 +22,7 @@ import components.classifier.wrapper
 import components.common_modules.chunks
 import components.common_modules.component
 import components.common_modules.constituent
-import components.common_modules.document
+import components.common_modules.tree
 import components.common_modules.sentence
 import components.common_modules.tags
 import components.common_modules.tokens
@@ -78,7 +78,7 @@ MODULES = [
     components.common_modules.chunks,
     components.common_modules.component,
     components.common_modules.constituent,
-    components.common_modules.document,
+    components.common_modules.tree,
     components.common_modules.sentence,
     components.common_modules.tags,
     components.common_modules.tokens,

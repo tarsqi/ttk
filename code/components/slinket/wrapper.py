@@ -6,7 +6,7 @@ Contains the Slinket wrapper.
 
 from library.tarsqi_constants import SLINKET
 from components.slinket.main import Slinket
-from components.common_modules import document
+from components.common_modules import tree
 from utilities import logger
 
 
@@ -22,5 +22,5 @@ class SlinketWrapper:
         processing. Slinket processing will update the tags in the TarsqiDocElement when
         slinks are added."""
         for element in self.document.elements:
-            doctree = document.create_tarsqi_tree(element)
+            doctree = tree.create_tarsqi_tree(element)
             Slinket().process_doctree(doctree, element)

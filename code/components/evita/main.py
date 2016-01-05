@@ -6,7 +6,7 @@ Responsible for the top-level processing of Evita.
 
 from components.common_modules.utils import get_words_as_string
 from components.common_modules.component import TarsqiComponent
-from components.common_modules.document import create_tarsqi_tree
+from components.common_modules.tree import create_tarsqi_tree
 from library.tarsqi_constants import EVITA
 from utilities import logger
 

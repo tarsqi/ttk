@@ -12,7 +12,7 @@ from library.tarsqi_constants import BLINKER
 from library.timeMLspec import TIMEX, EIID, TID, POL
 from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
-from components.common_modules.document import create_tarsqi_tree
+from components.common_modules.tree import create_tarsqi_tree
 from components.blinker.compare import compare_date
 
 
