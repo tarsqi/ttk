@@ -1,4 +1,4 @@
-"""Contains functionality specific to documents."""
+"""Contains the TarsqiTree class."""
 
 import sys
 import re
@@ -14,8 +14,8 @@ from library.timeMLspec import ALINK, SLINK, TLINK
 from library.timeMLspec import POS_ADJ
 
 
-def create_document_from_tarsqi_doc_element(element):
-    """Return an instance of Document, using the tags in element, which is an
+def create_tarsqi_tree(element):
+    """Return an instance of TarsqiTree, using the tags in element, which is an
     instance of TarsqiDocElement or a subclass."""
     top_node = Node(begin=element.begin, end=element.end)
     for tag in (element.tarsqi_tags.find_tags('s') +
@@ -27,24 +27,24 @@ def create_document_from_tarsqi_doc_element(element):
         top_node.insert(tag)
     top_node.set_positions()
     top_node.set_event_markers()
-    doc = Document(element.doc, element)
+    tree = TarsqiTree(element.doc, element)
     # recursively import all nodes into the doc, but skip the topnode itself
-    top_node.add_to_doc(doc, doc)
-    return doc
+    top_node.add_to_doc(tree, tree)
+    return tree
 
 
 class Node(object):
 
     """This class is used to build a temporary hierarchical structure from instances
     of docmodel.source_parser.Tag. It is also used to turn that structure into a
-    Document instance, with Sentence, NounChunk, VerbChunk, AdjectiveToken,
+    TarsqiTree instance, with Sentence, NounChunk, VerbChunk, AdjectiveToken,
     Token, TimexTag and EventTag elements in the hierarchy."""
 
     # Having a higher order means that a tag x will be including tag y if x and
     # y have the same extent.
-    order = { 'Document': 5, 's': 4, 'NG': 3,'VG': 3, 'EVENT': 2, 'TIMEX3': 2, 'lex': 1 }
+    order = { 'TarsqiTree': 5, 's': 4, 'NG': 3,'VG': 3, 'EVENT': 2, 'TIMEX3': 2, 'lex': 1 }
 
-    def __init__(self, tag=None, name='Document', parent=None, begin=None, end=None):
+    def __init__(self, tag=None, name='TarsqiTree', parent=None, begin=None, end=None):
         self.name = name
         self.document = None
         self.parent = parent
@@ -176,7 +176,7 @@ class Node(object):
     def set_positions(self):
         """For each daughter, set its position variable to its index in the
         self.dtrs list, the recurse for the daughter. These positions will later
-        be handed in to the Document elements (Sentence, VerbChunk, EventTag,
+        be handed in to the TarsqiTree elements (Sentence, VerbChunk, EventTag,
         Token etcetera)."""
         for idx in range(len(self.dtrs)):
             dtr = self.dtrs[idx]
@@ -190,17 +190,17 @@ class Node(object):
             self.event_dtr = dtr if dtr.name == 'EVENT' else None
             dtr.set_event_markers()
 
-    def add_to_doc(self, doc_element, document):
+    def add_to_doc(self, doc_element, tree):
         for dtr in self.dtrs:
-            doc_element_dtr = dtr.as_doc_element(document)
+            doc_element_dtr = dtr.as_doc_element(tree)
             doc_element_dtr.parent = doc_element
             if doc_element_dtr.isAdjToken() and doc_element.isEvent():
                 doc_element_dtr.event = True
                 doc_element_dtr.event_tag = doc_element
             doc_element.dtrs.append(doc_element_dtr)
-            dtr.add_to_doc(doc_element_dtr, document)
+            dtr.add_to_doc(doc_element_dtr, tree)
 
-    def as_doc_element(self, document):
+    def as_doc_element(self, tree):
         """Create from the node an instance of Sentence, NounChunk, VerbChunk, EventTag,
         TimexTag, Token or AdjectiveToken."""
         if self.name == 's':
@@ -211,9 +211,9 @@ class Node(object):
             doc_element = VerbChunk('VG')
         elif self.name == 'lex':
             pos = self.tag.attrs['pos']
-            word = document.tarsqidoc.source[self.begin:self.end]
+            word = tree.tarsqidoc.source[self.begin:self.end]
             token_class = AdjectiveToken if pos.startswith(POS_ADJ) else Token
-            doc_element = token_class(document, word, pos)
+            doc_element = token_class(tree, word, pos)
         elif self.name == 'EVENT':
             doc_element = EventTag(self.tag.attrs)
         elif self.name == 'TIMEX3':
@@ -234,32 +234,27 @@ class Node(object):
 
 
 
-class Document:
+class TarsqiTree:
 
     """Implements the shallow tree that is input to some of the Tarsqi components.
 
     Instance variables
-
-        tarsqidoc     -  the TarsqiDocument instance that the document is part of
-        docelement    -  the TarsqiDocElement that the document tree was made for
-
-        fname         -  an absolute path
-        events        -  a dictionary containing events found by Evita
-
+        tarsqidoc     -  the TarsqiDocument instance that the tree is part of
+        docelement    -  the TarsqiDocElement that the tree was made for
+        events        -  a dictionary with events found by Evita
         alink_list    -  a list of AlinkTags, filled in by Slinket
         slink_list    -  a list of SlinkTags, filled in by Slinket
         tlink_list    -  a list of TlinkTags
 
-    The events is used by Slinket and it stores events from the document tree
+    The events dictionary is used by Slinket and stores events from the tree
     indexed on event eids."""
-
 
     def __init__(self, tarsqidoc=None, tarsqidocelement=None):
         """Initialize all dictionaries, list and counters and set the file name."""
         self.tarsqidoc = tarsqidoc
         self.docelement = tarsqidocelement
         self.dtrs = []
-        self.events = {}        # used by slinket's event parser
+        self.events = {}
         self.alink_list = []
         self.slink_list = []
         self.tlink_list = []
@@ -274,7 +269,7 @@ class Document:
 
     def addSentence(self, sentence):
         """Append a Sentence to the dtrs list and sets the parent feature of the
-        sentence to the document."""
+        sentence to the tree."""
         sentence.setParent(self)
         self.dtrs.append(sentence)
 
@@ -307,10 +302,10 @@ class Document:
         for (att, val) in pairs.items():
             self.events[eid][att] = val
 
-    def document(self):
-        """Returns the document itself. This is so that chunks can ask their parent for
-        the document without having to worry whether the parent is a Sentence or a
-        Document."""
+    def tree(self):
+        """Returns the tree itself. This is so that chunks can ask their parent for
+        the tree without having to worry whether the parent is a Sentence or a
+        TarsqiTree."""
         return self
 
     def addEvent(self, event):
@@ -335,10 +330,10 @@ class Document:
         self.docelement.add_event(token.begin, token.end, event_attrs)
         
     def addLink(self, linkAttrs, linkType):
-        """Add a link of type linkType with its attributes to the document by appending
+        """Add a link of type linkType with its attributes to the tree by appending
         them to self.alink_list, self.slink_list or self.tlink_list. This allows
         other code, for example the main function of Slinket, to easily access
-        newly created links in the Document. The linkType argument is'ALINK',
+        newly created links in the TarsqiTree. The linkType argument is'ALINK',
         'SLINK' or 'TLINK' and linkAttrs is a dictionary of attributes."""
         linkAttrs['lid'] = self.tarsqidoc.next_link_id(linkType)
         if linkType == ALINK: self.alink_list.append(AlinkTag(linkAttrs))
@@ -352,7 +347,7 @@ class Document:
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation of
         the sentences."""
-        print "\n<Document filename=%s>\n" % self.tarsqidoc.source.filename
+        print "\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.source.filename
         print "  len(dtrs)=%s" % (len(self.dtrs))
         self.pretty_print_tagged_events_dict()
         print '  alink_list =', self.alink_list

@@ -12,7 +12,7 @@ from library.tarsqi_constants import BLINKER
 from library.timeMLspec import TIMEX, EIID, TID, POL
 from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
-from components.common_modules.document import create_document_from_tarsqi_doc_element
+from components.common_modules.document import create_tarsqi_tree
 from components.blinker.compare import compare_date
 
 
@@ -27,7 +27,7 @@ QUOTES = ["``", '"', "'"]
 class Blinker (TarsqiComponent):
 
     """Implements the Blinker component of Tarsqi. Blinker takes the
-    shallow tree implemented in the Document object and applies rules
+    shallow tree implemented in the TarsqiTree object and applies rules
     that capture regularities between events and times as well as
     between events.
 
@@ -36,13 +36,13 @@ class Blinker (TarsqiComponent):
        rules - a BlinkerRuleDictionary
        rule2_index - a dictionary, quick access to type 2 rules
        dct - a string of the form YYYYMMDD, representing the document creation time
-       doctree - a Document"""
+       doctree - a TarsqiTree"""
 
     def __init__(self, tarsqidoc):
         """Set component name and load rules into a BlinkerRuleDictionary
         object, this object knows where the rules are stored."""
         self.NAME = BLINKER
-        self.doctree = None         # instance of Document
+        self.doctree = None         # instance of TarsqiTree
         self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
         self.rules = BlinkerRuleDictionary()
         self.rule2_index = {}
@@ -58,10 +58,10 @@ class Blinker (TarsqiComponent):
             self.rule2_index[signal] = relation
             
     def process_element(self, element, dct):
-        """Apply all Blinker rules to the element. Creates a Document instance and then
+        """Apply all Blinker rules to the element. Creates a TarsqiTree instance and then
         applies the Blinker rules. Curently only applies rules of type 2."""
         self.dct = dct
-        self.doctree = create_document_from_tarsqi_doc_element(element)
+        self.doctree = create_tarsqi_tree(element)
         #self.pp_doctree(BLINKER)
         self._run_blinker()
 

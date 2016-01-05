@@ -11,8 +11,8 @@ from components.common_modules.constituent import Constituent
 
 class Token(Constituent):
 
-    def __init__(self, document, word, pos):
-        """Initialize with Document instance, the word and a part-of-speech. Some
+    def __init__(self, tarsqitree, word, pos):
+        """Initialize with a TarsqiTree instance, the word and a part-of-speech. Some
         instance variables will be filled in later, depending on what the Token
         is used for."""
         self.text = word
@@ -22,7 +22,7 @@ class Token(Constituent):
         self.end = None
         self.event = None
         self.textIdx = None
-        self.document = document
+        self.tree = tarsqitree
         self.position = None
         self.parent = None
         self.gramchunk = None
@@ -56,10 +56,10 @@ class Token(Constituent):
         """Return the text of the token."""
         return self.text
 
-    def document(self):
-        """Tokens have a document variable. Use this variable and avoid looking all the
+    def tree(self):
+        """Tokens have a tree variable. Use this variable and avoid looking all the
         way up the tree."""
-        return self.document
+        return self.tree
 
     def isToken(self):
         """Returns True"""
@@ -102,8 +102,8 @@ class Token(Constituent):
 
 class AdjectiveToken(Token):
 
-    def __init__(self, document, word, pos):
-        Token.__init__(self, document, word, pos)
+    def __init__(self, tree, word, pos):
+        Token.__init__(self, tree, word, pos)
         self.event = None      # set to True if self is wrapped in an EventTag
         self.eid = None        # the eid of the EventTag
         self.event_tag = None  # contains the EventTag
@@ -125,7 +125,7 @@ class AdjectiveToken(Token):
                     EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
-            doc = self.parent.document()
+            doc = self.parent.tree()
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
@@ -153,16 +153,16 @@ class AdjectiveToken(Token):
         self._processEventInToken()
 
     def _processEventInToken(self):
-        """Check whether there is an event class and add the event to self.document if
+        """Check whether there is an event class and add the event to self.tree if
         there is one. There is a sister of this method on Chunk."""
         if self.gramchunk.evClass:
-            self.document.addEvent(Event(self.gramchunk))
+            self.tree.addEvent(Event(self.gramchunk))
 
     def isAdjToken(self):
         return True
 
     def doc(self):
-        return self.parent.document()
+        return self.parent.tree()
 
     def setEventInfo(self, eid):
         self.event = 1

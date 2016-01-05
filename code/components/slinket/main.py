@@ -29,8 +29,8 @@ class Slinket (TarsqiComponent):
 
     Instance variables:
        NAME - a string
-       doctree - a Document
-       docelement - a tarsqiDocElement
+       doctree - a TarsqiTree
+       docelement - a TarsqiDocElement
     """
 
 

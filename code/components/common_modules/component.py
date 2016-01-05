@@ -20,12 +20,8 @@ class TarsqiComponent:
 
     def pp_doctree(self, componentName):
         """Print the document tree. Assumes there is a doctree instance variable that
-        contains a Document object."""
+        contains a TarsqiTree object."""
         print "\n--------- DOCUMENT TREE for %s ----------" % componentName
         self.doctree.pretty_print()
 
-    def pp_xmldoc(self, componentName):
-        """Print the XML document."""
-        print "\n--------- XmlDocument for %s ----------" % componentName
-        self.xmldoc.pretty_print()
 

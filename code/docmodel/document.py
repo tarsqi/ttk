@@ -13,7 +13,7 @@ class TarsqiDocument(ParameterMixin):
 
     Instance Variables:
        source - instance of DocSource
-       doctree - instance of Document
+       doctree - instance of TarsqiTree
        elements - list of TarsqiDocElements
        metadata - a dictionary
        parameters - parameter dictionary from the Tasqi instance

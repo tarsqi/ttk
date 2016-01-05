@@ -15,11 +15,11 @@ class Constituent:
         self.parent = parent
 
     def doc(self):
-        return self.document()
+        return self.tree()
 
-    def document(self):
+    def tree(self):
         # TODO: this is weird, why is it like this?
-        return self.parent.document()
+        return self.parent.tree()
 
     def isToken(self): return False
     def isAdjToken(self): return False
@@ -193,7 +193,7 @@ class Constituent:
                     RELATED_TO_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
-                self.document().addLink(alinkAttrs, ALINK)
+                self.tree().addLink(alinkAttrs, ALINK)
                 logger.debug("ALINK CREATED")
                 return True
             else:
@@ -264,7 +264,7 @@ class Constituent:
     def _find_slink(self, event_context, fsa_lists, reltype_list):
 
         """Try to find an slink in the given event_context using lists of FSAs. If the
-        context matches an FSA, then create an slink and insert it in the document.""" 
+        context matches an FSA, then create an slink and insert it in the tree.""" 
             
         for i in range(len(fsa_lists)):
 

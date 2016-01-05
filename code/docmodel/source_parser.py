@@ -8,8 +8,6 @@ source string and the tags are stored in a SourceDoc instance, which is intended
 provide just enough functionailty to deal with the input in a read-only fashion, that is,
 additional annotations should not be in this instance.
 
-This class will likely be embedded in a Document instance or a DocumentModel instance. 
-
 Classes:
 
     SourceParser

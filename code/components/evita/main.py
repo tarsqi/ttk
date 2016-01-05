@@ -6,7 +6,7 @@ Responsible for the top-level processing of Evita.
 
 from components.common_modules.utils import get_words_as_string
 from components.common_modules.component import TarsqiComponent
-from components.common_modules.document import create_document_from_tarsqi_doc_element
+from components.common_modules.document import create_tarsqi_tree
 from library.tarsqi_constants import EVITA
 from utilities import logger
 
@@ -15,8 +15,8 @@ class Evita (TarsqiComponent):
 
     """Class that implements Evita's event recognizer. Instance variables contain
     the name of the component, the TarsqiDocument, a TarsqiDocElement and a
-    Document instance. The Document instance that lives in the doctree variable
-    on the is for just one element and not for the whole document or string."""
+    TarsqiTree instance. The TarsqiTree instance in the doctree variable is the
+    tree for just one element and not for the whole document or string."""
 
     def __init__(self, tarsqidoc, docelement):
         """Set the NAME instance variable. The doctree variables is filled in during
@@ -24,14 +24,14 @@ class Evita (TarsqiComponent):
         self.NAME = EVITA
         self.tarsqidoc = tarsqidoc    # instance of TarsqiDocument
         self.docelement = docelement  # instance of TarsqiDocElement
-        self.doctree = None           # instance of Document
+        self.doctree = None           # instance of TarsqiTree
 
     def process_element(self):
         """Process an instance of docmodel.document.TarsqiDocParagraph. Loop through all
         sentences in self.doctree and through all nodes in each sentence and
         determine if the node contains an event. Events are added to the tag
         repository on the element."""
-        self.doctree = create_document_from_tarsqi_doc_element(self.docelement)
+        self.doctree = create_tarsqi_tree(self.docelement)
         #self.doctree.pp()
         self.doctree.tarsqidoc = self.tarsqidoc
         for sentence in self.doctree:

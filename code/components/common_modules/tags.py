@@ -45,7 +45,6 @@ class EventTag(Tag):
         self.eClass = attrs[CLASS]
         self.token = None
 
-
     def __len__(self):
         """Returns the lenght of the dtrs variable."""
         return len(self.dtrs)
@@ -60,7 +59,7 @@ class EventTag(Tag):
         # that this is used for are just __nonzero__, __str__ and __repr__.
         if trackGetAttrUse:
             print "*** EventTag.__getattr__", name
-        doc = self.document()
+        doc = self.tree()
         if name == 'eventStatus':
             return '1'
         elif name == TENSE:

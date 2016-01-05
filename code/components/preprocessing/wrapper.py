@@ -13,10 +13,6 @@ from utilities import logger
 from docmodel.source_parser import Tag
 from library.tarsqi_constants import PREPROCESSOR
 
-from components.common_modules.document import Document
-from components.common_modules.sentence import Sentence
-from components.common_modules.chunks import NounChunk, VerbChunk
-from components.common_modules.tokens import Token, AdjectiveToken
 from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger

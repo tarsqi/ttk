@@ -1,4 +1,4 @@
-"""Contains functionality specific to sentences in a document."""
+"""Contains functionality specific to sentences in a tree."""
 
 from utilities import logger
 from components.common_modules.constituent import Constituent
@@ -6,19 +6,21 @@ from components.common_modules.constituent import Constituent
 
 class Sentence(Constituent):
 
-    """A Sentence is a top-level element of a Document. It contains a list of Chunks and
-    Tokens.
+    """A Sentence is a top-level element of a TarsqiTree. It contains a list of
+    Chunks and Tokens.
     
     Instance variables
         dtrs - a list of Chunks and Tokens
         chunkIndex - an integer
         eventList - a list of (eLoc, eid) tuples
-        position - position in the Document parent (first sentence is 0)
-        parent - a Document
+        position - position in the TarsqiTree parent (first sentence is 0)
+        parent - a TarsqiTree
 
     The eventList variable stores (eLoc, eid) tuples of each tagged event in the sentence,
     the eLoc is the location of the event inside the embedding constituent, usually a
-    chunk)."""
+    chunk).
+
+    """
 
     def __init__(self):
         """Initialize all instance variables to 0, None or the empty list."""
@@ -49,9 +51,9 @@ class Sentence(Constituent):
         __getattr__ on Constituent, with possibly unwelcome results."""
         raise AttributeError, name
 
-    def document(self):
-        """Return the document that the sentence is in."""
-        return self.parent.document()
+    def tree(self):
+        """Return the tree that the sentence is in."""
+        return self.parent.tree()
 
     def add(self, chunkOrToken):
         """Add a chunk or token to the end of the sentence. Sets the sentence as the value
@@ -62,10 +64,8 @@ class Sentence(Constituent):
         self.dtrs.append(chunkOrToken)
 
     def setParent(self, parent):
-        """Set the parent feature of the sentence to the document. Also copies the
-        postionCount variable of the parent to the position variable of the sentence.
-        Arguments
-           parent - a Document"""
+        """Set the parent feature of the sentence to the TarsqiTree."""
+        # TODO: this does not appear to be used
         self.parent = parent
 
     def storeEventLocation(self, evLoc, eid):

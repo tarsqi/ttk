@@ -119,7 +119,7 @@ class Chunk(Constituent):
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
-            doc = self.parent.document()
+            doc = self.parent.tree()
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
@@ -136,7 +136,7 @@ class Chunk(Constituent):
         
     def _processEventInChunk(self, gramChunk=None):
         """Perform a few little checks on the head and check whether there is an
-        event class, then add the event to the document. When this is called on
+        event class, then add the event to the tree. When this is called on
         a NounChunk, then there is no GramChunk handed in and it will be
         retrieved from the gramchunk instance variable, when it is called from
         VerbChunk, then the GramChunk will be handed in."""
@@ -146,7 +146,7 @@ class Chunk(Constituent):
             and gchunk.head.getText() not in forms.be
             and gchunk.head.getText() not in forms.spuriousVerb
             and gchunk.evClass):
-            self.document().addEvent(Event(gchunk))
+            self.tree().addEvent(Event(gchunk))
 
     def _getHeadText(self):
         """Get the text string og the head of the chunk. Used by matchConstituent."""

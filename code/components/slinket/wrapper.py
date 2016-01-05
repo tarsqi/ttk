@@ -18,9 +18,9 @@ class SlinketWrapper:
         self.document = tarsqi_document
 
     def process(self):
-        """Create a Document instance for each TarsqiDocElement hand them to Slinket for
+        """Create a TarsqiTree instance for each TarsqiDocElement hand them to Slinket for
         processing. Slinket processing will update the tags in the TarsqiDocElement when
         slinks are added."""
         for element in self.document.elements:
-            doctree = document.create_document_from_tarsqi_doc_element(element)
+            doctree = document.create_tarsqi_tree(element)
             Slinket().process_doctree(doctree, element)

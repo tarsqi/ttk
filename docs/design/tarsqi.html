@@ -393,21 +393,77 @@ are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
 
 <h2>Evita</h2>
 
+<p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
+TarsqiDocElements in it, creating an Evita instance for all of them and then
+procesing the element. The Evita instance has slots for the TarsqiDocument, the
+TarsqiDocElement and a TarsqiTree instance which contains a document tree for the
+TarsqiDocElement that is being processed.</p>
+
 <table class="pythonclass indent spacy">
 <tr>
-  <td class="name" colspan="2">components.common_modules.document.Document</td>
+  <td class="name" colspan="2">components.evita.main.Evita</td>
 </tr>
 <tr>
   <td class="attribute">tarsqidoc</td>
   <td>an instance of docmodel.document.TarsqiDocument</td>
 </tr>
 <tr>
-  <td class="attribute">tarsqidocelement</td>
-  <td>the TarsqDocElement that the document tree is created for</td>
+  <td class="attribute">docelement</td>
+  <td>an instance of docmodel.document.TarsqDocElement or subclass thereof, the
+  element of the TarsqiDocument that is being processed by Evita</td>
 </tr>
 <tr>
-  <td class="attribute">taggedEventsDict</td>
-  <td>a dictionary containing tagged event in the input</td>
+  <td class="attribute">doctree</td>
+  <td>
+    <table class="pythonclass">
+      <tr>
+	<td class="name" colspan="2">components.common_modules.document.TarsqiTree</td>
+      </tr>
+      <tr>
+	<td class="attribute">tarsqidoc</td>
+	<td>an instance of docmodel.document.TarsqiDocument</td>
+      </tr>
+      <tr>
+	<td class="attribute">docelement</td>
+	<td>the TarsqDocElement that the document tree is created for</td>
+      </tr>
+      <tr>
+	<td class="attribute">dtrs</td>
+	<td>a list of daughters, typically instances of Sentence</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+<p>The Document instance itself knows what TarsqiDocument it belongs to and what
+TarsqiDocElement it was created for. It has a list of daughters and some other
+attributes that are ignored here because they are not used by Evita.</p>
+
+
+<h2>Slinket</h2>
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">components.common_modules.document.TarsqiTree</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqidoc</td>
+  <td>an instance of docmodel.document.TarsqiDocument</td>
+</tr>
+<tr>
+  <td class="attribute">docelement</td>
+  <td>the TarsqiDocElement that the tree is created for</td>
+</tr>
+ <tr>
+  <td class="attribute">dtrs</td>
+  <td>a list of daughters, typically instances of Sentence</td>
+</tr>
+<tr>
+  <td class="attribute">events</td>
+  <td>a dictionary containing events for the TarsqiDocElement that were found by
+  Evita, it is created by SLinket by collecting events and their attributes from
+  the document tree in dtrs</td>
 </tr>
 <tr>
   <td class="attribute">alink_list</td>
