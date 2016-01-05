@@ -22,7 +22,7 @@ from components.preprocessing.chunker import chunk_sentences
 from treetaggerwrapper import TreeTagger
 
 
-class TagId:
+class TagId():
     """Class to provide fresh identifiers for lex, ng, vg and s tags."""
 
     IDENTIFIERS = { 's': 0, 'c': 0, 'l': 0 }
@@ -68,11 +68,11 @@ def adjust_lex_offsets(tokens, offset):
     of the string. But for the lex tags we need to relate the offset to the beginning of
     the file, not to the beginning of some random string. This procedure is used to
     increment offsets on instances of TokenizedLex."""
-    for token in tokens:
-        if token == ('<s>', None):  # skip the s tags
-            continue
-        token[1].begin += offset
-        token[1].end += offset
+    for token_string, token_object in tokens:
+        # skip the ('<s>', None) pairs
+        if token_object is not None:
+            token_object.begin += offset
+            token_object.end += offset
 
 
 class PreprocessorWrapper:

@@ -66,16 +66,6 @@ class Constituent:
         going on. Event creation is only attempted on some sub classes."""
         logger.warn("Unexpected recipient of createEvent()")
 
-    def get_events(self, result=None):
-        # TODO: this is also defined on Document
-        if result is None:
-            result = []
-        for dtr in self.dtrs:
-            if dtr.isEvent():
-                result.append(dtr)
-            dtr.get_events(result)
-        return result
-
 
     def matchConstituent(self, description):
 

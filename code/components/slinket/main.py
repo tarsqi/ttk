@@ -7,6 +7,7 @@ the Chunk class.
 
 
 from components.common_modules.component import TarsqiComponent
+from components.common_modules.utils import get_events
 from library.slinket.main import SLINKET_DICTS
 from library.tarsqi_constants import SLINKET
 from library.timeMLspec import VERB, NOUN, ADJECTIVE
@@ -43,7 +44,7 @@ class Slinket (TarsqiComponent):
         SLINKET_DICTS.load()
 
     def process_doctree(self, doctree, tarsqidocelement):
-        """Find alinks and slinks in dcotree and export them to tarsqidocelement."""
+        """Find alinks and slinks in doctree and export them to self.docelement."""
         self.doctree = doctree
         self.docelement = tarsqidocelement
         self._build_event_dictionary()
@@ -52,19 +53,19 @@ class Slinket (TarsqiComponent):
         self._add_links_to_docelement()
 
     def _build_event_dictionary(self):
-        """Creates a dictionary with events on the self.doctree variable and
-        adds event lists to all sentences in self.doctree."""
-        events = self.doctree.get_events()
-        self.doctree.taggedEventsDict = {}
-        for event in events:
+        """Creates a dictionary with events on the self.doctree variable and adds
+        event lists (which consist of pairs of event location and event id) to
+        all sentences in self.doctree."""
+        self.doctree.events = {}
+        for event in get_events(self.doctree):
             eid = event.attrs[EID]
-            self.doctree.taggedEventsDict[eid] = event.attrs
+            self.doctree.events[eid] = event.attrs
             pos = event.dtrs[0].pos
-            epos = self.doctree.taggedEventsDict[eid][POS]
+            epos = self.doctree.events[eid][POS]
             form = event.dtrs[0].getText()
-            self.doctree.taggedEventsDict[eid][FORM] = form
-            self.doctree.taggedEventsDict[eid][EPOS] = epos
-            self.doctree.taggedEventsDict[eid][POS] = pos
+            self.doctree.events[eid][FORM] = form
+            self.doctree.events[eid][EPOS] = epos
+            self.doctree.events[eid][POS] = pos
         for sentence in self.doctree:
             sentence.set_event_list()
 
@@ -74,7 +75,7 @@ class Slinket (TarsqiComponent):
         eventNum = -1
         for (eLocation, eid) in sentence.eventList:
             eventNum += 1
-            event_expr = EventExpression(eid, eLocation, eventNum, doc.taggedEventsDict[eid])
+            event_expr = EventExpression(eid, eLocation, eventNum, doc.events[eid])
             logger.debug(event_expr.as_verbose_string())
             if event_expr.can_introduce_alink():
                 logger.debug("Alink candidate: " + event_expr.form)

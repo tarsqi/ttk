@@ -64,38 +64,38 @@ class EventTag(Tag):
         if name == 'eventStatus':
             return '1'
         elif name == TENSE:
-            #print "TENSE:", doc.taggedEventsDict[self.eid][TENSE]
-            return doc.taggedEventsDict[self.eid][TENSE]
+            #print "TENSE:", doc.events[self.eid][TENSE]
+            return doc.events[self.eid][TENSE]
         elif name == ASPECT:
-            return doc.taggedEventsDict[self.eid][ASPECT]
+            return doc.events[self.eid][ASPECT]
         elif name == EPOS: #NF_MORPH:
-            return doc.taggedEventsDict[self.eid][EPOS]#[NF_MORPH]
+            return doc.events[self.eid][EPOS]#[NF_MORPH]
         elif name == MOD:
-            try: mod = doc.taggedEventsDict[self.eid][MOD]
+            try: mod = doc.events[self.eid][MOD]
             except: mod = 'NONE'
             return mod
         elif name == POL:
-            try: pol = doc.taggedEventsDict[self.eid][POL]
+            try: pol = doc.events[self.eid][POL]
             except: pol = 'POS'
             return pol
         elif name == EVENTID:
-            return doc.taggedEventsDict[self.eid][EVENTID]
+            return doc.events[self.eid][EVENTID]
         elif name == EIID:
-            return doc.taggedEventsDict[self.eid][EIID]
+            return doc.events[self.eid][EIID]
         elif name == CLASS:
-            return doc.taggedEventsDict[self.eid][CLASS]
+            return doc.events[self.eid][CLASS]
         elif name == 'text' or name == FORM:
-            return doc.taggedEventsDict[self.eid][FORM] 
+            return doc.events[self.eid][FORM]
         elif name == STEM:
-                    return doc.taggedEventsDict[self.eid][STEM] 
+            return doc.events[self.eid][STEM]
         elif name == POS:
             try:
-                return doc.taggedEventsDict[self.eid][POS]
+                return doc.events[self.eid][POS]
             except:
                 # I don't remember whether POS has a particular use here
                 # or is a left over from prior times
                 logger.warn("Returning 'epos' instead of 'pos' value")  
-                return doc.taggedEventsDict[self.eid][EPOS]
+                return doc.events[self.eid][EPOS]
         else:
             raise AttributeError, name
 

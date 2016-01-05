@@ -112,7 +112,8 @@ class GramChunk:
             "%s: %s\n" % (self.__class__.__name__, self.node.getText()) + \
             "\tTENSE=%s ASPECT=%s HEAD=%s CLASS=%s\n" \
             % (self.tense, self.aspect, self.head.getText(), self.evClass) + \
-            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" % (self.nf_morph, self.modality, self.polarity) + \
+            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" \
+            % (self.nf_morph, self.modality, self.polarity) + \
             "\tHEAD=%s CLASS=%s\n" % (self.head.getText(), self.evClass)
 
 
@@ -133,12 +134,6 @@ class GramAChunk(GramChunk):
         self.head = adjectivetoken
         self.evClass = self.getEventClass()
         self.add_verb_features(verbGramFeats)
-
-    def XXXgetHead(self):
-        """Return the head of the GramAChunk, which amount to returning the
-        AdjectiveToken that this GramAChunk was created from."""
-        print 'getHead'
-        return self.head
 
     def getEventClass(self):
         """Return I_STATE if the head is on a short list of intentional state
@@ -186,7 +181,7 @@ class GramNChunk(GramChunk):
 
     def isEventCandidate_Syn(self):
         """Return True if the GramNChunk is syntactically able to be an event,
-        return False otherwise. A event candidate syntactically has to have a
+        return False otherwise. An event candidate syntactically has to have a
         head (which cannot be a timex) and the head has to be a common noun."""
         if self.head.isTimex():
             return False
@@ -195,7 +190,9 @@ class GramNChunk(GramChunk):
         return self.head and forms.RE_nounsCommon.match(self.head.pos)
 
     def isEventCandidate_Sem(self):
-        """Return True if the GramNChunk can be an event semantically."""
+        """Return True if the GramNChunk can be an event semantically. Depending
+        on user settings this is done by a mixture of wordnet lookup and using a
+        simple classifier."""
         debug("event candidate?")
         lemma = self.getEventLemma()
         # return True if all WorrdNetsenses are events, no classifier needed

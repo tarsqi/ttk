@@ -33,8 +33,9 @@ def update_event_checked_marker(constituent_list):
         item.setCheckedEvents()
 
 def get_tokens(sequence):
-    """Given a sequence of elements which is a slice of a tree, collect all
-    token leaves and return them as a list."""
+    """Given a sequence of elements which is a slice of a tree, collect all token
+    leaves and return them as a list. This is different from what get_tokens in
+    utils does since it operates on a list instead of a single node."""
     tokens = []
     for item in sequence:
         if item.nodeType[-5:] == 'Token':
@@ -122,14 +123,14 @@ class Chunk(Constituent):
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
-                return doc.taggedEventsDict[self.eid][FORM] 
+                return doc.events[self.eid][FORM]
             if name == MOD:
-                return doc.taggedEventsDict[self.eid].get(MOD,'NONE')
+                return doc.events[self.eid].get(MOD,'NONE')
             if name == POL:
-                return doc.taggedEventsDict[self.eid].get(POL,'POS')
+                return doc.events[self.eid].get(POL,'POS')
             if name == POS:
-                return doc.taggedEventsDict[self.eid].get(POS,'NONE')
-            return doc.taggedEventsDict[self.eid][name]
+                return doc.events[self.eid].get(POS,'NONE')
+            return doc.events[self.eid][name]
         else:
             raise AttributeError, name
         

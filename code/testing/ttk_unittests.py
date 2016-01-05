@@ -156,8 +156,11 @@ class SlinketTest(unittest.TestCase):
 
 def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
-    # NOTE: this is the same function as in ttk_regression.py
-    options = [('--pipeline', pipeline), ('--loglevel', '1')]
+    # NOTE: apart from the options this is the same function as in
+    # ttk_regression.py
+    options = [('--pipeline', pipeline),
+               ('--loglevel', '1'),
+               ('--trap-errors', 'False')]
     td = tarsqi.process_string(sentence, options)
     tags = td.elements[0].tarsqi_tags.find_tags(tag)
     for t in tags:
@@ -168,7 +171,9 @@ def check_tag(pipeline, sentence, tag, o1, o2):
 def check_link(pipeline, sentence, tagname, e1_offsets, e2_offsets, reltype):
     """Returns True if there is a link of type tagname (SLINK, ALINK or TLINK) with
     the specified relation type and event locations."""
-    options = [('--pipeline', pipeline), ('--loglevel', '1')]
+    options = [('--pipeline', pipeline),
+               ('--loglevel', '1'),
+               ('--trap-errors', 'False')]
     td = tarsqi.process_string(sentence, options)
     link_tags = td.elements[0].tarsqi_tags.find_tags(tagname)
     event_tags = td.elements[0].tarsqi_tags.find_tags('EVENT')

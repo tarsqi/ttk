@@ -23,19 +23,19 @@ class Token(Constituent):
         self.event = None
         self.textIdx = None
         self.document = document
-        self.position = None       # does not appear to be used on Token
+        self.position = None
         self.parent = None
         self.gramchunk = None
         self.checkedEvents = False
 
     def __getitem__(self, index):
+        """Make sure we can view the Token as something that has elements, but its only
+        element is itself. This is used by update_event_checked_marker in the
+        chunks module."""
         if index == 0:
             return self
         else:
-            raise IndexError("list index out of range")
-
-    def __len__(self):
-        return 1
+            raise IndexError("there is only one element in a Token")
 
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
@@ -95,9 +95,9 @@ class Token(Constituent):
             eid = self.event_tag.attrs.get('eid')
             eiid = self.event_tag.attrs.get('eiid')
             event_string = " eid=%s eiid=%s" % (eid, eiid)
-        print "%s<%s lid=%s pos=%s text=%s%s>" % \
+        print "%s<%s position=%d pos=%s text=%s%s>" % \
             (indent * ' ', self.__class__.__name__,
-             self.lid, self.pos, self.getText(), event_string)
+             self.position, self.pos, self.getText(), event_string)
 
 
 class AdjectiveToken(Token):
@@ -129,14 +129,14 @@ class AdjectiveToken(Token):
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
-                return doc.taggedEventsDict[self.eid][FORM] 
+                return doc.events[self.eid][FORM]
             if name == MOD:
-                return doc.taggedEventsDict[self.eid].get(MOD,'NONE')
+                return doc.events[self.eid].get(MOD,'NONE')
             if name == POL:
-                return doc.taggedEventsDict[self.eid].get(POL,'POS')
+                return doc.events[self.eid].get(POL,'POS')
             if name == POS:
-                return doc.taggedEventsDict[self.eid].get(POS,'NONE')
-            return doc.taggedEventsDict[self.eid][name]
+                return doc.events[self.eid].get(POS,'NONE')
+            return doc.events[self.eid][name]
         else:
             raise AttributeError, name
 

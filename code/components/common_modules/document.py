@@ -240,26 +240,26 @@ class Document:
 
     Instance variables
 
-        tarsqidoc         -  the TarsqiDocument instance that the document is part of
-        tarsqidocelement  -  the TarsqiDocElement that the document tree was made for
+        tarsqidoc     -  the TarsqiDocument instance that the document is part of
+        docelement    -  the TarsqiDocElement that the document tree was made for
 
-        fname             -  an absolute path
-        taggedEventsDict  -  a dictionary containing tagged event in the input
+        fname         -  an absolute path
+        events        -  a dictionary containing events found by Evita
 
-        alink_list     -  a list of AlinkTags, filled in by Slinket
-        slink_list     -  a list of SlinkTags, filled in by Slinket
-        tlink_list     -  a list of TlinkTags
+        alink_list    -  a list of AlinkTags, filled in by Slinket
+        slink_list    -  a list of SlinkTags, filled in by Slinket
+        tlink_list    -  a list of TlinkTags
 
-    The taggedEventsDicts is used by Slinket, storing events indexed on event IDs.
-    """
+    The events is used by Slinket and it stores events from the document tree
+    indexed on event eids."""
 
 
     def __init__(self, tarsqidoc=None, tarsqidocelement=None):
         """Initialize all dictionaries, list and counters and set the file name."""
         self.tarsqidoc = tarsqidoc
-        self.tarsqidocelement = tarsqidocelement
+        self.docelement = tarsqidocelement
         self.dtrs = []
-        self.taggedEventsDict = {}        # used by slinket's event parser
+        self.events = {}        # used by slinket's event parser
         self.alink_list = []
         self.slink_list = []
         self.tlink_list = []
@@ -286,26 +286,26 @@ class Document:
         timex.setParent(self)
     
     def hasEventWithAttribute(self, eid, att):
-        """Returns the attribute value if the taggedEventsDict has an event with the given
+        """Returns the attribute value if the events dictionary has an event with the given
         id that has a value for the given attribute, returns False otherwise
         Arguments
            eid - a string indicating the eid of the event
            att - a string indicating the attribute"""
-        return self.taggedEventsDict.get(eid,{}).get(att,False)
+        return self.events.get(eid,{}).get(att,False)
 
     def storeEventValues(self, pairs):
         """Store attributes associated with an event (that is, they live on an event or
-        makeinstance tag) in the taggedEventsDictionary. The pairs argument is a
+        makeinstance tag) in the events dictionary. The pairs argument is a
         dcitionary of attributes"""
         # get eid from event or instance
         try: eid = pairs[EID]
         except KeyError: eid = pairs[EVENTID]
         # initialize dictionary if it is not there yet
-        if not eid in self.taggedEventsDict:
-            self.taggedEventsDict[eid] = {}
+        if not eid in self.events:
+            self.events[eid] = {}
         # add data
         for (att, val) in pairs.items():
-            self.taggedEventsDict[eid][att] = val
+            self.events[eid][att] = val
 
     def document(self):
         """Returns the document itself. This is so that chunks can ask their parent for
@@ -332,7 +332,7 @@ class Document:
         # TODO: this assumes the event is always the last one, which may not
         # always be true
         token = event.tokenList[-1]
-        self.tarsqidocelement.add_event(token.begin, token.end, event_attrs)
+        self.docelement.add_event(token.begin, token.end, event_attrs)
         
     def addLink(self, linkAttrs, linkType):
         """Add a link of type linkType with its attributes to the document by appending
@@ -344,16 +344,6 @@ class Document:
         if linkType == ALINK: self.alink_list.append(AlinkTag(linkAttrs))
         elif linkType == SLINK: self.slink_list.append(SlinkTag(linkAttrs))
         elif linkType == TLINK: self.tlink_list.append(TlinkTag(linkAttrs))
-
-    def get_events(self, result=None):
-        # TODO: this is also defined on Constituent
-        if result is None:
-            result = []
-        for dtr in self.dtrs:
-            if dtr.isEvent():
-                result.append(dtr)
-            dtr.get_events(result)
-        return result
 
     def pp(self):
         """Short form of pretty_print()"""
@@ -371,14 +361,14 @@ class Document:
         self.pretty_print_sentences()
 
     def pretty_print_tagged_events_dict(self):
-        print '  taggedEventsDict'
-        eids = sorted(self.taggedEventsDict.keys())
+        print '  events'
+        eids = sorted(self.events.keys())
         for eid in eids:
             print '   ', eid, '=> {',
-            attrs = self.taggedEventsDict[eid].keys()
+            attrs = self.events[eid].keys()
             attrs.sort()
             for attr in attrs:
-                print "%s=%s" % (attr, str(self.taggedEventsDict[eid][attr])),
+                print "%s=%s" % (attr, str(self.events[eid][attr])),
             print '}'
 
     def pretty_print_sentences(self):
