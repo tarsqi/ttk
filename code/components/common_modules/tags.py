@@ -210,13 +210,13 @@ class TimexTag(Tag):
         return string
 
     def pretty_print(self, indent=0):
-        (tid, type, val) = (self.attrs.get('tid'), self.attrs.get('TYPE'), self.attrs.get('VAL'))
-        print "%s<%s tid=%s TYPE=%s VAL=%s>" % \
-              ( indent * ' ', self.name, str(tid), str(type), str(val) )
+        print "%s<%s tid=%s type=%s value=%s>" % \
+            (indent * ' ', self.name, self.attrs.get('tid'),
+             self.attrs.get('type'), self.attrs.get('value') )
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
-        
+
 class TlinkTag(Tag):
 
     """

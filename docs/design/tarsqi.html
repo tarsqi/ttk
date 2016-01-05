@@ -9,10 +9,12 @@ img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: blo
 .example { padding: 5pt; background: #eeeeee; border: thin dotted grey; }
 .image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
 .indent { margin-left: 10pt; }
+table { border: thin solid grey; border-collapse: collapse; width: 400pt; }
+table td { border: thin solid grey; vertical-align: top; padding: 3pt; }
 table.spacy { margin-top: 10pt; margin-bottom: 10pt; }
-table.pythonclass { border: thin solid grey; border-collapse: collapse; width: 400pt; }
-table.pythonclass td  { vertical-align: top; padding: 3pt; padding-left: 6pt; }
-table.pythonclass td.name  { font-weight: bold; border: thin solid grey; padding-left: 3pt;}
+table.pythonclass { width: 400pt; }
+table.pythonclass td { border-style: none; padding-left: 6pt; }
+table.pythonclass td.name { font-weight: bold; border: thin solid grey; padding-left: 3pt;}
 table.pythonclass td.attribute { }
 </style>
 
@@ -55,14 +57,13 @@ things:</p>
 
 <li>The class docmodel.source_parser.SourceParser parses the input file using
 parse_file(filename) and returns an instance of docmodel.source_parser.SourceDoc
-which includes two instance variables: text and tags with as values a unicode
-string and an instance of docmodel.source_parser.TagRepository:
+which includes two instance variables: text and tags.
 
 <img src="images/sourceparser.png"/ height="75">
 
 <table class="pythonclass indent spacy">
 <tr>
-  <td class="name" colspan="2">docmodel.source_parser.DocSource</td>
+  <td class="name" colspan="2">docmodel.source_parser.SourceDoc</td>
 </tr>
 <tr>
   <td class="attribute">text</td>
@@ -95,9 +96,12 @@ string and an instance of docmodel.source_parser.TagRepository:
 </table>
 
 The input is assumed to be an XML file with inline XML tags and the SourceParser
-turns it into the primary text data (text without tags) and a dictionary of tags
-with character offsets pointing into the primary data. Here is a minimal example
-as an illustration:
+turns it into the primary text data (text without tags) and a dictionary of
+class TagRepository which has tags with character offsets pointing into the
+primary data. Both instance variables are intended to be read-only. That is,
+after the SourceDoc is created the primary data string never changes and tags
+are not added to the TagRepository. Here is a minimal example as an
+illustration:
 
 <pre class="example indent">
 &lt;?xml version="1.0" ?>
@@ -124,7 +128,7 @@ This dictionary says that at character offset 8 we close a noun tag that was
 opened at offset 5. The TagRepository class has convenience methods to access
 tags.
 
-<li>One of the parsers from docmodel.parsers is then used to take the DocSource
+<li>One of the parsers from docmodel.parsers is then used to take the SourceDoc
 instance and create an instance of docmodel.document.TarsqiDocument.
 
 <img src="images/defaultparser.png"/ height="75">
@@ -135,7 +139,7 @@ instance and create an instance of docmodel.document.TarsqiDocument.
 </tr>
 <tr>
   <td class="attribute">source</td>
-  <td>an instance of docmodel.source_parser.DocSource</td>
+  <td>an instance of docmodel.source_parser.SourceDoc</td>
 </tr>
 <tr>
   <td class="attribute">metadata</td>
@@ -154,8 +158,9 @@ instance and create an instance of docmodel.document.TarsqiDocument.
 The DefaultParser does some minimal processing of the source document,
 extracting a document creation time and putting it in the metadata dictionary
 under the 'dct' key and splitting the document into paragraphs and putting each
-paragraph in the elements list. Paragraphs are instances of TarsqiDocParagraph,
-a subclass of TarsqiDocElement, which has the following structure:
+paragraph in the elements list. In the current implimentation, all elements are
+instances of TarsqiDocParagraph, a subclass of TarsqiDocElement, which has the
+following structure:
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -167,11 +172,11 @@ a subclass of TarsqiDocElement, which has the following structure:
 </tr>  
 <tr>
   <td class="attribute">begin</td>
-  <td>the beginning offset in doc.source</td>
+  <td>the beginning offset in the SourceDoc in doc.source</td>
 </tr>
 <tr>
   <td class="attribute">end</td>
-  <td>the ending offset in doc.source</td>
+  <td>the ending offset in the SourceDoc in doc.source</td>
 </tr>
 <tr>
   <td class="attribute">source_tags</td>
@@ -185,8 +190,11 @@ a subclass of TarsqiDocElement, which has the following structure:
 </tr>
 </table>
 
+In the future, other sub classes of TarsqiDocElement will be added (for example
+SectionHeader) and perhaps theelements list will come to implement a hierarchy.
+
 <li>Add the parameters from the settings.txt file and the command line options
-to the TarsqiDocument.
+to the TarsqiDocument. This fills in the parameters dictionary.
 
 <li>Apply components as specified in the pipeline. Recall that on initialization
 the Tarsqi class creates a pipeline of components from the user's --pipeline
@@ -215,7 +223,7 @@ TarsqiDocElements.
 
 <li>Print results. The Tarsqi class does this by asking the TarsqiDocument to
 print the source string and all tags to a document, which in turn is done by
-retrieving the source and the source tags from the DocSource instance and the
+retrieving the source and the source tags from the SourceDoc instance and the
 added Tarsqi tags from the TagRepository in the tarsqi_tags attributes on
 TarsqiDocElements. The output is written to one file with both the primary data
 and the tags. For example, take the example input below.
@@ -237,18 +245,21 @@ He sleeps on Friday.
   &lt;text id="1" begin="1" end="21" />
 &lt;/source_tags>
 &lt;ttk_tags>
-  &lt;lex id="l1" begin="1" end="3" lemma="he" pos="PP" />
-  &lt;NG id="c1" begin="1" end="3" targets="l1 l1" />
-  &lt;lex id="l2" begin="4" end="10" lemma="sleep" pos="VBZ" />
-  &lt;VG id="c2" begin="4" end="10" targets="l2 l2" />
-  &lt;lex id="l3" begin="11" end="13" lemma="on" pos="IN" />
-  &lt;lex id="l4" begin="14" end="20" lemma="Friday" pos="NNP" />
-  &lt;NG id="c3" begin="14" end="20" targets="l4 l4" />
-  &lt;lex id="l5" begin="20" end="21" lemma="." pos="." />
-  &lt;s id="s1" begin="1" end="21" targets="l1 l5" />
-  &lt;TIMEX3 id="1" begin="14" end="20" type="DATE" value="" />
-  &lt;EVENT id="2" begin="4" end="10" polarity="POS" pos="VERB" eiid="ei1"
+  &lt;TIMEX3 tid="t0" type="DATE" value="20160105" functionInDocument="CREATION_TIME"/>
+  &lt;doc_element type="TarsqiDocParagraph" begin="1" end="21">
+    &lt;lex id="l1" begin="1" end="3" lemma="he" pos="PP" />
+    &lt;NG id="c1" begin="1" end="3" targets="l1 l1" />
+    &lt;lex id="l2" begin="4" end="10" lemma="sleep" pos="VBZ" />
+    &lt;VG id="c2" begin="4" end="10" targets="l2 l2" />
+    &lt;lex id="l3" begin="11" end="13" lemma="on" pos="IN" />
+    &lt;lex id="l4" begin="14" end="20" lemma="Friday" pos="NNP" />
+    &lt;NG id="c3" begin="14" end="20" targets="l4 l4" />
+    &lt;lex id="l5" begin="20" end="21" lemma="." pos="." />
+    &lt;s id="s1" begin="1" end="21" targets="l1 l5" />
+    &lt;TIMEX3 id="1" begin="14" end="20" type="DATE" value="" />
+    &lt;EVENT id="2" begin="4" end="10" polarity="POS" pos="VERB" eiid="ei1"
          tense="PRESENT" eid="e1" aspect="NONE" class="OCCURRENCE" />
+  &lt;/doc_element>
 &lt;/ttk_tags>
 &lt;/ttk>
 </pre>
@@ -267,9 +278,12 @@ and then exports the results back to the TarsqiDocElements.</p>
 
 <img src="images/preprocessing.png" height="250"/>
 
-<p>The tokenizer takes the text and returns a list of pairs, where each pair is
-either ('&lt;s>', None) for sentence boundaries or a pair of a string and a
-TokenizedLex instance (which has begin and end instance variables):</p>
+<p>The tokenizer copies the text from the TarsqiDocParagraph (which actually
+does not hold the text itself but it has the character offsets in the SourceDoc
+and a reference to the SourceDoc) and it returns a list of pairs, where each
+pair is either ('&lt;s>', None) for sentence boundaries or a pair of a string
+and a TokenizedLex instance, which has instance variables begin, end and
+text:</p>
 
 <pre class="example indent">
 [('&lt;s>', None),
@@ -441,6 +455,19 @@ TarsqiDocElement it was created for. It has a list of daughters and some other
 attributes that are ignored here because they are not used by Evita.</p>
 
 
+<pre class="example indent">
+&lt;NounChunk position=0 checkedEvents=False event=None eid=None>
+  &lt;Token position=0 pos=DT text=The>
+  &lt;Token position=1 pos=NN text=dog>
+&lt;VerbChunk position=1 checkedEvents=False event=None eid=None>
+  &lt;Token position=0 pos=VBD text=barked>
+&lt;NounChunk position=2 checkedEvents=False event=None eid=None>
+  &lt;TIMEX3 tid=t1 type=DATE value=20160103>
+    &lt;Token position=0 pos=NN text=yesterday>
+&lt;Token position=3 pos=. text=.>
+</pre>
+
+
 <h2>Slinket</h2>
 
 <table class="pythonclass indent spacy">
@@ -479,6 +506,48 @@ attributes that are ignored here because they are not used by Evita.</p>
 </tr>
 </table>
 
+
+<h2>Tags added by the Tarsqi toolkit</h2>
+
+<p>All Tarsqi tags added by the system have identifiers that are unique to the document
+and the tag type. The identifiers consist of a tag-specific prefix and an integer. The
+prefixes and the tags they go with are listed in the table below.</p>
+
+<p>Some identifiers are introduces with an attribute "id", but the TimeML tags
+have special identifier attributes: tid, eid, eiid, and lid.</p>
+
+<table class="indent">
+<tr>
+  <td>l
+  <td>&lt;lex&gt;
+  <td>The lexical tokens from the base segmentation. Refer to character offsets.
+<tr>
+  <td>c
+  <td>&lt;ng&gt;, &lt;vg&gt;
+  <td>Chunks. Refer to character offsets and lex ids.
+<tr>
+  <td>s  
+  <td>&lt;s&gt;
+  <td>Sentence boundaries. Refer to character offsets and lex ids.
+<tr>
+  <td>t  
+  <td>&lt;timex3&gt;
+  <td>BTime timex tags.
+<tr>
+  <td>e  
+  <td>&lt;event&gt;
+  <td>Evita event tags, notice the absence of the depricated makeinstance tag.
+<tr>
+  <td>al  
+  <td>&lt;alink&gt;
+  <td rowspan="3" valign="top">The three relation tags. These can only refer to event ids or timex ids.
+<tr>
+  <td>sl
+  <td>&lt;slink&gt;
+<tr>
+  <td>tl
+  <td>&lt;tlink&gt;
+</table>
 
 
 </body>
