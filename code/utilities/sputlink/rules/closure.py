@@ -1,6 +1,5 @@
 
 from objects import TemporalObject, Link, PLink
-import string
 
 
 class Axiom(TemporalObject):
@@ -130,6 +129,6 @@ class Closure:
     def printMessage2(self,existingLink,relation,inlink,outlink):
         print "\nWARNING: link already exists"
         print "  %s" % (existingLink)
-        print "  %s" % (string.upper(relation))
+        print "  %s" % (relation.upper())
         print "    %s" % (inlink)
         print "    %s" % (outlink)

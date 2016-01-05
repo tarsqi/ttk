@@ -19,8 +19,8 @@ def create_tarsqi_tree(element):
     instance of TarsqiDocElement or a subclass."""
     top_node = Node(begin=element.begin, end=element.end)
     for tag in (element.tarsqi_tags.find_tags('s') +
-                element.tarsqi_tags.find_tags('NG') +
-                element.tarsqi_tags.find_tags('VG') +
+                element.tarsqi_tags.find_tags('ng') +
+                element.tarsqi_tags.find_tags('vg') +
                 element.tarsqi_tags.find_tags('lex') +
                 element.tarsqi_tags.find_tags('EVENT') +
                 element.tarsqi_tags.find_tags('TIMEX3')):
@@ -42,7 +42,7 @@ class Node(object):
 
     # Having a higher order means that a tag x will be including tag y if x and
     # y have the same extent.
-    order = { 'TarsqiTree': 5, 's': 4, 'NG': 3,'VG': 3, 'EVENT': 2, 'TIMEX3': 2, 'lex': 1 }
+    order = { 'TarsqiTree': 5, 's': 4, 'ng': 3,'vg': 3, 'EVENT': 2, 'TIMEX3': 2, 'lex': 1 }
 
     def __init__(self, tag=None, name='TarsqiTree', parent=None, begin=None, end=None):
         self.name = name
@@ -205,10 +205,10 @@ class Node(object):
         TimexTag, Token or AdjectiveToken."""
         if self.name == 's':
             doc_element = Sentence()
-        elif self.name == 'NG':
-            doc_element = NounChunk('NG')
-        elif self.name == 'VG':
-            doc_element = VerbChunk('VG')
+        elif self.name == 'ng':
+            doc_element = NounChunk('ng')
+        elif self.name == 'vg':
+            doc_element = VerbChunk('vg')
         elif self.name == 'lex':
             pos = self.tag.attrs['pos']
             word = tree.tarsqidoc.source[self.begin:self.end]

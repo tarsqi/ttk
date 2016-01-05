@@ -7,9 +7,6 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 
 """
 
-import string
-from types import ListType, TupleType
-
 import library.forms as forms
 import library.patterns as patterns
 from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL
@@ -57,7 +54,7 @@ class Chunk(Constituent):
     contain event tags, timex tags and tokens.
 
     Instance variables
-       phraseType         - string indicating the chunk type, usually 'VG' or 'NG'
+       phraseType         - string indicating the chunk type, usually 'vg' or 'ng'
        dtrs = []          - a list of Tokens, EventTags and TimexTags
        position = None    - index in the parent's daughters list
        head = -1          - the index of the head of the chunk
@@ -149,8 +146,8 @@ class Chunk(Constituent):
             self.tree().addEvent(Event(gchunk))
 
     def _getHeadText(self):
-        """Get the text string og the head of the chunk. Used by matchConstituent."""
-        headText = string.split(self.getText())[-1]
+        """Get the text string of the head of the chunk. Used by matchConstituent."""
+        headText = self.getText().split()[-1]
         return headText.strip()
 
     def embedded_event(self):

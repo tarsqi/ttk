@@ -5,7 +5,6 @@ basic relations are used instead of TimeML relations. Also produces an
 extra short output for consumption of Perl scripts. """
 
 import sys
-import string
 
 from objects import \
      ObjectList, TemporalObject, AbstractNode, AbstractLink, \

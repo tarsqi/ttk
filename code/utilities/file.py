@@ -1,7 +1,6 @@
 """Module containing simple file utilities."""
 
 import os
-import string
 import pickle
 
 
@@ -51,7 +50,7 @@ def read_settings(filename):
             continue
         if line.startswith('#'):
             continue
-        (flag, value) = map(string.strip, line.split('='))
+        (flag, value) = [s.strip() for s in line.split('=')]
         settings[flag] = value
     file.close()
     return settings

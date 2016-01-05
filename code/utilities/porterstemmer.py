@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import string
-
 from library.forms import STEM_EXCEPTIONS_FILE
 from binsearch import binarySearchFile
 
@@ -12,12 +10,12 @@ class Stemmer:
         self.exceptionsFile = open(STEM_EXCEPTIONS_FILE, 'r')
         self.porter = PorterStemmer()
 
-    def stem(self,key):
+    def stem(self, key):
         """Lookup key in stem exceptions file. Use the porter stemmer
         if key is not in exceptions file. """
         line = binarySearchFile(self.exceptionsFile, key)
         if line:
-            (form, stem, porterstem) = string.split(line)
+            (form, stem, porterstem) = line.split()
             return stem
         else:
             return self.porter.stem(key, 0, len(key)-1)

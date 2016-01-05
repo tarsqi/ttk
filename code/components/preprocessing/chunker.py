@@ -14,8 +14,8 @@ from types import StringType
 
 # CHUNK TYPES
 
-NG = 'NG'
-VG = 'VG'
+NG = 'ng'
+VG = 'vg'
 
 
 # TAG DICTIONARY
@@ -252,8 +252,8 @@ class Sentence:
         return \
             not_be(self.sentence[idx]) \
             and self.sentence[idx+1][1] == 'VBG' \
-            and self.sentence[idx+2] == '</VG>' \
-            and self.sentence[idx+3] == '<NG>' \
+            and self.sentence[idx+2] == '</vg>' \
+            and self.sentence[idx+3] == '<ng>' \
             and self.sentence[idx+4][1] in ('NN', 'NNS', 'NNP', 'NNPS') 
 
     
