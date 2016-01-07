@@ -5,16 +5,19 @@
 <style>
 body { width: 820px; }
 img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: block; }
+.navigation { font-size: 120%; }
 .spacy li { margin-top: 10pt; margin-bottom: 10pt; }
 .example { padding: 5pt; background: #eeeeee; border: thin dotted grey; }
 .image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
 .indent { margin-left: 10pt; }
-table { border: thin solid grey; border-collapse: collapse; width: 400pt; }
+table { border: thin solid grey; border-collapse: collapse; }
 table td { border: thin solid grey; vertical-align: top; padding: 3pt; }
+table tr.tableheader { background-color: #eeeeee; }
 table.spacy { margin-top: 10pt; margin-bottom: 10pt; }
 table.pythonclass { width: 400pt; }
 table.pythonclass td { border-style: none; padding-left: 6pt; }
 table.pythonclass td.name { font-weight: bold; border: thin solid grey; padding-left: 3pt;}
+table.pythonclass td.name { background-color: #eeeeee; }
 table.pythonclass td.attribute { }
 </style>
 
@@ -28,11 +31,27 @@ table.pythonclass td.attribute { }
 
 <p>This document gives a high-level overview of the TARSQI Toolkit code.</p>
 
+<p class="navigation">
+[ <a href="#toplevel">toplevel
+| <a href="#tags">tags
+| <a href="#preprocessor">preprocessor
+| <a href="#gutime">gutime
+| <a href="#evita">evita
+| <a href="#slinket">slinket
+| <a href="#s2t">s2t
+| <a href="#blinker">blinker
+| <a href="#classifier">classifier
+| <a href="#sputlink">sputlink
+]
+</p>
 
-<h2>Top-level Processing</h2>
+<a name="toplevel"/>
+<h2>1. Top-level Processing</h2>
 
-<p>The top-level processing chain is implemented in tarsqi.py in the Tarsqi
-class, which upon initialization does the following:</p>
+<p>All code, barring a few scripts, lives in the code directory inside the Tarsqi
+distribution. All paths given are relative to that path. The top-level
+processing chain is implemented in the Tarsqi class in tarsqi.py , which upon
+initialization does the following:</p>
 
 <ol class="spacy">
 
@@ -108,11 +127,30 @@ illustration:
 &lt;text>One &lt;noun>tag&lt;/noun> only.&lt;/text>
 </pre>
 
-For this text, the opening tags dictionary is as follows:
+<p>For this text, the tags list is as follows:</p>
 
 <pre class="example indent">
-{1: [&lt;docmodel.source_parser.Tag instance at 0x107ac3638>], 
- 5: [&lt;docmodel.source_parser.Tag instance at 0x107ac3518>]}
+[ &lt;docmodel.source_parser.Tag instance at 0x108d6c518>, 
+  &lt;docmodel.source_parser.Tag instance at 0x108d6c4d0> ]
+</pre>
+
+<p>For clarity, here is the same list but with the unhelpful print string for
+Tags replaced by a more helpful one:</p>
+
+<pre class="example indent">
+[ &lt;Tag text id=1 1:14 {}>,
+  &lt;Tag noun id=2 5:8 {}> ]
+</pre>
+
+<p>The dictionaries on the two tags are empty, but if the XML tags had
+attributes they would end up in there. The two other instance variables on
+TagRepository are in effect indexes over the list, giving quick access to the
+tags at specified begin or end offsets. The opening tags dictionary is as
+follows:</p>
+
+<pre class="example indent">
+{ 1: [ &lt;Tag text id=1 1:14 {}> ],
+  5: [ &lt;Tag noun id=2 5:8 {}> ] }
 </pre>
 
 Which indicates that there are opening tags at positions 1 and 5, and in both
@@ -121,7 +159,8 @@ the tag, its attributes and its begin and end offsets. The closing tags
 dictionary for the above example is:
 
 <pre class="example indent">
-{8: {5: {u'noun': True}}, 14: {1: {u'text': True}}}
+{  8: { 5: {u'noun': True} }, 
+  14: { 1: {u'text': True} } }
 </pre>
 
 This dictionary says that at character offset 8 we close a noun tag that was
@@ -191,7 +230,7 @@ following structure:
 </table>
 
 In the future, other sub classes of TarsqiDocElement will be added (for example
-SectionHeader) and perhaps theelements list will come to implement a hierarchy.
+SectionHeader) and perhaps the elements list will come to implement a hierarchy.
 
 <li>Add the parameters from the settings.txt file and the command line options
 to the TarsqiDocument. This fills in the parameters dictionary.
@@ -248,12 +287,12 @@ He sleeps on Friday.
   &lt;TIMEX3 tid="t0" type="DATE" value="20160105" functionInDocument="CREATION_TIME"/>
   &lt;doc_element type="TarsqiDocParagraph" begin="1" end="21">
     &lt;lex id="l1" begin="1" end="3" lemma="he" pos="PP" />
-    &lt;NG id="c1" begin="1" end="3" targets="l1 l1" />
+    &lt;ng id="c1" begin="1" end="3" targets="l1 l1" />
     &lt;lex id="l2" begin="4" end="10" lemma="sleep" pos="VBZ" />
-    &lt;VG id="c2" begin="4" end="10" targets="l2 l2" />
+    &lt;vg id="c2" begin="4" end="10" targets="l2 l2" />
     &lt;lex id="l3" begin="11" end="13" lemma="on" pos="IN" />
     &lt;lex id="l4" begin="14" end="20" lemma="Friday" pos="NNP" />
-    &lt;NG id="c3" begin="14" end="20" targets="l4 l4" />
+    &lt;ng id="c3" begin="14" end="20" targets="l4 l4" />
     &lt;lex id="l5" begin="20" end="21" lemma="." pos="." />
     &lt;s id="s1" begin="1" end="21" targets="l1 l5" />
     &lt;TIMEX3 id="1" begin="14" end="20" type="DATE" value="" />
@@ -270,7 +309,84 @@ over two lines here for readability.
 </ol>
 
 
-<h2>The Preprocessor</h2>
+<a name="tags"/>
+<h2>2. Tags added by the Tarsqi Toolkit</h2>
+
+<p>All Tarsqi tags added by the system have identifiers that are unique to the document
+and the tag type. The identifiers consist of a tag-specific prefix and an integer. The
+prefixes and the tags they go with are listed in the table below.</p>
+
+<table class="indent">
+  <tr class="tableheader">
+    <td>tag with identifier example</td>
+    <td>component</td>
+    <td>description</td>
+  </tr>
+  <tr>
+    <td>&lt;doc_element&gt;</td>
+    <td>DefaultParser and subclasses</td>
+    <td>paragraphs</td>
+  </tr>
+  <tr>
+    <td>&lt;s id="s1"&gt;</td>
+    <td>Tokenizer</td>
+    <td>sentences</td>
+  </tr>
+  <tr>
+    <td>&lt;lex id="l12"&gt;</td>
+    <td>Tokenizer and Tagger</td>
+    <td>tokens with pos and lemma</td>
+  </tr>
+  <tr>
+    <td>&lt;ng id="c1"&gt;</td>
+    <td>Chunker</td>
+    <td>noun chunks</td>
+  </tr>
+  <tr>
+    <td>&lt;vg id="c2"&gt;</td>
+    <td>Chunker</td>
+    <td>verb chunks</td>
+  </tr>
+  <tr>
+    <td>&lt;TIMEX3 tid="t3"&gt;</td>
+    <td>GUTime</td>
+    <td>TimeML time expressions</td>
+  </tr>
+  <tr>
+    <td>&lt;EVENT eid="e23" eiid="ei23"&gt;</td>
+    <td>Evita</td>
+    <td>events</td>
+  </tr>
+  <tr>
+    <td>&lt;ALINK lid="l31"&gt;</td>
+    <td>Slinket</td>
+    <td>aspectual links</td>
+  </tr>
+  <tr>
+    <td>&lt;SLINK lid="l32"&gt;</td>
+    <td>Slinket</td>
+    <td>subordinating links</td>
+  </tr>
+  <tr>
+    <td>&lt;TLINK lid="l33"&gt;</td>
+    <td>Blinker, S2T, classifier</td>
+    <td>temporal links</td>
+  </tr>
+</table>
+
+<p>Tags introduced by the preprocessor have lower case names and use the "id"
+attribute for the identifiers. TimeML tags are uppercase and introduce their
+identifiers with special attributes "tid", "eid", "eiid", and "lid". Noun chunks
+and verb chunks share the same prefix and so do the three link types. As per the
+TimeML specifications, events have an event identifier and an event instance
+identifier, this allows us to deal with those events that have more than one
+instance. The latter case is not recognized by the Tarsqi Toolkit however and
+the eid and eiid will always have the same integer in it (but not with the same
+prefix).</p>
+
+
+<a name="preprocessor"/>
+<h2>3. The Preprocessor</h2>
 
 <p>The PreprocessorWrapper loops through the TarsiDocElements. For each element,
 it extracts the source text, runs the tokenizer, tagger and chunker on that text
@@ -292,10 +408,9 @@ text:</p>
  (u'.', &lt;components.preprocessing.tokenizer.TokenizedLex instance at 0x110844b48>)]
 </pre>
 
-<p>Since the tokenizer runs in isolation on the text of an element, it assignes
-offsets starting at 0 to the text. The PreprocessWrappers adjusts these so that
-the offsets point into the correct spot in the full text source of the
-document.</p>
+<p>Since the tokenizer runs in isolation on the text of an element, assigns
+offsets starting at 0. The PreprocessorWrapper adjusts these so that the offsets
+point into the correct spot in the full text source of the document.</p>
 
 <p>The tagger is then fed a vertical string consisting of the first element of
 all pairs (the s tag or a string):</p>
@@ -322,49 +437,69 @@ lemma:</p>
 pairs that came out of the tokenizer and creates the following structure:</p>
 
 <pre class="example indent">
-[[('Fido', 'NNP', 'Fido', 1, 5), 
-  ('barks', 'VBZ', 'bark', 6, 11), 
+[[('Fido', 'NNP', 'Fido', 1, 5),
+  ('barks', 'VBZ', 'bark', 6, 11),
   ('.', '.', '.', 11, 12)]]
 </pre>
 
 <p>Note that the s tags have disappeared and that instead we now have a list of
 sublists, with one sublist for each sentence. Another thing that happens at this
-transformation stage is some normalization of tag names. The chunker adds NG and
-VG tags to the sublists.</p>
+transformation stage is some normalization of tag names. The chunker adds ng and
+vg tags to the sublists.</p>
 
 <pre class="example indent">
-[['&lt;NG>', ('Fido', 'NNP', 'Fido', 1, 5), '&lt;/NG>', 
-  '&lt;VG>', ('barks', 'VBZ', 'bark', 6, 11), '&lt;/VG>', 
+[['&lt;ng>', ('Fido', 'NNP', 'Fido', 1, 5), '&lt;/ng>',
+  '&lt;vg>', ('barks', 'VBZ', 'bark', 6, 11), '&lt;/vg>',
   ('.', '.', '.', 11, 12)]]
 </pre>
 
 <p>Finally, the information in this data structure is exported to the
-tarsqi_tags TagRepository on the TarsqiDocElement, where the opening_tags and
-closing_tags dictionaries now look as follows:</p>
+tarsqi_tags TagRepository on the TarsqiDocElement. Before the first component in
+the pipeline applies, this TagRepository is empty, but with the above input the
+preprocessor will append s, ng, vg and lex tags to the tags list and eventually
+set it to:</p>
 
 <pre class="example indent">
-{ 1: [&lt;docmodel.source_parser.Tag instance at 0x1033c9830>, 
-      &lt;docmodel.source_parser.Tag instance at 0x1033c98c0>, 
-      &lt;docmodel.source_parser.Tag instance at 0x1033c9e18>],
-  6: [&lt;docmodel.source_parser.Tag instance at 0x1033c9a70>, 
-      &lt;docmodel.source_parser.Tag instance at 0x1033c9cf8>],
- 11: [&lt;docmodel.source_parser.Tag instance at 0x1033c9ef0>] }
+[ &lt;Tag lex id=l1 1:5 {'lemma': 'Fido', 'pos': 'NNP'}>,
+  &lt;Tag ng id=c1 1:5 {}>,
+  &lt;Tag lex id=l2 6:11 {'lemma': 'bark', 'pos': 'VBZ'}>,
+  &lt;Tag vg id=c2 6:11 {}>,
+  &lt;Tag lex id=l3 11:12 {'lemma': '.', 'pos': '.'}>,
+  &lt;Tag s id=s1 1:12 {}> ]
+</pre>
+
+<p>Notice that the tags are added by a depth-first post-order traversal of the
+tree, but this is incidental of the algorithm and in no way a requirement on the
+order of the tags. When this tags list is built the preprocessor uses the
+index() method on the TagRepository to create the opening_tags and closing_tags
+dictionaries, which will look as follows:</p>
+
+<pre class="example indent">
+{ 1: [ &lt;Tag s id=s1 1:12 {}>,
+       &lt;Tag lex id=l1 1:5 {'lemma': 'Fido', 'pos': 'NNP'}>,
+       &lt;Tag ng id=c1 1:5 {}> ],
+  6: [ &lt;Tag lex id=l2 6:11 {'lemma': 'bark', 'pos': 'VBZ'}>,
+       &lt;Tag vg id=c2 6:11 {}> ],
+ 11: [ &lt;Tag lex id=l3 11:12 {'lemma': '.', 'pos': '.'}> ] }
 </pre>
 
 <pre class="example indent">
-{  5: { 1: {'lex': True, 'NG': True}}
-  11: { 6: {'lex': True, 'VG': True}}, 
-  12: { 1: {'s': True}, 
+{  5: { 1: {'lex': True, 'ng': True}}
+  11: { 6: {'lex': True, 'vg': True}},
+  12: { 1: {'s': True},
        11: {'lex': True}} }
 </pre>
 
 
-<h2>GUTime</h2>
+
+<a name="gutime"/>
+<h2>4. GUTime</h2>
 
 <p>The GUTimeWrapper takes the content of all TarsqiDocElements in the
 TarsqiDocument and creates the input needed by
 code/components/gutime/TimeTag.pl, which is the wrapper around TempEx.pm in the
-same directory. The input required by TimeTag.pl is a file with content as follows:
+same directory. The input required by TimeTag.pl is a file with content as
+follows:</p>
 
 <pre class="example indent">
 &lt;DOC>
@@ -403,9 +538,14 @@ are added:</p>
 </pre>
 
 <p>Similar to what happened with the preprocessor results, the new TIMEX3 tags
-are exported to the tarsqi_tags TagRepository on the TarsqiDocElement.</p>
+are exported to the tarsqi_tags TagRepository on the TarsqiDocElement. One
+difference is that the GUTimeWrapper adds tags using the add_tag method on
+TagRepository, which also adds the tag to the opening_tags and closing tags
+dictionaries, so a separate use of index() is not needed.</p>
 
-<h2>Evita</h2>
+
+<a name="evita"/>
+<h2>5. Evita</h2>
 
 <p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
 TarsqiDocElements in it, creating an Evita instance for all of them and then
@@ -423,7 +563,7 @@ TarsqiDocElement that is being processed.</p>
 </tr>
 <tr>
   <td class="attribute">docelement</td>
-  <td>an instance of docmodel.document.TarsqDocElement or subclass thereof, the
+  <td>an instance of docmodel.document.TarsqiDocElement or subclass thereof, the
   element of the TarsqiDocument that is being processed by Evita</td>
 </tr>
 <tr>
@@ -431,7 +571,7 @@ TarsqiDocElement that is being processed.</p>
   <td>
     <table class="pythonclass">
       <tr>
-	<td class="name" colspan="2">components.common_modules.document.TarsqiTree</td>
+	<td class="name" colspan="2">components.common_modules.tree.TarsqiTree</td>
       </tr>
       <tr>
 	<td class="attribute">tarsqidoc</td>
@@ -450,29 +590,92 @@ TarsqiDocElement that is being processed.</p>
 </tr>
 </table>
 
-<p>The Document instance itself knows what TarsqiDocument it belongs to and what
-TarsqiDocElement it was created for. It has a list of daughters and some other
-attributes that are ignored here because they are not used by Evita.</p>
+<p>The TarsqiTree instance itself knows what TarsqiDocument it belongs to and
+what TarsqiDocElement it was created for since these were handed in from the
+Evita instance. The TarsqiTree instance also has a list of daughters and some
+other attributes that are ignored here because they are not used by Evita.</p>
 
+<p>Since the TarsqiTree and its elements are the starting point for Evita and
+Slinket processing we will dwell on them a bit longer. Here is a pretty print of
+the TarsqiTree for "The dog barked yesterday.".</p>
 
 <pre class="example indent">
-&lt;NounChunk position=0 checkedEvents=False event=None eid=None>
-  &lt;Token position=0 pos=DT text=The>
-  &lt;Token position=1 pos=NN text=dog>
-&lt;VerbChunk position=1 checkedEvents=False event=None eid=None>
-  &lt;Token position=0 pos=VBD text=barked>
-&lt;NounChunk position=2 checkedEvents=False event=None eid=None>
-  &lt;TIMEX3 tid=t1 type=DATE value=20160103>
-    &lt;Token position=0 pos=NN text=yesterday>
-&lt;Token position=3 pos=. text=.>
+&lt;Sentence position=0>
+  &lt;NounChunk position=0 checkedEvents=False event=None eid=None>
+    &lt;Token position=0 pos=DT text=The>
+    &lt;Token position=1 pos=NN text=dog>
+  &lt;VerbChunk position=1 checkedEvents=False event=None eid=None>
+    &lt;Token position=0 pos=VBD text=barked>
+  &lt;NounChunk position=2 checkedEvents=False event=None eid=None>
+    &lt;TIMEX3 tid=t1 type=DATE value=20160103>
+      &lt;Token position=0 pos=NN text=yesterday>
+  &lt;Token position=3 pos=. text=.>
 </pre>
 
+<p>A TarsqiTree contains sentences, chunks, tokens and event and time
+constituents. It is created from a TarsqiDocElement as a first processing step
+by using the create_tarsqi_tree() method in components.common_modules.tree. This
+method uses the intermediary Node object to create a tree hierarchy and then
+replaces all Node objects with instances of Sentence, NounChunk, VerbChunk,
+Token, AdjectiveToken, EventTag and TimexTag (all defined in submodules of
+components.common_modules). These tree elements are all subclasses of
+Constituent and have the following instance variables and methods in common:</p>
 
-<h2>Slinket</h2>
+<table class="indent">
+  <tr>
+    <td>parent</td>
+    <td>a variable referring to the parent, which is an instance of
+      TarsqiTree or one of the subclasses of Constituent</td>
+  </tr>
+  <tr>
+    <td>dtrs</td>
+    <td>a list of daughters, this is the empty list for leaf nodes</td>
+  </tr>
+    <td>position</td>
+    <td>an integer reflecting the constituent's position in the dtrs list of the
+    parent (NOTE: update __init__ for this)</td>
+  </tr>
+  <tr>
+    <td>begin</td>
+    <td>the beginning offset in the SourceDoc</td>
+  </tr>
+  <tr>
+    <td>end</td>
+    <td>the ending offset in the SourceDoc</td>
+  </tr>
+  <tr>
+    <td>tree()</td>
+    <td>a method that returns the TarsqiTree instance at the top of the tree,
+    through this tree a constituent also has access to the TarsqiDocument and
+    the TarsqiDocElement</td>
+  </tr>
+</table>
+
+<p>The TarsqiTree is used by Tarsqi components as a common data structure to
+process over. For example, Evita and Slinket both run patterns over elements of
+this tree and major parts of the Evita and Slinket code are expressed as methods
+on constituents. Components may update elements of the tree, but it is important
+to note that those changes are incidental and will not be handed over to a next
+component in the pipeline. Instead, results from processing have to be exported
+to the TagRepository on the TarsqiDocElement, as in the following figure.</p>
+
+<img src="images/component.png" width="550"/>
+
+<p>Components import he TarsqiDocument and the TagRepository in the
+TarsqiDocElement and create a TarsqiTree from them, they then use this tree as
+input to processing and export the resulting tags back into the
+TagRepository. The next component in the pipeline will start afresh with a new
+TarsqiTree which will be created from the updated TagRepository.</p>
+
+<p>Getting back to Evita...</p>
+
+
+<a name="slinket"/>
+<h2>6. Slinket</h2>
 
 <table class="pythonclass indent spacy">
 <tr>
-  <td class="name" colspan="2">components.common_modules.document.TarsqiTree</td>
+  <td class="name" colspan="2">components.common_modules.tree.TarsqiTree</td>
 </tr>
 <tr>
   <td class="attribute">tarsqidoc</td>
@@ -504,49 +707,6 @@ attributes that are ignored here because they are not used by Evita.</p>
   <td class="attribute">tlink_list</td>
   <td>a list of TlinkTags</td>
 </tr>
-</table>
-
-
-<h2>Tags added by the Tarsqi toolkit</h2>
-
-<p>All Tarsqi tags added by the system have identifiers that are unique to the document
-and the tag type. The identifiers consist of a tag-specific prefix and an integer. The
-prefixes and the tags they go with are listed in the table below.</p>
-
-<p>Some identifiers are introduces with an attribute "id", but the TimeML tags
-have special identifier attributes: tid, eid, eiid, and lid.</p>
-
-<table class="indent">
-<tr>
-  <td>l
-  <td>&lt;lex&gt;
-  <td>The lexical tokens from the base segmentation. Refer to character offsets.
-<tr>
-  <td>c
-  <td>&lt;ng&gt;, &lt;vg&gt;
-  <td>Chunks. Refer to character offsets and lex ids.
-<tr>
-  <td>s  
-  <td>&lt;s&gt;
-  <td>Sentence boundaries. Refer to character offsets and lex ids.
-<tr>
-  <td>t  
-  <td>&lt;timex3&gt;
-  <td>BTime timex tags.
-<tr>
-  <td>e  
-  <td>&lt;event&gt;
-  <td>Evita event tags, notice the absence of the depricated makeinstance tag.
-<tr>
-  <td>al  
-  <td>&lt;alink&gt;
-  <td rowspan="3" valign="top">The three relation tags. These can only refer to event ids or timex ids.
-<tr>
-  <td>sl
-  <td>&lt;slink&gt;
-<tr>
-  <td>tl
-  <td>&lt;tlink&gt;
 </table>
 
 
