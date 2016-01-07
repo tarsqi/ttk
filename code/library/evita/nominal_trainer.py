@@ -1,5 +1,22 @@
 #!/usr/bin/python
 
+"""
+
+Very old code to build the conditional event probablities for the bayesian
+classifier in Evita.
+
+It is probably easier to scrap this competely and build a new version from
+scratch, while using the logic in this file.
+
+it is not clear what the evitaTimemlParser module is, but it probably refers to
+components/evita/timemlParser.py in the 2007 Tarsqi release (that file is not in
+the repository anymore). Also, the getTokens method on sentence was removed from
+the working directory in January 2015, but the last version is included n a
+comment below for reference. uses components.commonu_modules.utils.get_tokens
+instead.
+
+"""
+
 import os
 import sys
 import re
@@ -92,6 +109,20 @@ def definiteness(token):
                     return "DEF"
                 elif checkPos == 'DET' and checkToken.getText() in ['the', 'this', 'that', 'these', 'those']:
                     return "DEF"
+
+
+#    def getTokens(self):
+#        """Return the list of tokens in a sentence. Assumes that only tokens and
+#        chunks occur in the sentence."""
+#        tokenList = []
+#        for dtr in self.dtrs:
+#            if dtr.isToken():
+#                tokenList.append(dtr)
+#            elif dtr.isChunk():
+#                tokenList += dtr.dtrs
+#            else:
+#                logger.warn("Sentence element that is not a chunk or token")
+#        return tokenList
 
 
 

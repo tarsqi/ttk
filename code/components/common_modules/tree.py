@@ -4,69 +4,93 @@ import sys
 import re
 from xml.sax.saxutils import escape, quoteattr
 
+from docmodel.source_parser import Tag
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
 from components.common_modules.tokens import Token, AdjectiveToken
-from components.common_modules.tags import EventTag, InstanceTag, TimexTag
+from components.common_modules.tags import EventTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.timeMLspec import EID, EIID, EVENTID
-from library.timeMLspec import ALINK, SLINK, TLINK
-from library.timeMLspec import POS_ADJ
+from library.timeMLspec import SENTENCE, NOUNCHUNK, VERBCHUNK, LEX
+from library.timeMLspec import EVENT, TIMEX, ALINK, SLINK, TLINK
+from library.timeMLspec import POS, POS_ADJ
 
 
 def create_tarsqi_tree(element):
     """Return an instance of TarsqiTree, using the tags in element, which is an
     instance of TarsqiDocElement or a subclass."""
-    top_node = Node(begin=element.begin, end=element.end)
-    for tag in (element.tarsqi_tags.find_tags('s') +
-                element.tarsqi_tags.find_tags('ng') +
-                element.tarsqi_tags.find_tags('vg') +
-                element.tarsqi_tags.find_tags('lex') +
-                element.tarsqi_tags.find_tags('EVENT') +
-                element.tarsqi_tags.find_tags('TIMEX3')):
+    # start with a Tag with just the begin and end offsets
+    tree = TarsqiTree(element.doc, element)
+    top_tag = Tag(None, None, element.begin, element.end, {})
+    top_node = Node(top_tag, None, tree)
+    for tag in (element.tarsqi_tags.find_tags(SENTENCE) +
+                element.tarsqi_tags.find_tags(NOUNCHUNK) +
+                element.tarsqi_tags.find_tags(VERBCHUNK) +
+                element.tarsqi_tags.find_tags(LEX) +
+                element.tarsqi_tags.find_tags(EVENT) +
+                element.tarsqi_tags.find_tags(TIMEX)):
         top_node.insert(tag)
     top_node.set_positions()
     top_node.set_event_markers()
-    tree = TarsqiTree(element.doc, element)
     # recursively import all nodes into the doc, but skip the topnode itself
-    top_node.add_to_doc(tree, tree)
+    top_node.add_to_tree(tree)
+    #top_node.pp()
+    #tree.pp()
     return tree
 
 
 class Node(object):
 
     """This class is used to build a temporary hierarchical structure from instances
-    of docmodel.source_parser.Tag. It is also used to turn that structure into a
-    TarsqiTree instance, with Sentence, NounChunk, VerbChunk, AdjectiveToken,
-    Token, TimexTag and EventTag elements in the hierarchy."""
+    of docmodel.source_parser.Tag and to turn that structure into a TarsqiTree
+    instance with Sentence, NounChunk, VerbChunk, AdjectiveToken, Token,
+    TimexTag and EventTag elements in the hierarchy. Nodes can be considered
+    proto TarsqiTree elements or an intermediary between Tag and the classes
+    like Sentence and NounChunk. Nodes know how to insert a tag into themselves
+    (insert method) and how to add themselves to a TarsqiTree (add_to_tree
+    method).
+
+    Instance variables:
+      name       -  the name, taken from the Tag that the Node is created from
+      begin      -  the beginning offset from the Tag
+      end        -  the ending offset from the Tag
+      parent     -  the parent of the Node: None or another Node
+      position   -  the position in the parent's dtrs list
+      dtrs       -  a list of Nodes
+      event_dtr  -  None or the dtr from dtrs that is an event
+      tag        -  the Tag that the Node is created from
+      tree       -  the Tree that the Node will be inserted into as an element
+
+    """
 
     # Having a higher order means that a tag x will be including tag y if x and
-    # y have the same extent.
-    order = { 'TarsqiTree': 5, 's': 4, 'ng': 3,'vg': 3, 'EVENT': 2, 'TIMEX3': 2, 'lex': 1 }
+    # y have the same extent. Stipulates that events and times are always lower
+    # in the tree than chunks.
+    order = { SENTENCE: 4, NOUNCHUNK: 3, VERBCHUNK: 3, EVENT: 2, TIMEX: 2, LEX: 1 }
 
-    def __init__(self, tag=None, name='TarsqiTree', parent=None, begin=None, end=None):
-        self.name = name
-        self.document = None
+    # TODO: that stipulation is actually wrong for times and we are missing some
+    # imports from GUTime because of that
+
+    def __init__(self, tag, parent, tree=None):
+        """Initialize using a Tag object and a parent Node which can be None. If the
+        parent is None then a TarsqiTree is handed in as a third argument."""
+        self.name = tag.name
+        self.begin = tag.begin
+        self.end = tag.end
         self.parent = parent
-        self.position = None     # position in the parent's dtr list
+        self.position = None
         self.dtrs = []
         self.event_dtr = None
-        self.begin = begin
-        self.end = end
         self.tag = tag
-        if tag is not None:
-            self.begin = tag.begin
-            self.end = tag.end
-            self.name = tag.name
+        self.tree = parent.tree if tree is None else tree
 
     def __str__(self):
-        lemma = ''
-        if self.tag is not None and self.tag.attrs.has_key('lemma'):
-            lemma = ' "' + self.tag.attrs['lemma'] + '"'
+        lemma = self.tag.attrs.get('lemma')
+        lemma = " %s" % lemma if lemma else ''
         return "<Node %s %d-%d%s>" % (self.name, self.begin, self.end, lemma)
 
     def insert(self, tag):
-        """Insert a tag in the node. This could be insertion in one of the node's
+        """Insert a Tag in the node. This could be insertion in one of the node's
         daughters, or insertion in the node's daughters list. Print a warning if
         the tag cannot be inserted."""
         # first check if tag offsets fit in self offsets
@@ -75,7 +99,7 @@ class Node(object):
                 + "its boundaries are outside of the nodes boundaries"
         # add tag as first daughter if there are no daughters
         elif not self.dtrs:
-            self.dtrs.append(Node(tag, parent=self))
+            self.dtrs.append(Node(tag, self))
         else:
             # find the index of the daughter that the tag would fit in and
             # insert the tag into the daughter
@@ -87,7 +111,7 @@ class Node(object):
                 # the dtrs list
                 dtrs_idx = self._find_gap_idx(tag)
                 if dtrs_idx is not None:
-                    self.dtrs.insert(dtrs_idx, Node(tag, parent=self))
+                    self.dtrs.insert(dtrs_idx, Node(tag, self))
                 else:
                     # otherwise, find the span of dtrs that the tag includes,
                     # replace the span with the tag and insert the span into the
@@ -109,7 +133,7 @@ class Node(object):
             if Node.order.get(dtr.name) > Node.order.get(tag.name):
                 dtr.insert(tag)
             else:
-                new_dtr = Node(tag, parent=self)
+                new_dtr = Node(tag, self)
                 new_dtr.dtrs = [dtr]
                 dtr.parent = new_dtr
                 self.dtrs[idx] = new_dtr
@@ -119,7 +143,7 @@ class Node(object):
     def _replace_span_with_tag(self, tag, span):
         """Replace the span of dtrs with the tag and add the span as dtrs to the tag."""
         span_elements = [self.dtrs[i] for i in span]
-        new_node = Node(tag, parent=self)
+        new_node = Node(tag, self)
         new_node.dtrs = span_elements
         for element in span_elements:
             element.parent = new_node
@@ -184,48 +208,55 @@ class Node(object):
             dtr.set_positions()
 
     def set_event_markers(self):
-        """Set the self.event_dtrs variable if one of the dtrs is an event."""
-        # NOTE: this is problematic if there is more than one event
+        """Set the self.event_dtrs variable if one of the dtrs is an event. Assumes that
+        at most one daughter is an event."""
         for dtr in self.dtrs:
-            self.event_dtr = dtr if dtr.name == 'EVENT' else None
+            if dtr.name == 'EVENT':
+                self.event_dtr = dtr
             dtr.set_event_markers()
 
-    def add_to_doc(self, doc_element, tree):
+    def add_to_tree(self, tree_element):
+        """Add all daughters in self.dtrs as tree_elements to tree_element.dtrs, that is,
+        add them as a Sentence, NounChunk, VerbChunk, EventTag, TimexTag, Token
+        or AdjectiveToken. The tree_element argument can be one of those seven
+        elements or it can be a TarsqiTree. The tree argument is the TarsqiTree
+        instance and it is handed down to as_tree_element because when creating a
+        Token we need access to the docsource."""
         for dtr in self.dtrs:
-            doc_element_dtr = dtr.as_doc_element(tree)
-            doc_element_dtr.parent = doc_element
-            if doc_element_dtr.isAdjToken() and doc_element.isEvent():
-                doc_element_dtr.event = True
-                doc_element_dtr.event_tag = doc_element
-            doc_element.dtrs.append(doc_element_dtr)
-            dtr.add_to_doc(doc_element_dtr, tree)
+            tree_element_dtr = dtr.as_tree_element()
+            tree_element_dtr.parent = tree_element
+            if tree_element_dtr.isAdjToken() and tree_element.isEvent():
+                tree_element_dtr.event = True
+                tree_element_dtr.event_tag = tree_element
+            tree_element.dtrs.append(tree_element_dtr)
+            dtr.add_to_tree(tree_element_dtr)
 
-    def as_doc_element(self, tree):
+    def as_tree_element(self):
         """Create from the node an instance of Sentence, NounChunk, VerbChunk, EventTag,
         TimexTag, Token or AdjectiveToken."""
-        if self.name == 's':
-            doc_element = Sentence()
-        elif self.name == 'ng':
-            doc_element = NounChunk('ng')
-        elif self.name == 'vg':
-            doc_element = VerbChunk('vg')
-        elif self.name == 'lex':
-            pos = self.tag.attrs['pos']
-            word = tree.tarsqidoc.source[self.begin:self.end]
+        if self.name == SENTENCE:
+            tree_element = Sentence()
+        elif self.name == NOUNCHUNK:
+            tree_element = NounChunk(NOUNCHUNK)
+        elif self.name == VERBCHUNK:
+            tree_element = VerbChunk(VERBCHUNK)
+        elif self.name == LEX:
+            pos = self.tag.attrs[POS]
+            word = self.tree.tarsqidoc.source[self.begin:self.end]
             token_class = AdjectiveToken if pos.startswith(POS_ADJ) else Token
-            doc_element = token_class(tree, word, pos)
-        elif self.name == 'EVENT':
-            doc_element = EventTag(self.tag.attrs)
-        elif self.name == 'TIMEX3':
-            doc_element = TimexTag(self.tag.attrs)
-        doc_element.position = self.position
+            tree_element = token_class(self.tree, word, pos)
+        elif self.name == EVENT:
+            tree_element = EventTag(self.tag.attrs)
+        elif self.name == TIMEX:
+            tree_element = TimexTag(self.tag.attrs)
+        tree_element.position = self.position
         if self.event_dtr is not None:
-            doc_element.event = 1
-            doc_element.eid = self.event_dtr.tag.attrs['eid']
-            doc_element.eiid = self.event_dtr.tag.attrs['eiid']
-        doc_element.begin = self.begin
-        doc_element.end = self.end
-        return doc_element
+            tree_element.event = 1
+            tree_element.eid = self.event_dtr.tag.attrs['eid']
+            tree_element.eiid = self.event_dtr.tag.attrs['eiid']
+        tree_element.begin = self.begin
+        tree_element.end = self.end
+        return tree_element
 
     def pp(self, indent=0):
         print "%s%s" % (indent * '  ', self)
@@ -348,29 +379,28 @@ class TarsqiTree:
         """Pretty printer that prints all instance variables and a neat representation of
         the sentences."""
         print "\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.source.filename
-        print "  len(dtrs)=%s" % (len(self.dtrs))
+        print "len(dtrs) = %s" % (len(self.dtrs))
         self.pretty_print_tagged_events_dict()
-        print '  alink_list =', self.alink_list
-        print '  slink_list =', self.slink_list
-        print '  tlink_list =', self.tlink_list
+        print 'alink_list =', self.alink_list
+        print 'slink_list =', self.slink_list
+        print 'tlink_list =', self.tlink_list
         self.pretty_print_sentences()
 
     def pretty_print_tagged_events_dict(self):
-        print '  events'
+        print 'events = {',
         eids = sorted(self.events.keys())
         for eid in eids:
-            print '   ', eid, '=> {',
+            print "\n   ", eid, '=> {',
             attrs = self.events[eid].keys()
             attrs.sort()
             for attr in attrs:
                 print "%s=%s" % (attr, str(self.events[eid][attr])),
             print '}'
+        print '}'
 
     def pretty_print_sentences(self):
-        count = 0
         for sentence in self:
-            count = count + 1
-            print "\nSENTENCE " + str(count) + "\n"
-            sentence.pretty_print()
-        print "\n"
+            print
+            sentence.pretty_print(verbose=False)
+        print
 

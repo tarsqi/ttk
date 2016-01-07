@@ -20,12 +20,11 @@ trackGetAttrUse = True
 
 class Tag(Constituent):
 
-    """Abstract class for all tags."""
+    """Abstract class for all TimeML non-link tags."""
 
-    def pretty_print(self, indent=0):
-        """Generic pretty printer for tags, prints tag name between angled
-        brackets."""
-        print indent * ' ' + '<' + self.name + '>'
+    def __len__(self):
+        """Returns the lenght of the dtrs variable."""
+        return len(self.dtrs)
 
 
 class EventTag(Tag):
@@ -35,23 +34,13 @@ class EventTag(Tag):
     def __init__(self, attrs):
         """ The nodeType attribute is set to the same value as name because some methods
         ask for a nodeType attribute."""
+        Constituent.__init__(self)
         self.name = EVENT
         self.nodeType = EVENT
-        self.dtrs = []
-        self.begin = None
-        self.end = None
         self.attrs = attrs
         self.eid = attrs[EID]
         self.eClass = attrs[CLASS]
         self.token = None
-
-    def __len__(self):
-        """Returns the lenght of the dtrs variable."""
-        return len(self.dtrs)
-
-    def __getitem__(self, index):
-        """Returns an element from the dtrs variable."""
-        return self.dtrs[index]
 
     def XXX__getattr__(self, name):
         # TODO: remove this once it is established that blinker and s2t work, it
@@ -59,42 +48,42 @@ class EventTag(Tag):
         # that this is used for are just __nonzero__, __str__ and __repr__.
         if trackGetAttrUse:
             print "*** EventTag.__getattr__", name
-        doc = self.tree()
+        tree = self.tree()
         if name == 'eventStatus':
             return '1'
         elif name == TENSE:
-            #print "TENSE:", doc.events[self.eid][TENSE]
-            return doc.events[self.eid][TENSE]
+            #print "TENSE:", tree.events[self.eid][TENSE]
+            return tree.events[self.eid][TENSE]
         elif name == ASPECT:
-            return doc.events[self.eid][ASPECT]
+            return tree.events[self.eid][ASPECT]
         elif name == EPOS: #NF_MORPH:
-            return doc.events[self.eid][EPOS]#[NF_MORPH]
+            return tree.events[self.eid][EPOS]#[NF_MORPH]
         elif name == MOD:
-            try: mod = doc.events[self.eid][MOD]
+            try: mod = tree.events[self.eid][MOD]
             except: mod = 'NONE'
             return mod
         elif name == POL:
-            try: pol = doc.events[self.eid][POL]
+            try: pol = tree.events[self.eid][POL]
             except: pol = 'POS'
             return pol
         elif name == EVENTID:
-            return doc.events[self.eid][EVENTID]
+            return tree.events[self.eid][EVENTID]
         elif name == EIID:
-            return doc.events[self.eid][EIID]
+            return tree.events[self.eid][EIID]
         elif name == CLASS:
-            return doc.events[self.eid][CLASS]
+            return tree.events[self.eid][CLASS]
         elif name == 'text' or name == FORM:
-            return doc.events[self.eid][FORM]
+            return tree.events[self.eid][FORM]
         elif name == STEM:
-            return doc.events[self.eid][STEM]
+            return tree.events[self.eid][STEM]
         elif name == POS:
             try:
-                return doc.events[self.eid][POS]
+                return tree.events[self.eid][POS]
             except:
                 # I don't remember whether POS has a particular use here
                 # or is a left over from prior times
                 logger.warn("Returning 'epos' instead of 'pos' value")  
-                return doc.events[self.eid][EPOS]
+                return tree.events[self.eid][EPOS]
         else:
             raise AttributeError, name
 
@@ -129,22 +118,6 @@ class EventTag(Tag):
             dtr.pretty_print(indent+2)
 
 
-    
-class InstanceTag(Tag):
-
-    """The class for MAKEINSTANCE tags. Used by S2T.
-
-    Instance variables
-       name - a string
-       attrs - a dictionary of attributes"""
-    
-    def __init__(self, attrs):
-        """Initialize name and attributes."""
-        self.name = INSTANCE
-        self.attrs = attrs
-
-
-
 class TimexTag(Tag):
 
     """There is something fishy about this class because it all breaks when you try to
@@ -152,25 +125,11 @@ class TimexTag(Tag):
     
     def __init__(self, attrs):
         # NOTE: need to standardize on using name or nodeType
+        Constituent.__init__(self)
         self.nodeType = TIMEX
         self.name = TIMEX
         self.attrs = attrs
-        self.dtrs = []
-        self.begin = None
-        self.end = None
         self.checkedEvents = False
-
-    def __len__(self):
-        """Returns the lenght of the dtrs variable."""
-        return len(self.dtrs)
-
-    def __getitem__(self, index):
-        """Returns an element from the dtrs variable."""
-        return self.dtrs[index]
-
-    def __getslice__(self, i, j):
-        """Get a slice from the dtrs variable."""
-        return self.dtrs[i:j]
 
     def XXX__getattr__(self, name):
         # TODO. This method caused weird problems. The code seems to run okay
@@ -217,38 +176,35 @@ class TimexTag(Tag):
             dtr.pretty_print(indent+2)
 
 
-class TlinkTag(Tag):
+class LinkTag():
 
-    """
+    """Abstract class for all TimeML link tags. LinkTags are not constituents since
+    they are never inserted in the hierarchical structure of a TarsqiTree, but they
+    are added to lists of links in alink_list, slink_list and tlink_list.
+
     Instance variables
-       name - a string
+       name  - a string ('ALINK', 'SLINK' or 'TLINK')
        attrs - a dictionary of attributes"""
 
-    def __init__(self, attrs):
+    def __init__(self, name, attrs):
         """Initialize name and attributes."""
-        self.name = TLINK
+        self.name = name
         self.attrs = attrs
+
+
+class TlinkTag(LinkTag):
+
+    def __init__(self, attrs):
+        LinkTag.__init__(self, TLINK, attrs)
 
         
-class SlinkTag(Tag):
-    """
-    Instance variables
-       name - a string
-       attrs - a dictionary of attributes"""
+class SlinkTag(LinkTag):
 
     def __init__(self, attrs):
-        """Initialize name and attributes."""
-        self.name = SLINK
-        self.attrs = attrs
+        LinkTag.__init__(self, SLINK, attrs)
 
         
-class AlinkTag(Tag):
-    """
-    Instance variables
-       name - a string
-       attrs - a dictionary of attributes"""
+class AlinkTag(LinkTag):
 
     def __init__(self, attrs):
-        """Initialize name and attributes."""
-        self.name = ALINK
-        self.attrs = attrs
+        LinkTag.__init__(self, ALINK, attrs)

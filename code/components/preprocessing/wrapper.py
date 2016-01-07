@@ -196,4 +196,6 @@ def export(text, tarsqi_element):
         stag.end = last_ltag.end
         tarsqi_element.tarsqi_tags.append(stag)
 
+    # indexing is needed because we bypassed the add_tag method on TagRepository
+    # and instead directly appended to the tags list
     tarsqi_element.tarsqi_tags.index()

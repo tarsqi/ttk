@@ -54,7 +54,7 @@ class GUTimeWrapper:
             fout = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.out.xml" % count)
             _create_gutime_input(element, fin)
             _run_gutime(fin, fout)
-            _import_timex_tags(fout, element)
+            _export_timex_tags(fout, element)
 
 
 def _create_gutime_input(element, fname):
@@ -89,7 +89,7 @@ def _run_gutime(fin, fout):
     for line in fh_errors:
         logger.warn(line)
 
-def _import_timex_tags(fname, element):
+def _export_timex_tags(fname, element):
     """Take the TIMEX3 tags from the GUTime output and add them to the tarsqi
     tags dictionary."""
     dom = parse(fname)

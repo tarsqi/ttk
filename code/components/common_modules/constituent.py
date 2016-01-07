@@ -8,17 +8,39 @@ from library.timeMLspec import ALINK, SLINK, SYNTAX, RELTYPE
 
 
 class Constituent:
-    """An abstract class that contains some methods that are identical for Chunks and
-    Tokens plus a couple of default methods."""
+
+    """An abstract class that contains some methods that are identical for Chunks
+    and Tokens plus a couple of default methods. It also initializes the common
+    instance variables parent, dtrs, begin and end."""
+
+    # NOTE: at some point I added __len__ here but that screwed up Evita.
+
+    def __init__(self):
+        self.parent = None
+        self.dtrs = []
+        self.begin = None
+        self.end = None
+
+    def __setitem__(self, index, val):
+        """Sets a value on the dtrs variable."""
+        self.dtrs[index] = val
+
+    def __getitem__(self, index):
+        """Returns an element from the dtrs variable."""
+        return self.dtrs[index]
 
     def setParent(self, parent):
+        """Set the parent feature of the sentence to the TarsqiTree."""
+        # TODO: this does not appear to be used
         self.parent = parent
 
     def doc(self):
         return self.tree()
 
     def tree(self):
-        # TODO: this is weird, why is it like this?
+        """Return the TarsqiTree that the Consituent is in. Basically asks the
+        parent to do the work, if th eparent is the TarsqiTree itself then it
+        will return itself."""
         return self.parent.tree()
 
     def isToken(self): return False

@@ -11,7 +11,6 @@ class Sentence(Constituent):
     
     Instance variables
         dtrs - a list of Chunks and Tokens
-        chunkIndex - an integer
         eventList - a list of (eLoc, eid) tuples
         position - position in the TarsqiTree parent (first sentence is 0)
         parent - a TarsqiTree
@@ -24,8 +23,8 @@ class Sentence(Constituent):
 
     def __init__(self):
         """Initialize all instance variables to 0, None or the empty list."""
+        self.parent = None
         self.dtrs = []
-        self.chunkIndex = 0
         self.eventList = [] 
         self.position = None
         self.parent = None
@@ -34,26 +33,10 @@ class Sentence(Constituent):
         """Returns length of dtrs variable."""
         return len(self.dtrs)
 
-    def __getitem__(self, index):
-        """Get an item from the dtrs variable."""
-        if index is None:
-            logger.warn("Given index to __getitem__ in Sentence is None")
-            return None
-        return self.dtrs[index]
-
-    def __setitem__(self, idx, element):
-        """Set an element in the dtrs variable. In practice, idx is a slice and element
-        a list."""
-        self.dtrs[idx] = element
-
     def __getattr__(self, name):
         """This is here so that an unknown attribute is not dealt with by
         __getattr__ on Constituent, with possibly unwelcome results."""
         raise AttributeError, name
-
-    def tree(self):
-        """Return the tree that the sentence is in."""
-        return self.parent.tree()
 
     def add(self, chunkOrToken):
         """Add a chunk or token to the end of the sentence. Sets the sentence as the value
@@ -63,16 +46,8 @@ class Sentence(Constituent):
         chunkOrToken.setParent(self)
         self.dtrs.append(chunkOrToken)
 
-    def setParent(self, parent):
-        """Set the parent feature of the sentence to the TarsqiTree."""
-        # TODO: this does not appear to be used
-        self.parent = parent
-
     def storeEventLocation(self, evLoc, eid):
-        """Appends a tuple of event location and event id to the eventList.
-        Arguments
-           evLoc - an integer
-           eid - an eid"""
+        """Appends a tuple of event location (an integer) and event id to the eventList."""
         self.eventList.append((evLoc, eid))
 
     def get_event_list(self):
@@ -94,28 +69,15 @@ class Sentence(Constituent):
         in the sentence. This is used by Slinket."""
         self.eventList = self.get_event_list()
 
-    def getTokens(self):
-        """Return the list of tokens in a sentence."""
-        # NOTE: seems to be used by the evita NominalTrainer only
-        # TODO: does not deal with event and timex3 tags
-        tokenList = []
-        for dtr in self.dtrs:
-            if dtr.isToken():
-                tokenList.append(dtr)
-            elif dtr.isChunk():
-                tokenList += dtr.dtrs
-            else:
-                logger.warn("Sentence element that is not a chunk or token")
-        return tokenList
-
-    def pretty_print(self, tree=True):
+    def pretty_print(self, tree=True, verbose=False):
         """Pretty print the sentence by pretty printing all daughters"""
-        print "  parent        = %s" % self.parent
-        print "  chunkIndex    = %s" % self.chunkIndex
-        print "  position      = %s" % self.position
-        print "  eventList     = %s" % self.eventList
-        if tree:
-            print
+        if verbose:
+            print "SENTENCE %s\n" % self.position
+            print "  parent     =  %s" % self.parent
+            print "  eventList  =  %s\n" % self.eventList
+        else:
+            print "<Sentence position=%s>" % self.position
+        if tree or verbose:
             for dtr in self.dtrs:
                 dtr.pretty_print(indent=2)
 

@@ -55,6 +55,7 @@ class Chunk(Constituent):
 
     Instance variables
        phraseType         - string indicating the chunk type, usually 'vg' or 'ng'
+       parent=None        - the parent of the chunk
        dtrs = []          - a list of Tokens, EventTags and TimexTags
        position = None    - index in the parent's daughters list
        head = -1          - the index of the head of the chunk
@@ -68,12 +69,9 @@ class Chunk(Constituent):
     """
     
     def __init__(self, phraseType):
+        Constituent.__init__(self)
         self.phraseType = phraseType
-        self.dtrs = []
         self.position = None
-        self.parent = None
-        self.begin = None
-        self.end = None
         self.head = -1
         self.gramchunk = None
         self.gramchunks = []
@@ -84,22 +82,6 @@ class Chunk(Constituent):
     def __len__(self):
         """Returns the lenght of the dtrs variable."""
         return len(self.dtrs)
-
-    def __setitem__(self, index, val):
-        """Sets a value on the dtrs variable."""
-        self.dtrs[index] = val
-
-    def __getitem__(self, index):
-        """Returns an element from the dtrs variable."""
-        return self.dtrs[index]
-
-    def __getslice__(self, i, j):
-        """Get a slice from the dtrs variable."""
-        return self.dtrs[i:j]
-
-    def getHead(self):
-        """Return the head of the chunk (by default the last element)."""
-        return self.dtrs[self.head]
 
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
@@ -116,21 +98,25 @@ class Chunk(Constituent):
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
-            doc = self.parent.tree()
+            tree = self.parent.tree()
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
-                return doc.events[self.eid][FORM]
+                return tree.events[self.eid][FORM]
             if name == MOD:
-                return doc.events[self.eid].get(MOD,'NONE')
+                return tree.events[self.eid].get(MOD,'NONE')
             if name == POL:
-                return doc.events[self.eid].get(POL,'POS')
+                return tree.events[self.eid].get(POL,'POS')
             if name == POS:
-                return doc.events[self.eid].get(POS,'NONE')
-            return doc.events[self.eid][name]
+                return tree.events[self.eid].get(POS,'NONE')
+            return tree.events[self.eid][name]
         else:
             raise AttributeError, name
-        
+
+    def getHead(self):
+        """Return the head of the chunk (by default the last element)."""
+        return self.dtrs[self.head]
+
     def _processEventInChunk(self, gramChunk=None):
         """Perform a few little checks on the head and check whether there is an
         event class, then add the event to the tree. When this is called on
@@ -162,7 +148,8 @@ class Chunk(Constituent):
         token.setParent(self)
         self.dtrs.append(token)
 
-    def setEventInfo(self, eid):
+    def XXXsetEventInfo(self, eid):
+        # TODO: this is probably done by hand somewhere, trace that spot
         self.event = 1
         self.eid = eid
         
@@ -220,7 +207,7 @@ class NounChunk(Chunk):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
         event candidate, then conditionally adds it. The verbGramFeat dictionary
         is used when a governing verb hands in its features to a nominal in a
-        predicatve complement."""
+        predicative complement."""
         logger.debug("NounChunk.createEvent(verbGramFeat=%s)" % verbGramFeat)
         if not self.isEmpty():
             self.gramchunk = GramNChunk(self)

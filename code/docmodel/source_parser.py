@@ -253,7 +253,7 @@ class TagRepository:
        A list of OpeningTag and ClosingTag elements, used only to build the tags list.
 
     self.tags
-       A list with tags, ordered on id.
+       A list with Tag instances.
 
     self.opening_tags
        A dictionary of tags indexed on begin offset, the values are lists of Tag
@@ -274,7 +274,7 @@ class TagRepository:
     # whether the opening and closing tags are needed, all they seem to do is be
     # there for when we create an XML document, which we may want to relegate to
     # another component alltogether.
-    
+
     def __init__(self):
         self.tmp = []
         self.tags = []
@@ -319,6 +319,8 @@ class TagRepository:
 
     def index(self):
         """Index tags on position."""
+        self.opening_tags = {}
+        self.closing_tags = {}
         for tag in self.tags:
             self.opening_tags.setdefault(tag.begin,[]).append(tag)
             self.closing_tags.setdefault(tag.end,{}).setdefault(tag.begin,{})[tag.name] = True
@@ -375,7 +377,7 @@ class Tag:
         self.attrs = attrs
 
     def __str__(self):
-        return "<Tag %s %s %d:%d %s>" % \
+        return "<Tag %s id=%s %d:%d %s>" % \
                (self.name, self.id, self.begin, self.end, str(self.attrs))
 
     def __cmp__(self, other):

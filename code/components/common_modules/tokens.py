@@ -1,12 +1,11 @@
-"""NOT YET PROPERLY DOCUMENTED"""
 
 from library import forms
 from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT
 from library.timeMLspec import EPOS, POS_PREP, MOD, POL, EVENTID, EIID, CLASS
-from utilities import logger
 from components.evita.event import Event
-from components.evita.gramChunk import GramNChunk, GramAChunk, GramVChunkList
+from components.evita.gramChunk import GramAChunk
 from components.common_modules.constituent import Constituent
+from utilities import logger
 
 
 class Token(Constituent):
@@ -15,11 +14,9 @@ class Token(Constituent):
         """Initialize with a TarsqiTree instance, the word and a part-of-speech. Some
         instance variables will be filled in later, depending on what the Token
         is used for."""
+        Constituent.__init__(self)
         self.text = word
         self.pos = pos
-        self.dtrs = []
-        self.begin = None
-        self.end = None
         self.event = None
         self.textIdx = None
         self.tree = tarsqitree
@@ -29,9 +26,10 @@ class Token(Constituent):
         self.checkedEvents = False
 
     def __getitem__(self, index):
-        """Make sure we can view the Token as something that has elements, but its only
-        element is itself. This is used by update_event_checked_marker in the
-        chunks module."""
+        """The method with the same name on Constituent made sure that we can view the
+        Token as something that has elements. But here we add that Token has
+        itself as its one daughter. This is used by update_event_checked_marker
+        in the chunks module."""
         if index == 0:
             return self
         else:
@@ -70,8 +68,8 @@ class Token(Constituent):
         return self.pos[0] == 'V' and self.getText() not in forms.auxVerbs
 
     def isPreposition(self):
-        """Return True if self is a preposition and False if not."""
-        # TODO: note that this returns False if self is 'to' as in 'to the barn'
+        """Return True if self is a preposition and False if not. Note that this
+        method returns False for the preposition in 'to the barn'."""
         return self.pos == POS_PREP
 
     def createEvent(self, tarsqidoc):
@@ -161,9 +159,7 @@ class AdjectiveToken(Token):
     def isAdjToken(self):
         return True
 
-    def doc(self):
-        return self.parent.tree()
-
-    def setEventInfo(self, eid):
+    def XXXsetEventInfo(self, eid):
+        # TODO: this is probably done by hand somewhere, trace that spot
         self.event = 1
         self.eid = eid

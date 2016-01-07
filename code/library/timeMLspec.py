@@ -8,14 +8,15 @@ Author: Roser
 Last Modified: April 14, 2005
 ==============================================="""
 
+
 # TimeBank chunking
 # =================
 
 SENTENCE = 's'
-NOUNCHUNK = 'NG'
-VERBCHUNK = 'VG'
+NOUNCHUNK = 'ng'
+VERBCHUNK = 'vg'
 TOKEN = 'lex'
-LID = 'lid'
+LEX = 'lex'
 POS = 'pos'
 
 
@@ -70,6 +71,7 @@ LINK = re.compile('(S|T|A)LINK')
 TLINK = 'TLINK'
 SLINK = 'SLINK'
 ALINK = 'ALINK'
+LID = 'lid'
 
 RELTYPE = 'relType'
 EVENT_INSTANCE_ID = 'eventInstanceID'
