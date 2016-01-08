@@ -1,9 +1,7 @@
-"""Contains classes for TimeML tags.
+"""tags.py
 
-Author: Roser
-Last Modified: April 14, 2005
+Contains classes for TimeML tags.
 
-NOT YET PROPERLY DOCUMENTED
 """
 
 
@@ -26,6 +24,12 @@ class Tag(Constituent):
         """Returns the lenght of the dtrs variable."""
         return len(self.dtrs)
 
+    def getText(self):
+        string = ""
+        for dtr in self.dtrs:
+            string += ' ' + dtr.getText()
+        return string
+
 
 class EventTag(Tag):
 
@@ -42,13 +46,16 @@ class EventTag(Tag):
         self.eClass = attrs[CLASS]
         self.token = None
 
+    def __str__(self):
+        return "<EventTag name=%s eid=%s>" % (self.name, self.eid)
+
     def XXX__getattr__(self, name):
         # TODO: remove this once it is established that blinker and s2t work, it
         # does not appear to be used for Evita and for Slinket the attributes
-        # that this is used for are just __nonzero__, __str__ and __repr__.
+        # that this is used for are just __nonzero__, __str__ and __repr__ (and
+        # somehow the errors raised get trapped).
         if trackGetAttrUse:
             print "*** EventTag.__getattr__", name
-        tree = self.tree()
         if name == 'eventStatus':
             return '1'
         elif name == TENSE:
@@ -90,26 +97,6 @@ class EventTag(Tag):
     def isEvent(self):
         return True
 
-    def addTokenInfo(self, token):   
-        #logger.debug("MY CURRENT attrs: "+str(self.attrs))
-        self.token = token
-        self._addValueToAttr(POS, self.token.pos)
-        self._addValueToAttr(FORM, self.token.getText())
-
-    def _addValueToAttr(self, attr, value):
-        if not self._isValueAlreadySet(attr):
-            self.attrs[attr] = value
-        else:
-            logger.debug( "VALUE already ASSIGNED to event: "+str(self.attrs[POS]))
-            pass
-
-    def _isValueAlreadySet(self, att):
-        try:
-            val = self.attrs[att]
-            return 1
-        except:
-            return 0
-        
     def pretty_print(self, indent=0):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'), self.attrs.get('class'))
         print "%s<%s position=%s eid=%s eiid=%s class=%s>" % \
@@ -124,10 +111,10 @@ class TimexTag(Tag):
     print an instance. The problem probably stems from __getattr__."""
     
     def __init__(self, attrs):
-        # NOTE: need to standardize on using name or nodeType
         Constituent.__init__(self)
-        self.nodeType = TIMEX
+        # NOTE: need to standardize on using name or nodeType
         self.name = TIMEX
+        self.nodeType = TIMEX
         self.attrs = attrs
         self.checkedEvents = False
 
@@ -149,16 +136,6 @@ class TimexTag(Tag):
     def isTimex(self):
         return True
         
-    def nodeType(self):
-        return self.name
-    
-    def add(self, chunkOrToken):
-        chunkOrToken.setParent(self)
-        self.dtrs.append(chunkOrToken)
-
-    def setParent(self, parent):
-        self.parent = parent
-
     def getText(self):
         string = ""
         for dtr in self.dtrs:
@@ -192,19 +169,19 @@ class LinkTag():
         self.attrs = attrs
 
 
-class TlinkTag(LinkTag):
+class AlinkTag(LinkTag):
 
     def __init__(self, attrs):
-        LinkTag.__init__(self, TLINK, attrs)
+        LinkTag.__init__(self, ALINK, attrs)
 
-        
+
 class SlinkTag(LinkTag):
 
     def __init__(self, attrs):
         LinkTag.__init__(self, SLINK, attrs)
 
-        
-class AlinkTag(LinkTag):
+
+class TlinkTag(LinkTag):
 
     def __init__(self, attrs):
-        LinkTag.__init__(self, ALINK, attrs)
+        LinkTag.__init__(self, TLINK, attrs)

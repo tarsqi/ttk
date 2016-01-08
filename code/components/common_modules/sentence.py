@@ -38,37 +38,20 @@ class Sentence(Constituent):
         __getattr__ on Constituent, with possibly unwelcome results."""
         raise AttributeError, name
 
-    def add(self, chunkOrToken):
-        """Add a chunk or token to the end of the sentence. Sets the sentence as the value
-        of the parents variable on the chunk or token.
-        Arguments
-           chunkOrToken - a Chunk or a Token"""
-        chunkOrToken.setParent(self)
-        self.dtrs.append(chunkOrToken)
-
-    def storeEventLocation(self, evLoc, eid):
-        """Appends a tuple of event location (an integer) and event id to the eventList."""
-        self.eventList.append((evLoc, eid))
-
-    def get_event_list(self):
-        """Return the list of eLocation-eid tuples of the sentence."""
-        event_list = []
+    def set_event_list(self):
+        """Set the value of self.eventList to the list of eLocation-eid tuples
+        in the sentence. This is used by Slinket."""
+        self.eventList = []
         eventLocation = -1
         for element in self:
             eventLocation += 1
             if element.isChunk():
                 event = element.embedded_event()
                 if event:
-                    event_list.append((eventLocation, event.eid))
+                    self.eventList.append((eventLocation, event.eid))
             elif element.isToken() and element.event:
-                event_list.append((eventLocation, element.eid))
-        return event_list
-
-    def set_event_list(self):
-        """Set the value of self.eventList to the list of eLocation-eid tuples
-        in the sentence. This is used by Slinket."""
-        self.eventList = self.get_event_list()
-
+                self.eventList.append((eventLocation, element.eid))
+        
     def pretty_print(self, tree=True, verbose=False):
         """Pretty print the sentence by pretty printing all daughters"""
         if verbose:

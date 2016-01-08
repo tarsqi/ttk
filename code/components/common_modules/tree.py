@@ -57,7 +57,7 @@ class Node(object):
       parent     -  the parent of the Node: None or another Node
       position   -  the position in the parent's dtrs list
       dtrs       -  a list of Nodes
-      event_dtr  -  None or the dtr from dtrs that is an event
+      event_dtr  -  None or the Node from dtrs that is an event
       tag        -  the Tag that the Node is created from
       tree       -  the Tree that the Node will be inserted into as an element
 
@@ -244,13 +244,13 @@ class Node(object):
             pos = self.tag.attrs[POS]
             word = self.tree.tarsqidoc.source[self.begin:self.end]
             token_class = AdjectiveToken if pos.startswith(POS_ADJ) else Token
-            tree_element = token_class(self.tree, word, pos)
+            tree_element = token_class(word, pos)
         elif self.name == EVENT:
             tree_element = EventTag(self.tag.attrs)
         elif self.name == TIMEX:
             tree_element = TimexTag(self.tag.attrs)
         if self.event_dtr is not None:
-            tree_element.event = 1
+            tree_element.event = True
             tree_element.eid = self.event_dtr.tag.attrs['eid']
             tree_element.eiid = self.event_dtr.tag.attrs['eiid']
         # inherit some goodies from the Node
@@ -300,19 +300,6 @@ class TarsqiTree:
         """Indexing occurs on the dtrs variable."""
         return self.dtrs[index]
 
-    def addSentence(self, sentence):
-        """Append a Sentence to the dtrs list and sets the parent feature of the
-        sentence to the tree."""
-        sentence.setParent(self)
-        self.dtrs.append(sentence)
-
-    def addTimex(self, timex):
-        """Applied when a timex cannot be added to a Chunk or a Sentence, probably
-        intended for the DCT."""
-        # NOTE: this is probably wrong, test it with a document where
-        # the DCT will not end up in a sentence tag
-        timex.setParent(self)
-    
     def hasEventWithAttribute(self, eid, att):
         """Returns the attribute value if the events dictionary has an event with the given
         id that has a value for the given attribute, returns False otherwise
@@ -334,12 +321,6 @@ class TarsqiTree:
         # add data
         for (att, val) in pairs.items():
             self.events[eid][att] = val
-
-    def tree(self):
-        """Returns the tree itself. This is so that chunks can ask their parent for
-        the tree without having to worry whether the parent is a Sentence or a
-        TarsqiTree."""
-        return self
 
     def addEvent(self, event):
         """Takes an instance of evita.event.Event and adds it to the TagRepository on

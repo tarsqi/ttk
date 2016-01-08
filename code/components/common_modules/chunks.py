@@ -98,7 +98,6 @@ class Chunk(Constituent):
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
-            #tree = self.parent.tree()
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
@@ -144,28 +143,15 @@ class Chunk(Constituent):
                 return item
         return None
 
-    def addToken(self, token):
-        token.setParent(self)
-        self.dtrs.append(token)
-
-    def XXXsetEventInfo(self, eid):
-        # TODO: this is probably done by hand somewhere, trace that spot
-        self.event = 1
-        self.eid = eid
-        
     def getText(self):
         string = ""
-        for token in self.dtrs:
-            string += ' ' + str(token.getText())
+        for dtr in self.dtrs:
+            string += ' ' + dtr.getText()
         return string
 
     def isChunk(self):
         """Returns True."""
         return True
-
-    def isTimex(self):
-        """Return True if the chunk is a Timex chunk."""
-        return self.phraseType and self.phraseType[:5] == 'TIMEX'
 
     def pretty_print(self, indent=0):
         print "%s<%s position=%s checkedEvents=%s event=%s eid=%s>" % \

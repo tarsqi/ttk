@@ -10,7 +10,7 @@ from utilities import logger
 
 class Token(Constituent):
 
-    def __init__(self, tarsqitree, word, pos):
+    def __init__(self, word, pos):
         """Initialize with a TarsqiTree instance, the word and a part-of-speech. Some
         instance variables will be filled in later, depending on what the Token
         is used for."""
@@ -19,7 +19,6 @@ class Token(Constituent):
         self.pos = pos
         self.event = None
         self.textIdx = None
-        self.tree = tarsqitree
         self.position = None
         self.parent = None
         self.gramchunk = None
@@ -53,11 +52,6 @@ class Token(Constituent):
     def getText(self):
         """Return the text of the token."""
         return self.text
-
-    def tree(self):
-        """Tokens have a tree variable. Use this variable and avoid looking all the
-        way up the tree."""
-        return self.tree
 
     def isToken(self):
         """Returns True"""
@@ -100,8 +94,8 @@ class Token(Constituent):
 
 class AdjectiveToken(Token):
 
-    def __init__(self, tree, word, pos):
-        Token.__init__(self, tree, word, pos)
+    def __init__(self, word, pos):
+        Token.__init__(self, word, pos)
         self.event = None      # set to True if self is wrapped in an EventTag
         self.eid = None        # the eid of the EventTag
         self.event_tag = None  # contains the EventTag
@@ -123,21 +117,22 @@ class AdjectiveToken(Token):
                     EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
-            doc = self.parent.tree()
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
-                return doc.events[self.eid][FORM]
+                return self.tree.events[self.eid][FORM]
             if name == MOD:
-                return doc.events[self.eid].get(MOD,'NONE')
+                return self.tree.events[self.eid].get(MOD,'NONE')
             if name == POL:
-                return doc.events[self.eid].get(POL,'POS')
+                return self.tree.events[self.eid].get(POL,'POS')
             if name == POS:
-                return doc.events[self.eid].get(POS,'NONE')
-            return doc.events[self.eid][name]
+                return self.tree.events[self.eid].get(POS,'NONE')
+            return self.tree.events[self.eid][name]
         else:
             raise AttributeError, name
 
+    def isAdjToken(self):
+        return True
         
     def createAdjEvent(self, verbGramFeats=None):
         """Processes the adjective after a copular verb and make it an event if the
@@ -155,11 +150,3 @@ class AdjectiveToken(Token):
         there is one. There is a sister of this method on Chunk."""
         if self.gramchunk.evClass:
             self.tree.addEvent(Event(self.gramchunk))
-
-    def isAdjToken(self):
-        return True
-
-    def XXXsetEventInfo(self, eid):
-        # TODO: this is probably done by hand somewhere, trace that spot
-        self.event = 1
-        self.eid = eid

@@ -1,4 +1,4 @@
-from types import ListType, StringType, TupleType
+from types import ListType, TupleType
 
 from utilities import logger
 from library.timeMLspec import EVENT_INSTANCE_ID
@@ -11,7 +11,7 @@ class Constituent:
 
     """An abstract class that contains some methods that are identical for Chunks
     and Tokens plus a couple of default methods. It also initializes the common
-    instance variables parent, dtrs, begin and end."""
+    instance variables tree, parent, dtrs, begin and end."""
 
     # NOTE: at some point I added __len__ here but that screwed up Evita.
 
@@ -29,11 +29,6 @@ class Constituent:
     def __getitem__(self, index):
         """Returns an element from the dtrs variable."""
         return self.dtrs[index]
-
-    def setParent(self, parent):
-        """Set the parent feature of the sentence to the TarsqiTree."""
-        # TODO: this does not appear to be used
-        self.parent = parent
 
     def isToken(self): return False
     def isAdjToken(self): return False
@@ -63,7 +58,8 @@ class Constituent:
             self.parent.setCheckedEvents()
 
     def getText(self):
-        logger.warn("Unexpected recipient of getText: %s" % self)
+        raise Error
+        logger.warn("Unexpected recipient: %s" % self)
 
     def nextNode(self):
         """Return the right sibling in the tree or None if there is none. Works nicely
