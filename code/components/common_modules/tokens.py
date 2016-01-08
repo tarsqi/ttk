@@ -72,7 +72,7 @@ class Token(Constituent):
         method returns False for the preposition in 'to the barn'."""
         return self.pos == POS_PREP
 
-    def createEvent(self, tarsqidoc):
+    def createEvent(self):
         """Do nothing when an AdjectiveToken or Token is asked to create an
         event. Potential adjectival events are processed from the VerbChunk
         using the createAdjEvent() method. Do not log a warning since it is
@@ -139,7 +139,7 @@ class AdjectiveToken(Token):
             raise AttributeError, name
 
         
-    def createAdjEvent(self, verbGramFeats=None, tarsqidoc=None):
+    def createAdjEvent(self, verbGramFeats=None):
         """Processes the adjective after a copular verb and make it an event if the
         adjective has an event class."""
         logger.debug("AdjectiveToken.createAdjEvent(verbGramFeat=%s)" % verbGramFeats)

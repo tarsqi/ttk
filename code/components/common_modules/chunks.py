@@ -203,7 +203,7 @@ class NounChunk(Chunk):
             return True
         return False
 
-    def createEvent(self, verbGramFeat=None, tarsqidoc=None):
+    def createEvent(self, verbGramFeat=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
         event candidate, then conditionally adds it. The verbGramFeat dictionary
         is used when a governing verb hands in its features to a nominal in a
@@ -229,12 +229,12 @@ class VerbChunk(Chunk):
         """Write information on the sentence that an event was added to."""
         if DRIBBLE:
             toks = get_tokens(self.parent.dtrs)
-            p1 = int(toks[0].lex.attrs['begin'])
-            p2 = int(toks[-1].lex.attrs['end'])
-            e_p1 = self.dtrs[-1].lex.attrs['begin']
-            e_p2 = self.dtrs[-1].lex.attrs['end']
+            p1 = toks[0].begin
+            p2 = toks[-1].end
+            e_p1 = self.dtrs[-1].begin
+            e_p2 = self.dtrs[-1].end
             text = ' '.join(text.split())
-            sentence = self.tarsqidoc.source.text[p1:p2]
+            sentence = self.tree().tarsqidoc.source.text[p1:p2]
             sentence = ' '.join(sentence.split())
             line = "%s\t%s\t%s\t%s:%s\n" % (header, text, sentence, e_p1, e_p2)
             VerbChunk.DRIBBLE_FH.write(line)
@@ -438,11 +438,10 @@ class VerbChunk(Chunk):
             self._processEventInChunk(GramVCh)
 
 
-    def createEvent(self, tarsqidoc):
+    def createEvent(self):
         """Try to create an event in the VerbChunk. Delegates to two methods
         depending on the position of the verb in the chunk."""
 
-        self.tarsqidoc = tarsqidoc
         GramVChList = GramVChunkList(self)
         if GramVChList.do_not_process():
             return

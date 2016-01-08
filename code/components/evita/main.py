@@ -38,4 +38,4 @@ class Evita (TarsqiComponent):
             logger.debug("SENTENCE: %s" % get_words_as_string(sentence))
             for node in sentence:
                 if not node.checkedEvents:
-                    node.createEvent(tarsqidoc=self.tarsqidoc)
+                    node.createEvent()
