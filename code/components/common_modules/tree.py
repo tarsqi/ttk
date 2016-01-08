@@ -340,13 +340,9 @@ class TarsqiTree:
         return self
 
     def addEvent(self, event):
-        """Takes an instance of evita.event.Event and adds it to the tagrepository on
+        """Takes an instance of evita.event.Event and adds it to the TagRepository on
         the TarsqiDocElement."""
-        # TODO: this combines the information from the event and the instance
-        # and it is here because of the legacy difference between events and
-        # instances, at some point event and instance will be merged
         event_attrs = dict(event.attrs)
-        event_attrs.update(event.instanceList[0].attrs)
         # with the current implementation, there is always one instance per
         # event, so we just reuse the event identifier for the instance
         eid = self.tarsqidoc.next_event_id()
@@ -355,9 +351,11 @@ class TarsqiTree:
         event_attrs['eiid'] = eiid
         event_attrs = { k:v for k,v in event_attrs.items()
                         if v is not None and k is not 'eventID' }
-        # TODO: this assumes the event is always the last one, which may not
-        # always be true
-        token = event.tokenList[-1]
+        # NOTE: we now always have one token on this list, if there are more in
+        # a future implementation we takes the last, but what probably should
+        # happen is that we take the begin offset form the first and the end
+        # offset from the last token.  always be true
+        token = event.tokens[-1]
         self.docelement.add_event(token.begin, token.end, event_attrs)
         
     def addLink(self, linkAttrs, linkType):

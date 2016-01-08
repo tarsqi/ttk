@@ -9,8 +9,8 @@ Last Modified: April 14, 2005
 ==============================================="""
 
 
-# TimeBank chunking
-# =================
+# Preprocessing tags and attributes
+# =================================
 
 SENTENCE = 's'
 NOUNCHUNK = 'ng'
@@ -63,7 +63,9 @@ EPOS = 'epos' #NF_MORPH = 'nf_morph'
 TENSE = 'tense'
 ASPECT = 'aspect'
 MOD = 'modality'
+MODALITY = 'modality'
 POL = 'polarity'
+POLARITY = 'polarity'
 NO_FINITE = ['PRESPART', 'PASTPART', 'INFINITIVE']
 FINITE = ['PRESENT', 'PAST', 'FUTURE']
 
