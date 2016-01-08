@@ -71,9 +71,9 @@ class Node(object):
     # TODO: that stipulation is actually wrong for times and we are missing some
     # imports from GUTime because of that
 
-    def __init__(self, tag, parent, tree=None):
-        """Initialize using a Tag object and a parent Node which can be None. If the
-        parent is None then a TarsqiTree is handed in as a third argument."""
+    def __init__(self, tag, parent, tree):
+        """Initialize using a Tag object, a parent Node which can be None for the top
+        node, and the TarsqiTree that the node is for."""
         self.name = tag.name
         self.begin = tag.begin
         self.end = tag.end
@@ -82,7 +82,7 @@ class Node(object):
         self.dtrs = []
         self.event_dtr = None
         self.tag = tag
-        self.tree = parent.tree if tree is None else tree
+        self.tree = tree
 
     def __str__(self):
         lemma = self.tag.attrs.get('lemma')
@@ -99,7 +99,7 @@ class Node(object):
                 + "its boundaries are outside of the nodes boundaries"
         # add tag as first daughter if there are no daughters
         elif not self.dtrs:
-            self.dtrs.append(Node(tag, self))
+            self.dtrs.append(Node(tag, self, self.tree))
         else:
             # find the index of the daughter that the tag would fit in and
             # insert the tag into the daughter
@@ -111,7 +111,7 @@ class Node(object):
                 # the dtrs list
                 dtrs_idx = self._find_gap_idx(tag)
                 if dtrs_idx is not None:
-                    self.dtrs.insert(dtrs_idx, Node(tag, self))
+                    self.dtrs.insert(dtrs_idx, Node(tag, self, self.tree))
                 else:
                     # otherwise, find the span of dtrs that the tag includes,
                     # replace the span with the tag and insert the span into the
@@ -133,7 +133,7 @@ class Node(object):
             if Node.order.get(dtr.name) > Node.order.get(tag.name):
                 dtr.insert(tag)
             else:
-                new_dtr = Node(tag, self)
+                new_dtr = Node(tag, self, self.tree)
                 new_dtr.dtrs = [dtr]
                 dtr.parent = new_dtr
                 self.dtrs[idx] = new_dtr
@@ -143,7 +143,7 @@ class Node(object):
     def _replace_span_with_tag(self, tag, span):
         """Replace the span of dtrs with the tag and add the span as dtrs to the tag."""
         span_elements = [self.dtrs[i] for i in span]
-        new_node = Node(tag, self)
+        new_node = Node(tag, self, self.tree)
         new_node.dtrs = span_elements
         for element in span_elements:
             element.parent = new_node
@@ -249,11 +249,13 @@ class Node(object):
             tree_element = EventTag(self.tag.attrs)
         elif self.name == TIMEX:
             tree_element = TimexTag(self.tag.attrs)
-        tree_element.position = self.position
         if self.event_dtr is not None:
             tree_element.event = 1
             tree_element.eid = self.event_dtr.tag.attrs['eid']
             tree_element.eiid = self.event_dtr.tag.attrs['eiid']
+        # inherit some goodies from the Node
+        tree_element.position = self.position
+        tree_element.tree = self.tree
         tree_element.begin = self.begin
         tree_element.end = self.end
         return tree_element

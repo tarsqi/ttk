@@ -98,18 +98,18 @@ class Chunk(Constituent):
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
-            tree = self.parent.tree()
+            #tree = self.parent.tree()
             if name == 'eventStatus':
                 return '1'
             if name == 'text' or name == FORM:
-                return tree.events[self.eid][FORM]
+                return self.tree.events[self.eid][FORM]
             if name == MOD:
-                return tree.events[self.eid].get(MOD,'NONE')
+                return self.tree.events[self.eid].get(MOD,'NONE')
             if name == POL:
-                return tree.events[self.eid].get(POL,'POS')
+                return self.tree.events[self.eid].get(POL,'POS')
             if name == POS:
-                return tree.events[self.eid].get(POS,'NONE')
-            return tree.events[self.eid][name]
+                return self.tree.events[self.eid].get(POS,'NONE')
+            return self.tree.events[self.eid][name]
         else:
             raise AttributeError, name
 
@@ -129,7 +129,7 @@ class Chunk(Constituent):
             and gchunk.head.getText() not in forms.be
             and gchunk.head.getText() not in forms.spuriousVerb
             and gchunk.evClass):
-            self.tree().addEvent(Event(gchunk))
+            self.tree.addEvent(Event(gchunk))
 
     def _getHeadText(self):
         """Get the text string of the head of the chunk. Used by matchConstituent."""
@@ -234,7 +234,7 @@ class VerbChunk(Chunk):
             e_p1 = self.dtrs[-1].begin
             e_p2 = self.dtrs[-1].end
             text = ' '.join(text.split())
-            sentence = self.tree().tarsqidoc.source.text[p1:p2]
+            sentence = self.tree.tarsqidoc.source.text[p1:p2]
             sentence = ' '.join(sentence.split())
             line = "%s\t%s\t%s\t%s:%s\n" % (header, text, sentence, e_p1, e_p2)
             VerbChunk.DRIBBLE_FH.write(line)

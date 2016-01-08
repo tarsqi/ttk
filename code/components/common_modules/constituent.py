@@ -16,6 +16,7 @@ class Constituent:
     # NOTE: at some point I added __len__ here but that screwed up Evita.
 
     def __init__(self):
+        self.tree = None
         self.parent = None
         self.dtrs = []
         self.begin = None
@@ -33,15 +34,6 @@ class Constituent:
         """Set the parent feature of the sentence to the TarsqiTree."""
         # TODO: this does not appear to be used
         self.parent = parent
-
-    def doc(self):
-        return self.tree()
-
-    def tree(self):
-        """Return the TarsqiTree that the Consituent is in. Basically asks the
-        parent to do the work, if th eparent is the TarsqiTree itself then it
-        will return itself."""
-        return self.parent.tree()
 
     def isToken(self): return False
     def isAdjToken(self): return False
@@ -215,7 +207,7 @@ class Constituent:
                     RELATED_TO_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
-                self.tree().addLink(alinkAttrs, ALINK)
+                self.tree.addLink(alinkAttrs, ALINK)
                 logger.debug("ALINK CREATED")
                 return True
             else:
@@ -304,7 +296,7 @@ class Constituent:
                     SUBORDINATED_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
-                self.doc().addLink(slinkAttrs, SLINK)
+                self.tree.addLink(slinkAttrs, SLINK)
                 logger.debug("SLINK CREATED")
                 return True
             else:
