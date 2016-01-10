@@ -20,11 +20,8 @@ pairs in later elements.
 
 
 EVENT_TESTS = [
-    ('HAVE-1-2', "All Arabs would have to move behind Iraq.", 24, 28, ('modality', 'would have to')),
 
-    ]
-
-x=[('NOUN-1', "The war is over.", 4, 7, ('class', 'OCCURRENCE'), ('tense', 'NONE')),
+    ('NOUN-1', "The war is over.", 4, 7, ('class', 'OCCURRENCE'), ('tense', 'NONE')),
     ('NOUN-2', "The man is old.", 4, 7, None),
     ('VERB-bark', "Fido barks.", 5, 10),
     ('VERB-not-bark', "Fido does not bark.", 14, 18, ('polarity', 'NEG')),
@@ -48,7 +45,7 @@ x=[('NOUN-1', "The war is over.", 4, 7, ('class', 'OCCURRENCE'), ('tense', 'NONE
     ('GOING-TO-1', "We are going to maintain our forces in the region.", 7, 12, None),
     ('GOING-TO-2', "We are going to maintain our forces in the region.", 16, 24), # FUTURE
     ('HAVE-1-1', "All Arabs would have to move behind Iraq.", 16, 20, None),
-    ('HAVE-1-2', "All Arabs would have to move behind Iraq.", 24, 28),
+    ('HAVE-1-2', "All Arabs would have to move behind Iraq.", 24, 28, ('modality', 'would have to')),
     ('HAVE-2-1', "The Iraqi leadership did not have a rational approach.", 29, 33),
     ('KEEP-1', "The stocks they keep on hand to sell investors.", 16, 20), # ASPECTUAL
     ('KEEP-2', "They intend to keep interest rates unchanged.", 15, 19), # ASPECTUAL

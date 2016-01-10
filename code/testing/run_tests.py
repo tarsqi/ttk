@@ -99,7 +99,6 @@ class TarsqiEntityTest(TarsqiTest):
         subclasses. Results are written to the standard output."""
         try:
             td = run_pipeline(pipeline, self.sentence)
-            td.pp()
             tag = get_tag(td, self.tag, self.o1, self.o2)
             if self.find_tag:
                 result = PASS if tag else FAIL
@@ -107,18 +106,18 @@ class TarsqiEntityTest(TarsqiTest):
                 result = PASS if tag is None else FAIL
             self.results[result] += 1
             entity_spec = "%s(%s:%s)=%s" % (self.tag, self.o1, self.o2, self.find_tag)
-            print "  %-20s %-25s %s" % (self.name, entity_spec, result)
+            print "  %-20s %-30s %s" % (self.name, entity_spec, result)
             for attr, val in self.attributes:
                 attr_spec = "   %s=%s" % (attr, val.replace(' ', '_'))
                 if result == PASS:
                     attr_result = PASS if tag.attrs.get(attr) == val else FAIL
                     self.results[attr_result] += 1
-                    print "  %-20s %-25s %s" % (self.name, attr_spec, attr_result)
+                    print "  %-20s %-30s %s" % (self.name, attr_spec, attr_result)
                 else:
-                    print "  %-20s %-25s %s" % (self.name, attr_spec, result)
+                    print "  %-20s %-30s %s" % (self.name, attr_spec, result)
         except:
             self.results[ERROR] += 1
-            print "  %-46s %s" % (self.name, ERROR)
+            print "  %-51s %s" % (self.name, ERROR)
             if SHOW_ERRORS:
                 print; traceback.print_exc(); print
 
