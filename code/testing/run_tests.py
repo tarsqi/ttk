@@ -22,7 +22,16 @@ The following options are available:
    --slinket      run the Slinket tests
    --show-errors  print the stack trace of all errors
 
-Without none of the first three options are given all test will run.
+If none of the first three options are given all test will run.
+
+The tests are focussed on components, but the actual test cases focus on tags,
+which allows for some flexibility. If for example a BTime component is added we
+would create a new subclass of TarsqiEntityTest, similar to GUTimeTest, but with
+a different pipeline, and then use this test in the initialization of
+ModuleTest. We can use the same tests as for GUTime. But timex test cases could
+be split into cases for BTime and GUTime if we wanted, all we need to do is edit
+the case.test_case_timex module and the variables from it that are imported in
+this script.
 
 Examples:
 
@@ -63,13 +72,14 @@ SLINKET_PIPELINE = 'PREPROCESSOR,EVITA,SLINKET'
 class TarsqiTest(object):
 
     """The mother of all tests. Just an empty shell."""
-    
-    pass
 
 
 class TarsqiEntityTest(TarsqiTest):
 
+    """A test case for Tarsqi entities (events and times)."""
+
     def __init__(self, tag, test_specification):
+        """Load the test specification from the cases module."""
         self.name = test_specification[0]
         self.sentence = test_specification[1]
         self.o1 = test_specification[2]
@@ -85,8 +95,11 @@ class TarsqiEntityTest(TarsqiTest):
                 self.attributes.append(specification_element)
 
     def run(self, pipeline):
+        """Run the entity test using the pipeline as handed in from the same method on
+        subclasses. Results are written to the standard output."""
         try:
             td = run_pipeline(pipeline, self.sentence)
+            td.pp()
             tag = get_tag(td, self.tag, self.o1, self.o2)
             if self.find_tag:
                 result = PASS if tag else FAIL
@@ -96,10 +109,13 @@ class TarsqiEntityTest(TarsqiTest):
             entity_spec = "%s(%s:%s)=%s" % (self.tag, self.o1, self.o2, self.find_tag)
             print "  %-20s %-25s %s" % (self.name, entity_spec, result)
             for attr, val in self.attributes:
-                result = PASS if tag.attrs.get(attr) == val else FAIL
-                self.results[result] += 1
-                attr_spec = "  %s=%s" % (attr, val)
-                print "  %-20s %-25s %s" % (self.name, attr_spec, result)
+                attr_spec = "   %s=%s" % (attr, val.replace(' ', '_'))
+                if result == PASS:
+                    attr_result = PASS if tag.attrs.get(attr) == val else FAIL
+                    self.results[attr_result] += 1
+                    print "  %-20s %-25s %s" % (self.name, attr_spec, attr_result)
+                else:
+                    print "  %-20s %-25s %s" % (self.name, attr_spec, result)
         except:
             self.results[ERROR] += 1
             print "  %-46s %s" % (self.name, ERROR)
@@ -109,7 +125,10 @@ class TarsqiEntityTest(TarsqiTest):
 
 class TarsqiLinkTest(TarsqiTest):
 
+    """A test case for Tarsqi links (alinks, slinks and tlinks)."""
+
     def __init__(self, tag, test_specification):
+        """Load the test specification from the cases module."""
         self.sentence = test_specification[5]
         self.linkname = tag
         self.filename = test_specification[1]
@@ -117,10 +136,6 @@ class TarsqiLinkTest(TarsqiTest):
         self.reltype = test_specification[0]
         self.e1 = test_specification[3]
         self.e2 = test_specification[4]
-        self.e1o1 = test_specification[3][0]
-        self.e1o2 = test_specification[3][1]
-        self.e2o1 = test_specification[4][0]
-        self.e2o2 = test_specification[4][1]
         self.name = "%s-%s" % (self.reltype, self.fsa_rule)
         self.find_tag = True
         if len(test_specification) > 6:
@@ -128,6 +143,8 @@ class TarsqiLinkTest(TarsqiTest):
         self.results = { PASS: 0, FAIL: 0, ERROR: 0 }
 
     def run(self, pipeline):
+        """Run the entity test using the pipeline as handed in from the same method on
+        subclasses. Results are written to the standard output."""
         try:
             td = run_pipeline(pipeline, self.sentence)
             tag = get_link(td, self.linkname, self.e1, self.e2, self.reltype)
@@ -137,30 +154,36 @@ class TarsqiLinkTest(TarsqiTest):
                 result = PASS if tag is None else FAIL
             self.results[result] += 1
             link_spec = "%s(%s:%s-%s:%s)=%s" \
-                        % (self.linkname, self.e1[0], self.e1[1],
+                        % (self.reltype, self.e1[0], self.e1[1],
                            self.e2[0], self.e2[1], self.find_tag)
-            print "  %-35s %-35s %s" % (self.name, link_spec, result)
+            print "  %-35s %-40s %s" % (self.name, link_spec, result)
         except:
             self.results[ERROR] += 1
-            print "  %-71s %s" % (self.name, ERROR)
+            print "  %-76s %s" % (self.name, ERROR)
             if SHOW_ERRORS:
                 print; traceback.print_exc(); print
 
 
 
 class GUTimeTest(TarsqiEntityTest):
+    """Test case for GUTime tests. This test is handed the test specifications and
+    uses TarsqiEntityTest with the 'TIMEX3' tag and the GUTime pipeline."""
     def __init__(self, test_specification):
         TarsqiEntityTest.__init__(self, 'TIMEX3', test_specification)
     def run(self):
         TarsqiEntityTest.run(self, GUTIME_PIPELINE)
 
 class EvitaTest(TarsqiEntityTest):
+    """Test case for GUTime tests. This test is handed the test specifications and
+    uses TarsqiEntityTest with the 'EVENT' tag and the Evita pipeline."""
     def __init__(self, test_specification):
         TarsqiEntityTest.__init__(self, 'EVENT', test_specification)
     def run(self):
         TarsqiEntityTest.run(self, EVITA_PIPELINE)
 
 class SlinketTest(TarsqiLinkTest):
+    """Test case for Slinket tests. This test is handed the test specifications and
+    the link tag and uses TarsqiLinkTest with the Slinket pipeline."""
     def __init__(self, tag, test_specification):
         TarsqiLinkTest.__init__(self, tag, test_specification)
     def run(self):
@@ -170,7 +193,7 @@ class SlinketTest(TarsqiLinkTest):
 
 def run_pipeline(pipeline, sentence):
     """Run the sentence through the pipeline and return the resulting
-    TarsqiDocument."""
+    TarsqiDocument. Do not let the Tarsqi code trap errors."""
     options = [('--pipeline', pipeline),
                ('--loglevel', '1'),
                ('--trap-errors', 'False')]
@@ -187,7 +210,7 @@ def get_tag(td, tag, o1, o2):
 
 def get_link(td, tagname, e1_offsets, e2_offsets, reltype):
     """Return the link tag with the specified tagname (SLINK, ALINK or TLINK),
-    relation type and event locations. Return NOne if there is no such link"""
+    relation type and event locations. Return None if there is no such link"""
     link_tags = td.elements[0].tarsqi_tags.find_tags(tagname)
     event_tags = td.elements[0].tarsqi_tags.find_tags('EVENT')
     if not link_tags:
@@ -216,6 +239,11 @@ def select_event(eiid, event_tags):
         
 
 class ModuleTest(object):
+
+    """The class that implements a module test. It is given a module name, the
+    module test class, a list of test specifications, and an optional tagname
+    that is tested. When running a module test you will run al test cases from
+    the test specifications list."""
 
     def __init__(self, module_name, module_class, test_specifications, tag=None):
         self.module_name = module_name

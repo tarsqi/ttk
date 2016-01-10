@@ -20,10 +20,15 @@ pairs in later elements.
 
 
 EVENT_TESTS = [
-    ('NOUN-1', "The war is over.", 4, 7, ('class', 'OCCURRENCE'), ('tense', 'NONE')),
+    ('HAVE-1-2', "All Arabs would have to move behind Iraq.", 24, 28, ('modality', 'would have to')),
+
+    ]
+
+x=[('NOUN-1', "The war is over.", 4, 7, ('class', 'OCCURRENCE'), ('tense', 'NONE')),
     ('NOUN-2', "The man is old.", 4, 7, None),
-    ('VERB-1', "Fido barks.", 5, 10),
-    ('VERB-2', "John sleeps today.", 5, 11),
+    ('VERB-bark', "Fido barks.", 5, 10),
+    ('VERB-not-bark', "Fido does not bark.", 14, 18, ('polarity', 'NEG')),
+    ('VERB-sleeps-today', "John sleeps today.", 5, 11),
     # need case for MODAL
     ('BE-ADJ-1', "The door is open.", 12, 16),
     ('BE-NOM-1', "There was a war.", 12, 15),

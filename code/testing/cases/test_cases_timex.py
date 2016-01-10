@@ -21,7 +21,8 @@ pairs in later elements.
 
 TIMEX_TESTS = [
 
-    ('june-5th', "It is June 5th.", 6, 14),
-    ('today', "John sleeps today.", 12, 17)
+    ('it-is-june-5th', "It is June 5th.", 6, 14, ('type', 'DATE'), ('value', '')),
+    ('sleeps-today', "John sleeps today.", 12, 17),
+    ('the-year-2000', "In the year 2000 it was warm.", 12, 16,  ('type', 'DATE'), ('value', '2000')),
 
 ]
