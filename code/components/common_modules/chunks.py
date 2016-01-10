@@ -171,7 +171,8 @@ class NounChunk(Chunk):
         return True
 
     def isDefinite(self):
-        """Return True if self includes a Token that is a POS, PRP$ or a definite determiner."""
+        """Return True if self includes a Token that is a POS, PRP$ or a definite
+        determiner."""
         for token in self.dtrs[:self.head]:
             if (token.pos == forms.possessiveEndingTag
                 or token.pos == forms.possessivePronounTag
@@ -182,12 +183,7 @@ class NounChunk(Chunk):
 
     def isEmpty(self):
         """Return True if the chunk is empty, False otherwise."""
-        if not self.dtrs:
-            # this happened at some point due to a crazy bug in some old code
-            # that does not exist anymore
-            logger.warn("There are no dtrs in the NounChunk")
-            return True
-        return False
+        return False if self.dtrs else True
 
     def createEvent(self, verbGramFeat=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
@@ -195,12 +191,18 @@ class NounChunk(Chunk):
         is used when a governing verb hands in its features to a nominal in a
         predicative complement."""
         logger.debug("NounChunk.createEvent(verbGramFeat=%s)" % verbGramFeat)
-        if not self.isEmpty():
+        if self.isEmpty():
+            # this happened at some point due to a crazy bug in some old code
+            # that does not exist anymore, let's log a warning in case this
+            # problem returns
+            logger.warn("There are no dtrs in the NounChunk")
+        else:
             self.gramchunk = GramNChunk(self)
             self.gramchunk.add_verb_features(verbGramFeat)
             logger.debug(self.gramchunk.as_verbose_string())
-            # Even if preceded by a BE or a HAVE form, only tagging N Chunks headed by an
-            # eventive noun E.g., "was an intern" will NOT be tagged
+            # Even if preceded by a BE or a HAVE form, only tagging N Chunks
+            # headed by an eventive noun E.g., "was an intern" will NOT be
+            # tagged
             if self.gramchunk.isEventCandidate():
                 logger.debug("Nominal is an event candidate")
                 self._processEventInChunk()

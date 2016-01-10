@@ -33,7 +33,6 @@ class Evita (TarsqiComponent):
         repository on the element."""
         self.doctree = create_tarsqi_tree(self.docelement)
         #self.doctree.pp()
-        self.doctree.tarsqidoc = self.tarsqidoc
         for sentence in self.doctree:
             logger.debug("SENTENCE: %s" % get_words_as_string(sentence))
             for node in sentence:

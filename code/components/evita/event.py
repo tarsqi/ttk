@@ -26,7 +26,7 @@ class Event:
     """
 
     def __init__(self, gramCh):
-        """Initialize from a GramNChunk, GramVChunk or GramACHunk. Creates the list of
+        """Initialize from a GramNChunk, GramVChunk or GramAChunk. Creates the list of
         the head of the GramChunk and creates the tokens list with the head as
         the sole element. Currently Evita only recocgnizes one-token events (in
         line with the old TimeML specifications), the list is a hook for adding

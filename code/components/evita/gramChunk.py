@@ -64,15 +64,17 @@ if DEBUG:
     print "DBM_FILES_OPENED = %s" % DBM_FILES_OPENED
 
 
-def getWordList(consituents):
-    """Returns a list of words from the list of consituents, typically the
-    constituents are instances of NounCHunk, VerbChunk or Token. Used for
+def getWordList(constituents):
+    """Returns a list of words from the list of constituents, typically the
+    constituents are instances of NounChunk, VerbChunk or Token. Used for
     debugging purposes."""
-    return [consituent.getText() for consituent in consituents]
+    return [constituent.getText() for constituent in constituents]
 
-def getPOSList(consituents):
-    """Input: List of Item instances. Function for debugging purposes."""
-    return [consituent.pos for consituent in consituents]
+def getPOSList(constituents):
+    """Returns a list of parts-of-speech from the list of constituents, typically
+    the constituents are instances of NounChunk, VerbChunk or Token. Used for
+    debugging purposes."""
+    return [constituent.pos for constituent in constituents]
 
 def collapse_timex_nodes(nodes):
     """Take a list of nodes and flatten it out by removing Timex tags."""
@@ -85,7 +87,7 @@ def collapse_timex_nodes(nodes):
             return_nodes.append(node)
     return return_nodes
 
-def debug (*args):
+def debug(*args):
     if DEBUG:
         for arg in args: print arg,
         print
@@ -96,6 +98,14 @@ class GramChunk:
     """The subclasses of this class are used to add grammatical features to a
     NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
     of instances of those classes."""
+
+    def __init__(self, chunk_or_token):
+        """Common initialization for GramNChunk and GramAChunk."""
+        self.node = chunk_or_token
+        self.tense = "NONE"
+        self.aspect = "NONE"
+        self.modality = "NONE"
+        self.polarity = "POS"
 
     def add_verb_features(self, verbGramFeat):
         """Set grammatical features (tense, aspect, modality and polarity) with the
@@ -125,12 +135,13 @@ class GramAChunk(GramChunk):
         """Initialize with an AdjectiveToken and use default values for most instance
         variables, but percolate grammatical features from the copular verb if
         they were handed in."""
-        self.node = adjectivetoken
-        self.tense = "NONE"
-        self.aspect = "NONE"
+        GramChunk.__init__(self, adjectivetoken)
+        #self.node = adjectivetoken
+        #self.tense = "NONE"
+        #self.aspect = "NONE"
         self.nf_morph = "ADJECTIVE"
-        self.modality = "NONE"
-        self.polarity = "POS"
+        #self.modality = "NONE"
+        #self.polarity = "POS"
         self.head = adjectivetoken
         self.evClass = self.getEventClass()
         self.add_verb_features(verbGramFeats)
@@ -149,9 +160,7 @@ class GramNChunk(GramChunk):
     def __init__(self, nounchunk):
         """Initialize with a NounChunk and use default values for most instance
         variables."""
-        chunkclassname = nounchunk.__class__.__name__
-        if chunkclassname != 'NounChunk':
-            logger.warn("GramNChunk created with instance of " + chunkclassname)
+        self.check_class(nounchunk)
         self.node = nounchunk
         self.tense = "NONE"
         self.aspect = "NONE"
@@ -160,6 +169,11 @@ class GramNChunk(GramChunk):
         self.polarity = "POS"
         self.head = self.node.getHead()
         self.evClass = self.getEventClass()
+
+    def check_class(self, chunk):
+        chunkclassname = chunk.__class__.__name__
+        if chunkclassname != 'NounChunk':
+            logger.warn("GramNChunk created with instance of " + chunkclassname)
 
     def getEventClass(self):
         """Get the event class for the GramChunk. For nominals, the event class
@@ -245,9 +259,6 @@ class GramVChunkList:
 
     def __getitem__(self, index):
         return self.gramVChunksList[index]
-
-    def __getslice__(self, i, j):
-        return self.gramVChunksList[i:j]
 
     def __str__(self):
         if len(self.gramVChunksList) == 0:
@@ -488,6 +499,7 @@ class GramVChunk(GramChunk):
         the chunk, which are stored in self.trueChunk. Selects the rules
         relevant for the length of the chunk and applies them. Returns None if
         no rule applies."""
+        # TODO: add these to the regular variables, not the list
         rules = FEATURE_RULES[len(self.trueChunk)]
         for rule in rules:
             features = FeatureRule(rule, self.trueChunk).match()
@@ -545,6 +557,7 @@ class GramVChunk(GramChunk):
         """Return True if the GramVChunk cannot possibly be an event. This is the place
         for performing some simple stoplist-like tests."""
         # TODO: why would any of these ever occur?
+        # TODO: if we use a stop list it should be separated from the code
         return ((self.headForm == 'including' and self.tense == 'NONE')
                 or self.headForm == '_')
 

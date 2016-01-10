@@ -282,7 +282,7 @@ class TarsqiTree:
     The events dictionary is used by Slinket and stores events from the tree
     indexed on event eids."""
 
-    def __init__(self, tarsqidoc=None, tarsqidocelement=None):
+    def __init__(self, tarsqidoc, tarsqidocelement):
         """Initialize all dictionaries, list and counters and set the file name."""
         self.tarsqidoc = tarsqidoc
         self.docelement = tarsqidocelement

@@ -50,10 +50,10 @@ class EventTag(Tag):
         return "<EventTag name=%s eid=%s>" % (self.name, self.eid)
 
     def XXX__getattr__(self, name):
-        # TODO: remove this once it is established that blinker and s2t work, it
-        # does not appear to be used for Evita and for Slinket the attributes
-        # that this is used for are just __nonzero__, __str__ and __repr__ (and
-        # somehow the errors raised get trapped).
+        # TODO: remove this once it is established that blinker and s2t work
+        # without it, it does not appear to be used for Evita and for Slinket
+        # the attributes that this is used for are just __nonzero__, __str__ and
+        # __repr__ (and somehow the errors raised get trapped).
         if trackGetAttrUse:
             print "*** EventTag.__getattr__", name
         if name == 'eventStatus':

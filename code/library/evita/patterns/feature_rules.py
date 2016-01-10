@@ -11,8 +11,8 @@ A rule is a list and has the following fields:
 A WORD_SPEC or a POS_SPEC is either None or a pair of an operator and an element
 that needs to be matched. If the operator is 'in' than the element is a list and
 if the operator is '==' then the element is a string. The operator and the
-element are used to match to an element of the tokens in the string. Which
-element depends on the position in the rule of the WORD_SPEC and POS_SPEC.
+element are used to match to a token in the chunk. Which token this is depends
+on the position in the rule of the WORD_SPEC and POS_SPEC.
 
 Rule sets are defined for token sequences from length 1 through 7. The rule list
 for a sequence of two tokens has a length of six:
@@ -28,6 +28,9 @@ second token. Here is an example rule:
       ('in', do), ('in', verbsPresent),
       None, ('in', ['VB', 'VBP']),
       ('PRESENT', 'NONE', 'VERB') ]
+
+Note that since the rules are only applied for VerbChunks the nf_morph element
+is always 'VERB'.
 
 In this case the first word has to be in the list do (which is defined in forms)
 and its part-of-speech has to be in the list verbsPresent (also defined in

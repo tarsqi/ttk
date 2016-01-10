@@ -10,10 +10,10 @@ class Sentence(Constituent):
     Chunks and Tokens.
     
     Instance variables
-        dtrs - a list of Chunks and Tokens
-        eventList - a list of (eLoc, eid) tuples
-        position - position in the TarsqiTree parent (first sentence is 0)
-        parent - a TarsqiTree
+        parent     -  a TarsqiTree
+        dtrs       -  a list of Chunks and Tokens
+        position   -  position in the TarsqiTree parent (first sentence is 0)
+        eventList  -  a list of (eLoc, eid) tuples
 
     The eventList variable stores (eLoc, eid) tuples of each tagged event in the sentence,
     the eLoc is the location of the event inside the embedding constituent, usually a
@@ -47,11 +47,14 @@ class Sentence(Constituent):
             eventLocation += 1
             if element.isChunk():
                 event = element.embedded_event()
-                if event:
+                # NOTE: this used to be "if event:", but the combination of that
+                # with EventTag.__getattr__ caused errors apparently because
+                # __nonzero__ was intercepted by __getattr__
+                if event is not None:
                     self.eventList.append((eventLocation, event.eid))
             elif element.isToken() and element.event:
                 self.eventList.append((eventLocation, element.eid))
-        
+
     def pretty_print(self, tree=True, verbose=False):
         """Pretty print the sentence by pretty printing all daughters"""
         if verbose:

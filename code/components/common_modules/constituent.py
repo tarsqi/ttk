@@ -18,6 +18,7 @@ class Constituent:
     def __init__(self):
         self.tree = None
         self.parent = None
+        self.position = None
         self.dtrs = []
         self.begin = None
         self.end = None
