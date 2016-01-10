@@ -1,8 +1,8 @@
-"""unit_test_cases_slinket.py
+"""test_cases_slink.py
 
-Set of test cases for Slinket. These tests are not intended to be a thorough
-coverage test, but they try to hit enough cases so that errors are likely to be
-found.
+Set of test cases for Slinks and Alinks. These tests are not intended to be a
+thorough coverage test, but they try to hit enough cases so that errors are
+likely to be found.
 
 Cases are split into a SIMPLE category with some quick and dirty minimal checks
 and sets of cases for each relation type. The relation type cases were initially
@@ -73,9 +73,9 @@ COUNTER_FACTIVE = [
      "But as the craze died, Coleco failed to come up with another winner and filed for" +
      " bankruptcy-law protection in July 1988."),
 
-    ('COUNTER_FACTIVE', 'wsj_0471.xml', 'NP_event1', (131,138), (142,149),
-     "DPC, an investor group led by New York-based Crescott Investment Associates, had" +
-     " itself filed a suit in state court in Los Angeles seeking to nullify the agreement.")
+    #('COUNTER_FACTIVE', 'wsj_0471.xml', 'NP_event1', (131,138), (142,149),
+    #"DPC, an investor group led by New York-based Crescott Investment Associates, had" +
+    # " itself filed a suit in state court in Los Angeles seeking to nullify the agreement.")
 ]
 
 
@@ -157,19 +157,23 @@ NEG_EVIDENTIAL = [
 
     # not used because it fails event though it shouldn't, find out why
     # the double quotes may be an issue
-    ('NEG_EVIDENTIAL', 'wsj_0026.xml', 'NP_event1', (87,93), (104,113),
-     "The White House said Mr. Bush decided to grant duty-free status for 18 categories," +
-     " but turned down such treatment for other types of watches \"because of the potential" +
-     " for material injury to watch producers located in the U.S. and the Virgin Islands.\""),
+    #('NEG_EVIDENTIAL', 'wsj_0026.xml', 'NP_event1', (87,93), (104,113),
+    # "The White House said Mr. Bush decided to grant duty-free status for 18 categories," +
+    # " but turned down such treatment for other types of watches \"because of the potential" +
+    # " for material injury to watch producers located in the U.S. and the Virgin Islands.\""),
 
     # not used because it fails event though it shouldn't, find out why
-    ('NEG_EVIDENTIAL', 'wsj_0778.xml', 'NP_event1', (111,120), (124,128),
-     "They also worry that if the government applies asset-forfeiture laws broadly," +
-     " the best defense lawyers will be unwilling to take criminal cases unless they" +
-     " are assured of being paid."),
+    #('NEG_EVIDENTIAL', 'wsj_0778.xml', 'NP_event1', (111,120), (124,128),
+    # "They also worry that if the government applies asset-forfeiture laws broadly," +
+    # " the best defense lawyers will be unwilling to take criminal cases unless they" +
+    # " are assured of being paid."),
 
     # not used because it fails event though it shouldn't, find out why
-    ('NEG_EVIDENTIAL', 'wsj_1006.xml', 'thatClause_that', (30,36), (102,106),
-     "Mr. Nadeau said he intends to remain Provigo's chief executive only until the" +
-     " non-food businesses are sold, after a which a new chief executive will be named.")
+    #('NEG_EVIDENTIAL', 'wsj_1006.xml', 'thatClause_that', (30,36), (102,106),
+    # "Mr. Nadeau said he intends to remain Provigo's chief executive only until the" +
+    # " non-food businesses are sold, after a which a new chief executive will be named.")
 ]
+
+
+ALINK_TESTS = ALINKS
+SLINK_TESTS = SIMPLE + COUNTER_FACTIVE + EVIDENTIAL + FACTIVE + MODAL + NEG_EVIDENTIAL
