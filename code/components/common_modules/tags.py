@@ -20,15 +20,6 @@ class Tag(Constituent):
 
     """Abstract class for all TimeML non-link tags."""
 
-    def __len__(self):
-        """Returns the lenght of the dtrs variable."""
-        return len(self.dtrs)
-
-    def getText(self):
-        string = ""
-        for dtr in self.dtrs:
-            string += ' ' + dtr.getText()
-        return string
 
 
 class EventTag(Tag):
@@ -136,15 +127,6 @@ class TimexTag(Tag):
     def isTimex(self):
         return True
         
-    def getText(self):
-        string = ""
-        for dtr in self.dtrs:
-            if dtr.nodeType[-5:] == 'Token':
-                string += ' '+str(dtr.getText())
-            elif dtr.nodeType[-5:] == 'Chunk':
-                string += ' '+str(dtr.getText())
-        return string
-
     def pretty_print(self, indent=0):
         print "%s<%s tid=%s type=%s value=%s>" % \
             (indent * ' ', self.name, self.attrs.get('tid'),

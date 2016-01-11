@@ -12,6 +12,7 @@ import library.patterns as patterns
 from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL
 from library.timeMLspec import EVENTID, EIID, CLASS, EVENT, TIMEX
 from utilities import logger
+from components.common_modules import utils
 from components.common_modules.constituent import Constituent
 from components.evita.event import Event
 from components.evita.gramChunk import GramNChunk, GramVChunkList
@@ -29,24 +30,6 @@ def update_event_checked_marker(constituent_list):
     for item in constituent_list:
         item.setCheckedEvents()
 
-def get_tokens(sequence):
-    """Given a sequence of elements which is a slice of a tree, collect all token
-    leaves and return them as a list. This is different from what get_tokens in
-    utils does since it operates on a list instead of a single node."""
-    tokens = []
-    for item in sequence:
-        if item.nodeType[-5:] == 'Token':
-            tokens.append(item)
-        elif item.nodeType[-5:] == 'Chunk':
-            tokens += get_tokens(item)
-        elif item.nodeType == 'EVENT':
-            tokens.append(item)
-        elif item.nodeType == 'TIMEX3':
-            tokens += get_tokens(item)
-        else:
-            raise "ERROR: unknown item type: " + item.nodeType
-    return tokens
-
 
 class Chunk(Constituent):
 
@@ -54,7 +37,7 @@ class Chunk(Constituent):
     contain event tags, timex tags and tokens.
 
     Instance variables
-       phraseType         - string indicating the chunk type, usually 'vg' or 'ng'
+       phraseType         - string indicating the chunk type, either 'vg' or 'ng'
        parent=None        - the parent of the chunk
        dtrs = []          - a list of Tokens, EventTags and TimexTags
        position = None    - index in the parent's daughters list
@@ -78,10 +61,6 @@ class Chunk(Constituent):
         self.event = None
         self.eid = None
         self.checkedEvents = False
-
-    def __len__(self):
-        """Returns the lenght of the dtrs variable."""
-        return len(self.dtrs)
 
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the
@@ -142,12 +121,6 @@ class Chunk(Constituent):
             if item.isEvent():
                 return item
         return None
-
-    def getText(self):
-        string = ""
-        for dtr in self.dtrs:
-            string += ' ' + dtr.getText()
-        return string
 
     def isChunk(self):
         """Returns True."""
@@ -216,7 +189,7 @@ class VerbChunk(Chunk):
     def dribble(self, header, text):
         """Write information on the sentence that an event was added to."""
         if DRIBBLE:
-            toks = get_tokens(self.parent.dtrs)
+            toks = utils.get_tokens(self.parent.dtrs)
             p1 = toks[0].begin
             p2 = toks[-1].end
             e_p1 = self.dtrs[-1].begin
@@ -253,7 +226,7 @@ class VerbChunk(Chunk):
         token-based structure, or chunked."""
         logger.debug("Entering _getRestSent")
         if structure == 'flat':
-            restSentence = get_tokens(self.parent[self.position+1:])
+            restSentence = utils.get_tokens(self.parent[self.position+1:])
         elif structure == 'chunked':
             restSentence = self.parent[self.position+1:]
         else:
@@ -277,7 +250,7 @@ class VerbChunk(Chunk):
             return 0
 
     def _processEventInMultiVChunk(self, substring):
-        chunk_list = get_tokens(self) + substring
+        chunk_list = utils.get_tokens(self) + substring
         GramMultiVChunk = GramVChunkList(chunk_list)[0]
         self._processEventInChunk(GramMultiVChunk)
         map(update_event_checked_marker, substring)

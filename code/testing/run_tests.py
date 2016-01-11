@@ -67,6 +67,8 @@ EVITA_PIPELINE = 'PREPROCESSOR,EVITA'
 SLINKET_PIPELINE = 'PREPROCESSOR,GUTIME,EVITA,SLINKET'
 SLINKET_PIPELINE = 'PREPROCESSOR,EVITA,SLINKET'
 
+# this is used when we run all tests so we can print a summary at the end
+SUMMARY = []
 
 
 class TarsqiTest(object):
@@ -262,15 +264,18 @@ class ModuleTest(object):
             results[PASS] += test.results[PASS]
             results[FAIL] += test.results[FAIL]
             results[ERROR] += test.results[ERROR]
-        print "\nTOTALS:  PASS=%s  FAIL=%s  ERROR=%s\n" \
-            % (results[PASS], results[FAIL], results[ERROR])
+        p = "PASS=%s" % results[PASS]
+        f = "FAIL=%s" % results[FAIL]
+        e = "ERROR=%s" % results[ERROR]
+        print "\nTOTALS:  %s  %s  %s\n" % (p, f, e)
+        SUMMARY.append([self.module_name, p, f, e])
 
-        
 
 def test_all():
     test_gutime()
     test_evita()
     test_slinket()
+    print_summary()
 
 def test_gutime():
     ModuleTest('GUTime', GUTimeTest, TIMEX_TESTS).run()
@@ -282,6 +287,11 @@ def test_slinket():
     ModuleTest('Slinket Alink', SlinketTest, ALINK_TESTS, 'ALINK').run()
     ModuleTest('Slinket Slink', SlinketTest, SLINK_TESTS, 'SLINK').run()
 
+def print_summary():
+    print "\nSUMMARY:\n"
+    for module, p, f, e in SUMMARY:
+        print "   %-15s    %-10s  %-10s  %s" % (module, p, f, e)
+    print
 
 if __name__ == '__main__':
 

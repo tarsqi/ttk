@@ -29,10 +29,6 @@ class Sentence(Constituent):
         self.position = None
         self.parent = None
         
-    def __len__(self):
-        """Returns length of dtrs variable."""
-        return len(self.dtrs)
-
     def __getattr__(self, name):
         """This is here so that an unknown attribute is not dealt with by
         __getattr__ on Constituent, with possibly unwelcome results."""

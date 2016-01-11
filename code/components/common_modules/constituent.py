@@ -13,8 +13,6 @@ class Constituent:
     and Tokens plus a couple of default methods. It also initializes the common
     instance variables tree, parent, dtrs, begin and end."""
 
-    # NOTE: at some point I added __len__ here but that screwed up Evita.
-
     def __init__(self):
         self.tree = None
         self.parent = None
@@ -31,15 +29,22 @@ class Constituent:
         """Returns an element from the dtrs variable."""
         return self.dtrs[index]
 
-    def isToken(self): return False
-    def isAdjToken(self): return False
-    def isChunk(self): return False
-    def isVerbChunk(self): return False
-    def isNounChunk(self): return False
-    def isTimex(self): return False
-    def isEvent(self): return False
-    def isPreposition(self): return False
-    
+    def __iter__(self):
+        return iter(self.dtrs)
+
+    def __reversed__(self):
+        return reversed(self.dtrs)
+
+    def __nonzero__(self):
+        return True
+
+    def __len__(self):
+        """Returns the lenght of the dtrs variable."""
+        # NOTE. When you this method you want __nonzero__ as well because
+        # without it a constituent with an empty dtrs list will be False and
+        # this will cause errors
+        return len(self.dtrs)
+
     def __getattr__(self, name):
         """Used by node._matchConstituent. Needs cases for all instance variables used in the
         pattern matching phase."""
@@ -52,6 +57,15 @@ class Constituent:
         else:
             raise AttributeError, name
 
+    def isToken(self): return False
+    def isAdjToken(self): return False
+    def isChunk(self): return False
+    def isVerbChunk(self): return False
+    def isNounChunk(self): return False
+    def isTimex(self): return False
+    def isEvent(self): return False
+    def isPreposition(self): return False
+
     def setCheckedEvents(self):
         if self.parent.__class__.__name__ == 'Sentence':
             self.checkedEvents = True
@@ -59,8 +73,10 @@ class Constituent:
             self.parent.setCheckedEvents()
 
     def getText(self):
-        raise Error
-        logger.warn("Unexpected recipient: %s" % self)
+        string = ""
+        for dtr in self.dtrs:
+            string += ' ' + dtr.getText()
+        return string
 
     def nextNode(self):
         """Return the right sibling in the tree or None if there is none. Works nicely

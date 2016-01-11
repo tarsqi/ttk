@@ -377,8 +377,9 @@ class Tag:
         self.attrs = attrs
 
     def __str__(self):
-        return "<Tag %s id=%s %d:%d %s>" % \
-               (self.name, self.id, self.begin, self.end, str(self.attrs))
+        attrs = ''.join([" %s='%s'" % (k,v) for k,v in self.attrs.items()])
+        return "<Tag %s id=%s %d:%d {%s }>" % \
+               (self.name, self.id, self.begin, self.end, attrs)
 
     def __cmp__(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with an

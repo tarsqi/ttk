@@ -76,7 +76,7 @@ def getPOSList(constituents):
     debugging purposes."""
     return [constituent.pos for constituent in constituents]
 
-def collapse_timex_nodes(nodes):
+def remove_timex_nodes(nodes):
     """Take a list of nodes and flatten it out by removing Timex tags."""
     return_nodes = []
     for node in nodes:
@@ -107,6 +107,12 @@ class GramChunk:
         self.modality = "NONE"
         self.polarity = "POS"
 
+    def check_class(self, class_name):
+        node_class_name = self.node.__class__.__name__
+        if node_class_name == class_name:
+            logger.warn("%s created with instance of %s" %
+                        (self.__class__.__name__, node_class_name))
+
     def add_verb_features(self, verbGramFeat):
         """Set grammatical features (tense, aspect, modality and polarity) with the
         features handed in from the governing verb."""
@@ -131,20 +137,15 @@ class GramAChunk(GramChunk):
 
     """Contains the grammatical features for an AdjectiveToken."""
 
-    def __init__(self, adjectivetoken, verbGramFeats):
+    def __init__(self, adjectivetoken):
         """Initialize with an AdjectiveToken and use default values for most instance
         variables, but percolate grammatical features from the copular verb if
         they were handed in."""
         GramChunk.__init__(self, adjectivetoken)
-        #self.node = adjectivetoken
-        #self.tense = "NONE"
-        #self.aspect = "NONE"
+        self.check_class('AdjectiveToken')
         self.nf_morph = "ADJECTIVE"
-        #self.modality = "NONE"
-        #self.polarity = "POS"
         self.head = adjectivetoken
         self.evClass = self.getEventClass()
-        self.add_verb_features(verbGramFeats)
 
     def getEventClass(self):
         """Return I_STATE if the head is on a short list of intentional state
@@ -160,20 +161,11 @@ class GramNChunk(GramChunk):
     def __init__(self, nounchunk):
         """Initialize with a NounChunk and use default values for most instance
         variables."""
-        self.check_class(nounchunk)
-        self.node = nounchunk
-        self.tense = "NONE"
-        self.aspect = "NONE"
+        GramChunk.__init__(self, nounchunk)
+        self.check_class('NounChunk')
         self.nf_morph = "NOUN"
-        self.modality = "NONE"
-        self.polarity = "POS"
         self.head = self.node.getHead()
         self.evClass = self.getEventClass()
-
-    def check_class(self, chunk):
-        chunkclassname = chunk.__class__.__name__
-        if chunkclassname != 'NounChunk':
-            logger.warn("GramNChunk created with instance of " + chunkclassname)
 
     def getEventClass(self):
         """Get the event class for the GramChunk. For nominals, the event class
@@ -293,7 +285,7 @@ class GramVChunkList:
 
     def distributeInfo(self):
         tempNodes = self.remove_interjections()
-        tempNodes = collapse_timex_nodes(tempNodes)
+        tempNodes = remove_timex_nodes(tempNodes)
         itemCounter = 0
         for item in tempNodes:
             if item.pos == 'TO':
@@ -638,7 +630,7 @@ class GramVChunk(GramChunk):
             logger.warn("Error running event class patterns")
 
     def as_verbose_string(self):
-        if self.node == None:
+        if self.node is None:
             opening_string = 'GramVChunk: None'
         else:
             opening_string = "GramVChunk: %s" % self.node.getText()

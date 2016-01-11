@@ -22,32 +22,62 @@ pairs in later elements.
 EVENT_TESTS = [
 
     ('NOUN-1', "The war is over.", 4, 7, ('class', 'OCCURRENCE'), ('tense', 'NONE')),
+
     ('NOUN-2', "The man is old.", 4, 7, None),
+
     ('VERB-bark', "Fido barks.", 5, 10),
+
     ('VERB-not-bark', "Fido does not bark.", 14, 18, ('polarity', 'NEG')),
+
     ('VERB-sleeps-today', "John sleeps today.", 5, 11),
+
     # need case for MODAL
+
     ('BE-ADJ-1', "The door is open.", 12, 16),
+
     ('BE-NOM-1', "There was a war.", 12, 15),
+
     ('BE-NOM-2', "There was a war.", 6, 9, None),
+
     ('BE-NOM-3', "There was a man.", 6, 9, None),
+
     ('BE-NOM-4', "There was a man.", 12, 15, None),
-    ('BECOME-1', "Women have become the sole support of their families.", 11, 17),
+
+    ('BECOME-1', "Women have become the sole support of their families.",
+     11, 17, ('tense', 'PRESENT'), ('aspect', 'PERFECTIVE')),
+
     ('BECOME-ADJ-1', "Women have become alarmed.", 11, 17),
+
     ('BECOME-ADJ-2', "Women have become alarmed.", 18, 25),
-    ('CONTINUE-1', "The earnings continued to be excellent.", 13, 22),
+
     ('CONTINUE-ADJ-1', "The earnings continued to be excellent.", 13, 22),
-    ('CONTINUE-ADJ-2', "The economic embargo on materials continued unabated.", 34, 43),
-    ('CONTINUE-ADJ-3', "The economic embargo on materials continued unabated.", 44, 52),
+
+    ('CONTINUE-ADJ-2', "The economic embargo on materials continued unabated.",
+     34, 43,('class', 'ASPECTUAL'), ('tense', 'PAST'), ('aspect', 'NONE')),
+
+    ('CONTINUE-ADJ-3', "The economic embargo on materials continued unabated.",
+     44, 52, ('class', 'STATE'), ('tense', 'NONE'), ('aspect', 'NONE')),
+
     ('DO-1', "You can do that.", 8, 10),
+
     # need case for DO-AUX
-    ('GOING-1', "The fundamental change the industry is going through.", 39, 44),
+
+    ('GOING-1', "The fundamental change the industry is going through.",
+     39, 44, ('class', 'OCCURRENCE'), ('tense', 'PRESENT'), ('aspect', 'PROGRESSIVE')),
+
     ('GOING-TO-1', "We are going to maintain our forces in the region.", 7, 12, None),
+
     ('GOING-TO-2', "We are going to maintain our forces in the region.", 16, 24), # FUTURE
+
     ('HAVE-1-1', "All Arabs would have to move behind Iraq.", 16, 20, None),
+
     ('HAVE-1-2', "All Arabs would have to move behind Iraq.", 24, 28, ('modality', 'would have to')),
+
     ('HAVE-2-1', "The Iraqi leadership did not have a rational approach.", 29, 33),
+
     ('KEEP-1', "The stocks they keep on hand to sell investors.", 16, 20), # ASPECTUAL
+
     ('KEEP-2', "They intend to keep interest rates unchanged.", 15, 19), # ASPECTUAL
+
     ('KEEP-3', "They intend to keep interest rates unchanged.", 35, 44), # STATE
 ]
