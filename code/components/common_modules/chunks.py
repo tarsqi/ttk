@@ -38,7 +38,7 @@ class Chunk(Constituent):
 
     Instance variables
        phraseType         - string indicating the chunk type, either 'vg' or 'ng'
-       parent=None        - the parent of the chunk
+       parent = None      - the parent of the chunk
        dtrs = []          - a list of Tokens, EventTags and TimexTags
        position = None    - index in the parent's daughters list
        head = -1          - the index of the head of the chunk
@@ -50,7 +50,7 @@ class Chunk(Constituent):
        checkedEvents = False
 
     """
-    
+
     def __init__(self, phraseType):
         Constituent.__init__(self)
         self.phraseType = phraseType
@@ -158,12 +158,12 @@ class NounChunk(Chunk):
         """Return True if the chunk is empty, False otherwise."""
         return False if self.dtrs else True
 
-    def createEvent(self, verbGramFeat=None):
+    def createEvent(self, gramvchunks=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
-        event candidate, then conditionally adds it. The verbGramFeat dictionary
+        event candidate, then conditionally adds it. The gramvchunk dictionary
         is used when a governing verb hands in its features to a nominal in a
         predicative complement."""
-        logger.debug("NounChunk.createEvent(verbGramFeat=%s)" % verbGramFeat)
+        logger.debug("NounChunk.createEvent(gramvchunk=%s)")
         if self.isEmpty():
             # this happened at some point due to a crazy bug in some old code
             # that does not exist anymore, let's log a warning in case this
@@ -171,7 +171,7 @@ class NounChunk(Chunk):
             logger.warn("There are no dtrs in the NounChunk")
         else:
             self.gramchunk = GramNChunk(self)
-            self.gramchunk.add_verb_features(verbGramFeat)
+            self.gramchunk.add_verb_features(gramvchunks)
             logger.debug(self.gramchunk.as_verbose_string())
             # Even if preceded by a BE or a HAVE form, only tagging N Chunks
             # headed by an eventive noun E.g., "was an intern" will NOT be
@@ -257,24 +257,17 @@ class VerbChunk(Chunk):
 
     def _processEventInMultiNChunk(self, GramVCh, substring):
         nounChunk = substring[-1]
-        verbGramFeatures = {'tense': GramVCh.tense,
-                            'aspect': GramVCh.aspect,
-                            'modality': GramVCh.modality,
-                            'polarity': GramVCh.polarity}
-        nounChunk.createEvent(verbGramFeatures)
+        nounChunk.createEvent(GramVCh)
         map(update_event_checked_marker, substring)
 
     def _processEventInMultiAChunk(self, GramVCh, substring):
         adjToken = substring[-1]
-        verbGramFeatures = {'tense': GramVCh.tense,
-                            'aspect': GramVCh.aspect,
-                            'modality': GramVCh.modality,
-                            'polarity': GramVCh.polarity}
-        adjToken.createAdjEvent(verbGramFeatures)
+        adjToken.createAdjEvent(GramVCh)
         map(update_event_checked_marker, substring)
 
     def _processDoubleEventInMultiAChunk(self, GramVCh, substring):
-        """Tagging EVENT in VerbChunk and in AdjectiveToken."""
+        """Tagging EVENT in both VerbChunk and AdjectiveToken. In this case the adjective
+        will not be given the verb features."""
         logger.debug("[V_2Ev] " + GramVCh.as_verbose_string())
         self._processEventInChunk(GramVCh)
         adjToken = substring[-1]

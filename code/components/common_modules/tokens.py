@@ -134,15 +134,15 @@ class AdjectiveToken(Token):
     def isAdjToken(self):
         return True
         
-    def createAdjEvent(self, verbGramFeats=None):
+    def createAdjEvent(self, gramvchunk=None):
         """Processes the adjective after a copular verb and make it an event if the
         adjective has an event class."""
-        logger.debug("AdjectiveToken.createAdjEvent(verbGramFeat=%s)" % verbGramFeats)
+        logger.debug("AdjectiveToken.createAdjEvent(gramvchunk)")
         if not self.parent.__class__.__name__ == 'Sentence':
             logger.warn("Unexpected syntax tree")
             return
         self.gramchunk = GramAChunk(self)
-        self.gramchunk.add_verb_features(verbGramFeats)
+        self.gramchunk.add_verb_features(gramvchunk)
         logger.debug(self.gramchunk.as_verbose_string())
         self._processEventInToken()
 

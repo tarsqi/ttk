@@ -113,14 +113,14 @@ class GramChunk:
             logger.warn("%s created with instance of %s" %
                         (self.__class__.__name__, node_class_name))
 
-    def add_verb_features(self, verbGramFeat):
+    def add_verb_features(self, gramvchunk):
         """Set grammatical features (tense, aspect, modality and polarity) with the
         features handed in from the governing verb."""
-        if verbGramFeat is not None:
-            self.tense = verbGramFeat['tense']
-            self.aspect = verbGramFeat['aspect']
-            self.modality = verbGramFeat['modality']
-            self.polarity = verbGramFeat['polarity']
+        if gramvchunk is not None:
+            self.tense = gramvchunk.tense
+            self.aspect = gramvchunk.aspect
+            self.modality = gramvchunk.modality
+            self.polarity = gramvchunk.polarity
 
     def as_verbose_string(self):
         """Debugging method to print the GramChunk and its features."""
@@ -446,10 +446,10 @@ class GramVChunk(GramChunk):
         self.left = left  
         self.negative = self.negMarks
         self.infinitive = self.infMark
-        self.gramFeatures = self.getGramFeatures()
-        self.tense = self.getTense()
-        self.aspect = self.getAspect()
-        self.nf_morph = self.getNf_morph()
+        self.tense = 'NONE'
+        self.aspect = 'NONE'
+        self.nf_morph = 'VERB'
+        self.set_tense_and_aspect()
         self.modality = self.getModality()
         self.polarity = self.getPolarity()
         self.head = self.getHead()
@@ -467,8 +467,7 @@ class GramVChunk(GramChunk):
             "\thead         = %s\n" % ( str(self.head) ) + \
             "\tevClass      = %s\n" % ( str(self.evClass) ) + \
             "\ttense        = %s\n" % ( str(self.tense) ) + \
-            "\taspect       = %s\n" % ( str(self.aspect) ) + \
-            "\tgramFeatures = %s\n" % ( str(self.gramFeatures) )
+            "\taspect       = %s\n" % ( str(self.aspect) )
 
     def isAuxVerb(self):
         return True if self.head.getText().lower() in forms.auxVerbs else False
@@ -486,43 +485,30 @@ class GramVChunk(GramChunk):
         else:
             return None
 
-    def getGramFeatures(self):
-        """Generates a triple of TENSE, ASPECT and CATEGORY given the tokens of
-        the chunk, which are stored in self.trueChunk. Selects the rules
-        relevant for the length of the chunk and applies them. Returns None if
-        no rule applies."""
-        # TODO: add these to the regular variables, not the list
+    def set_tense_and_aspect(self):
+        """Sets the tense and aspect attributes by overwriting the default values with
+        results from the feature rules in FEATURE_RULES. This method also tries a trick
+        in case no features were extracted from the rules."""
+        # TODO: get to understand that trick
+        features = self.apply_feature_rules()
+        if features is not None:
+            (tense, aspect, nf_morph) = features
+            self.tense = tense
+            self.aspect = aspect
+        elif len(self.trueChunk) > 1 and self.head is not None:
+            self.tense = getattr(GramVChunkList([self.head])[0], 'tense')
+            self.aspect = getattr(GramVChunkList([self.head])[0], 'aspect')
+
+    def apply_feature_rules(self):
+        """Returns a triple of TENSE, ASPECT and CATEGORY given the tokens of the chunk,
+        which are stored in self.trueChunk. Selects the rules relevant for the
+        length of the chunk and applies them. Returns None if no rule applies."""
         rules = FEATURE_RULES[len(self.trueChunk)]
         for rule in rules:
             features = FeatureRule(rule, self.trueChunk).match()
-            if features: return features
+            if features:
+                return features
         return None
-
-    def getTense(self):
-        """Return the tense of the GramVChunk."""
-        return self.get_gram_feature('tense', 0, 'NONE')
-
-    def getAspect(self):
-        """Return the aspect of the GramVChunk."""
-        return self.get_gram_feature('aspect', 1, 'UNKNOWN')
-
-    def getNf_morph(self):
-        """Return the nf_morph of the GramVChunk."""
-        return self.get_gram_feature('nf_morph', 2, 'UNKNOWN')
-
-    def get_gram_feature(self, feature, idx, default):
-        """Return the value of the grammatical feature given the feature name (which is
-        one of tense, aspect and nf_morph), the index in the self.gramFeatures
-        dictionary and a default value."""
-        # TODO: in rare cases there is no gramFeatures dictionary, we then get
-        # the feature from the first GramVChunk (not quite sure how exactly this
-        # works) or from the default value
-        if self.gramFeatures:
-            return self.gramFeatures[idx]
-        elif len(self.trueChunk) > 1 and self.getHead():
-            return getattr(GramVChunkList([self.getHead()])[0], feature)
-        else:
-            return default
 
     def getModality(self):
         modal = ''

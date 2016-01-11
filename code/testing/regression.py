@@ -1,26 +1,26 @@
-"""ttk_regression.py
+"""regression.py
 
 Regression test for the Tarsqi components. Currently only for Evita and within
 evita only loads some verbal event cases.
 
 Usage:
 
-$ python ttk_regression.py --evita
+$ python regression.py --evita
 
    Runs all available Evita tests and stores the results in directories
    results/evita-XX where the XX denotes a particular Evita test. Files in the
    results directories are timestamped.
-   
-$ python ttk_regression.py --report
+
+$ python regression.py --report
 
    Generate HTML reports of all available tests.
-   
-$ python ttk_regression.py --purge TEST_CASE TIMESTAMP
+
+$ python regression.py --purge TEST_CASE TIMESTAMP
 
    Purge the resuts data for a particular test case at a particular timestamp
    and update the report. An example test case would be evita-vg.
 
-$ python ttk_regression.py --create-event-vg-cases
+$ python regression.py --create-event-vg-cases
 
    Creates test cases from cases/input/timebank-events-vg.txt and puts them in
    cases/cases-evita-vg.tab. This needs to be run only once.
@@ -92,7 +92,7 @@ def create_event_vg_cases():
     outfile = 'testing/cases/cases-evita-vg.txt'
     out = open(outfile, 'w')
     out.write("# EVITA TEST CASES FOR VERBAL EVENTS\n")
-    out.write("# Created by create_event_vg_cases() in code/testing/ttk_regression.py\n\n")
+    out.write("# Created by create_event_vg_cases() in code/testing/regression.py\n\n")
     for line in open(infile):
         if line[0] == '#': continue
         if not line.strip(): continue
@@ -121,18 +121,15 @@ def run_evita():
     for case in cases:
         result = check_tag('PREPROCESSOR,EVITA', case.sentence, 'EVENT', case.o1, case.o2)
         fh.write("%s\t%s\n" % (case.identifier, '+' if result is True else '-'))
-        if result is True: true += 1
-            #print identifier, result
+        if result is True:
+            true += 1
         else:
             false += 1
-            #print case
-            #print "   [%s]" % ' '.join(["%s:%s" % (t.begin, t.end) for t in result[1]])
-            # break
     print "True=%s False=%s" % (true, false)
-    
+
 def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
-    # NOTE: apart from the options this is the same function as in ttk_unittests.py
+    # NOTE: apart from the options this is the same function as in unittests.py
     options = [('--pipeline', pipeline),
                ('--loglevel', '1')]
     td = tarsqi.process_string(sentence, options)
@@ -168,7 +165,7 @@ class ReportGenerator(object):
         self.case_fh = None
         self.case_fh = None
         self.case_results = None
-        
+
     def _init_cases(self):
         for name in glob.glob(self.cases_dir + '/cases-*.tab'):
             case_name = os.path.splitext(os.path.basename(name))[0]
@@ -244,7 +241,7 @@ class ReportGenerator(object):
                                   case.sentence[case.o2:]))
         self.case_fh.write("</table>")
 
-    
+
 def generate_report():
     """Generate the html reports from the current result files."""
     generator =  ReportGenerator()
@@ -274,7 +271,6 @@ def purge_result(args):
         generate_report()
 
 
-    
 if __name__ == '__main__':
 
     options = ['create-event-vg-cases', 'evita', 'report', 'purge']
