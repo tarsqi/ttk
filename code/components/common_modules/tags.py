@@ -20,6 +20,11 @@ class Tag(Constituent):
 
     """Abstract class for all TimeML non-link tags."""
 
+    def createEvent(self):
+        """Do nothing when an EventTag or TimexTag is asked to create an event. Without
+        this method a method with the same name on Consituent would log a warning."""
+        pass
+
 
 
 class EventTag(Tag):

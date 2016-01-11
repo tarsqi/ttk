@@ -65,7 +65,7 @@ SHOW_ERRORS = False
 GUTIME_PIPELINE = 'PREPROCESSOR,GUTIME'
 EVITA_PIPELINE = 'PREPROCESSOR,EVITA'
 SLINKET_PIPELINE = 'PREPROCESSOR,GUTIME,EVITA,SLINKET'
-SLINKET_PIPELINE = 'PREPROCESSOR,EVITA,SLINKET'
+#SLINKET_PIPELINE = 'PREPROCESSOR,EVITA,SLINKET'
 
 # this is used when we run all tests so we can print a summary at the end
 SUMMARY = []
@@ -165,7 +165,6 @@ class TarsqiLinkTest(TarsqiTest):
                 print; traceback.print_exc(); print
 
 
-
 class GUTimeTest(TarsqiEntityTest):
     """Test case for GUTime tests. This test is handed the test specifications and
     uses TarsqiEntityTest with the 'TIMEX3' tag and the GUTime pipeline."""
@@ -191,14 +190,10 @@ class SlinketTest(TarsqiLinkTest):
         TarsqiLinkTest.run(self, SLINKET_PIPELINE)
 
 
-
 def run_pipeline(pipeline, sentence):
     """Run the sentence through the pipeline and return the resulting
-    TarsqiDocument. Do not let the Tarsqi code trap errors."""
-    options = [('--pipeline', pipeline),
-               ('--loglevel', '1'),
-               ('--trap-errors', 'False')]
-    return tarsqi.process_string(sentence, options)
+    TarsqiDocument. The process_string method does not trap errors."""
+    return tarsqi.process_string(sentence, pipeline=pipeline, loglevel=1)
 
 def get_tag(td, tag, o1, o2):
     """Return the tag between offsets o1 and o2 if there is one, return None if
@@ -296,7 +291,7 @@ def print_summary():
 if __name__ == '__main__':
 
     # a dummy run just to get the tagger messages out of the way
-    tarsqi.process_string("Fido barks.", [('--pipeline', 'PREPROCESSOR')])
+    tarsqi.process_string("Fido barks.")
 
     run_gutime_tests = False
     run_evita_tests = False

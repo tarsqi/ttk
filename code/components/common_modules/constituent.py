@@ -88,9 +88,10 @@ class Constituent:
         except IndexError:
             return None
 
-    def createEvent(self, tarsqidoc):
-        """Does nothing except for logging a warning. If this happens something weird is
-        going on. Event creation is only attempted on some sub classes."""
+    def createEvent(self):
+        """Does nothing except for logging a warning. If this happens something
+        unexpected is going on. Event creation is only attempted on some sub
+        classes."""
         logger.warn("Unexpected recipient of createEvent()")
 
 

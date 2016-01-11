@@ -114,8 +114,8 @@ class GramChunk:
                         (self.__class__.__name__, node_class_name))
 
     def add_verb_features(self, gramvchunk):
-        """Set grammatical features (tense, aspect, modality and polarity) with the
-        features handed in from the governing verb."""
+        """Set some features (tense, aspect, modality and polarity) to the values of
+        those features on the governing verb."""
         if gramvchunk is not None:
             self.tense = gramvchunk.tense
             self.aspect = gramvchunk.aspect
