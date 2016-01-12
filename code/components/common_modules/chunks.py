@@ -11,11 +11,24 @@ import library.forms as forms
 import library.patterns as patterns
 from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL
 from library.timeMLspec import EVENTID, EIID, CLASS, EVENT, TIMEX
-from utilities import logger
+
 from components.common_modules import utils
 from components.common_modules.constituent import Constituent
+
 from components.evita.event import Event
 from components.evita.gramChunk import GramNChunk, GramVChunkList
+from components.evita import wordnet
+from components.evita import bayes
+
+from components.evita.settings import EVITA_NOM_DISAMB
+from components.evita.settings import EVITA_NOM_CONTEXT
+from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
+
+from utilities import logger
+
+
+# Get the Bayesian event recognizer
+nomEventRec = bayes.get_classifier()
 
 
 # This is another way of capturing messages. It is separate from the logger and
@@ -175,9 +188,66 @@ class NounChunk(Chunk):
             # Even if preceded by a BE or a HAVE form, only tagging N Chunks
             # headed by an eventive noun E.g., "was an intern" will NOT be
             # tagged
-            if self.gramchunk.isEventCandidate():
+            #if self.gramchunk.isEventCandidate():
+            if self.isEventCandidate():
                 logger.debug("Nominal is an event candidate")
                 self._processEventInChunk()
+
+    def isEventCandidate(self):
+        """Return True if the nominal is syntactically and semantically an
+        event, return False otherwise."""
+        return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
+
+    def isEventCandidate_Syn(self):
+        """Return True if the GramNChunk is syntactically able to be an event,
+        return False otherwise. An event candidate syntactically has to have a
+        head (which cannot be a timex) and the head has to be a common noun."""
+        # using the regular expression is a bit faster then lookup in the short
+        # list of common noun parts of speech (forms.nounsCommon)
+        return (
+            self.gramchunk.head
+            and not self.gramchunk.head.isTimex()
+            and forms.RE_nounsCommon.match(self.gramchunk.head.pos) )
+
+    def isEventCandidate_Sem(self):
+        """Return True if the GramNChunk can be an event semantically. Depending
+        on user settings this is done by a mixture of wordnet lookup and using a
+        simple classifier."""
+        logger.debug("event candidate?")
+        lemma = self.gramchunk.getEventLemma()
+        # return True if all WordNet senses are events, no classifier needed
+        is_event = wordnet.allSensesAreEvents(lemma)
+        logger.debug("  all WordNet senses are events ==> %s" % is_event)
+        if is_event:
+            return True
+        # run the classifier if required, fall through on disambiguation error
+        if EVITA_NOM_DISAMB:
+            try:
+                is_event = self._run_classifier(lemma)
+                logger.debug("  baysian classifier result ==> %s" % is_event)
+                return is_event
+            except bayes.DisambiguationError, (strerror):
+                pass
+                logger.debug("  DisambiguationError: %s" % unicode(strerror))
+        # check whether primary sense or some of the senses are events
+        if EVITA_NOM_WNPRIMSENSE_ONLY:
+            is_event = wordnet.primarySenseIsEvent(lemma)
+            logger.debug("  primary WordNet sense is event ==> %s" % is_event)
+        else:
+            is_event = wordnet.someSensesAreEvents(lemma)
+            logger.debug("  some WordNet sense is event ==> %s" % is_event)
+        return is_event
+
+    def _run_classifier(self, lemma):
+        """Run the classifier on lemma, using features from the GramNChunk."""
+        features = []
+        if EVITA_NOM_CONTEXT:
+            features = ['DEF' if self.isDefinite() else 'INDEF',
+                        self.gramchunk.head.pos]
+        is_event = nomEventRec.isEvent(lemma, features)
+        logger.debug("  nomEventRec.isEvent(%s) ==> %s" % (lemma, is_event))
+        return is_event
+
 
 
 class VerbChunk(Chunk):

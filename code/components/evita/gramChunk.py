@@ -4,25 +4,14 @@ This module contains classes that add grammatical features to NounChunks,
 VerbChunks and AdjectiveTokens. The grammatical features drive part of the event
 recognition.
 
-It is debatable whether the functionality should be here or whether it should be
-on the classes that these classes are attached to. This module feels like a bit
-of a hodge-podge and the naming of the classes (GramNChunk etcetera) is a bit
-unfortunate and tends to be confusing.
-
-Included here is functionality to:
-- look up nominals in WordNet (using wordnet module)
-- run a simple bayesian classifier
-- check whether a nominal is a potential event
-- check the kind of verb chunk (modal, future)
-- generate the event class
-
 """
 
-from types import ListType, InstanceType
+# TODO. Some old functionality that seemed better suited for NounChunk was
+# removed, but there may still be functionality on GramVChunk that should really
+# be on VerbChunk.
 
-import wordnet
-import bayes
-from rule import FeatureRule
+
+from types import ListType, InstanceType
 
 import utilities.porterstemmer as porterstemmer
 import utilities.logger as logger
@@ -32,34 +21,12 @@ from library import forms
 from library.evita.patterns.feature_rules import FEATURE_RULES
 
 from components.common_modules.utils import get_tokens
-
-DEBUG = False
-
-# Determines whether we try to disambiguate nominals with training data
-NOM_DISAMB = True
-
-# Determines whether we use context information in training data (has no effect if
-# NOM_DISAMB == False).
-NOM_CONTEXT = True
-
-# Determines how we use WordNet to recognize events. If True, mark only forms
-# whose first WN sense is an event sense, if False, mark forms which have any
-# event sense (if NOM_DISAMB is true, this is only a fallback where no training
-# data exists).
-NOM_WNPRIMSENSE_ONLY = True
+from components.evita.rule import FeatureRule
 
 
-# Open pickle files with verbstem information
+# Open pickle files with verbstem information and get a stemmer
 DictVerbStems = open_pickle_file(forms.DictVerbStemPickleFileName)
-
-# Get the Bayesian event recognizer and the stemmer
-nomEventRec = bayes.get_classifier()
 stemmer = porterstemmer.Stemmer()
-
-if DEBUG:
-    print "NOM_DISAMB = %s" % NOM_DISAMB
-    print "NOM_CONTEXT = %s" % NOM_CONTEXT
-    print "NOM_WNPRIMSENSE_ONLY = %s" % NOM_WNPRIMSENSE_ONLY
 
 
 def getWordList(constituents):
@@ -73,11 +40,6 @@ def getPOSList(constituents):
     the constituents are instances of NounChunk, VerbChunk or Token. Used for
     debugging purposes."""
     return [constituent.pos for constituent in constituents]
-
-def debug(*args):
-    if DEBUG:
-        for arg in args: print arg,
-        print
 
         
 class GramChunk:
@@ -159,59 +121,6 @@ class GramNChunk(GramChunk):
             return self.head.lemma
         except AttributeError:
             return stemmer.stem(self.head.getText().lower())
-
-    def isEventCandidate(self):
-        """Return True if the nominal is syntactically and semantically an
-        event, return False otherwise."""
-        return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
-
-    def isEventCandidate_Syn(self):
-        """Return True if the GramNChunk is syntactically able to be an event,
-        return False otherwise. An event candidate syntactically has to have a
-        head (which cannot be a timex) and the head has to be a common noun."""
-        # using the regular expression is a bit faster then lookup in the short
-        # list of common noun parts of speech (forms.nounsCommon)
-        return (
-            self.head
-            and not self.head.isTimex()
-            and forms.RE_nounsCommon.match(self.head.pos) )
-
-    def isEventCandidate_Sem(self):
-        """Return True if the GramNChunk can be an event semantically. Depending
-        on user settings this is done by a mixture of wordnet lookup and using a
-        simple classifier."""
-        debug("event candidate?")
-        lemma = self.getEventLemma()
-        # return True if all WordNet senses are events, no classifier needed
-        is_event = wordnet.allSensesAreEvents(lemma)
-        debug("  all WordNet senses are events ==> %s" % is_event)
-        if is_event:
-            return True
-        # run the classifier if required, fall through on disambiguation error
-        if NOM_DISAMB:
-            try:
-                is_event = self._run_classifier(lemma)
-                debug("  baysian classifier result ==> %s" % is_event)
-                return is_event
-            except bayes.DisambiguationError, (strerror):
-                debug("  DisambiguationError: %s" % unicode(strerror))
-        # check whether primary sense or some of the senses are events
-        if NOM_WNPRIMSENSE_ONLY:
-            is_event = wordnet.primarySenseIsEvent(lemma)
-            debug("  primary WordNet sense is event ==> %s" % is_event)
-        else:
-            is_event = wordnet.someSensesAreEvents(lemma)
-            debug("  some WordNet sense is event ==> %s" % is_event)
-        return is_event
-
-    def _run_classifier(self, lemma):
-        """Run the classifier on lemma, using features from the GramNChunk."""
-        features = []
-        if NOM_CONTEXT:
-            features = ['DEF' if self.node.isDefinite() else 'INDEF', self.head.pos]
-        is_event = nomEventRec.isEvent(lemma, features)
-        debug("  nomEventRec.isEvent(%s) ==> %s" % (lemma, is_event))
-        return is_event
 
 
 class GramVChunkList:
@@ -464,7 +373,7 @@ class GramVChunk(GramChunk):
         if self.trueChunk:
             return self.trueChunk[-1]
         else:
-            debug("WARNING: empty trueChunk, head is set to None")
+            logger.warn("empty trueChunk, head is set to None")
             return None
 
     def getPreHead(self):
