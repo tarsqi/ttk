@@ -21,9 +21,8 @@ Included here is functionality to:
 from types import ListType, InstanceType
 
 import wordnet
+import bayes
 from rule import FeatureRule
-from bayes import BayesEventRecognizer
-from bayes import DisambiguationError
 
 import utilities.porterstemmer as porterstemmer
 import utilities.logger as logger
@@ -31,6 +30,8 @@ from utilities.file import open_pickle_file
 
 from library import forms
 from library.evita.patterns.feature_rules import FEATURE_RULES
+
+from components.common_modules.utils import get_tokens
 
 DEBUG = False
 
@@ -48,20 +49,17 @@ NOM_CONTEXT = True
 NOM_WNPRIMSENSE_ONLY = True
 
 
-# Open pickle files with semcor and verbstem information
-DictSemcorEvent = open_pickle_file(forms.DictSemcorEventPickleFilename)
-DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
+# Open pickle files with verbstem information
 DictVerbStems = open_pickle_file(forms.DictVerbStemPickleFileName)
 
-# Create the Bayesian event recognizer and the stemmer
-nomEventRec = BayesEventRecognizer(DictSemcorEvent, DictSemcorContext)
+# Get the Bayesian event recognizer and the stemmer
+nomEventRec = bayes.get_classifier()
 stemmer = porterstemmer.Stemmer()
 
 if DEBUG:
     print "NOM_DISAMB = %s" % NOM_DISAMB
     print "NOM_CONTEXT = %s" % NOM_CONTEXT
     print "NOM_WNPRIMSENSE_ONLY = %s" % NOM_WNPRIMSENSE_ONLY
-    print "DBM_FILES_OPENED = %s" % DBM_FILES_OPENED
 
 
 def getWordList(constituents):
@@ -76,17 +74,6 @@ def getPOSList(constituents):
     debugging purposes."""
     return [constituent.pos for constituent in constituents]
 
-def remove_timex_nodes(nodes):
-    """Take a list of nodes and flatten it out by removing Timex tags."""
-    return_nodes = []
-    for node in nodes:
-        if node.isTimex():
-            for tok in node:
-                return_nodes.append(tok)
-        else:
-            return_nodes.append(node)
-    return return_nodes
-
 def debug(*args):
     if DEBUG:
         for arg in args: print arg,
@@ -99,19 +86,14 @@ class GramChunk:
     NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
     of instances of those classes."""
 
-    def __init__(self, chunk_or_token):
+    def __init__(self, chunk_or_token, gramvchunk):
         """Common initialization for GramNChunk and GramAChunk."""
         self.node = chunk_or_token
         self.tense = "NONE"
         self.aspect = "NONE"
         self.modality = "NONE"
         self.polarity = "POS"
-
-    def check_class(self, class_name):
-        node_class_name = self.node.__class__.__name__
-        if node_class_name == class_name:
-            logger.warn("%s created with instance of %s" %
-                        (self.__class__.__name__, node_class_name))
+        self.add_verb_features(gramvchunk)
 
     def add_verb_features(self, gramvchunk):
         """Set some features (tense, aspect, modality and polarity) to the values of
@@ -137,12 +119,11 @@ class GramAChunk(GramChunk):
 
     """Contains the grammatical features for an AdjectiveToken."""
 
-    def __init__(self, adjectivetoken):
+    def __init__(self, adjectivetoken, gramvchunk=None):
         """Initialize with an AdjectiveToken and use default values for most instance
         variables, but percolate grammatical features from the copular verb if
         they were handed in."""
-        GramChunk.__init__(self, adjectivetoken)
-        self.check_class('AdjectiveToken')
+        GramChunk.__init__(self, adjectivetoken, gramvchunk)
         self.nf_morph = "ADJECTIVE"
         self.head = adjectivetoken
         self.evClass = self.getEventClass()
@@ -158,11 +139,10 @@ class GramNChunk(GramChunk):
 
     """Contains the grammatical features for a NounChunk."""
 
-    def __init__(self, nounchunk):
+    def __init__(self, nounchunk, gramvchunk=None):
         """Initialize with a NounChunk and use default values for most instance
         variables."""
-        GramChunk.__init__(self, nounchunk)
-        self.check_class('NounChunk')
+        GramChunk.__init__(self, nounchunk, gramvchunk)
         self.nf_morph = "NOUN"
         self.head = self.node.getHead()
         self.evClass = self.getEventClass()
@@ -189,11 +169,12 @@ class GramNChunk(GramChunk):
         """Return True if the GramNChunk is syntactically able to be an event,
         return False otherwise. An event candidate syntactically has to have a
         head (which cannot be a timex) and the head has to be a common noun."""
-        if self.head.isTimex():
-            return False
         # using the regular expression is a bit faster then lookup in the short
         # list of common noun parts of speech (forms.nounsCommon)
-        return self.head and forms.RE_nounsCommon.match(self.head.pos)
+        return (
+            self.head
+            and not self.head.isTimex()
+            and forms.RE_nounsCommon.match(self.head.pos) )
 
     def isEventCandidate_Sem(self):
         """Return True if the GramNChunk can be an event semantically. Depending
@@ -201,14 +182,18 @@ class GramNChunk(GramChunk):
         simple classifier."""
         debug("event candidate?")
         lemma = self.getEventLemma()
-        # return True if all WorrdNetsenses are events, no classifier needed
-        if wordnet.allSensesAreEvents(lemma):
+        # return True if all WordNet senses are events, no classifier needed
+        is_event = wordnet.allSensesAreEvents(lemma)
+        debug("  all WordNet senses are events ==> %s" % is_event)
+        if is_event:
             return True
         # run the classifier if required, fall through on disambiguation error
         if NOM_DISAMB:
             try:
-                return self._run_classifier(lemma)
-            except DisambiguationError, (strerror):
+                is_event = self._run_classifier(lemma)
+                debug("  baysian classifier result ==> %s" % is_event)
+                return is_event
+            except bayes.DisambiguationError, (strerror):
                 debug("  DisambiguationError: %s" % unicode(strerror))
         # check whether primary sense or some of the senses are events
         if NOM_WNPRIMSENSE_ONLY:
@@ -285,7 +270,10 @@ class GramVChunkList:
 
     def distributeInfo(self):
         tempNodes = self.remove_interjections()
-        tempNodes = remove_timex_nodes(tempNodes)
+        #print self.node
+        #print '---', ' '.join([n.text for n in tempNodes])
+        tempNodes = get_tokens(tempNodes)
+        #print '-->', ' '.join([n.text for n in tempNodes])
         itemCounter = 0
         for item in tempNodes:
             if item.pos == 'TO':
@@ -593,24 +581,24 @@ class GramVChunk(GramChunk):
         """Return the event class for the nominal, using the regeluar expressions
         in the library."""
         try:
-            head = self.head.getText()
+            text = self.head.getText()
         except AttributeError:
             # This is used when the head is None, which can be the case for some
             # weird (and incorrect) chunks, like [to/TO] (MV 11//08/07)
             logger.warn("Cannot assign class to incorrect chunk")
             return None
-        head = 'is' if head in forms.be else DictVerbStems.get(head, head.lower())
+        stem = 'is' if text in forms.be else DictVerbStems.get(text, text.lower())
         try:
-            if forms.istateprog.match(head): return  'I_STATE'
-            elif forms.reportprog.match(head): return 'REPORTING'
-            elif forms.percepprog.match(head): return 'PERCEPTION'
-            elif forms.iactionprog.match(head): return 'I_ACTION'
-            elif forms.aspect1prog.match(head): return 'ASPECTUAL'
-            elif forms.aspect2prog.match(head): return 'ASPECTUAL'
-            elif forms.aspect3prog.match(head): return 'ASPECTUAL'
-            elif forms.aspect4prog.match(head): return 'ASPECTUAL'
-            elif forms.aspect5prog.match(head): return 'ASPECTUAL'
-            elif forms.stateprog.match(head): return 'STATE'
+            if forms.istateprog.match(stem): return  'I_STATE'
+            elif forms.reportprog.match(stem): return 'REPORTING'
+            elif forms.percepprog.match(stem): return 'PERCEPTION'
+            elif forms.iactionprog.match(stem): return 'I_ACTION'
+            elif forms.aspect1prog.match(stem): return 'ASPECTUAL'
+            elif forms.aspect2prog.match(stem): return 'ASPECTUAL'
+            elif forms.aspect3prog.match(stem): return 'ASPECTUAL'
+            elif forms.aspect4prog.match(stem): return 'ASPECTUAL'
+            elif forms.aspect5prog.match(stem): return 'ASPECTUAL'
+            elif forms.stateprog.match(stem): return 'STATE'
             else: return 'OCCURRENCE'
         except:
             logger.warn("Error running event class patterns")

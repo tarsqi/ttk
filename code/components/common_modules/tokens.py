@@ -141,8 +141,7 @@ class AdjectiveToken(Token):
         if not self.parent.__class__.__name__ == 'Sentence':
             logger.warn("Unexpected syntax tree")
             return
-        self.gramchunk = GramAChunk(self)
-        self.gramchunk.add_verb_features(gramvchunk)
+        self.gramchunk = GramAChunk(self, gramvchunk)
         logger.debug(self.gramchunk.as_verbose_string())
         self._processEventInToken()
 

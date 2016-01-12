@@ -4,8 +4,15 @@ Contains a Bayesian disambiguator.
 
 """
 
+from library import forms
+from utilities.file import open_pickle_file
 
-DEBUG_BAYES = False
+
+DEBUG = False
+
+# Open pickle files with semcor information
+DictSemcorEvent = open_pickle_file(forms.DictSemcorEventPickleFilename)
+DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
 
 # Specify at which frequency training data are allowed to have an impact on sense
 # disambiguation
@@ -14,7 +21,10 @@ MINIMAL_FREQUENCY = 2.0
 
 def _debug(string):
     """Debugging method"""
-    if DEBUG_BAYES: print string
+    if DEBUG: print string
+
+def get_classifier():
+    return BayesEventRecognizer(DictSemcorEvent, DictSemcorContext)
 
 
 class DisambiguationError(LookupError):

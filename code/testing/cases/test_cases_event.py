@@ -35,13 +35,17 @@ EVENT_TESTS = [
 
     ('BE-ADJ-1', "The door is open.", 12, 16),
 
-    ('BE-NOM-1', "There was a war.", 12, 15),
+    # the noun is an event, but the verb is not
+    ('BE-NOM-was-war-1', "There was a war.", 12, 15),
+    ('BE-NOM-was-war-2', "There was a war.", 6, 9, None),
 
-    ('BE-NOM-2', "There was a war.", 6, 9, None),
+    # no events
+    ('BE-NOM-was-man-1', "There was a man.", 6, 9, None),
+    ('BE-NOM-was-man-2', "There was a man.", 12, 15, None),
 
-    ('BE-NOM-3', "There was a man.", 6, 9, None),
-
-    ('BE-NOM-4', "There was a man.", 12, 15, None),
+    # the determiner matters for the classifier
+    ('BE-NOM-was-absence-1', "There was an absence .", 13, 20, None),
+    ('BE-NOM-was-absence-2', "There was the absence .", 14, 21),
 
     ('BECOME-1', "Women have become the sole support of their families.",
      11, 17, ('tense', 'PRESENT'), ('aspect', 'PERFECTIVE')),

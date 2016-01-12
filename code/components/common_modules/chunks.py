@@ -158,7 +158,7 @@ class NounChunk(Chunk):
         """Return True if the chunk is empty, False otherwise."""
         return False if self.dtrs else True
 
-    def createEvent(self, gramvchunks=None):
+    def createEvent(self, gramvchunk=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
         event candidate, then conditionally adds it. The gramvchunk dictionary
         is used when a governing verb hands in its features to a nominal in a
@@ -170,8 +170,7 @@ class NounChunk(Chunk):
             # problem returns
             logger.warn("There are no dtrs in the NounChunk")
         else:
-            self.gramchunk = GramNChunk(self)
-            self.gramchunk.add_verb_features(gramvchunks)
+            self.gramchunk = GramNChunk(self, gramvchunk)
             logger.debug(self.gramchunk.as_verbose_string())
             # Even if preceded by a BE or a HAVE form, only tagging N Chunks
             # headed by an eventive noun E.g., "was an intern" will NOT be
