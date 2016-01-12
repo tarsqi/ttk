@@ -46,9 +46,9 @@ class Sentence(Constituent):
                 # NOTE: this used to be "if event:", but the combination of that
                 # with EventTag.__getattr__ caused errors apparently because
                 # __nonzero__ was intercepted by __getattr__
-                if event is not None:
+                if event:
                     self.eventList.append((eventLocation, event.eid))
-            elif element.isToken() and element.event:
+            elif element.isEvent():
                 self.eventList.append((eventLocation, element.eid))
 
     def pretty_print(self, tree=True, verbose=False):
