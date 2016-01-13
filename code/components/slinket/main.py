@@ -46,6 +46,12 @@ class Slinket (TarsqiComponent):
     def process_doctree(self, doctree, tarsqidocelement):
         """Find alinks and slinks in doctree and export them to self.docelement."""
         self.doctree = doctree
+        if True and False:
+            for s in doctree:
+                for e in s:
+                    print e
+                    e.print_vars()
+            doctree.pp()
         self.docelement = tarsqidocelement
         self._build_event_dictionary()
         for sentence in self.doctree:

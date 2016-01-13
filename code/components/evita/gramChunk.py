@@ -12,6 +12,7 @@ recognition.
 
 
 from types import ListType, InstanceType
+from pprint import pprint
 
 import utilities.porterstemmer as porterstemmer
 import utilities.logger as logger
@@ -24,8 +25,10 @@ from components.common_modules.utils import get_tokens
 from components.evita.rule import FeatureRule
 
 
-# Open pickle files with verbstem information and get a stemmer
+# open the pickle file with verbstem information
 DictVerbStems = open_pickle_file(forms.DictVerbStemPickleFileName)
+
+# initialize a stemmer
 stemmer = porterstemmer.Stemmer()
 
 
@@ -45,6 +48,7 @@ def getPOSList(constituents):
 class GramChunk:
 
     """The subclasses of this class are used to add grammatical features to a
+
     NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
     of instances of those classes."""
 
@@ -65,6 +69,9 @@ class GramChunk:
             self.aspect = gramvchunk.aspect
             self.modality = gramvchunk.modality
             self.polarity = gramvchunk.polarity
+
+    def print_vars(self):
+        pprint(vars(self))
 
     def as_verbose_string(self):
         """Debugging method to print the GramChunk and its features."""

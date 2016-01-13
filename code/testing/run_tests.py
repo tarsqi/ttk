@@ -259,10 +259,10 @@ class ModuleTest(object):
             results[PASS] += test.results[PASS]
             results[FAIL] += test.results[FAIL]
             results[ERROR] += test.results[ERROR]
-        p = "PASS=%s" % results[PASS]
-        f = "FAIL=%s" % results[FAIL]
-        e = "ERROR=%s" % results[ERROR]
-        print "\nTOTALS:  %s  %s  %s\n" % (p, f, e)
+        p = results[PASS]
+        f = results[FAIL]
+        e = results[ERROR]
+        print "\nTOTALS:  PASS=%s  FAIL=%s  ERROR=%s\n" % (p, f, e)
         SUMMARY.append([self.module_name, p, f, e])
 
 
@@ -284,9 +284,13 @@ def test_slinket():
 
 def print_summary():
     print "\nSUMMARY:\n"
+    print "   %-15s    %-10s  %-10s  %s" % ('', ' PASS', ' FAIL',  'ERROR')
     for module, p, f, e in SUMMARY:
-        print "   %-15s    %-10s  %-10s  %s" % (module, p, f, e)
+        print "   %-15s    %5s       %5s       %5s" % (module, p, f, e)
     print
+    if f or e:
+        print "   THERE WERE FAILURES OR ERRORS\n"
+
 
 if __name__ == '__main__':
 

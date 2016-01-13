@@ -6,9 +6,8 @@ Contains a Bayesian disambiguator.
 
 from library import forms
 from utilities.file import open_pickle_file
+from utilities import logger
 
-
-DEBUG = False
 
 # Open pickle files with semcor information
 DictSemcorEvent = open_pickle_file(forms.DictSemcorEventPickleFilename)
@@ -18,10 +17,6 @@ DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
 # disambiguation
 MINIMAL_FREQUENCY = 2.0
 
-
-def _debug(string):
-    """Debugging method"""
-    if DEBUG: print string
 
 def get_classifier():
     return BayesEventRecognizer(DictSemcorEvent, DictSemcorContext)
@@ -49,8 +44,8 @@ class BayesEventRecognizer:
         DisambiguationError if there is not enough data for a decision."""
 
         senseProbData = self.senseProbs.get(lemma, [0.0, 0.0])
-        _debug("BayesEventRecognizer.isEvent("+lemma+")")
-        _debug("  " + str(senseProbData))
+        logger.debug("BayesEventRecognizer.isEvent("+lemma+")")
+        logger.debug("\traw counts: " + str(senseProbData))
 
         # calculate probabilities from frequency data, refuse to do anything if
         # frequencies are too low
@@ -59,7 +54,7 @@ class BayesEventRecognizer:
             raise DisambiguationError('sparse data for "' + lemma + '"')
         probEvent = senseProbData[1] / frequency
         probNonEvent = 1 - probEvent
-        _debug("  " + str(probEvent) + " > " + str(probNonEvent))
+        logger.debug("\tprobabilities: non-event=%s event=%s" % (probNonEvent, probEvent))
 
         # return now if probabilities are absolute
         if probEvent == 1:
@@ -72,11 +67,11 @@ class BayesEventRecognizer:
         for feature in features:
             try:
                 probs = self.condProbs[lemma][feature]
-                _debug("  "+feature+": "+str(probs))
+                logger.debug("\tfeature prob: %s=%s" % (feature, probs))
                 probEvent *= probs[1]
                 probNonEvent *= probs[0]
             except KeyError:
                 pass
 
-        _debug("  " + str(probEvent) + " > " + str(probNonEvent))
+        logger.debug("\tadjusted probabilities: non-event=%s event=%s" % (probNonEvent, probEvent))
         return probEvent > probNonEvent

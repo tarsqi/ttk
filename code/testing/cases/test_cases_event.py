@@ -33,7 +33,8 @@ EVENT_TESTS = [
 
     # need case for MODAL
 
-    ('BE-ADJ-1', "The door is open.", 12, 16),
+    ('BE-ADJ-was-open', "The door was open.", 13, 17),
+    ('BE-ADJ-is-green', "The wall is green.", 12, 17),
 
     # the noun is an event, but the verb is not
     ('BE-NOM-was-war-1', "There was a war.", 12, 15),

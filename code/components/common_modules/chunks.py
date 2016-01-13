@@ -30,7 +30,6 @@ from utilities import logger
 # Get the Bayesian event recognizer
 nomEventRec = bayes.get_classifier()
 
-
 # This is another way of capturing messages. It is separate from the logger and
 # operates class based. It is used in VerbChunk to collect data from a run.
 DRIBBLE = False
@@ -49,35 +48,38 @@ class Chunk(Constituent):
     """Implements the common behaviour of chunks. Chunks are embedded in sentences and
     contain event tags, timex tags and tokens.
 
-    Instance variables
+    Instance variables (in addition to the ones defined on Constituent)
        phraseType         - string indicating the chunk type, either 'vg' or 'ng'
-       parent = None      - the parent of the chunk
-       dtrs = []          - a list of Tokens, EventTags and TimexTags
-       position = None    - index in the parent's daughters list
        head = -1          - the index of the head of the chunk
-       parent = None      - the parent, an instance of Sentence typically
        gramchunk = None   - an instance of GramNChunk or GramVChunk
        gramchunks = []    - a list of GramVChunks, used for verb chunks
-       event = None
-       eid = None
+       event = None       - set to True if the chunk contains an event
+       eid = None         - set to an identifier if the chunk contains an event
+       eiid = None        - set to an identifier if the chunk contains an event
        checkedEvents = False
 
-    """
+    Some of these variables are set to a non-default value at initialization,
+    but most of them are filled in during processing. The variables event, eid
+    and eiid are generated during TarsqiTree construction, they are all None
+    when a tree is created for Evita, but can have values for components later
+    in the pipeline."""
+
+    # TODO: maybe replace eid and eiid with event_tag (cf AdjectiveToken)
 
     def __init__(self, phraseType):
         Constituent.__init__(self)
         self.phraseType = phraseType
-        self.position = None
         self.head = -1
         self.gramchunk = None
         self.gramchunks = []
         self.event = None
         self.eid = None
+        self.eiid = None
         self.checkedEvents = False
 
     def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance variables used in the
-        pattern matching phase. A similar method is used on Token. Used by Slinket"""
+        """Used by the matcher and needs cases for all instance variables used in the
+        pattern matching phase. A similar method is used on Token."""
         if name == 'nodeType':
             return self.__class__.__name__
         if name == 'nodeName':
@@ -176,6 +178,8 @@ class NounChunk(Chunk):
         event candidate, then conditionally adds it. The gramvchunk dictionary
         is used when a governing verb hands in its features to a nominal in a
         predicative complement."""
+        #print self
+        #self.print_vars()
         logger.debug("NounChunk.createEvent(gramvchunk=%s)")
         if self.isEmpty():
             # this happened at some point due to a crazy bug in some old code
@@ -184,6 +188,7 @@ class NounChunk(Chunk):
             logger.warn("There are no dtrs in the NounChunk")
         else:
             self.gramchunk = GramNChunk(self, gramvchunk)
+            #self.gramchunk.print_vars()
             logger.debug(self.gramchunk.as_verbose_string())
             # Even if preceded by a BE or a HAVE form, only tagging N Chunks
             # headed by an eventive noun E.g., "was an intern" will NOT be
@@ -192,6 +197,8 @@ class NounChunk(Chunk):
             if self.isEventCandidate():
                 logger.debug("Nominal is an event candidate")
                 self._processEventInChunk()
+            #self.print_vars()
+            #self.gramchunk.print_vars()
 
     def isEventCandidate(self):
         """Return True if the nominal is syntactically and semantically an
@@ -199,9 +206,9 @@ class NounChunk(Chunk):
         return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
 
     def isEventCandidate_Syn(self):
-        """Return True if the GramNChunk is syntactically able to be an event,
+        """Return True if the nominal is syntactically able to be an event,
         return False otherwise. An event candidate syntactically has to have a
-        head (which cannot be a timex) and the head has to be a common noun."""
+        head which cannot be a timex and the head has to be a common noun."""
         # using the regular expression is a bit faster then lookup in the short
         # list of common noun parts of speech (forms.nounsCommon)
         return (
@@ -210,7 +217,7 @@ class NounChunk(Chunk):
             and forms.RE_nounsCommon.match(self.gramchunk.head.pos) )
 
     def isEventCandidate_Sem(self):
-        """Return True if the GramNChunk can be an event semantically. Depending
+        """Return True if the nominal can be an event semantically. Depending
         on user settings this is done by a mixture of wordnet lookup and using a
         simple classifier."""
         logger.debug("event candidate?")
@@ -247,7 +254,6 @@ class NounChunk(Chunk):
         is_event = nomEventRec.isEvent(lemma, features)
         logger.debug("  nomEventRec.isEvent(%s) ==> %s" % (lemma, is_event))
         return is_event
-
 
 
 class VerbChunk(Chunk):

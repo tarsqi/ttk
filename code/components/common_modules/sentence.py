@@ -43,9 +43,6 @@ class Sentence(Constituent):
             eventLocation += 1
             if element.isChunk():
                 event = element.embedded_event()
-                # NOTE: this used to be "if event:", but the combination of that
-                # with EventTag.__getattr__ caused errors apparently because
-                # __nonzero__ was intercepted by __getattr__
                 if event:
                     self.eventList.append((eventLocation, event.eid))
             elif element.isEvent():

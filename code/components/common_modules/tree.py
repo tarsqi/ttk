@@ -216,24 +216,23 @@ class Node(object):
             dtr.set_event_markers()
 
     def add_to_tree(self, tree_element):
-        """Add all daughters in self.dtrs as tree_elements to tree_element.dtrs, that is,
-        add them as a Sentence, NounChunk, VerbChunk, EventTag, TimexTag, Token
-        or AdjectiveToken. The tree_element argument can be one of those seven
-        elements or it can be a TarsqiTree. The tree argument is the TarsqiTree
-        instance and it is handed down to as_tree_element because when creating a
-        Token we need access to the docsource."""
+        """Add all daughters in self.dtrs as tree_elements to the initially
+        empty list in tree_element.dtrs. Add them as instances of Sentence,
+        NounChunk, VerbChunk, EventTag, TimexTag, Token or AdjectiveToken. The
+        tree_element argument can be one of those seven elements or it can be a
+        TarsqiTree."""
         for dtr in self.dtrs:
             tree_element_dtr = dtr.as_tree_element()
             tree_element_dtr.parent = tree_element
             if tree_element_dtr.isAdjToken() and tree_element.isEvent():
                 tree_element_dtr.event = True
-                tree_element_dtr.event_tag = tree_element
+                tree_element_dtr.event_tag = tree_element#XXX
             tree_element.dtrs.append(tree_element_dtr)
             dtr.add_to_tree(tree_element_dtr)
 
     def as_tree_element(self):
         """Create from the node an instance of Sentence, NounChunk, VerbChunk, EventTag,
-        TimexTag, Token or AdjectiveToken."""
+        TimexTag, Token or AdjectiveToken. Copy information from the Node as needed."""
         if self.name == SENTENCE:
             tree_element = Sentence()
         elif self.name == NOUNCHUNK:

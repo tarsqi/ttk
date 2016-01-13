@@ -10,17 +10,26 @@ from utilities import logger
 
 class Token(Constituent):
 
+    """implements a single token.
+
+    Instance variables:
+        text        -  the text string of the token
+        pos         -  the part-of-speech of the token
+        event       -  set to True if the token is wrapped in an EventTag
+        event_tag   -  contains the EventTag
+
+    The event, eid and event are set at TarsqiTree creation for the daughters of
+    event tags."""
+
     def __init__(self, word, pos):
-        """Initialize with a TarsqiTree instance, the word and a part-of-speech. Some
-        instance variables will be filled in later, depending on what the Token
-        is used for."""
+        """Initialize with the word and a part-of-speech, use defaults for all
+        the other variables."""
         Constituent.__init__(self)
         self.text = word
         self.pos = pos
         self.event = None
+        self.event_tag = None
         self.textIdx = None
-        self.position = None
-        self.parent = None
         self.gramchunk = None
         self.checkedEvents = False
 
@@ -71,7 +80,7 @@ class Token(Constituent):
         event. Potential adjectival events are processed from the VerbChunk
         using the createAdjEvent() method. Do not log a warning since it is
         normal for a Token to be asked this, without this method a method with
-        the same name on COnsituent would log a warning."""
+        the same name on Consituent would log a warning."""
         pass
 
     def debug_string(self):
@@ -93,12 +102,6 @@ class Token(Constituent):
 
 
 class AdjectiveToken(Token):
-
-    def __init__(self, word, pos):
-        Token.__init__(self, word, pos)
-        self.event = None      # set to True if self is wrapped in an EventTag
-        self.eid = None        # the eid of the EventTag
-        self.event_tag = None  # contains the EventTag
 
     def __getattr__(self, name):
         """Used by Sentence._match. Needs cases for all instance variables used in the

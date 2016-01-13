@@ -7,14 +7,20 @@ body { width: 820px; }
 img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: block; }
 .navigation { font-size: 120%; }
 .spacy li { margin-top: 10pt; margin-bottom: 10pt; }
+.tight li { margin-top: 4pt; margin-bottom: 4pt; }
 .example { padding: 5pt; background: #eeeeee; border: thin dotted grey; }
 .image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
 .indent { margin-left: 10pt; }
+.embedded { margin-right: 5pt; margin-bottom: 5pt; }
+h1 { border-bottom: thick solid green; }
+h2 { margin-top: 25pt; border-bottom: medium solid green; }
+h3 { margin-top: 15pt; border-bottom: thin solid green; }
+code { font-size: 125%; }
 table { border: thin solid grey; border-collapse: collapse; }
 table td { border: thin solid grey; vertical-align: top; padding: 3pt; }
 table tr.tableheader { background-color: #eeeeee; }
 table.spacy { margin-top: 10pt; margin-bottom: 10pt; }
-table.pythonclass { width: 400pt; }
+table.pythonclass { width: 500pt; }
 table.pythonclass td { border-style: none; padding-left: 6pt; }
 table.pythonclass td.name { font-weight: bold; border: thin solid grey; padding-left: 3pt;}
 table.pythonclass td.name { background-color: #eeeeee; }
@@ -32,35 +38,36 @@ table.pythonclass td.attribute { }
 <p>This document gives a high-level overview of the TARSQI Toolkit code.</p>
 
 <p class="navigation">
-[ <a href="#toplevel">toplevel
-| <a href="#tags">tags
-| <a href="#preprocessor">preprocessor
-| <a href="#gutime">gutime
-| <a href="#evita">evita
-| <a href="#slinket">slinket
-| <a href="#s2t">s2t
-| <a href="#blinker">blinker
-| <a href="#classifier">classifier
-| <a href="#sputlink">sputlink
+[ <a href="#toplevel">toplevel</a>
+| <a href="#tags">tags</a>
+| <a href="#preprocessor">preprocessor</a>
+| <a href="#gutime">gutime</a>
+| <a href="#evita">evita</a>
+| <a href="#slinket">slinket</a>
+| <a href="#s2t">s2t</a>
+| <a href="#blinker">blinker</a>
+| <a href="#classifier">classifier</a>
+| <a href="#sputlink">sputlink</a>
 ]
 </p>
 
 <a name="toplevel"/>
 <h2>1. Top-level Processing</h2>
 
-<p>All code, barring a few scripts, lives in the code directory inside the Tarsqi
-distribution. All paths given are relative to that path. The top-level
-processing chain is implemented in the Tarsqi class in tarsqi.py , which upon
-initialization does the following:</p>
+<p>All code, barring a few scripts, lives in the code directory
+inside the Tarsqi distribution. All paths given are relative to that path.</p>
+
+<p>The top-level processing chain is implemented in the Tarsqi class in
+tarsqi.py, which upon initialization does the following:</p>
 
 <ol class="spacy">
 
-<li>Read the parameters. These are read from settings.txt but can also be
-overridden on the command line invocation.
+<li>Read the parameters. These are read from settings.txt but can
+also be overridden on the command line invocation.
 
-<li>Create a pipeline from the --pipeline parameter. A pipeline is a list of
-pairs where each pair has the name of the component and the Python class that
-implements it.
+<li>Create a pipeline from the --pipeline parameter. A pipeline is
+a list of pairs where each pair has the name of the component and the Python
+class that implements it.
 
 <li>Select the source parser. There are four parsers defined in
 docmodel.parsers: DefaultParser, TimebankParser, ATEEParser and RTE3Parser. The
@@ -91,7 +98,7 @@ which includes two instance variables: text and tags.
 <tr>
   <td class="attribute">tags</td>
   <td>
-    <table class="pythonclass">
+    <table class="pythonclass embedded">
       <tr>
 	<td class="name" colspan="2">docmodel.source_parser.TagRepository</td>
       </tr>
@@ -230,7 +237,8 @@ following structure:
 </table>
 
 In the future, other sub classes of TarsqiDocElement will be added (for example
-SectionHeader) and perhaps the elements list will come to implement a hierarchy.
+SectionHeader) and most likely the elements variable will become a tree rather
+than a flat list.
 
 <li>Add the parameters from the settings.txt file and the command line options
 to the TarsqiDocument. This fills in the parameters dictionary.
@@ -251,13 +259,21 @@ then the pipeline as stored in the Tarsqi instance would be
  ('EVITA', &lt;class components.evita.wrapper.EvitaWrapper at 0x1051c3ce8>)]
 </pre>
 
-The code for all components is wrapped in special wrapper classes. All that the
-wrappers are required to have are (1) an initialization method that takes the
-TarsqiDocument as its sole argument and (2) a process() method which has the
-side effect of changing the TarsqiDocument instance. Components update the
-TarsqiDocument by updating the TagRepository instances inside the
-TarsqiDocElement instances in the elements list. In some cases, another data
-structure is updated first and then the results are exported to the
+The code for all components is wrapped in special wrapper classes like
+PreprocessorWrapper and EvitaWrapper in the example above. All available
+wrappers are defined in the COMPONENTS dictiornary in
+components.__init__.py. Every wrapper is required to have the following two
+methods:
+
+<ol class="tight">
+<li>an initialization method that takes the TarsqiDocument as its sole argument</li>
+<li>a process() method which has the side effect of changing the TarsqiDocument
+instance.</li>
+</ol>
+
+Components update the TarsqiDocument by updating the TagRepository instances
+inside the TarsqiDocElement instances in the elements list. In some cases,
+another data structure is updated first and then the results are exported to the
 TarsqiDocElements.
 
 <li>Print results. The Tarsqi class does this by asking the TarsqiDocument to
@@ -496,10 +512,9 @@ dictionaries, which will look as follows:</p>
 <h2>4. GUTime</h2>
 
 <p>The GUTimeWrapper takes the content of all TarsqiDocElements in the
-TarsqiDocument and creates the input needed by
-code/components/gutime/TimeTag.pl, which is the wrapper around TempEx.pm in the
-same directory. The input required by TimeTag.pl is a file with content as
-follows:</p>
+TarsqiDocument and creates the input needed by components/gutime/TimeTag.pl,
+which is the wrapper around TempEx.pm in the same directory. The input required
+by TimeTag.pl is a file with content as follows:</p>
 
 <pre class="example indent">
 &lt;DOC>
@@ -518,11 +533,11 @@ follows:</p>
 DCT is handed to GUTime. Otherwise, only s and lex tags are allowed. GUTime does
 not require the lex tags to have the begin and end attributes, but it is okay
 for them to be there. Any kind of spacing between the tags is allowed. The
-wrapper creates the above file in a temporary data directory code/data/tmp
-(which is emptied at the beginning of each tarsqi.py invocation) and then uses
-the Python subprocess module to run the Perl script. The output is put in the
-same temporary directory and is exactly like the input except that TIMEX3 tags
-are added:</p>
+wrapper creates the above file in a temporary data directory data/tmp (which is
+emptied at the beginning of each tarsqi.py invocation) and then uses the Python
+subprocess module to run the Perl script. The output is put in the same
+temporary directory and is exactly like the input except that TIMEX3 tags are
+added:</p>
 
 <pre class="example indent">
 &lt;DOC>
@@ -550,8 +565,12 @@ dictionaries, so a separate use of index() is not needed.</p>
 <p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
 TarsqiDocElements in it, creating an Evita instance for all of them and then
 procesing the element. The Evita instance has slots for the TarsqiDocument, the
-TarsqiDocElement and a TarsqiTree instance which contains a document tree for the
-TarsqiDocElement that is being processed.</p>
+TarsqiDocElement and a TarsqiTree instance which contains a document tree for
+the TarsqiDocElement that is being processed. The TarsqiTree instance itself
+knows what TarsqiDocument it belongs to and what TarsqiDocElement it was created
+for since these were handed in from the Evita instance. The TarsqiTree instance
+also has a list of daughters as well as some other attributes that are ignored
+here because they are not used by Evita.</p>
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -569,7 +588,7 @@ TarsqiDocElement that is being processed.</p>
 <tr>
   <td class="attribute">doctree</td>
   <td>
-    <table class="pythonclass">
+    <table class="pythonclass embedded">
       <tr>
 	<td class="name" colspan="2">components.common_modules.tree.TarsqiTree</td>
       </tr>
@@ -589,11 +608,6 @@ TarsqiDocElement that is being processed.</p>
   </td>
 </tr>
 </table>
-
-<p>The TarsqiTree instance itself knows what TarsqiDocument it belongs to and
-what TarsqiDocElement it was created for since these were handed in from the
-Evita instance. The TarsqiTree instance also has a list of daughters and some
-other attributes that are ignored here because they are not used by Evita.</p>
 
 <p>Since the TarsqiTree and its elements are the starting point for Evita and
 Slinket processing we will dwell on them a bit longer. Here is a pretty print of
@@ -619,21 +633,31 @@ method uses the intermediary Node object to create a tree hierarchy and then
 replaces all Node objects with instances of Sentence, NounChunk, VerbChunk,
 Token, AdjectiveToken, EventTag and TimexTag (all defined in submodules of
 components.common_modules). These tree elements are all subclasses of
-Constituent and have the following instance variables and methods in common:</p>
+Constituent and have the following instance variables:</p>
 
-<table class="indent">
+<table class="pythonclass indent spacy">
+  <tr>
+    <td class="name" colspan="2">components.common_modules.constituent.Constituent</td>
+  </tr>
+  <tr>
+    <td>tree</td>
+    <td>contains the TarsqiTree instance at the top of the tree, through this
+    tree a constituent also has access to the TarsqiDocument and the
+    TarsqiDocElement</td>
+  </tr>
   <tr>
     <td>parent</td>
-    <td>a variable referring to the parent, which is an instance of
-      TarsqiTree or one of the subclasses of Constituent</td>
+    <td>a reference to the parent, which is an instance of TarsqiTree or one of
+      the subclasses of Constituent</td>
+  </tr>
+  <tr>
+    <td>position</td>
+    <td>an integer reflecting the constituent's position in the dtrs list of the
+    parent</td>
   </tr>
   <tr>
     <td>dtrs</td>
     <td>a list of daughters, this is the empty list for leaf nodes</td>
-  </tr>
-    <td>position</td>
-    <td>an integer reflecting the constituent's position in the dtrs list of the
-    parent (NOTE: update __init__ for this)</td>
   </tr>
   <tr>
     <td>begin</td>
@@ -642,12 +666,6 @@ Constituent and have the following instance variables and methods in common:</p>
   <tr>
     <td>end</td>
     <td>the ending offset in the SourceDoc</td>
-  </tr>
-  <tr>
-    <td>tree()</td>
-    <td>a method that returns the TarsqiTree instance at the top of the tree,
-    through this tree a constituent also has access to the TarsqiDocument and
-    the TarsqiDocElement</td>
   </tr>
 </table>
 
@@ -668,6 +686,123 @@ TagRepository. The next component in the pipeline will start afresh with a new
 TarsqiTree which will be created from the updated TagRepository.</p>
 
 <p>Getting back to Evita...</p>
+
+<p>The EvitaWrapper takes the TarsqiDocument on initialization and its process()
+method loops over all TarsqiDocElements, creating an Evita instance for each of
+them and then running the process_element() method. The process_elements()
+method loops through all Sentence instances in the TarsqiTree in Evita's doctree
+variable, and then loops through all daughters of the Sentence. For each
+daughter it attempts to create an event with the createEvent() method, which is
+implemented on the NounChunk and VerbChunk classes.</p>
+
+<p>As an illustration, below is a fragment from the code in the Evita class in
+components.evita.main. Note that the code is slightly simplified and edited and
+that it is not well-formed Python code anymore, this is true for all code
+fragments shown in this document.</p>
+
+<pre class="example indent">
+<i>components.evita.main.Evita</i>
+
+process_element():
+   self.doctree = create_tarsqi_tree(self.docelement)
+   for sentence in self.doctree:
+      for node in sentence:
+         node.createEvent()
+</pre>
+
+<p>Nominal events are created with createEvent() on NounChunk and verbal and
+adjectival events are created with createEvent() on VerbChunk. Adjectival events
+are initially dealt with by VerbChunk because they are created only if preceded
+by certain verb groups, which is recognized by VerbChunk. The following three
+sections give details on how the three kinds of events are created.</p>
+
+
+<h3>Nominal events</h3>
+
+<p>Most of the code that deals with nominal events is expressed on the NounChunk
+class, which is a sublass of Chunk and Constituent. Recall that Constituents
+defines instance variables tree, parent, position, dtrs, being and end. These
+are all filled in during TarsqiTree construction with create_tarsqi_tree(), as
+mentioned earlier in the Evita section. Several other instance variables are
+defined on chunks. The table below has just the variables added by NounChunk
+that are relevant for Evita.</p>
+
+<table class="pythonclass indent spacy">
+  <tr>
+    <td class="name" colspan="2">components.common_modules.chunks.NounChunk</td>
+  </tr>
+  <tr>
+    <td>phraseType</td>
+    <td>the chunktype, basically the chunk tag generated by the chunker, always
+    'ng' for noun chunks</td>
+  </tr>
+  <tr>
+    <td>head</td>
+    <td>an integer reflecting the position of the head token in the chunk's dtrs
+    variable, always set to -1 (that is, the last element)</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>gramchunk</td>
+    <td>
+      <table class="pythonclass embedded">
+	<tr>
+	  <td class="name" colspan="2">components.evita.gramChunk.GramNChunk</td>
+	</tr>
+	<tr>
+	  <td>node</td>
+	  <td>the NounChunk that the features are for</td>
+	</tr>
+	<tr>
+	  <td>tense</td>
+	  <td>the tense of the nominal, this may sound odd and in most cases
+	  there will be no tense for the nominal, but in some cases this will be
+	  inherited from a governing verb.</td>
+	</tr>
+	<tr>
+	  <td>aspect</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>modality</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>polarity</td>
+	  <td></td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>gramchunks</td>
+    <td>the empty list for noun chunks, but can be non-empty for verb chunks</td>
+  </tr>
+  <tr>
+    <td>checkedEvents</td>
+    <td>a flag indicating whether the chunk has already been checked for events,
+    initially set to False</td>
+  </tr>
+</table>
+
+
+<pre class="example indent">
+<i>components.common_modules.chunks.NounChunk</i>
+
+createEvent(self, gramvchunk=None):
+   self.gramchunk = GramNChunk(self, gramvchunk)
+   if self.isEventCandidate():
+      self._processEventInChunk()
+</pre>
+
+
+<h3>Verbal events</h3>
+
+
+<h3>Adjectival events</h3>
 
 
 <a name="slinket"/>
@@ -691,9 +826,9 @@ TarsqiTree which will be created from the updated TagRepository.</p>
 </tr>
 <tr>
   <td class="attribute">events</td>
-  <td>a dictionary containing events for the TarsqiDocElement that were found by
-  Evita, it is created by SLinket by collecting events and their attributes from
-  the document tree in dtrs</td>
+  <td>a dictionary (TODO: indexed on...) containing events for the
+  TarsqiDocElement that were found by Evita, it is created by Slinket by
+  collecting events and their attributes from the document tree in dtrs</td>
 </tr>
 <tr>
   <td class="attribute">alink_list</td>

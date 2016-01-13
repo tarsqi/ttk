@@ -1,4 +1,5 @@
 from types import ListType, TupleType
+from pprint import pprint
 
 from utilities import logger
 from library.timeMLspec import EVENT_INSTANCE_ID
@@ -10,8 +11,21 @@ from library.timeMLspec import ALINK, SLINK, SYNTAX, RELTYPE
 class Constituent:
 
     """An abstract class that contains some methods that are identical for Chunks
-    and Tokens plus a couple of default methods. It also initializes the common
-    instance variables tree, parent, dtrs, begin and end."""
+    and Tokens plus a couple of default methods.
+
+    Instance variables:
+       tree     - the TarsqiTree instance that the consituent is an element of
+       parent   - the parent, typically an instance of Sentence
+       position - index in the parent's daughters list
+       dtrs     - a list of Tokens, EventTags and TimexTags
+       begin    - beginning offset in the SourceDoc
+       end      - ending offset in the SourceDoc
+
+    On initialization these are all set to None or the empty list (for the dtrs
+    variabe). All values are filled in when the TarsqiTree is created from a
+    TarsqiDocElement.
+
+    """
 
     def __init__(self):
         self.tree = None
@@ -40,7 +54,7 @@ class Constituent:
 
     def __len__(self):
         """Returns the lenght of the dtrs variable."""
-        # NOTE. When you this method you want __nonzero__ as well because
+        # NOTE. When you have this method you want __nonzero__ as well because
         # without it a constituent with an empty dtrs list will be False and
         # this will cause errors
         return len(self.dtrs)
@@ -160,6 +174,9 @@ class Constituent:
 
     def pp(self):
         self.pretty_print()
+
+    def print_vars(self):
+        pprint(vars(self))
 
     def pretty_print(self):
         print "<<pretty_print() not defined for this object>>"
