@@ -51,8 +51,11 @@ table.pythonclass td.attribute { }
 ]
 </p>
 
+
+<!----------------------------------------------------------------------------->
 <a name="toplevel"/>
 <h2>1. Top-level Processing</h2>
+<!----------------------------------------------------------------------------->
 
 <p>All code, barring a few scripts, lives in the code directory
 inside the Tarsqi distribution. All paths given are relative to that path.</p>
@@ -325,8 +328,10 @@ over two lines here for readability.
 </ol>
 
 
+<!----------------------------------------------------------------------------->
 <a name="tags"/>
 <h2>2. Tags added by the Tarsqi Toolkit</h2>
+<!----------------------------------------------------------------------------->
 
 <p>All Tarsqi tags added by the system have identifiers that are unique to the document
 and the tag type. The identifiers consist of a tag-specific prefix and an integer. The
@@ -508,8 +513,10 @@ dictionaries, which will look as follows:</p>
 
 
 
+<!----------------------------------------------------------------------------->
 <a name="gutime"/>
 <h2>4. GUTime</h2>
+<!----------------------------------------------------------------------------->
 
 <p>The GUTimeWrapper takes the content of all TarsqiDocElements in the
 TarsqiDocument and creates the input needed by components/gutime/TimeTag.pl,
@@ -559,8 +566,10 @@ TagRepository, which also adds the tag to the opening_tags and closing tags
 dictionaries, so a separate use of index() is not needed.</p>
 
 
+<!----------------------------------------------------------------------------->
 <a name="evita"/>
 <h2>5. Evita</h2>
+<!----------------------------------------------------------------------------->
 
 <p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
 TarsqiDocElements in it, creating an Evita instance for all of them and then
@@ -707,7 +716,8 @@ process_element():
    self.doctree = create_tarsqi_tree(self.docelement)
    for sentence in self.doctree:
       for node in sentence:
-         node.createEvent()
+         if not node.checkedEvents:
+            node.createEvent()
 </pre>
 
 <p>Nominal events are created with createEvent() on NounChunk and verbal and
@@ -718,14 +728,15 @@ sections give details on how the three kinds of events are created.</p>
 
 
 <h3>Nominal events</h3>
+<!-------------------->
 
 <p>Most of the code that deals with nominal events is expressed on the NounChunk
 class, which is a sublass of Chunk and Constituent. Recall that Constituents
 defines instance variables tree, parent, position, dtrs, being and end. These
 are all filled in during TarsqiTree construction with create_tarsqi_tree(), as
-mentioned earlier in the Evita section. Several other instance variables are
-defined on chunks. The table below has just the variables added by NounChunk
-that are relevant for Evita.</p>
+mentioned earlier in this section. Several other instance variables are defined
+on chunks. The table below has just the variables added by NounChunk that are
+relevant for Evita.</p>
 
 <table class="pythonclass indent spacy">
   <tr>
@@ -739,11 +750,7 @@ that are relevant for Evita.</p>
   <tr>
     <td>head</td>
     <td>an integer reflecting the position of the head token in the chunk's dtrs
-    variable, always set to -1 (that is, the last element)</td>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
+    variable, always set to -1 for noun chunks, picking out the last element</td>
   </tr>
   <tr>
     <td>gramchunk</td>
@@ -758,21 +765,19 @@ that are relevant for Evita.</p>
 	</tr>
 	<tr>
 	  <td>tense</td>
-	  <td>the tense of the nominal, this may sound odd and in most cases
-	  there will be no tense for the nominal, but in some cases this will be
-	  inherited from a governing verb.</td>
+	  <td>the tense of the nominal, by default set to 'NONE'</td>
 	</tr>
 	<tr>
 	  <td>aspect</td>
-	  <td></td>
+	  <td>the aspect of the nominal, by default set to 'NONE'</td>
 	</tr>
 	<tr>
 	  <td>modality</td>
-	  <td></td>
+	  <td>the modality of the nominal, by default set to 'NONE'</td>
 	</tr>
 	<tr>
 	  <td>polarity</td>
-	  <td></td>
+	  <td>the polarity of the nominal, by default set to 'POS'</td>
 	</tr>
       </table>
     </td>
@@ -784,10 +789,22 @@ that are relevant for Evita.</p>
   <tr>
     <td>checkedEvents</td>
     <td>a flag indicating whether the chunk has already been checked for events,
-    initially set to False</td>
+    initially set to False; if set to True, createEvent() will never be run for
+    the chunk</td>
   </tr>
 </table>
 
+<p>The GramNChunk instance in the gramchunk variable contains the grammatical
+features for the noun chunk. This instance has a pointer back to the NounChunk
+it is in and four grammatical features. Three of them are typically 'NONE' for
+nouns, and it may sound a wee bit odd for nouns to have tense, aspect or
+modality, nominal, but in some cases nominal will inherit these from a governing
+verb, for example, with phrases like "This would be a tragedy". When the verb
+chunk "be" tries to create an event it will recognize that the actual event is
+the nominal following it, it will then try to create an event on that nominal
+and hand it the verb chunk features. This is explanined further below.</p>
+
+<p>The top-level of the createEvent() code for nominals looks as follows:</p>
 
 <pre class="example indent">
 <i>components.common_modules.chunks.NounChunk</i>
@@ -798,15 +815,103 @@ createEvent(self, gramvchunk=None):
       self._processEventInChunk()
 </pre>
 
+<p>GramNchunk creation for the NounChunk is a simple affair, setting the
+defaults and then leting them be overwritten if features were handed in from the
+governing verb. The main work occurs in the isEventCandidate() method on the
+chunk, which first checks whether the noun chunk is syntactically able to be an
+event, which is the case if the chunk has a head, the head is a common noun and
+the chunk is not a time expression. Next, it checks whether the noun chunk can
+semantically be an event. It does this by looking up the head token in Wordnet
+and by running a simple Bayesian classifier. This is where the heavy lifting
+occurs. The general logic is as follows:</p>
+
+<ol>
+
+<li>If all senses of the head token of the chunk are events in WordNet, return
+True.</li>
+
+<li>Else, if the classifier has enough data for the head token in its
+statistical model, let the classifier decide whether the token is an event.</li>
+
+<li>Else, do another WordNet lookup and check either whether the primary sense
+is an event or whether some senses are events.</li>
+
+</ol>
+
+<p>The exact application of this logic is driven by settings in the
+components.evita.settings module, which has a couple of variable that determine
+whether the Bayesian classifier is used and how WordNet lookup determines
+event-hood.
+
+<pre class="example indent">
+<i>components.evita.settings</i>
+
+EVITA_NOM_DISAMB = True
+EVITA_NOM_CONTEXT = True
+EVITA_NOM_WNPRIMSENSE_ONLY = True
+</pre>
+
+<p>The first variable determines whether the classifier will actually apply and
+the second whether the classifier will take into account contextual features (as
+opposed to just the word). The third variable determines the choice to be made
+in step 3, the default is to decide that a token is an event if its primary
+sense is.</p>
+
+<p>The resources used by the logic above are in library/evita/dictionaries.</p>
+
+<p>If the isEventCandidate() method returns true then the _processEventInChunk()
+method will perform a few last checks and then add an event to the
+TarsqiDocElement by asking the TarsqiTree to do the honours:</p>
+
+<pre class="example indent">
+<i>components.common_modules.chunks.Chunk</i>
+
+def _processEventInChunk(self, gramChunk=None):
+     gchunk = self.gramchunk if gramChunk is None else gramChunk
+     if (gchunk.head
+         and gchunk.head.getText() not in forms.be
+         and gchunk.head.getText() not in forms.spuriousVerb
+         and gchunk.evClass):
+         self.tree.addEvent(Event(gchunk))
+</pre>
+
+<p>This method is defined on Chunk and is used by VerbChunks as well. The core
+is to invoke addEvent() on the TarsqiTree instance in the tree variable, handing
+it an Event instance which was created from the GramNChunk (or gramVChunk for
+verb chunks).</p>
+
+<pre class="example indent">
+<i>components.common_modules.tree.TarsqiTree</i>
+
+ def addEvent(self, event):
+     event_attrs = dict(event.attrs)
+     eid = self.tarsqidoc.next_event_id()
+     eiid = "ei%s" % eid[1:]
+     event_attrs['eid'] = eid
+     event_attrs['eiid'] = eiid
+     token = event.tokens[-1]
+     self.docelement.add_event(token.begin, token.end, event_attrs)
+</pre>
+
+<p>The TarsqiTree instance is handed most event features (tense and aspect and
+so on), but it is responsible for generating unique identifiers for the event
+(which it gets from the TarsqiDocument). Finally, it asks the TarsqiDocElement
+to add the tag to the tarsqi_tags TagRepository, thereby exporting the component
+results as shown in the picture earlier in this section.</p>
+
 
 <h3>Verbal events</h3>
+<!------------------->
 
 
 <h3>Adjectival events</h3>
+<!------------------->
 
 
+<!----------------------------------------------------------------------------->
 <a name="slinket"/>
 <h2>6. Slinket</h2>
+<!----------------------------------------------------------------------------->
 
 <table class="pythonclass indent spacy">
 <tr>

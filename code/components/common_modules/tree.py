@@ -331,15 +331,16 @@ class TarsqiTree:
         eiid = "ei%s" % eid[1:]
         event_attrs['eid'] = eid
         event_attrs['eiid'] = eiid
+        # TODO: at least the second test does not seem needed anymore
         event_attrs = { k:v for k,v in event_attrs.items()
                         if v is not None and k is not 'eventID' }
         # NOTE: we now always have one token on this list, if there are more in
         # a future implementation we takes the last, but what probably should
         # happen is that we take the begin offset form the first and the end
-        # offset from the last token.  always be true
+        # offset from the last token.
         token = event.tokens[-1]
         self.docelement.add_event(token.begin, token.end, event_attrs)
-        
+
     def addLink(self, linkAttrs, linkType):
         """Add a link of type linkType with its attributes to the tree by appending
         them to self.alink_list, self.slink_list or self.tlink_list. This allows

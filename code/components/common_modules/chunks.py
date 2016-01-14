@@ -65,6 +65,7 @@ class Chunk(Constituent):
     in the pipeline."""
 
     # TODO: maybe replace eid and eiid with event_tag (cf AdjectiveToken)
+    # TODO: the matcher may rely on event being 1, check that
 
     def __init__(self, phraseType):
         Constituent.__init__(self)
@@ -178,8 +179,6 @@ class NounChunk(Chunk):
         event candidate, then conditionally adds it. The gramvchunk dictionary
         is used when a governing verb hands in its features to a nominal in a
         predicative complement."""
-        #print self
-        #self.print_vars()
         logger.debug("NounChunk.createEvent(gramvchunk=%s)")
         if self.isEmpty():
             # this happened at some point due to a crazy bug in some old code
@@ -190,15 +189,12 @@ class NounChunk(Chunk):
             self.gramchunk = GramNChunk(self, gramvchunk)
             #self.gramchunk.print_vars()
             logger.debug(self.gramchunk.as_verbose_string())
-            # Even if preceded by a BE or a HAVE form, only tagging N Chunks
+            # Even if preceded by a BE or a HAVE form, only tagging NounChunks
             # headed by an eventive noun E.g., "was an intern" will NOT be
             # tagged
-            #if self.gramchunk.isEventCandidate():
             if self.isEventCandidate():
                 logger.debug("Nominal is an event candidate")
                 self._processEventInChunk()
-            #self.print_vars()
-            #self.gramchunk.print_vars()
 
     def isEventCandidate(self):
         """Return True if the nominal is syntactically and semantically an
@@ -211,6 +207,7 @@ class NounChunk(Chunk):
         head which cannot be a timex and the head has to be a common noun."""
         # using the regular expression is a bit faster then lookup in the short
         # list of common noun parts of speech (forms.nounsCommon)
+        # TODO: is the first check needed? isn't there always a head?
         return (
             self.gramchunk.head
             and not self.gramchunk.head.isTimex()
