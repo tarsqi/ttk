@@ -350,14 +350,14 @@ class GramVChunk(GramChunk):
         self.left = left  
         self.negative = self.negMarks
         self.infinitive = self.infMark
+        self.head = self.getHead()
+        self.evClass = self.getEventClass()
         self.tense = 'NONE'
         self.aspect = 'NONE'
         self.nf_morph = 'VERB'
         self.set_tense_and_aspect()
         self.modality = self.getModality()
         self.polarity = self.getPolarity()
-        self.head = self.getHead()
-        self.evClass = self.getEventClass()
         # the following four are added so that the pattern matcher can access
         # these embedded variables directly
         self.headForm = self.head.getText()
