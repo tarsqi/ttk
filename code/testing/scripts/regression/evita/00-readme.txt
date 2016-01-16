@@ -5,6 +5,8 @@ tracks results on a number of cases where each case is a sentence. These scripts
 do a diff on the results of processing an entire file against a baseline that
 was saved earlier.
 
+We now only have regressions tests for Evita.
+
 Tests need to be run from the code directory.
 
 First, if you have not done this already, you need to create the files where
@@ -14,8 +16,13 @@ future runs of Tarsqi are compared against:
 
 To run scripts for data files:
 
-   $ sh testing/scripts/regression/evita/evita-test-BE.sh
-   $ sh testing/scripts/regression/evita/evita-test-OTHER.sh
+   $ sh testing/scripts/regression/evita/evita-test.sh <TEST_CASE>
+
+Here, TEST_CASE points at the name of the test case. Cases are in the data-in
+directory and all look like evita-test-NAME.xml. Examples:
+
+   $ sh testing/scripts/regression/evita/evita-test.sh BE
+   $ sh testing/scripts/regression/evita/evita-test.sh OTHER
 
 To run all scripts:
 
@@ -28,15 +35,14 @@ diff command if new results differed from old results.
 
 Note that most, if not all, of these tests are guaranteed to fail after a about
 week. This is because Tarsqi uses the current date for processing, which is used
-for resolving the normalized value of some time expressions. Jut rerun the
+for resolving the normalized value of some time expressions. Just rerun the
 setup-evita-tests.sh scripts again to recreate the baseline.
 
 
 TODO:
 
-- Only BE and OTHER are ready, add the others.
-
-- There is a lot of redundancy between the shell scripts, use one script that
-  takes an argument to pick out the data set (or sets).
-
 - Make it so that these scripts can run from any directory
+
+- Merge evita-test.sh and evita-test-ALL.sh, where the first script will
+  consider not having an argument as a license to run all tests. Similarly, the
+  setup script might be able to merged in as well.
