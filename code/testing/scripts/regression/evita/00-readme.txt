@@ -16,7 +16,7 @@ future runs of Tarsqi are compared against:
 
 To run scripts for data files:
 
-   $ sh testing/scripts/regression/evita/evita-test.sh <TEST_CASE>
+   $ sh testing/scripts/regression/evita/evita-test.sh <TEST_CASE>?
 
 Here, TEST_CASE points at the name of the test case. Cases are in the data-in
 directory and all look like evita-test-NAME.xml. Examples:
@@ -24,14 +24,14 @@ directory and all look like evita-test-NAME.xml. Examples:
    $ sh testing/scripts/regression/evita/evita-test.sh BE
    $ sh testing/scripts/regression/evita/evita-test.sh OTHER
 
-To run all scripts:
+The argument is optional, if no argument is given all tests will run:
 
-   $ sh testing/scripts/regression/evita/evita-test-ALL.sh
+   $ sh testing/scripts/regression/evita/evita-test.sh
 
-If all the output you get is messages that Tarsqi is running or that results are
-compared, then the regression test passed. In all other cases you will get to
-see missing file error messages if Tarsqi threw an error or the output of the
-diff command if new results differed from old results.
+If all the output you get is messages that Tarsqi is running, then the
+regression test passed. In all other cases you will get to see missing file
+error messages if Tarsqi threw an error or the output of the diff command if new
+results differed from baseline results.
 
 Note that most, if not all, of these tests are guaranteed to fail after a about
 week. This is because Tarsqi uses the current date for processing, which is used
@@ -43,6 +43,4 @@ TODO:
 
 - Make it so that these scripts can run from any directory
 
-- Merge evita-test.sh and evita-test-ALL.sh, where the first script will
-  consider not having an argument as a license to run all tests. Similarly, the
-  setup script might be able to merged in as well.
+- See if it makes sense for the setup script to be merged into evita-test.sh.

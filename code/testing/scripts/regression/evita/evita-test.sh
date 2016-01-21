@@ -1,6 +1,8 @@
 # Run the simple Evita regression tests
 
-# See 00-readme.txt for details on how to run this.
+# Run this from the code directory. Without argument it runs all tests, with an
+# argument just the one picked out by it. See 00-readme.txt for more details on
+# this.
 
 
 pipeline=PREPROCESSOR,EVITA
@@ -20,7 +22,21 @@ function run_test () {
 
 }
 
-run_test $1
+
+if [ "$#" -eq  "0" ]; then
+    run_test BE
+    run_test BECOME
+    run_test COMPLEX
+    run_test CONTINUE
+    run_test DO
+    run_test GOING
+    run_test HAVE
+    run_test KEEP
+    run_test OTHER
+    run_test USED
+ else
+    run_test $1
+ fi
 
 
 
