@@ -108,7 +108,7 @@ class TarsqiDocument(ParameterMixin):
         for e in self.elements:
             fh.write("  <doc_element type=\"%s\" begin=\"%s\" end=\"%s\">\n"
                      % (e.__class__.__name__, e.begin, e.end))
-            for tag in e.tarsqi_tags.tags:
+            for tag in sorted(e.tarsqi_tags.tags):
                 fh.write("    %s\n" % tag.as_ttk_tag())
             fh.write("  </doc_element>\n")
         fh.write("</ttk_tags>\n")

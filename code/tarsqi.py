@@ -62,7 +62,7 @@ TTK_ROOT = os.path.dirname(scriptPath)
 os.environ['TTK_ROOT'] = TTK_ROOT
 
 # TODO: need to get rid of this by recompiling all FSA's
-sys.path[1:1] = [ os.path.join(TTK_ROOT,'utilities') ]
+sys.path[1:1] = [ os.path.join(TTK_ROOT, 'utilities') ]
 
 from components import COMPONENTS
 from docmodel.source_parser import SourceParser

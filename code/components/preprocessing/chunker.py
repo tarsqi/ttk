@@ -40,13 +40,13 @@ np_final_tags = [
     'NN', 'NNS', 'NNP', 'NNPS' ]
 
 vp_initial_tags = [
-    'TO', 'MD', 'VB', 'VBD', 'VBN', 'VBP', 'VBG', 'VBZ' ]
+    'TO', 'MD', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
 
 vp_internal_tags = [
     'RB', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
 
 vp_final_tags = [
-    'VB', 'VBD', 'VBP', 'VBG', 'VBN', 'VBZ' ]
+    'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
 
 CHUNK_TAGS = { NG: { 'b': {}, 'i': {}, 'e': {} },
                VG: { 'b': {}, 'i': {}, 'e': {} } }

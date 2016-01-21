@@ -226,7 +226,7 @@ class Node(object):
             tree_element_dtr.parent = tree_element
             if tree_element_dtr.isAdjToken() and tree_element.isEvent():
                 tree_element_dtr.event = True
-                tree_element_dtr.event_tag = tree_element#XXX
+                tree_element_dtr.event_tag = tree_element
             tree_element.dtrs.append(tree_element_dtr)
             dtr.add_to_tree(tree_element_dtr)
 

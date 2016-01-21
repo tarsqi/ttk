@@ -6,6 +6,8 @@ Some utilities common to all the objects in the common_modules module.
 
 import types
 
+from library import forms
+
 
 def get_tokens(node_or_sequence):
     """Get tokens from a node or sequence."""
@@ -53,9 +55,9 @@ def get_events(node, result=None):
 # Collect information from a sequence of nodes
 
 def get_tokens_from_sequence(sequence):
-    """Given a sequence of elements which is a slice of a tree, collect all token
-    leaves and return them as a list. This is different from what get_tokens in
-    utils does since it operates on a list instead of a single node."""
+    """Given a sequence of elements, collect all the token leaves and return
+    them as a list."""
+    # TODO: this can probably use get_tokens
     tokens = []
     for item in sequence:
         if item.nodeType[-5:] == 'Token':
@@ -70,3 +72,47 @@ def get_tokens_from_sequence(sequence):
             raise "ERROR: unknown item type: " + item.nodeType
     return tokens
 
+
+# Testing a sequence of Tokens
+
+def contains_adverbs_only(sequence):
+    """Returns true if sequence only contains adverbs, returns false otherwise."""
+    non_advs = [item for item in sequence if item.pos not in forms.partInVChunks2]
+    return False if non_advs else True
+
+
+
+# Removing interjections from a GramVChunkList
+
+def remove_interjections(gchunklist):
+    """Remove interjections and punctuations from gchunk, which is a
+    GramVChunkList, where self.node is either a VerbChunk or a list of
+    tokens. Examples:
+       - ['ah', ',', 'coming', 'up']
+         >> ['ah', 'coming', 'up']
+       - ['she', 'has', ',',  'I', 'think', ',', 'to', 'go']
+         >> ['she', 'has', 'to', 'go']"""
+    # TODO. In the 6000 tokens of evita-test2.xml, this applies only once,
+    # replacing 'has, I think, been' with 'has been', but that seems like an
+    # error because the input had an extra verb after 'been' ('has, I think,
+    # been demolished'). Could perhaps remove this method. Also, it is a bit
+    # peculiar how 'has, I think, been' ends up as a sequence, find out why.
+    before = []  # nodes before first punctuation
+    after = []   # nodes after last punctuation
+    for item in gchunklist.nodes:
+        if item.pos not in (',', '"', '``'):
+            before.append(item)
+        else: break
+    for item in reversed(gchunklist.nodes):
+        if item.pos not in (',', '"', '``'):
+            after.insert(0, item)
+        else: break
+    if len(before) == len(after) == len(gchunklist.nodes):
+        # no punctuations or interjections
+        return before
+    elif len(before) + len(after) == len(gchunklist.nodes) - 1:
+        # one punctuation
+        return before + after
+    else:
+        # two punctuations with potential interjection
+        return before + after

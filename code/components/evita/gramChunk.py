@@ -21,8 +21,12 @@ from utilities.file import open_pickle_file
 from library import forms
 from library.evita.patterns.feature_rules import FEATURE_RULES
 
-from components.common_modules.utils import get_tokens
+from components.common_modules.utils import get_tokens, remove_interjections
+from components.common_modules.utils import contains_adverbs_only
 from components.evita.rule import FeatureRule
+
+DEBUG = True
+DEBUG = False
 
 
 # open the pickle file with verbstem information
@@ -44,7 +48,12 @@ def getPOSList(constituents):
     debugging purposes."""
     return [constituent.pos for constituent in constituents]
 
-        
+def debug(text, newline=True):
+    if DEBUG:
+        if newline: print text
+        else: print text,
+
+
 class GramChunk:
 
     """The subclasses of this class are used to add grammatical features to a
@@ -77,11 +86,10 @@ class GramChunk:
         """Debugging method to print the GramChunk and its features."""
         return \
             "%s: %s\n" % (self.__class__.__name__, self.node.getText()) + \
-            "\tTENSE=%s ASPECT=%s HEAD=%s CLASS=%s\n" \
+            "\ttense=%s aspect=%s head=%s class=%s\n" \
             % (self.tense, self.aspect, self.head.getText(), self.evClass) + \
-            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" \
-            % (self.nf_morph, self.modality, self.polarity) + \
-            "\tHEAD=%s CLASS=%s\n" % (self.head.getText(), self.evClass)
+            "\tnf_morph=%s modality=%s polarity=%s\n" \
+            % (self.nf_morph, self.modality, self.polarity)
 
 
 class GramAChunk(GramChunk):
@@ -132,11 +140,78 @@ class GramNChunk(GramChunk):
 
 class GramVChunkList:
 
-    def __init__(self, node):
-        self.node = node
-        self.counter = 0 # To control different subchunks w/in a chunk (e.g., "began to study") 
-        self.gramVChunksList = []
-        self.trueChunkLists = [[]]
+    """This class is used to create a list of GramVChunk instances. What it does
+    is (1) collecting information form a VerbChunk or a list of Tokens, (2) move
+    this information into separate bins depending on the type of items in the
+    source, (3) decide whether we need more than one GramVChunk for some input,
+    and (4) create a list of VerbChunks.
+
+    Where a GramNChunk is given a NounChunk on initialization, a GramVChunkList
+    is given a VerbChunk or a list of Tokens (or maybe other categories as well)
+    GramVChunks are different from NounChunks in that there can be more than one
+    GramVChunk for a VerbChunk. This is not very common, but it happens for
+    example in
+
+       "More problems in Hong Kong for a place, for an economy, that many
+        experts [thought was] once invincible."
+
+    where "thought was" ends up as one verb chunk.
+
+    Another difference is that sometimes a GramVChunk is created for tokens
+    including tokens to the right of the VerbChunk, for example in
+
+       "All Arabs [would have] [to move] behind Iraq."
+
+    where there are two adjacent VerbChunks. With the current implementation,
+    when processing [would have], we end up creating GramVChunks for "would
+    have" and "would have to move", and then, when dealing with [to move", we
+    create a GramVChunk for "to move".
+
+    TODO: check whether "would have" and "to move" should be ruled out
+    TODO: check why "to move" is not already ruled out through the flag
+
+    Note that in both cases, the root of the issue is that the chunking is not
+    appropriate for Evita.
+
+    TODO: consider updating the Chunker and simplifying the code here.
+
+    """
+
+    def __init__(self, verbchunk=None, tokens=None):
+        """Initialize several kinds of lists, distributing information from the
+        VerbChunk or list of Tokens that is handed in on initialization and
+        create a list of GramVChunks in self.gramVChunksList."""
+        source = "VerbChunk" if verbchunk else "Tokens"
+        logger.debug("Initializing GramVChunkList from %s" % source)
+        self._initialize_nodes(verbchunk, tokens)
+        self._initialize_lists()
+        self._distributeNodes()
+        self._generateGramVChunks()
+
+    def _initialize_nodes(self, verbchunk, tokens):
+        """Given the VerbChunk or a list of Tokens, set the nodes variable to
+        either the daughters of the VerbChunk or the list of Tokens. Also sets
+        node and tokens, where the first one has the VerbChunk or None (this is
+        so we can hand the chunk to GramVChunk, following GramChunk behaviour),
+        and where the second one is the list of Tokens or None."""
+        if verbchunk:
+            self.node = verbchunk
+            self.tokens = None
+            self.nodes = verbchunk.dtrs
+        elif tokens:
+            self.node = None
+            self.tokens = tokens
+            self.nodes = tokens
+        else:
+            logger.error("Incorrect initialization of GramVChunkList")
+
+    def _initialize_lists(self):
+        """Initializes the lists that contain items (Tokens) of the chunk. Since
+        one chunk may spawn more than one GramVChunk, these lists are actually
+        lists of lists."""
+        self.counter = 0            # controls different subchunks in a chunk
+        self.gramVChunksList = []   # this is the list of GramVChunk instances
+        self.trueChunkLists = [[]]  # the core of the chunk
         self.negMarksLists = [[]]
         self.infMarkLists = [[]]
         self.adverbsPreLists = [[]]
@@ -144,8 +219,6 @@ class GramVChunkList:
         self.leftLists = [[]]
         self.chunkLists = [self.trueChunkLists, self.negMarksLists, self.infMarkLists,
                            self.adverbsPreLists, self.adverbsPostLists, self.leftLists]
-        self.distributeInfo()
-        self.generateGramVChunks() 
 
     def __len__(self):
         return len(self.gramVChunksList)
@@ -158,8 +231,8 @@ class GramVChunkList:
             return '[]'
         string = ''
         for i in self.gramVChunksList:
-            node = "\n\tNEGATIVE: " + str(getWordList(i.negMarks)) \
-                + "\n\tINFINITIVE: "  + str(getWordList(i.infMark)) \
+            node = "\n\tNEGATIVE: " + str(getWordList(i.negative)) \
+                + "\n\tINFINITIVE: "  + str(getWordList(i.infinitive)) \
                 + "\n\tADVERBS-pre: " + str(getWordList(i.adverbsPre)) \
                 + "\n\tADVERBS-post: %s%s" % (getWordList(i.adverbsPost), getPOSList(i.adverbsPost)) \
                 + "\n\tTRUE CHUNK: %s%s" % (getWordList(i.trueChunk), getPOSList(i.trueChunk)) \
@@ -173,154 +246,163 @@ class GramVChunkList:
             string += node
         return string
 
-    def do_not_process(self):
-        """Return True if this GramVChunkList can be skipped, either because
-        there are no true chunks or because there is no content."""
+    def is_wellformed(self):
+        """Return True if this GramVChunkList is well-formed, that is, it has content
+        and at least one true chunk."""
         true_chunks = self.trueChunkLists
         if len(true_chunks) == 1 and not true_chunks[0]:
-            return True
+            return False
         if len(self) == 0:
-            logger.warn("Obtaining an empty GramVChList")
-            return True
-        return False
+            logger.warn("Empty GramVChList")
+            return False
+        return True
 
-    def distributeInfo(self):
-        tempNodes = self.remove_interjections()
-        #print self.node
-        #print '---', ' '.join([n.text for n in tempNodes])
-        tempNodes = get_tokens(tempNodes)
-        #print '-->', ' '.join([n.text for n in tempNodes])
+    def _distributeNodes(self):
+        """Distribute the item information over the lists in the GramVChunkLists."""
+        # TODO: figure out whether to keep remove_interjections
+        tempNodes = remove_interjections(self)
+        debug("\n" + '-'.join([n.getText() for n in tempNodes]))
+        logger.debug('-'.join([n.getText() for n in tempNodes]))
         itemCounter = 0
         for item in tempNodes:
+            debug( "   %s  %-3s  %-8s" % (itemCounter, item.pos, item.getText()), newline=False)
             if item.pos == 'TO':
-                if itemCounter != 0:
-                    try:
-                        if self.trueChunkLists[-1][-1].getText() \
-                                in ['going', 'used', 'has', 'had', 'have', 'having']:
-                            self.addInCurrentSublist(self.trueChunkLists, item)
-                    except: pass
-                else:
-                    self.addInCurrentSublist(self.infMarkLists, item)
+                self._distributeNode_TO(item, itemCounter)
             elif item.getText() in forms.negative:
-                self.addInCurrentSublist(self.negMarksLists, item)
+                self._distributeNode_NEG(item)
             elif item.pos == 'MD':
-                self.addInCurrentSublist(self.trueChunkLists, item)
+                self._distributeNode_MD(item)
             elif item.pos[0] == 'V':
-                if item == tempNodes[-1]:
-                    self._treatMainVerb(item, tempNodes, itemCounter)
-                elif (item.isMainVerb() and
-                      not item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
-                    self._treatMainVerb(item, tempNodes, itemCounter)
-                elif (item.isMainVerb() and
-                      item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
-                    try:
-                        if (tempNodes[itemCounter+1].getText() == 'to' or
-                            tempNodes[itemCounter+2].getText() == 'to'):
-                            self.addInCurrentSublist(self.trueChunkLists, item)
-                        else:
-                            self._treatMainVerb(item, tempNodes, itemCounter)
-                    except:
-                        self._treatMainVerb(item, tempNodes, itemCounter)
-                else:
-                    self.addInCurrentSublist(self.trueChunkLists, item)
+                self._distributeNode_V(item, tempNodes, itemCounter)
             elif item.pos in forms.partAdv:
-                if item != tempNodes[-1]:
-                    if len(tempNodes) > itemCounter+1:
-                        if (tempNodes[itemCounter+1].pos == 'TO' or
-                            self.isFollowedByOnlyAdvs(tempNodes[itemCounter:])):
-                            self.addInPreviousSublist(self.adverbsPostLists, item)
-                        else:
-                            self.addInCurrentSublist(self.adverbsPreLists, item)
-                    else:
-                        self.addInCurrentSublist(self.adverbsPostLists, item)
-                else:
-                    self.addInPreviousSublist(self.adverbsPostLists, item)
+                self._distributeNode_ADV(item, tempNodes, itemCounter)
+            else:
+                debug( '==> None')
             itemCounter += 1
+            if DEBUG:
+                self.print_trueChunkLists()
 
-    def _treatMainVerb(self, item, tempNode, itemCounter):
-        self.addInCurrentSublist(self.trueChunkLists, item)
-        self.updateCounter()
-        if (item == tempNode[-1] or
-            self.isFollowedByOnlyAdvs(tempNode[itemCounter+1:])):
+    def _distributeNode_TO(self, item, itemCounter):
+        """If the item is the first one, just add the item to the infinitive markers
+        list. Otherwise, see if the last element in the core is one of a small
+        group ('going', 'used' and forms of 'have'), if it is, add the element to the
+        core, if not, do nothing at all."""
+        debug( '==> TO')
+        if itemCounter == 0:
+            self._addInCurrentSublist(self.infMarkLists, item)
+        else:
+            # This case should only occur if a chunk was extended with a method
+            # on VerbChunk (_createEventOnHave, _createEventOnFutureGoingTo and
+            # _createEventOnPastUsedTo).
+            try:
+                if self.trueChunkLists[-1][-1].getText() \
+                   in ['going', 'used', 'has', 'had', 'have', 'having']:
+                    self._addInCurrentSublist(self.trueChunkLists, item)
+                else:
+                    # Given the VerbChunk methods used above, this should
+                    # probably never happen.
+                    logger.warn("Unexpected input for GramVChunkList")
+            except IndexError:
+                logger.warn("Unexpected input for GramVChunkList")
+
+    def _distributeNode_NEG(self, item):
+        """Do not add the negation item to the core in self.trueChunkLists, but add it
+        to the list with negation markers."""
+        debug( '==> NEG')
+        self._addInCurrentSublist(self.negMarksLists, item)
+
+    def _distributeNode_MD(self, item):
+        """Add the modifier element to the core list."""
+        debug( '==> MD')
+        self._addInCurrentSublist(self.trueChunkLists, item)
+
+    def _distributeNode_V(self, item, tempNodes, itemCounter):
+        debug( '==> V')
+        if item == tempNodes[-1]:
+            self._treatMainVerb(item, tempNodes, itemCounter)
+        elif (item.isMainVerb() and
+              not item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
+            self._treatMainVerb(item, tempNodes, itemCounter)
+        elif (item.isMainVerb() and
+              item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
+            try:
+                if (tempNodes[itemCounter+1].getText() == 'to' or
+                    tempNodes[itemCounter+2].getText() == 'to'):
+                    self._addInCurrentSublist(self.trueChunkLists, item)
+                else:
+                    self._treatMainVerb(item, tempNodes, itemCounter)
+            except:
+                self._treatMainVerb(item, tempNodes, itemCounter)
+        else:
+            self._addInCurrentSublist(self.trueChunkLists, item)
+
+    def _distributeNode_ADV(self, item, tempNodes, itemCounter):
+        debug( '==> ADV')
+        if item != tempNodes[-1]:
+            if len(tempNodes) > itemCounter+1:
+                if (tempNodes[itemCounter+1].pos == 'TO' or
+                    contains_adverbs_only(tempNodes[itemCounter:])):
+                    self._addInPreviousSublist(self.adverbsPostLists, item)
+                else:
+                    self._addInCurrentSublist(self.adverbsPreLists, item)
+            else:
+                self._addInCurrentSublist(self.adverbsPostLists, item)
+        else:
+            self._addInPreviousSublist(self.adverbsPostLists, item)
+
+    def print_trueChunkLists(self):
+        for trueChunkList in self.trueChunkLists:
+            print "   tc [%s]" % (', '.join(["%s" % x.text for x in trueChunkList]))
+
+    def _treatMainVerb(self, item, tempNodes, itemCounter):
+        self._addInCurrentSublist(self.trueChunkLists, item)
+        # TODO: it is weird that the counter is updated independently from
+        # updating the chunk lists, fin dout why
+        self._updateCounter()
+        if (item == tempNodes[-1] or
+            contains_adverbs_only(tempNodes[itemCounter+1:])):
             pass
         else:
-            self.updateChunkLists()
+            self._updateChunkLists()
 
-    def isFollowedByOnlyAdvs(self, sequence):
-        non_advs = [item for item in sequence if item.pos not in forms.partInVChunks2]
-        return False if non_advs else True
-
-    def remove_interjections(self):
-        """Remove interjections and punctuations from inside a sequence of
-        tokens. Examples:
-        - ['ah', ',', 'coming', 'up']  >> ['ah', 'coming', 'up']
-        - ['she', 'has', ',',  'I', 'think', ',', 'to', 'go'] >> ['she', 'has', 'to', 'go']"""
-        # TODO. In the 6000 tokens of evita-test2.xml, this applies only once,
-        # replacing 'has, I think, been' with 'has been', but that seems like an
-        # error because the input had an extra verb after 'been' ('has, I think,
-        # been demolished'). Could perhaps remove this method. Also, it is a bit
-        # peculiar how 'has, I think, been' ends up as a sequence, find out why.
-        before = []  # nodes before first punctuation
-        after = []   # nodes after last punctuation
-        for item in self.node:
-            if item.pos not in (',', '"', '``'):
-                before.append(item)
-            else: break
-        for item in reversed(self.node):
-            if item.pos not in (',', '"', '``'):
-                after.insert(0, item)
-            else: break
-        if len(before) == len(after) == len(self.node):
-            # no punctuations or interjections
-            return before
-        elif len(before) + len(after) == len(self.node) - 1:
-            # one punctuation
-            return before + after
-        else:
-            # two punctuations with potential interjection
-            return before + after
-
-    def updateCounter(self):
+    def _updateCounter(self):
         self.counter += 1
 
-    def getNodeName(self):
-        if type(self.node) is InstanceType:
-            # Node is a Chunk from chunked input
-            return self.node.phraseType
-        elif type(self.node) is ListType:
-            # Node is a sequence of chunks and/or tokens (i.e., multi-chunk)
-            return 'VMX'
+    def _updateChunkLists(self):
+        """Append an empty list to the end of all lists maintained in the
+        GramVChunkList. Necessary for dealing with chunks containing subchunks,
+        for example '[[might consider] [filing]]'."""
+        for chunkList in self.chunkLists:
+            # TODO: why do we have this test?
+            if len(chunkList) == self.counter:
+                chunkList.append([])
+            else:
+                logger.warn("length of chunk list and counter are out of sync")
+
+    def _addInCurrentSublist(self, sublist, element):
+        """Add the element to the current element (that is, the last element) in
+        sublist. The elements of the sublist are lists themselves."""
+        if len(sublist) - self.counter == 1:
+            sublist[self.counter].append(element)
         else:
-            # Node is the head element
-            return "VH"
+            logger.warn("length of chunk list and counter are out of sync")
 
-    def updateChunkLists(self):
-        """Necessary for dealing with chunks containing subchunks e.g., 'remains to be
-        seen'."""
-        for list in self.chunkLists:
-            if len(list) == self.counter:
-                # The presence of a main verb has already updated self.counter
-                list.append([])
-
-    def addInCurrentSublist(self, tokens, element):
-        if len(tokens) - self.counter == 1:
-            tokens[self.counter].append(element)
-        else:
-            # The presence of a main verb has already updated self.counter
-            pass
-
-    def addInPreviousSublist(self, tokens, element):
-        if len(tokens) == 0 and self.counter == 0:
-            tokens.append([element])
-        elif len(tokens) >= self.counter-1:
-            tokens[self.counter-1].append(element)
+    def _addInPreviousSublist(self, sublist, element):
+        """Add the element to the previous element (that is, the penultimate
+        element) in sublist. The elements of the sublist are lists themselves."""
+        # TODO: this is used only once in all of the tests evita-BE.xml, look
+        # into what this case is; also, the logic of how this works and the
+        # interaction with self.counter is a bit unclear, it can probably be
+        # simplified
+        if len(sublist) >= self.counter-1:
+            sublist[self.counter-1].append(element)
         else:
             logger.warn("list should be longer")
+        #print '>>>', len(sublist), self.counter
+        #print sublist
 
-    def generateGramVChunks(self):
-        self.normalizeLists()
-        lenLists = len(self.trueChunkLists)
-        for idx in range(lenLists):
+    def _generateGramVChunks(self):
+        for idx in range(len(self.trueChunkLists)):
             gramVCh = GramVChunk(self.node,
                                  self.trueChunkLists[idx],
                                  self.negMarksLists[idx],
@@ -330,26 +412,20 @@ class GramVChunkList:
                                  self.leftLists[idx])
             self.gramVChunksList.append(gramVCh)
 
-    def normalizeLists(self):
-        for idx in range(len(self.chunkLists)-1):
-            if len(self.chunkLists[idx]) < len(self.chunkLists[idx+1]):
-                self.chunkLists[idx].append([])
-            elif len(self.chunkLists[idx]) > len(self.chunkLists[idx+1]):
-                self.chunkLists[idx+1].append([])
 
-            
 class GramVChunk(GramChunk):
 
     def __init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost, left):
+        # TODO: note that there is not a straight correspondence between the
+        # VerbChunk and the tokens that the GramVChunk is for, how do we know
+        # that the right event is added?
         self.node = verbchunk
-        self.trueChunk = tCh  
-        self.negMarks = negMk  
-        self.infMark = infMk  
-        self.adverbsPre = advPre  
-        self.adverbsPost = advPost  
-        self.left = left  
-        self.negative = self.negMarks
-        self.infinitive = self.infMark
+        self.trueChunk = tCh
+        self.negative = negMk
+        self.infinitive = infMk            # does not appear to be used
+        self.adverbsPre = advPre
+        self.adverbsPost = advPost
+        self.left = left
         self.head = self.getHead()
         self.evClass = self.getEventClass()
         self.tense = 'NONE'
@@ -390,18 +466,19 @@ class GramVChunk(GramChunk):
             return None
 
     def set_tense_and_aspect(self):
-        """Sets the tense and aspect attributes by overwriting the default values with
-        results from the feature rules in FEATURE_RULES. This method also tries a trick
-        in case no features were extracted from the rules."""
-        # TODO: get to understand that trick
+        """Sets the tense and aspect attributes by overwriting the default
+        values with results from the feature rules in FEATURE_RULES. If no
+        feature rules applied, create a throw-away GramVChunk for the head and
+        use the features from there (which might still be defaults)."""
         features = self.apply_feature_rules()
         if features is not None:
             (tense, aspect, nf_morph) = features
             self.tense = tense
             self.aspect = aspect
         elif len(self.trueChunk) > 1 and self.head is not None:
-            self.tense = getattr(GramVChunkList([self.head])[0], 'tense')
-            self.aspect = getattr(GramVChunkList([self.head])[0], 'aspect')
+            gramvchunk = GramVChunkList(tokens=[self.head])[0]
+            self.tense = gramvchunk.tense
+            self.aspect = gramvchunk.aspect
 
     def apply_feature_rules(self):
         """Returns a triple of TENSE, ASPECT and CATEGORY given the tokens of the chunk,
@@ -443,22 +520,22 @@ class GramVChunk(GramChunk):
         return ((self.headForm == 'including' and self.tense == 'NONE')
                 or self.headForm == '_')
 
-    def nodeIsModalForm(self, nextNode):
+    def nodeIsModal(self, nextNode):
         return self.headPos == 'MD' and nextNode
 
-    def nodeIsBeForm(self, nextNode):
+    def nodeIsBe(self, nextNode):
         return self.headForm in forms.be and nextNode
 
-    def nodeIsBecomeForm(self, nextNode):
+    def nodeIsBecome(self, nextNode):
         return self.headForm in forms.become and nextNode
 
-    def nodeIsContinueForm(self, nextNode):
+    def nodeIsContinue(self, nextNode):
         return forms.RE_continue.match(self.headForm) and nextNode
 
-    def nodeIsKeepForm(self, nextNode):
+    def nodeIsKeep(self, nextNode):
         return forms.RE_keep.match(self.headForm) and nextNode
 
-    def nodeIsHaveForm(self):
+    def nodeIsHave(self):
         return self.headForm in forms.have and self.headPos is not 'MD'
 
     def nodeIsFutureGoingTo(self):
@@ -523,6 +600,7 @@ class GramVChunk(GramChunk):
         if self.node is None:
             opening_string = 'GramVChunk: None'
         else:
+            # TODO: this crashes since often self.node is a list
             opening_string = "GramVChunk: %s" % self.node.getText()
         try:
             head_string = self.head.getText()

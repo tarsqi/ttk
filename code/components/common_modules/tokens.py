@@ -33,6 +33,9 @@ class Token(Constituent):
         self.gramchunk = None
         self.checkedEvents = False
 
+    def __str__(self):
+        return "<Token %s:%s pos=%s %s>" % (self.begin, self.end, self.pos, self.text)
+
     def __getitem__(self, index):
         """The method with the same name on Constituent made sure that we can view the
         Token as something that has elements. But here we add that Token has
@@ -146,9 +149,9 @@ class AdjectiveToken(Token):
             return
         self.gramchunk = GramAChunk(self, gramvchunk)
         logger.debug(self.gramchunk.as_verbose_string())
-        self._processEventInToken()
+        self._conditionallyAddEvent()
 
-    def _processEventInToken(self):
+    def _conditionallyAddEvent(self):
         """Check whether there is an event class and add the event to self.tree if
         there is one. There is a sister of this method on Chunk."""
         if self.gramchunk.evClass:
