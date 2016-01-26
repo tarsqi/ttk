@@ -54,15 +54,14 @@ import docmodel.parsers
 import docmodel.source_parser
 
 import utilities.binsearch
-import utilities.converter
 import utilities.logger
 import utilities.porterstemmer
 import utilities.xml_utils
 
-import utilities.sputlink.main
-import utilities.sputlink.graph
-import utilities.sputlink.objects
-import utilities.sputlink.utils
+#import utilities.sputlink.main
+#import utilities.sputlink.graph
+#import utilities.sputlink.objects
+#import utilities.sputlink.utils
 
 
 MODULES = [
@@ -111,14 +110,13 @@ MODULES = [
     docmodel.source_parser,
 
     utilities.binsearch,
-    utilities.converter,
     utilities.logger,
     utilities.porterstemmer,
     utilities.xml_utils,
 
-    utilities.sputlink.main,
-    utilities.sputlink.graph,
-    utilities.sputlink.objects,
-    utilities.sputlink.utils
+#    utilities.sputlink.main,
+#    utilities.sputlink.graph,
+#    utilities.sputlink.objects,
+#    utilities.sputlink.utils
     ]
 
