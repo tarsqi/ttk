@@ -207,7 +207,7 @@ instance and create an instance of docmodel.document.TarsqiDocument.
 The DefaultParser does some minimal processing of the source document,
 extracting a document creation time and putting it in the metadata dictionary
 under the 'dct' key and splitting the document into paragraphs and putting each
-paragraph in the elements list. In the current implimentation, all elements are
+paragraph in the elements list. In the current implementation, all elements are
 instances of TarsqiDocParagraph, a subclass of TarsqiDocElement, which has the
 following structure:
 
@@ -244,7 +244,7 @@ SectionHeader) and most likely the elements variable will become a tree rather
 than a flat list.
 
 <li>Add the parameters from the settings.txt file and the command line options
-to the TarsqiDocument. This fills in the parameters dictionary.
+to the TarsqiDocument, filling in the parameters dictionary.
 
 <li>Apply components as specified in the pipeline. Recall that on initialization
 the Tarsqi class creates a pipeline of components from the user's --pipeline
@@ -284,15 +284,20 @@ print the source string and all tags to a document, which in turn is done by
 retrieving the source and the source tags from the SourceDoc instance and the
 added Tarsqi tags from the TagRepository in the tarsqi_tags attributes on
 TarsqiDocElements. The output is written to one file with both the primary data
-and the tags. For example, take the example input below.
+and the tags.</li>
+
+</ol>
+
+<p>To close this section, here is an example of an output file that the Tarsqi
+toolkit produces. Suppose we have the input below.</p>
 
 <pre class="example indent">
 &lt;?xml version="1.0" ?>
 &lt;text>He sleeps on Friday.&lt;/text>
 </pre>
 
-And suppose we have a pipeline that includes the preprocessor, GUTime and
-Evita. Then the output will be:
+<p>And suppose we have a pipeline that includes the preprocessor, GUTime and
+Evita. Then the output will be:</p>
 
 <pre class="example indent">
 &lt;ttk>
@@ -322,10 +327,9 @@ He sleeps on Friday.
 &lt;/ttk>
 </pre>
 
-Note that the EVENT tag will actually be printed on one line only, it is split
-over two lines here for readability.
-
-</ol>
+<p>All elements, with the exception of the Document Creation Time occurr inside
+of doc_element tags. Note that the EVENT tag will actually be printed on one
+line only, it is split over two lines here for readability.</p>
 
 
 <!----------------------------------------------------------------------------->
@@ -812,7 +816,7 @@ and hand it the verb chunk features. This is explanined further below.</p>
 createEvent(self, gramvchunk=None):
    self.gramchunk = GramNChunk(self, gramvchunk)
    if self.isEventCandidate():
-      self._processEventInChunk()
+      self._conditionallyAddEvent()
 </pre>
 
 <p>GramNchunk creation for the NounChunk is a simple affair, setting the
@@ -857,16 +861,104 @@ opposed to just the word). The third variable determines the choice to be made
 in step 3, the default is to decide that a token is an event if its primary
 sense is.</p>
 
-<p>The resources used by the logic above are in library/evita/dictionaries.</p>
+<p>The resources used by the logic above are in library/evita/dictionaries. Here
+is a short desciption of the WordNet and classifier resources.</p>
 
-<p>If the isEventCandidate() method returns true then the _processEventInChunk()
-method will perform a few last checks and then add an event to the
-TarsqiDocElement by asking the TarsqiTree to do the honours:</p>
+<ul class="spacy">
+
+<li>For WordNet lookup, three files are used:
+
+<ol class="tight">
+<li>wnAllSensesAreEvents.txt contains the nouns for which all senses are events,
+<li>wnPrimSenseIsEvent.txt contains the nouns for which the primary sense is an
+event,
+<li>wnSomeSensesAreEvents.txt contains the nouns for which some sense is an
+event.
+</ol>
+
+Note that the second file includes all nouns in the first and that the third
+file contains all nouns in the second. WordNet lookup is a binary search through
+these files. The files were created by library/evita/build_event_nominals1.py,
+which uses the third party module wntools. This script has not been used or
+tested in almost 10 years. There is also a script named
+library/evita/build_event_nominals2.py, which takes these files and creates
+Python dbm files for them, which may improve speed a bit. In a not-so-distant
+future, we will probably load these files into an in-memory dictionary at Tarsqi
+startup time (or load them from a pickle file).
+
+</li>
+
+<li>
+
+For the Bayesian classifier, there are two pickle files, both in
+library/evita/dictionaries, that contain Python dictionaries with the statistics
+used. The statistics were taken from TimeBank and Semcor, two corpora with event
+information for nominals. The first file, semcorNomEvent.pickle, contains raw
+counts for 2638 nominals and lists the number of non-event occurrences and the
+number of event occurrences. Here is a fragment of the Python dictionary in that
+pickle file:
+
+<pre class="example indent">
+'drawing': [12.0, 2.0],
+'negligence': [0, 2.0],
+'detail': [33.0, 9.0],
+'absorption': [0, 7.0],
+'crack': [6.0, 1.0],
+</pre>
+
+From this fragment you can read that there were 12 occurrences where 'drawing'
+was not an event and 2 occurrences where it was. (By the way, it is not clear
+why these numbers are floats, probably a historical accident).
+
+<p/>
+
+The file semcorNomEventContextProb.pickle contains probability adjustments for
+the nominals given a small amount of features (definite versus indefinite and
+singualer versus plural). The numbers are adjustments for the non-event
+probability and the event probability respectively. Adjustments for two of the
+nominals above are given below.
+
+<pre class="example indent">
+'drawing': {
+	'DEF': (0.1, 0.1),
+	'INDEF': (0.9, 0.9),
+	'NN': (0.34, 0.9),
+	'NNS': (0.66, 0.1) }
+
+'absorption': {
+	'DEF': (0.5, 0.166666),
+	'INDEF': (0.5, 0.833333),
+	'NNS': (0.5, 0.3),
+	'NN': (0.5, 0.7) }
+</pre>
+
+For example, if we take 'drawing', which has a proability of 0.14 of being an
+event and 0.86 of not being an event, and say that we have the features INDEF
+and NN, then the adjusted event probability would be 0.14 * 0.9 * 0.9 = 0.11 and
+the adjusted non-event probability would be 0.86 * 0.9 * 0.7 = 0.26, after which
+the adjusted chance of not being an event is still bigger. Note that the
+combined probabilities are not 1 anymore.
+
+<p/>
+
+There is some ancient code in library/evita/build_event_nominals1.py which will
+not work, but which was originally used to create the pickle files. The content
+of the pickle files is also listed in a friendlier format in files with the .txt
+extension in the same directory.
+
+</li>
+
+</ul>
+
+<p>Back to the Evita nominal event logic. If the isEventCandidate() method
+returns true then the _conditionallyAddEvent() method will perform a few last
+checks and then add an event to the TarsqiDocElement by asking the TarsqiTree to
+do the honours:</p>
 
 <pre class="example indent">
 <i>components.common_modules.chunks.Chunk</i>
 
-def _processEventInChunk(self, gramChunk=None):
+def _conditionallyAddEvent(self, gramChunk=None):
      gchunk = self.gramchunk if gramChunk is None else gramChunk
      if (gchunk.head
          and gchunk.head.getText() not in forms.be
