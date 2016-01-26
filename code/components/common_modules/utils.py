@@ -76,7 +76,8 @@ def get_tokens_from_sequence(sequence):
 # Testing a sequence of Tokens
 
 def contains_adverbs_only(sequence):
-    """Returns true if sequence only contains adverbs, returns false otherwise."""
+    """Return true if sequence only contains adverbs, return false otherwise. Return
+    True if the argument is an empty sequence."""
     non_advs = [item for item in sequence if item.pos not in forms.partInVChunks2]
     return False if non_advs else True
 

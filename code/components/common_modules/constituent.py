@@ -60,8 +60,8 @@ class Constituent:
         return len(self.dtrs)
 
     def __getattr__(self, name):
-        """Used by node._matchConstituent. Needs cases for all instance variables used in the
-        pattern matching phase."""
+        """Used by matchConstituent. Needs cases for all instance variables used
+        in the pattern matching phase."""
         if name == 'nodeType':
             return self.__class__.__name__
         elif name == 'text':

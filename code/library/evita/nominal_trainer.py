@@ -8,7 +8,7 @@ classifier in Evita.
 It is probably easier to scrap this competely and build a new version from
 scratch, while using the logic in this file.
 
-it is not clear what the evitaTimemlParser module is, but it probably refers to
+It is not clear what the evitaTimemlParser module is, but it probably refers to
 components/evita/timemlParser.py in the 2007 Tarsqi release (that file is not in
 the repository anymore). Also, the getTokens method on sentence was removed from
 the working directory in January 2015, but the last version is included n a

@@ -55,7 +55,7 @@ class Sentence(Constituent):
             print "  parent     =  %s" % self.parent
             print "  eventList  =  %s\n" % self.eventList
         else:
-            print "<Sentence position=%s>" % self.position
+            print "<Sentence position=%s %d-%d>" % (self.position, self.begin, self.end)
         if tree or verbose:
             for dtr in self.dtrs:
                 dtr.pretty_print(indent=2)

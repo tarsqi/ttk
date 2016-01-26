@@ -99,9 +99,9 @@ class Token(Constituent):
             eid = self.event_tag.attrs.get('eid')
             eiid = self.event_tag.attrs.get('eiid')
             event_string = " eid=%s eiid=%s" % (eid, eiid)
-        print "%s<%s position=%d pos=%s text=%s%s>" % \
-            (indent * ' ', self.__class__.__name__,
-             self.position, self.pos, self.getText(), event_string)
+        print "%s<%s position=%d %d-%d pos=%s text=%s%s>" % \
+            (indent * ' ', self.__class__.__name__, self.position,
+             self.begin, self.end, self.pos, self.getText(), event_string)
 
 
 class AdjectiveToken(Token):

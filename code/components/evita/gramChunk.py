@@ -6,11 +6,6 @@ recognition.
 
 """
 
-# TODO. Some old functionality that seemed better suited for NounChunk was
-# removed, but there may still be functionality on GramVChunk that should really
-# be on VerbChunk.
-
-
 from types import ListType, InstanceType
 from pprint import pprint
 
@@ -40,13 +35,17 @@ def getWordList(constituents):
     """Returns a list of words from the list of constituents, typically the
     constituents are instances of NounChunk, VerbChunk or Token. Used for
     debugging purposes."""
-    return [constituent.getText() for constituent in constituents]
+    return [str(constituent.getText()) for constituent in constituents]
 
 def getPOSList(constituents):
     """Returns a list of parts-of-speech from the list of constituents, typically
     the constituents are instances of NounChunk, VerbChunk or Token. Used for
     debugging purposes."""
     return [constituent.pos for constituent in constituents]
+
+def getWordPosList(constituents):
+    return ["%s/%s" % (s, t) for s, t
+            in zip(getWordList(constituents), getPOSList(constituents))]
 
 def debug(text, newline=True):
     if DEBUG:
@@ -57,7 +56,6 @@ def debug(text, newline=True):
 class GramChunk:
 
     """The subclasses of this class are used to add grammatical features to a
-
     NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
     of instances of those classes."""
 
@@ -187,6 +185,7 @@ class GramVChunkList:
         self._initialize_lists()
         self._distributeNodes()
         self._generateGramVChunks()
+        if DEBUG: print "\n", self
 
     def _initialize_nodes(self, verbchunk, tokens):
         """Given the VerbChunk or a list of Tokens, set the nodes variable to
@@ -216,9 +215,8 @@ class GramVChunkList:
         self.infMarkLists = [[]]
         self.adverbsPreLists = [[]]
         self.adverbsPostLists = [[]]
-        self.leftLists = [[]]
         self.chunkLists = [self.trueChunkLists, self.negMarksLists, self.infMarkLists,
-                           self.adverbsPreLists, self.adverbsPostLists, self.leftLists]
+                           self.adverbsPreLists, self.adverbsPostLists]
 
     def __len__(self):
         return len(self.gramVChunksList)
@@ -227,24 +225,10 @@ class GramVChunkList:
         return self.gramVChunksList[index]
 
     def __str__(self):
-        if len(self.gramVChunksList) == 0:
-            return '[]'
-        string = ''
-        for i in self.gramVChunksList:
-            node = "\n\tNEGATIVE: " + str(getWordList(i.negative)) \
-                + "\n\tINFINITIVE: "  + str(getWordList(i.infinitive)) \
-                + "\n\tADVERBS-pre: " + str(getWordList(i.adverbsPre)) \
-                + "\n\tADVERBS-post: %s%s" % (getWordList(i.adverbsPost), getPOSList(i.adverbsPost)) \
-                + "\n\tTRUE CHUNK: %s%s" % (getWordList(i.trueChunk), getPOSList(i.trueChunk)) \
-                + "\n\tTENSE: " + str(i.tense) \
-                + "\n\tASPECT: " + str(i.aspect) \
-                + "\n\tNF_MORPH: " + str(i.nf_morph) \
-                + "\n\tMODALITY: " + str(i.modality) \
-                + "\n\tPOLARITY: " + str(i.polarity) \
-                + "\n\tHEAD: " + str(i.head.getText()) \
-                + "\n\tCLASS: " + str(i.evClass) + "\n"
-            string += node
-        return string
+        words = '-'.join(getWordList(self.nodes))
+        return \
+            "<GramVChunkList length=%d words=%s>\n\n" % (len(self), words) + \
+            "\n".join([gvch.as_verbose_string() for gvch in self.gramVChunksList])
 
     def is_wellformed(self):
         """Return True if this GramVChunkList is well-formed, that is, it has content
@@ -258,36 +242,41 @@ class GramVChunkList:
         return True
 
     def _distributeNodes(self):
-        """Distribute the item information over the lists in the GramVChunkLists."""
+        """Distribute the item's information over the lists in the GramVChunkLists."""
         # TODO: figure out whether to keep remove_interjections
         tempNodes = remove_interjections(self)
         debug("\n" + '-'.join([n.getText() for n in tempNodes]))
         logger.debug('-'.join([n.getText() for n in tempNodes]))
         itemCounter = 0
         for item in tempNodes:
-            debug( "   %s  %-3s  %-8s" % (itemCounter, item.pos, item.getText()), newline=False)
+            #debug( "   %s  %-3s  %-8s" % (itemCounter, item.pos, item.getText()), newline=False)
+            message_prefix = "   %s  %s/%s" % (itemCounter, item.getText(), item.pos)
             if item.pos == 'TO':
+                debug( '%s  ==>  TO' % message_prefix)
                 self._distributeNode_TO(item, itemCounter)
             elif item.getText() in forms.negative:
+                debug( '%s  ==>  NEG' % message_prefix)
                 self._distributeNode_NEG(item)
             elif item.pos == 'MD':
+                debug( '%s  ==>  MD' % message_prefix)
                 self._distributeNode_MD(item)
             elif item.pos[0] == 'V':
+                debug( '%s  ==>  V' % message_prefix)
                 self._distributeNode_V(item, tempNodes, itemCounter)
             elif item.pos in forms.partAdv:
+                debug( '%s  ==>  ADV' % message_prefix)
                 self._distributeNode_ADV(item, tempNodes, itemCounter)
             else:
-                debug( '==> None')
+                debug( '%s  ==>  None' % message_prefix)
             itemCounter += 1
             if DEBUG:
-                self.print_trueChunkLists()
+                self.print_ChunkLists()
 
     def _distributeNode_TO(self, item, itemCounter):
         """If the item is the first one, just add the item to the infinitive markers
         list. Otherwise, see if the last element in the core is one of a small
         group ('going', 'used' and forms of 'have'), if it is, add the element to the
         core, if not, do nothing at all."""
-        debug( '==> TO')
         if itemCounter == 0:
             self._addInCurrentSublist(self.infMarkLists, item)
         else:
@@ -308,76 +297,86 @@ class GramVChunkList:
     def _distributeNode_NEG(self, item):
         """Do not add the negation item to the core in self.trueChunkLists, but add it
         to the list with negation markers."""
-        debug( '==> NEG')
         self._addInCurrentSublist(self.negMarksLists, item)
 
     def _distributeNode_MD(self, item):
-        """Add the modifier element to the core list."""
-        debug( '==> MD')
+        """Add the modal element to the core list."""
         self._addInCurrentSublist(self.trueChunkLists, item)
 
     def _distributeNode_V(self, item, tempNodes, itemCounter):
-        debug( '==> V')
+        """Add a verb to the lists. This takes one of two actions, depending on the kind
+        of verb we are dealing with and on whether it is followed by TO."""
         if item == tempNodes[-1]:
-            self._treatMainVerb(item, tempNodes, itemCounter)
-        elif (item.isMainVerb() and
-              not item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
-            self._treatMainVerb(item, tempNodes, itemCounter)
-        elif (item.isMainVerb() and
-              item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']):
-            try:
-                if (tempNodes[itemCounter+1].getText() == 'to' or
-                    tempNodes[itemCounter+2].getText() == 'to'):
+            # if the verb is the last item, it can simply be added to the core.
+            self._addInCurrentSublist(self.trueChunkLists, item)
+        elif item.isMainVerb():
+            if item.getText() in ['going', 'used', 'had', 'has', 'have', 'having']:
+                # this makes sure that verbs like "going" in "going to sleep"
+                # are not treated as regular main verbs (for regular main verbs
+                # we would create two subchunks
+                if self._item_is_followed_by_TO(tempNodes, itemCounter):
                     self._addInCurrentSublist(self.trueChunkLists, item)
                 else:
                     self._treatMainVerb(item, tempNodes, itemCounter)
-            except:
+            else:
                 self._treatMainVerb(item, tempNodes, itemCounter)
         else:
             self._addInCurrentSublist(self.trueChunkLists, item)
 
     def _distributeNode_ADV(self, item, tempNodes, itemCounter):
-        debug( '==> ADV')
+        """Just add the adverb to an adverb list, the trick is to figure out which list
+        to add it. Factors are the location of the item in the tempNodes list
+        and the pos tags of the elements following the item."""
+        # TODO. This does often not do the right thing. For example, in the
+        # phrase 'will end up being eliminated', we get two GramVChunks, but
+        # 'up' will live in the adverbsPre list of the second one (instead of in
+        # the adverbsPost list of the first). This is of limited negative effect
+        # since the only thing that the adverbs are used for is to scan the
+        # adverbPre list for 'only', which has effect on the polarity.
         if item != tempNodes[-1]:
+            debug("      NOT LAST")
             if len(tempNodes) > itemCounter+1:
+                debug('        tempNodes IS LONG')
                 if (tempNodes[itemCounter+1].pos == 'TO' or
                     contains_adverbs_only(tempNodes[itemCounter:])):
+                    # this would apply to text like "end up in Tokyo" but the
+                    # chunker does not recognize "end up" as a <vg>
+                    debug('          NEXT IS TO OR REST IS ADVERBS')
                     self._addInPreviousSublist(self.adverbsPostLists, item)
                 else:
+                    debug('          NEXT IS NOT TO AND REST IS NOT ADVERBS')
                     self._addInCurrentSublist(self.adverbsPreLists, item)
             else:
+                debug('        tempNodes IS NOT LONG')
                 self._addInCurrentSublist(self.adverbsPostLists, item)
         else:
+            debug("      LAST")
             self._addInPreviousSublist(self.adverbsPostLists, item)
 
-    def print_trueChunkLists(self):
-        for trueChunkList in self.trueChunkLists:
-            print "   tc [%s]" % (', '.join(["%s" % x.text for x in trueChunkList]))
+    def _item_is_followed_by_TO(self, tempNodes, itemCounter):
+        """Return True if one of the next two tokens is TO, return False otherwise."""
+        try:
+            return (tempNodes[itemCounter+1].getText() == 'to' or
+                    tempNodes[itemCounter+2].getText() == 'to')
+        except IndexError:
+            return False
 
     def _treatMainVerb(self, item, tempNodes, itemCounter):
+        """Add a main verb to the trueChunks list. That is all that is done when the
+        item is followed by adverbs only. In other cases, we have a chunk which
+        has two subchunks and _updateChunkLists is called to introduce the
+        second chunk. This is to deal with cases like 'might consider filing',
+        where we want to end up with two events."""
         self._addInCurrentSublist(self.trueChunkLists, item)
-        # TODO: it is weird that the counter is updated independently from
-        # updating the chunk lists, fin dout why
-        self._updateCounter()
-        if (item == tempNodes[-1] or
-            contains_adverbs_only(tempNodes[itemCounter+1:])):
-            pass
-        else:
+        if not contains_adverbs_only(tempNodes[itemCounter+1:]):
             self._updateChunkLists()
-
-    def _updateCounter(self):
-        self.counter += 1
 
     def _updateChunkLists(self):
         """Append an empty list to the end of all lists maintained in the
-        GramVChunkList. Necessary for dealing with chunks containing subchunks,
-        for example '[[might consider] [filing]]'."""
+        GramVChunkList and update the counter."""
+        self.counter += 1
         for chunkList in self.chunkLists:
-            # TODO: why do we have this test?
-            if len(chunkList) == self.counter:
-                chunkList.append([])
-            else:
-                logger.warn("length of chunk list and counter are out of sync")
+            chunkList.append([])
 
     def _addInCurrentSublist(self, sublist, element):
         """Add the element to the current element (that is, the last element) in
@@ -390,32 +389,40 @@ class GramVChunkList:
     def _addInPreviousSublist(self, sublist, element):
         """Add the element to the previous element (that is, the penultimate
         element) in sublist. The elements of the sublist are lists themselves."""
-        # TODO: this is used only once in all of the tests evita-BE.xml, look
-        # into what this case is; also, the logic of how this works and the
-        # interaction with self.counter is a bit unclear, it can probably be
-        # simplified
+        # TODO. This method is never used in the 300+ sentences in the tests in
+        # testing/scripts/regression/evita/data-in. There us a use case for this
+        # method though with phrases like "end up being eliminated", where "up"
+        # should be added to the previous and not current list, which is now not
+        # dealt with properly. Also, the logic of this method is a bit odd in
+        # that when the counter is 0 the item will be added to the last (and
+        # current) list, maybe want a warning instead.
         if len(sublist) >= self.counter-1:
             sublist[self.counter-1].append(element)
         else:
+            # not sure whether this can actually occur
             logger.warn("list should be longer")
-        #print '>>>', len(sublist), self.counter
-        #print sublist
 
     def _generateGramVChunks(self):
         for idx in range(len(self.trueChunkLists)):
-            gramVCh = GramVChunk(self.node,
-                                 self.trueChunkLists[idx],
-                                 self.negMarksLists[idx],
-                                 self.infMarkLists[idx],
-                                 self.adverbsPreLists[idx],
-                                 self.adverbsPostLists[idx],
-                                 self.leftLists[idx])
+            gramVCh = GramVChunk(self.node, self.trueChunkLists[idx],
+                                 self.negMarksLists[idx], self.infMarkLists[idx],
+                                 self.adverbsPreLists[idx], self.adverbsPostLists[idx])
             self.gramVChunksList.append(gramVCh)
+
+    def print_ChunkLists(self):
+        for i in range(len(self.trueChunkLists)):
+            sep = ', '
+            tc =  sep.join(["%s" % x.text for x in self.trueChunkLists[i]])
+            neg =  sep.join(["%s" % x.text for x in self.negMarksLists[i]])
+            inf =  sep.join(["%s" % x.text for x in self.infMarkLists[i]])
+            adv1 =  sep.join(["%s" % x.text for x in self.adverbsPreLists[i]])
+            adv2 =  sep.join(["%s" % x.text for x in self.adverbsPostLists[i]])
+            print "      tc=[%s] inf=[%s] neg=[%s] adv1=[%s] adv2=[%s]" % (tc, inf, neg, adv1, adv2)
 
 
 class GramVChunk(GramChunk):
 
-    def __init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost, left):
+    def __init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost):
         # TODO: note that there is not a straight correspondence between the
         # VerbChunk and the tokens that the GramVChunk is for, how do we know
         # that the right event is added?
@@ -425,7 +432,6 @@ class GramVChunk(GramChunk):
         self.infinitive = infMk            # does not appear to be used
         self.adverbsPre = advPre
         self.adverbsPost = advPost
-        self.left = left
         self.head = self.getHead()
         self.evClass = self.getEventClass()
         self.tense = 'NONE'
@@ -601,19 +607,19 @@ class GramVChunk(GramChunk):
             opening_string = 'GramVChunk: None'
         else:
             # TODO: this crashes since often self.node is a list
-            opening_string = "GramVChunk: %s" % self.node.getText()
+            opening_string = "GramVChunk: '%s'" % self.node.getText().strip()
         try:
-            head_string = self.head.getText()
+            head_string = self.head.getText().strip()
         except AttributeError:
             head_string = ''
         return \
-            opening_string + "\n" + \
-            "\tTENSE=%s ASPECT=%s HEAD=%s CLASS=%s\n" \
-            % (self.tense, self.aspect, self.head.getText(), self.evClass) + \
-            "\tNF_MORPH=%s MODALITY=%s POLARITY=%s\n" \
-            % (self.nf_morph, self.modality, self.polarity) + \
-            "\tNEGATIVE:" + str(getWordList(self.negative)) + "\n" + \
-            "\tINFINITIVE:" + str(getWordList(self.infinitive)) + "\n" + \
-            "\tADVERBS-pre:" + str(getWordList(self.adverbsPre)) + "\n" + \
-            "\tADVERBS-post:%s%s\n" % (getWordList(self.adverbsPost), getPOSList(self.adverbsPost)) + \
-            "\tTRUE CHUNK:%s%s\n" % (getWordList(self.trueChunk), getPOSList(self.trueChunk))
+            opening_string + "\n" \
+            + "\ttense=%s aspect=%s head=%s class=%s\n" \
+            % (self.tense, self.aspect, self.head.getText(), self.evClass) \
+            + "\tnf_morph=%s modality=%s polarity=%s\n" \
+            % (self.nf_morph, self.modality.replace(' ', '-'), self.polarity) \
+            + "\ttrueChunk: [%s]\n" % ', '.join(getWordPosList(self.trueChunk)) \
+            + "\tnegative:  [%s]\n"  % ', '.join(getWordPosList(self.negative)) \
+            + "\tinfinitive: [%s]\n"  % ', '.join(getWordPosList(self.infinitive)) \
+            + "\tadverbs-pre: [%s]\n" % ', '.join(getWordPosList(self.adverbsPre)) \
+            + "\tadverbs-post: [%s]\n" %  ', '.join(getWordPosList(self.adverbsPost))

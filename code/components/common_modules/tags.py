@@ -95,8 +95,8 @@ class EventTag(Tag):
 
     def pretty_print(self, indent=0):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'), self.attrs.get('class'))
-        print "%s<%s position=%s eid=%s eiid=%s class=%s>" % \
-              ( indent * ' ', self.name, self.position, str(eid), str(eiid), str(cl) )
+        print "%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
+              ( indent * ' ', self.name, self.position, self.begin, self.end, str(eid), str(eiid), str(cl) )
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 

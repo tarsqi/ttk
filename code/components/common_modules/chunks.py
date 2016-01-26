@@ -118,13 +118,12 @@ class Chunk(Constituent):
         retrieved from the gramchunk instance variable, when it is called from
         VerbChunk, then the GramChunk will be handed in."""
         gchunk = self.gramchunk if gramChunk is None else gramChunk
-        # TODO: the second and third test seem relevant for verbs only
-        if (gchunk.head
-            and gchunk.head.getText() not in forms.be
-            and gchunk.head.getText() not in forms.spuriousVerb
-            and gchunk.evClass):
-            #print "   ADDING EVENT"
-            #for node in gchunk.node: print node
+        text = gchunk.head.getText()
+        # the second and third tests seem relevant for verbs only, but we keep
+        # them anyway for all chunks
+        if (gchunk.evClass
+            and text not in forms.be
+            and text not in forms.spuriousVerb):
             self.tree.addEvent(Event(gchunk))
 
     def _getHeadText(self):
@@ -145,9 +144,9 @@ class Chunk(Constituent):
         return True
 
     def pretty_print(self, indent=0):
-        print "%s<%s position=%s checkedEvents=%s event=%s eid=%s>" % \
-            (indent * ' ', self.__class__.__name__,
-             self.position, self.checkedEvents, self.event, self.eid)
+        print "%s<%s position=%s %d-%d checkedEvents=%s event=%s eid=%s>" % \
+            (indent * ' ', self.__class__.__name__, self.position,
+             self.begin, self.end, self.checkedEvents, self.event, self.eid)
         for tok in self.dtrs:
             tok.pretty_print(indent+2)
 
@@ -207,11 +206,8 @@ class NounChunk(Chunk):
         head which cannot be a timex and the head has to be a common noun."""
         # using the regular expression is a bit faster then lookup in the short
         # list of common noun parts of speech (forms.nounsCommon)
-        # TODO: is the first check needed? isn't there always a head?
-        return (
-            self.gramchunk.head
-            and not self.gramchunk.head.isTimex()
-            and forms.RE_nounsCommon.match(self.gramchunk.head.pos) )
+        return (not self.gramchunk.head.isTimex()
+                and forms.RE_nounsCommon.match(self.gramchunk.head.pos))
 
     def isEventCandidate_Sem(self):
         """Return True if the nominal can be an event semantically. Depending
