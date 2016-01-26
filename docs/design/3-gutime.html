@@ -1,0 +1,71 @@
+<link rel="stylesheet" type="text/css" href="master.css">
+</head>
+
+<body>
+
+<p class="top navigation">
+<a href="index.html">home</a>
+<a href="1-toplevel.html">toplevel</a>
+<a href="2-preprocessor.html">preprocessor</a>
+<a href="3-gutime.html">gutime</a>
+<a href="4-evita.html">evita</a>
+<a href="5-slinket.html">slinket</a>
+<a href="6-s2t.html">s2t</a>
+<a href="7-blinker.html">blinker</a>
+<a href="8-classifier.html">classifier</a>
+<a href="9-sputlink.html">sputlink</a>
+</p>
+
+
+<h1>TARSQI Toolkit - GUTime</h1>
+
+<p>The GUTimeWrapper takes the content of all TarsqiDocElements in the
+TarsqiDocument and creates the input needed by components/gutime/TimeTag.pl,
+which is the wrapper around TempEx.pm in the same directory. The input required
+by TimeTag.pl is a file with content as follows:</p>
+
+<pre class="example indent">
+&lt;DOC>
+&lt;DATE>20160102&lt;/DATE>
+&lt;s>
+   &lt;lex id="l1" begin="1" end="5" pos="NNP">Fido&lt;/lex>
+   &lt;lex id="l2" begin="6" end="11" pos="NNS">barks&lt;/lex>
+   &lt;lex id="l3" begin="12" end="14" pos="IN">on&lt;/lex>
+   &lt;lex id="l4" begin="15" end="21" pos="NNP">Monday&lt;/lex>
+   &lt;lex id="l5" begin="21" end="22" pos=".">.&lt;/lex>
+&lt;/s>
+&lt;/DOC>
+</pre>
+
+<p>The DOC root and the DATE tag are required, the latter being the way that the
+DCT is handed to GUTime. Otherwise, only s and lex tags are allowed. GUTime does
+not require the lex tags to have the begin and end attributes, but it is okay
+for them to be there. Any kind of spacing between the tags is allowed. The
+wrapper creates the above file in a temporary data directory data/tmp (which is
+emptied at the beginning of each tarsqi.py invocation) and then uses the Python
+subprocess module to run the Perl script. The output is put in the same
+temporary directory and is exactly like the input except that TIMEX3 tags are
+added:</p>
+
+<pre class="example indent">
+&lt;DOC>
+&lt;DATE>&lt;TIMEX3 VAL="20160102">20160102&lt;/TIMEX3>&lt;/DATE>
+&lt;s>
+   &lt;lex id="l1" begin="1" end="5" pos="NNP">Fido&lt;/lex>
+   &lt;lex id="l2" begin="6" end="11" pos="NNS">barks&lt;/lex>
+   &lt;lex id="l3" begin="12" end="14" pos="IN">on&lt;/lex>
+   &lt;TIMEX3 tid="t1" TYPE="DATE">&lt;lex id="l4" begin="15" end="21" pos="NNP">Monday&lt;/lex>&lt;/TIMEX3>
+   &lt;lex id="l5" begin="21" end="22" pos=".">.&lt;/lex>
+&lt;/s>
+&lt;/DOC>
+</pre>
+
+<p>Similar to what happened with the preprocessor results, the new TIMEX3 tags
+are exported to the tarsqi_tags TagRepository on the TarsqiDocElement. One
+difference is that the GUTimeWrapper adds tags using the add_tag method on
+TagRepository, which also adds the tag to the opening_tags and closing tags
+dictionaries, so a separate use of index() is not needed.</p>
+
+
+</body>
+</html>

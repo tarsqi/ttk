@@ -1,0 +1,460 @@
+<link rel="stylesheet" type="text/css" href="master.css">
+</head>
+
+<body>
+
+<p class="top navigation">
+<a href="index.html">home</a>
+<a href="1-toplevel.html">toplevel</a>
+<a href="2-preprocessor.html">preprocessor</a>
+<a href="3-gutime.html">gutime</a>
+<a href="4-evita.html">evita</a>
+<a href="5-slinket.html">slinket</a>
+<a href="6-s2t.html">s2t</a>
+<a href="7-blinker.html">blinker</a>
+<a href="8-classifier.html">classifier</a>
+<a href="9-sputlink.html">sputlink</a>
+</p>
+
+
+<h1>TARSQI Toolkit - Evita</h1>
+
+<p class="navigation">
+[ <a href="#evita">evita</a>
+| <a href="#nouns">nominal events</a>
+| <a href="#verbs">verbal events</a>
+| <a href="#adjectives">adjectival events</a>
+]
+</p>
+
+<a name="evita"/>
+<h2>Evita and the TarsqiTree class</h2>
+
+<p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
+TarsqiDocElements in it, creating an Evita instance for all of them and then
+procesing the element. The Evita instance has slots for the TarsqiDocument, the
+TarsqiDocElement and a TarsqiTree instance which contains a document tree for
+the TarsqiDocElement that is being processed. The TarsqiTree instance itself
+knows what TarsqiDocument it belongs to and what TarsqiDocElement it was created
+for since these were handed in from the Evita instance. The TarsqiTree instance
+also has a list of daughters as well as some other attributes that are ignored
+here because they are not used by Evita.</p>
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">components.evita.main.Evita</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqidoc</td>
+  <td>an instance of docmodel.document.TarsqiDocument</td>
+</tr>
+<tr>
+  <td class="attribute">docelement</td>
+  <td>an instance of docmodel.document.TarsqiDocElement or subclass thereof, the
+  element of the TarsqiDocument that is being processed by Evita</td>
+</tr>
+<tr>
+  <td class="attribute">doctree</td>
+  <td>
+    <table class="pythonclass embedded">
+      <tr>
+	<td class="name" colspan="2">components.common_modules.tree.TarsqiTree</td>
+      </tr>
+      <tr>
+	<td class="attribute">tarsqidoc</td>
+	<td>an instance of docmodel.document.TarsqiDocument</td>
+      </tr>
+      <tr>
+	<td class="attribute">docelement</td>
+	<td>the TarsqDocElement that the document tree is created for</td>
+      </tr>
+      <tr>
+	<td class="attribute">dtrs</td>
+	<td>a list of daughters, typically instances of Sentence</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+<p>Since the TarsqiTree and its elements are the starting point for Evita and
+Slinket processing we will dwell on them a bit longer. Here is a pretty print of
+the TarsqiTree for "The dog barked yesterday.".</p>
+
+<pre class="example indent">
+&lt;Sentence position=0>
+  &lt;NounChunk position=0 checkedEvents=False event=None eid=None>
+    &lt;Token position=0 pos=DT text=The>
+    &lt;Token position=1 pos=NN text=dog>
+  &lt;VerbChunk position=1 checkedEvents=False event=None eid=None>
+    &lt;Token position=0 pos=VBD text=barked>
+  &lt;NounChunk position=2 checkedEvents=False event=None eid=None>
+    &lt;TIMEX3 tid=t1 type=DATE value=20160103>
+      &lt;Token position=0 pos=NN text=yesterday>
+  &lt;Token position=3 pos=. text=.>
+</pre>
+
+<p>A TarsqiTree contains sentences, chunks, tokens and event and time
+constituents. It is created from a TarsqiDocElement as a first processing step
+by using the create_tarsqi_tree() method in components.common_modules.tree. This
+method uses the intermediary Node object to create a tree hierarchy and then
+replaces all Node objects with instances of Sentence, NounChunk, VerbChunk,
+Token, AdjectiveToken, EventTag and TimexTag (all defined in submodules of
+components.common_modules). These tree elements are all subclasses of
+Constituent and have the following instance variables:</p>
+
+<table class="pythonclass indent spacy">
+  <tr>
+    <td class="name" colspan="2">components.common_modules.constituent.Constituent</td>
+  </tr>
+  <tr>
+    <td>tree</td>
+    <td>contains the TarsqiTree instance at the top of the tree, through this
+    tree a constituent also has access to the TarsqiDocument and the
+    TarsqiDocElement</td>
+  </tr>
+  <tr>
+    <td>parent</td>
+    <td>a reference to the parent, which is an instance of TarsqiTree or one of
+      the subclasses of Constituent</td>
+  </tr>
+  <tr>
+    <td>position</td>
+    <td>an integer reflecting the constituent's position in the dtrs list of the
+    parent</td>
+  </tr>
+  <tr>
+    <td>dtrs</td>
+    <td>a list of daughters, this is the empty list for leaf nodes</td>
+  </tr>
+  <tr>
+    <td>begin</td>
+    <td>the beginning offset in the SourceDoc</td>
+  </tr>
+  <tr>
+    <td>end</td>
+    <td>the ending offset in the SourceDoc</td>
+  </tr>
+</table>
+
+<p>The TarsqiTree is used by Tarsqi components as a common data structure to
+process over. For example, Evita and Slinket both run patterns over elements of
+this tree and major parts of the Evita and Slinket code are expressed as methods
+on constituents. Components may update elements of the tree, but it is important
+to note that those changes are incidental and will not be handed over to a next
+component in the pipeline. Instead, results from processing have to be exported
+to the TagRepository on the TarsqiDocElement, as in the following figure.</p>
+
+<img src="images/component.png" width="550"/>
+
+<p>Components import he TarsqiDocument and the TagRepository in the
+TarsqiDocElement and create a TarsqiTree from them, they then use this tree as
+input to processing and export the resulting tags back into the
+TagRepository. The next component in the pipeline will start afresh with a new
+TarsqiTree which will be created from the updated TagRepository.</p>
+
+<p>Getting back to Evita...</p>
+
+<p>The EvitaWrapper takes the TarsqiDocument on initialization and its process()
+method loops over all TarsqiDocElements, creating an Evita instance for each of
+them and then running the process_element() method. The process_elements()
+method loops through all Sentence instances in the TarsqiTree in Evita's doctree
+variable, and then loops through all daughters of the Sentence. For each
+daughter it attempts to create an event with the createEvent() method, which is
+implemented on the NounChunk and VerbChunk classes.</p>
+
+<p>As an illustration, below is a fragment from the code in the Evita class in
+components.evita.main. Note that the code is slightly simplified and edited and
+that it is not well-formed Python code anymore, this is true for all code
+fragments shown in this document.</p>
+
+<pre class="example indent">
+<i>components.evita.main.Evita</i>
+
+process_element():
+   self.doctree = create_tarsqi_tree(self.docelement)
+   for sentence in self.doctree:
+      for node in sentence:
+         if not node.checkedEvents:
+            node.createEvent()
+</pre>
+
+<p>Nominal events are created with createEvent() on NounChunk and verbal and
+adjectival events are created with createEvent() on VerbChunk. Adjectival events
+are initially dealt with by VerbChunk because they are created only if preceded
+by certain verb groups, which is recognized by VerbChunk. The following three
+sections give details on how the three kinds of events are created.</p>
+
+
+<a name="nouns"/>
+<h2>Nominal events</h2>
+
+<p>Most of the code that deals with nominal events is expressed on the NounChunk
+class, which is a sublass of Chunk and Constituent. Recall that Constituents
+defines instance variables tree, parent, position, dtrs, being and end. These
+are all filled in during TarsqiTree construction with create_tarsqi_tree(), as
+mentioned earlier in this section. Several other instance variables are defined
+on chunks. The table below has just the variables added by NounChunk that are
+relevant for Evita.</p>
+
+<table class="pythonclass indent spacy">
+  <tr>
+    <td class="name" colspan="2">components.common_modules.chunks.NounChunk</td>
+  </tr>
+  <tr>
+    <td>phraseType</td>
+    <td>the chunktype, basically the chunk tag generated by the chunker, always
+    'ng' for noun chunks</td>
+  </tr>
+  <tr>
+    <td>head</td>
+    <td>an integer reflecting the position of the head token in the chunk's dtrs
+    variable, always set to -1 for noun chunks, picking out the last element</td>
+  </tr>
+  <tr>
+    <td>gramchunk</td>
+    <td>
+      <table class="pythonclass embedded">
+	<tr>
+	  <td class="name" colspan="2">components.evita.gramChunk.GramNChunk</td>
+	</tr>
+	<tr>
+	  <td>node</td>
+	  <td>the NounChunk that the features are for</td>
+	</tr>
+	<tr>
+	  <td>tense</td>
+	  <td>the tense of the nominal, by default set to 'NONE'</td>
+	</tr>
+	<tr>
+	  <td>aspect</td>
+	  <td>the aspect of the nominal, by default set to 'NONE'</td>
+	</tr>
+	<tr>
+	  <td>modality</td>
+	  <td>the modality of the nominal, by default set to 'NONE'</td>
+	</tr>
+	<tr>
+	  <td>polarity</td>
+	  <td>the polarity of the nominal, by default set to 'POS'</td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>gramchunks</td>
+    <td>the empty list for noun chunks, but can be non-empty for verb chunks</td>
+  </tr>
+  <tr>
+    <td>checkedEvents</td>
+    <td>a flag indicating whether the chunk has already been checked for events,
+    initially set to False; if set to True, createEvent() will never be run for
+    the chunk</td>
+  </tr>
+</table>
+
+<p>The GramNChunk instance in the gramchunk variable contains the grammatical
+features for the noun chunk. This instance has a pointer back to the NounChunk
+it is in and four grammatical features. Three of them are typically 'NONE' for
+nouns, and it may sound a wee bit odd for nouns to have tense, aspect or
+modality, nominal, but in some cases nominal will inherit these from a governing
+verb, for example, with phrases like "This would be a tragedy". When the verb
+chunk "be" tries to create an event it will recognize that the actual event is
+the nominal following it, it will then try to create an event on that nominal
+and hand it the verb chunk features. This is explanined further below.</p>
+
+<p>The top-level of the createEvent() code for nominals looks as follows:</p>
+
+<pre class="example indent">
+<i>components.common_modules.chunks.NounChunk</i>
+
+createEvent(self, gramvchunk=None):
+   self.gramchunk = GramNChunk(self, gramvchunk)
+   if self.isEventCandidate():
+      self._conditionallyAddEvent()
+</pre>
+
+<p>GramNchunk creation for the NounChunk is a simple affair, setting the
+defaults and then leting them be overwritten if features were handed in from the
+governing verb. The main work occurs in the isEventCandidate() method on the
+chunk, which first checks whether the noun chunk is syntactically able to be an
+event, which is the case if the chunk has a head, the head is a common noun and
+the chunk is not a time expression. Next, it checks whether the noun chunk can
+semantically be an event. It does this by looking up the head token in Wordnet
+and by running a simple Bayesian classifier. This is where the heavy lifting
+occurs. The general logic is as follows:</p>
+
+<ol>
+
+<li>If all senses of the head token of the chunk are events in WordNet, return
+True.</li>
+
+<li>Else, if the classifier has enough data for the head token in its
+statistical model, let the classifier decide whether the token is an event.</li>
+
+<li>Else, do another WordNet lookup and check either whether the primary sense
+is an event or whether some senses are events.</li>
+
+</ol>
+
+<p>The exact application of this logic is driven by settings in the
+components.evita.settings module, which has a couple of variable that determine
+whether the Bayesian classifier is used and how WordNet lookup determines
+event-hood.
+
+<pre class="example indent">
+<i>components.evita.settings</i>
+
+EVITA_NOM_DISAMB = True
+EVITA_NOM_CONTEXT = True
+EVITA_NOM_WNPRIMSENSE_ONLY = True
+</pre>
+
+<p>The first variable determines whether the classifier will actually apply and
+the second whether the classifier will take into account contextual features (as
+opposed to just the word). The third variable determines the choice to be made
+in step 3, the default is to decide that a token is an event if its primary
+sense is.</p>
+
+<p>The resources used by the logic above are in library/evita/dictionaries. Here
+is a short desciption of the WordNet and classifier resources.</p>
+
+<ul class="spacy">
+
+<li>For WordNet lookup, three files are used:
+
+<ol class="tight">
+<li>wnAllSensesAreEvents.txt contains the nouns for which all senses are events,
+<li>wnPrimSenseIsEvent.txt contains the nouns for which the primary sense is an
+event,
+<li>wnSomeSensesAreEvents.txt contains the nouns for which some sense is an
+event.
+</ol>
+
+Note that the second file includes all nouns in the first and that the third
+file contains all nouns in the second. WordNet lookup is a binary search through
+these files. The files were created by library/evita/build_event_nominals1.py,
+which uses the third party module wntools. This script has not been used or
+tested in almost 10 years. There is also a script named
+library/evita/build_event_nominals2.py, which takes these files and creates
+Python dbm files for them, which may improve speed a bit. In a not-so-distant
+future, we will probably load these files into an in-memory dictionary at Tarsqi
+startup time (or load them from a pickle file).
+
+</li>
+
+<li>
+
+For the Bayesian classifier, there are two pickle files, both in
+library/evita/dictionaries, that contain Python dictionaries with the statistics
+used. The statistics were taken from TimeBank and Semcor, two corpora with event
+information for nominals. The first file, semcorNomEvent.pickle, contains raw
+counts for 2638 nominals and lists the number of non-event occurrences and the
+number of event occurrences. Here is a fragment of the Python dictionary in that
+pickle file:
+
+<pre class="example indent">
+'drawing': [12.0, 2.0],
+'negligence': [0, 2.0],
+'detail': [33.0, 9.0],
+'absorption': [0, 7.0],
+'crack': [6.0, 1.0],
+</pre>
+
+From this fragment you can read that there were 12 occurrences where 'drawing'
+was not an event and 2 occurrences where it was. (By the way, it is not clear
+why these numbers are floats, probably a historical accident).
+
+<p/>
+
+The file semcorNomEventContextProb.pickle contains probability adjustments for
+the nominals given a small amount of features (definite versus indefinite and
+singualer versus plural). The numbers are adjustments for the non-event
+probability and the event probability respectively. Adjustments for two of the
+nominals above are given below.
+
+<pre class="example indent">
+'drawing': {
+	'DEF': (0.1, 0.1),
+	'INDEF': (0.9, 0.9),
+	'NN': (0.34, 0.9),
+	'NNS': (0.66, 0.1) }
+
+'absorption': {
+	'DEF': (0.5, 0.166666),
+	'INDEF': (0.5, 0.833333),
+	'NNS': (0.5, 0.3),
+	'NN': (0.5, 0.7) }
+</pre>
+
+For example, if we take 'drawing', which has a proability of 0.14 of being an
+event and 0.86 of not being an event, and say that we have the features INDEF
+and NN, then the adjusted event probability would be 0.14 * 0.9 * 0.9 = 0.11 and
+the adjusted non-event probability would be 0.86 * 0.9 * 0.7 = 0.26, after which
+the adjusted chance of not being an event is still bigger. Note that the
+combined probabilities are not 1 anymore.
+
+<p/>
+
+There is some ancient code in library/evita/build_event_nominals1.py which will
+not work, but which was originally used to create the pickle files. The content
+of the pickle files is also listed in a friendlier format in files with the .txt
+extension in the same directory.
+
+</li>
+
+</ul>
+
+<p>Back to the Evita nominal event logic. If the isEventCandidate() method
+returns true then the _conditionallyAddEvent() method will perform a few last
+checks and then add an event to the TarsqiDocElement by asking the TarsqiTree to
+do the honours:</p>
+
+<pre class="example indent">
+<i>components.common_modules.chunks.Chunk</i>
+
+def _conditionallyAddEvent(self, gramChunk=None):
+     gchunk = self.gramchunk if gramChunk is None else gramChunk
+     if (gchunk.head
+         and gchunk.head.getText() not in forms.be
+         and gchunk.head.getText() not in forms.spuriousVerb
+         and gchunk.evClass):
+         self.tree.addEvent(Event(gchunk))
+</pre>
+
+<p>This method is defined on Chunk and is used by VerbChunks as well. The core
+is to invoke addEvent() on the TarsqiTree instance in the tree variable, handing
+it an Event instance which was created from the GramNChunk (or gramVChunk for
+verb chunks).</p>
+
+<pre class="example indent">
+<i>components.common_modules.tree.TarsqiTree</i>
+
+ def addEvent(self, event):
+     event_attrs = dict(event.attrs)
+     eid = self.tarsqidoc.next_event_id()
+     eiid = "ei%s" % eid[1:]
+     event_attrs['eid'] = eid
+     event_attrs['eiid'] = eiid
+     token = event.tokens[-1]
+     self.docelement.add_event(token.begin, token.end, event_attrs)
+</pre>
+
+<p>The TarsqiTree instance is handed most event features (tense and aspect and
+so on), but it is responsible for generating unique identifiers for the event
+(which it gets from the TarsqiDocument). Finally, it asks the TarsqiDocElement
+to add the tag to the tarsqi_tags TagRepository, thereby exporting the component
+results as shown in the picture earlier in this section.</p>
+
+
+<a name="verbs"/>
+<h2>Verbal events</h2>
+
+
+<a name="adjectives"/>
+<h2>Adjectival events</h2>
+
+
+</body>
+</html>
+

@@ -1,0 +1,34 @@
+
+body { xwidth: 820px; }
+
+body, p, td, dt, dd { font-size: 14pt; }
+
+img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: block; }
+
+.navigation { font-size: 120%; }
+.top { border: thin solid green; padding: 8pt; word-spacing: 10pt; }
+.spacy li { margin-top: 10pt; margin-bottom: 10pt; }
+.tight li { margin-top: 4pt; margin-bottom: 4pt; }
+.example { padding: 5pt; background: #eeeeee; border: thin dotted grey; font-size: 80%; }
+.image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
+.indent { margin-left: 10pt; }
+.embedded { margin-right: 5pt; margin-bottom: 5pt; }
+
+h1 { border-bottom: thick solid green; }
+h2 { margin-top: 25pt; border-bottom: medium solid green; }
+h3 { margin-top: 15pt; border-bottom: thin solid green; }
+
+code { font-size: 125%; }
+
+table { border: thin solid grey; border-collapse: collapse; }
+table td { border: thin solid grey; vertical-align: top; padding: 3pt; }
+table tr.tableheader { background-color: #eeeeee; }
+table.spacy { margin-top: 10pt; margin-bottom: 10pt; }
+table.pythonclass { width: 500pt; }
+table.pythonclass td { border-style: none; padding-left: 6pt; }
+table.pythonclass td.name { font-weight: bold; border: thin solid grey; padding-left: 3pt;}
+table.pythonclass td.name { background-color: #eeeeee; }
+table.pythonclass td.attribute { }
+
+dt { margin-left: 8pt; }
+dd { margin-top: 6pt; margin-bottom: 10pt; }

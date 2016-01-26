@@ -1,0 +1,70 @@
+<link rel="stylesheet" type="text/css" href="master.css">
+</head>
+
+<body>
+
+<p class="top navigation">
+<a href="index.html">home</a>
+<a href="1-toplevel.html">toplevel</a>
+<a href="2-preprocessor.html">preprocessor</a>
+<a href="3-gutime.html">gutime</a>
+<a href="4-evita.html">evita</a>
+<a href="5-slinket.html">slinket</a>
+<a href="6-s2t.html">s2t</a>
+<a href="7-blinker.html">blinker</a>
+<a href="8-classifier.html">classifier</a>
+<a href="9-sputlink.html">sputlink</a>
+</p>
+
+
+<h1>TARSQI Toolkit - Slinket</h1>
+
+<!--
+<p class="navigation">
+[ <a href="#toplevel">toplevel</a>
+| <a href="#tags">tags</a>
+]
+</p>
+-->
+
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">components.common_modules.tree.TarsqiTree</td>
+</tr>
+<tr>
+  <td class="attribute">tarsqidoc</td>
+  <td>an instance of docmodel.document.TarsqiDocument</td>
+</tr>
+<tr>
+  <td class="attribute">docelement</td>
+  <td>the TarsqiDocElement that the tree is created for</td>
+</tr>
+ <tr>
+  <td class="attribute">dtrs</td>
+  <td>a list of daughters, typically instances of Sentence</td>
+</tr>
+<tr>
+  <td class="attribute">events</td>
+  <td>a dictionary (TODO: indexed on...) containing events for the
+  TarsqiDocElement that were found by Evita, it is created by Slinket by
+  collecting events and their attributes from the document tree in dtrs</td>
+</tr>
+<tr>
+  <td class="attribute">alink_list</td>
+  <td>a list of AlinkTags</td>
+</tr>
+<tr>
+  <td class="attribute">slink_list</td>
+  <td>a list of SlinkTags</td>
+</tr>
+<tr>
+  <td class="attribute">tlink_list</td>
+  <td>a list of TlinkTags</td>
+</tr>
+</table>
+
+
+
+</body>
+</html>
