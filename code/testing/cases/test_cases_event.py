@@ -31,6 +31,11 @@ EVENT_TESTS = [
 
     ('VERB-sleeps-today', "John sleeps today.", 5, 11),
 
+    # some tests to see if chunking was okay
+    ('VBG-also-coming-home', "They are also coming home.", 14, 20), 
+    ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 9, 15), 
+    ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 16, 25, None), 
+
     # need case for MODAL
 
     ('BE-ADJ-was-open', "The door was open.", 13, 17),

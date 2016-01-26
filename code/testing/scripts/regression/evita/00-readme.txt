@@ -38,6 +38,9 @@ week. This is because Tarsqi uses the current date for processing, which is used
 for resolving the normalized value of some time expressions. Just rerun the
 setup-evita-tests.sh scripts again to recreate the baseline.
 
+Update: the former is not true for evita-test.sh anymore since we do not use
+diff to compare results anymore, however, when GUTime or BTime is going to be
+tested this way the issue will return.
 
 TODO:
 

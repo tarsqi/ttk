@@ -7,6 +7,7 @@
 
 pipeline=PREPROCESSOR,EVITA
 
+script_dir=testing/scripts/regression/evita
 testing_dir_in=testing/scripts/regression/evita/data-in
 testing_dir_out=testing/scripts/regression/evita/data-out
 testing_dir_tmp=testing/scripts/regression/evita/data-tmp
@@ -18,7 +19,7 @@ function run_test () {
 	rm $testing_dir_tmp/evita-$1.xml
     fi
     python tarsqi.py --pipeline=$pipeline $testing_dir_in/evita-$1.xml $testing_dir_tmp/evita-$1.xml &> /dev/null 
-    diff $testing_dir_out/evita-$1.xml $testing_dir_tmp/evita-$1.xml
+    python $script_dir/compare.py $testing_dir_out/evita-$1.xml $testing_dir_tmp/evita-$1.xml
 
 }
 

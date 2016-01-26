@@ -108,18 +108,18 @@ class TarsqiEntityTest(TarsqiTest):
                 result = PASS if tag is None else FAIL
             self.results[result] += 1
             entity_spec = "%s(%s:%s)=%s" % (self.tag, self.o1, self.o2, self.find_tag)
-            print "  %-25s %-30s %s" % (self.name, entity_spec, result)
+            print "  %-30s %-30s %s" % (self.name, entity_spec, result)
             for attr, val in self.attributes:
                 attr_spec = "   %s=%s" % (attr, val.replace(' ', '_'))
                 if result == PASS:
                     attr_result = PASS if tag.attrs.get(attr) == val else FAIL
                     self.results[attr_result] += 1
-                    print "  %-25s %-30s %s" % (self.name, attr_spec, attr_result)
+                    print "  %-30s %-30s %s" % (self.name, attr_spec, attr_result)
                 else:
-                    print "  %-25s %-30s %s" % (self.name, attr_spec, result)
+                    print "  %-30s %-30s %s" % (self.name, attr_spec, result)
         except:
             self.results[ERROR] += 1
-            print "  %-56s %s" % (self.name, ERROR)
+            print "  %-61s %s" % (self.name, ERROR)
             if SHOW_ERRORS:
                 print; traceback.print_exc(); print
 
