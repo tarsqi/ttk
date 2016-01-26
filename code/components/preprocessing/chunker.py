@@ -219,15 +219,16 @@ class Sentence:
         
            [see/VBP sleeping/VBG] [men/NNS]
 
-        This method finds these occurrences and moves the VBG in to
-        the noun group:
+        This method finds these occurrences and moves the VBG in to the noun
+        group:
 
            [see/VBP] [sleeping/VBG men/NNS]
 
-        In order to do this, it finds all occurrences of VGs followed
-        by NGs where: (i) the VG ends in VBG, (ii) the NG starts with
-        one of NN, NNS, NNP, NNPS, and (iii) the verb before the VBG
-        is not a form of "be"."""
+        In order to do this, it finds all occurrences of VGs followed by NGs
+        where: (i) the VG ends in VBG, (ii) the NG starts with one of NN, NNS,
+        NNP, NNPS, and (iii) the verb before the VBG is not a form of "be".
+
+        """
 
         for i in range(0,len(self.sentence)-5):
             if self.is_VB_VBG_NN(i):
@@ -235,7 +236,6 @@ class Sentence:
                 token = self.sentence[i+1]
                 del self.sentence[i+1:i+2]
                 self.sentence.insert(i+3,token)
-
 
     def is_VB_VBG_NN(self, idx):
         """Return True if starting at idx, we have the pattern "NOT_BE VBG
@@ -247,14 +247,13 @@ class Sentence:
             else:
                 return token[0] not in ('is', 'am', 'are')
             
-        # may want to test for tuples, but this works even thought the
-        # first one below evaluates to True for chunk tags.
-        return \
-            not_be(self.sentence[idx]) \
-            and self.sentence[idx+1][1] == 'VBG' \
-            and self.sentence[idx+2] == '</vg>' \
-            and self.sentence[idx+3] == '<ng>' \
-            and self.sentence[idx+4][1] in ('NN', 'NNS', 'NNP', 'NNPS') 
+        # TODO: this seems a bit brittle, but it does not appear to break
+        return (not_be(self.sentence[idx])
+                and self.sentence[idx][1] in ('VBP', 'VBZ', 'VBD', 'VB')
+                and self.sentence[idx+1][1] == 'VBG'
+                and self.sentence[idx+2] == '</vg>'
+                and self.sentence[idx+3] == '<ng>'
+                and self.sentence[idx+4][1] in ('NN', 'NNS', 'NNP', 'NNPS'))
 
     
     def pp(self):
