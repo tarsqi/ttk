@@ -1,200 +1,241 @@
 (lp1
-(iFSA
+(iutilities.FSA
 FSA
-(dp2
+p2
+(dp3
 S'fsaname'
-p3
-NsS'finalStates'
 p4
-(lp5
+NsS'finalStates'
+p5
+(lp6
 I5
-asS'alphabet'
-p6
-NsS'_isTrimmed'
+asS'_isTrimmed'
 p7
 I1
-sS'label'
+sS'alphabet'
 p8
-S"[_{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_g_o_i_n_g_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_t_e_x_t_'_:_ _'_h_a_v_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_e_n_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_h_a_v_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_e_n_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_h_a_v_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _'_)_'_]"
-sS'states'
+NsS'label'
 p9
-(lp10
-I1
-aI3
-aI4
-aI2
-aI0
-aI5
-asS'initialState'
+S"[_{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_g_o_i_n_g_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_t_e_x_t_'_:_ _'_h_a_v_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_e_n_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_h_a_v_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_e_n_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_h_a_v_e_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_'_,_ _'_V_B_P_'_]_}_,_ _'_)_'_]"
+p10
+sS'initialState'
 p11
 I0
-sS'_arcMetadata'
+sS'states'
 p12
-(dsS'_isSorted'
-p13
-I1
-sS'transitions'
-p14
-(lp15
-(I0
+(lp13
 I0
-S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I0
-I1
-S"{'text': 'going', 'nodeType': 'Token'}"
-ta(I1
-I2
-S"{'text': 'to', 'nodeType': 'Token'}"
-ta(I2
-I2
-S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I2
-I3
-S"{'text': 'be', 'nodeType': 'Token', 'pos': ['VB', 'VBP']}"
-ta(I2
-I4
-S"{'text': 'have', 'nodeType': 'Token', 'pos': ['VB', 'VBP']}"
-ta(I2
-I5
-S"{'nodeType': 'Token', 'pos': ['VB', 'VBP']}"
-ta(I3
-I3
-S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I3
-I5
-S"{'nodeType': 'Token', 'pos': 'VBG'}"
-ta(I3
-I5
-S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
-ta(I4
-I4
-S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I4
-I3
-S"{'text': 'been', 'nodeType': 'Token'}"
-ta(I4
-I5
-S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
-tasS'_isDeterminized'
-p16
-I1
-sS'_isMinimized'
-p17
-I1
-sba(iFSA
-FSA
-(dp18
-g3
-Nsg4
-(lp19
-I2
-asg6
-Nsg7
-I1
-sg8
-S"[_{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_i_n_g_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_)_'_]"
-sg9
-(lp20
-I2
-aI0
 aI1
-asg11
-I0
-sg12
-(dsg13
-I1
-sg14
-(lp21
-(I0
-I0
-S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I0
-I1
-S"{'text': 'being', 'nodeType': 'Token'}"
-ta(I0
-I2
-S"{'nodeType': 'Token', 'pos': 'VBG'}"
-ta(I0
-I2
-S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
-ta(I1
-I1
-S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I1
-I2
-S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
-tasg16
-I1
-sg17
-I1
-sba(iFSA
-FSA
-(dp22
-g3
-Nsg4
-(lp23
-I7
-asg6
-Nsg7
-I1
-sg8
-S"[_{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_,_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_._'_,_ _'_._'_,_ _'_._'_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_,_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_(_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_i_n_g_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_)_'_]"
-sg9
-(lp24
-I1
-aI6
-aI7
-aI2
-aI0
+aI5
 aI4
 aI3
-aI5
-asg11
-I0
-sg12
-(dsg13
+aI2
+asS'_arcMetadata'
+p14
+(dp15
+sS'_isSorted'
+p16
 I1
-sg14
-(lp25
+sS'transitions'
+p17
+(lp18
 (I0
 I0
 S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I0
+tp19
+a(I0
 I1
-S"{'text': ',', 'nodeType': 'Token'}"
-ta(I1
+S"{'text': 'going', 'nodeType': 'Token'}"
+tp20
+a(I1
 I2
-S'ALL'
-p26
-ta(I2
-I3
-g26
-ta(I3
-I4
-S'ALL'
-ta(I3
-I5
-S"{'text': ',', 'nodeType': 'Token'}"
-ta(I4
-I5
-S"{'text': ',', 'nodeType': 'Token'}"
-ta(I5
-I6
-S"{'text': 'being', 'nodeType': 'Token'}"
-ta(I5
-I7
-S"{'nodeType': 'Token', 'pos': 'VBG'}"
-ta(I5
-I7
-S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
-ta(I6
-I6
+S"{'text': 'to', 'nodeType': 'Token'}"
+tp21
+a(I2
+I2
 S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
-ta(I6
-I7
+tp22
+a(I2
+I3
+S"{'text': 'be', 'nodeType': 'Token', 'pos': ['VB', 'VBP']}"
+tp23
+a(I2
+I4
+S"{'text': 'have', 'nodeType': 'Token', 'pos': ['VB', 'VBP']}"
+tp24
+a(I2
+I5
+S"{'nodeType': 'Token', 'pos': ['VB', 'VBP']}"
+tp25
+a(I3
+I3
+S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
+tp26
+a(I3
+I5
+S"{'nodeType': 'Token', 'pos': 'VBG'}"
+tp27
+a(I3
+I5
 S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
-tasg16
+tp28
+a(I4
+I4
+S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
+tp29
+a(I4
+I3
+S"{'text': 'been', 'nodeType': 'Token'}"
+tp30
+a(I4
+I5
+S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
+tp31
+asS'_isDeterminized'
+p32
+I1
+sS'_isMinimized'
+p33
+I1
+sba(iutilities.FSA
+FSA
+p34
+(dp35
+g4
+Nsg5
+(lp36
+I2
+asg7
+I1
+sg8
+Nsg9
+S"[_{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_i_n_g_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_)_'_]"
+p37
+sg11
+I0
+sg12
+(lp38
+I0
+aI2
+aI1
+asg14
+(dp39
+sg16
 I1
 sg17
+(lp40
+(I0
+I0
+S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
+tp41
+a(I0
+I1
+S"{'text': 'being', 'nodeType': 'Token'}"
+tp42
+a(I0
+I2
+S"{'nodeType': 'Token', 'pos': 'VBG'}"
+tp43
+a(I0
+I2
+S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
+tp44
+a(I1
+I1
+S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
+tp45
+a(I1
+I2
+S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
+tp46
+asg32
+I1
+sg33
+I1
+sba(iutilities.FSA
+FSA
+p47
+(dp48
+g4
+Nsg5
+(lp49
+I7
+asg7
+I1
+sg8
+Nsg9
+S"[_{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_t_e_x_t_'_:_ _'_,_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_._'_,_ _'_._'_,_ _'_._'_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_,_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_(_'_,_ _{_'_t_e_x_t_'_:_ _'_b_e_i_n_g_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_t_e_x_t_'_:_ _(_'_^_'_,_ _[_'_a_'_,_ _'_a_n_'_,_ _'_t_h_e_'_,_ _'_a_s_'_]_)_,_ _'_n_o_d_e_T_y_p_e_'_:_ _[_'_T_o_k_e_n_'_,_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_]_,_ _'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_W_D_T_'_,_ _'_D_T_'_,_ _'_J_J_'_,_ _'_P_R_P_'_]_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_V_B_G_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_V_B_D_'_,_ _'_V_B_N_'_]_}_,_ _'_)_'_]"
+p50
+sg11
+I0
+sg12
+(lp51
+I0
+aI7
+aI1
+aI2
+aI3
+aI4
+aI5
+aI6
+asg14
+(dp52
+sg16
+I1
+sg17
+(lp53
+(I0
+I0
+S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
+tp54
+a(I0
+I1
+S"{'text': ',', 'nodeType': 'Token'}"
+tp55
+a(I1
+I2
+S'ALL'
+p56
+tp57
+a(I2
+I3
+g56
+tp58
+a(I3
+I4
+g56
+tp59
+a(I3
+I5
+S"{'text': ',', 'nodeType': 'Token'}"
+p60
+tp61
+a(I4
+I5
+g60
+tp62
+a(I5
+I6
+S"{'text': 'being', 'nodeType': 'Token'}"
+tp63
+a(I5
+I7
+S"{'nodeType': 'Token', 'pos': 'VBG'}"
+tp64
+a(I5
+I7
+S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
+tp65
+a(I6
+I6
+S"{'text': ('^', ['a', 'an', 'the', 'as']), 'nodeType': ['Token', 'AdjectiveToken'], 'pos': ['RB', 'WDT', 'DT', 'JJ', 'PRP']}"
+tp66
+a(I6
+I7
+S"{'nodeType': 'Token', 'pos': ['VBD', 'VBN']}"
+tp67
+asg32
+I1
+sg33
 I1
 sba.

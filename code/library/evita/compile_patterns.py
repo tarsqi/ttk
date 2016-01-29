@@ -1,22 +1,45 @@
-import cPickle
-from FSA import compileOP
-from evitaUncompiledPatterns import patternsGroups
+"""compile_patterns.py
+
+Take all the Evita multi-chunk patterns, compile them into FSAs, and save them
+in pickle files in this directory.
+
+The following files are created:
+
+   BECOME_A_FSAs.pickle
+   BE_A_FSAs.pickle
+   BE_FSAs.pickle
+   BE_N_FSAs.pickle
+   CONTINUE_A_FSAs.pickle
+   DO_FSAs.pickle
+   GOINGto_FSAs.pickle
+   HAVE_FSAs.pickle
+   KEEP_A_FSAs.pickle
+   MODAL_FSAs.pickle
+   USEDto_FSAs.pickle
+
+After creation these should be moved to the patterns directory.
 
 """
-    Taking each list of patterns (from uncompiledPatterns.patternsGroups)
-    as input, compiling the patterns into FSA, and converting the list
-    into a pickle object to be stored into ./Patterns/.
-"""
 
+import os, sys, cPickle
 
-DIR_PATTERNS = "Patterns/"
+sys.path.append('../..')
 
-if __name__ == "__main__":
-    for (listName,patternsList) in patternsGroups:
-        pickleFile = open(DIR_PATTERNS+listName+".pickle", 'w')
-        toPickle = []
+# This is ugly, but we need to do this because multi_chunk_patterns imports
+# library.forms which needs the TTK_ROOT environment variable
+scriptPath = os.path.abspath(__file__)
+scriptDir = os.path.dirname(scriptPath)
+ttk_root = os.sep.join(scriptPath.split(os.sep)[:-2])
+os.environ['TTK_ROOT'] = ttk_root
 
-        for pattern in patternsList:
-            toPickle.append(compileOP(pattern))
-        
-        cPickle.dump(toPickle,pickleFile)
+from utilities.FSA import compileOP
+from library.evita.multi_chunk_patterns import patternsGroups
+
+for (listName, patternsList) in patternsGroups:
+    fname = "%s.pickle" % listName
+    pickleFile = open(fname, 'w')
+    print "Compiling %d %s and saving them in %s" % (len(patternsList), listName, fname)
+    toPickle = []
+    for pattern in patternsList:
+        toPickle.append(compileOP(pattern))
+    cPickle.dump(toPickle, pickleFile)
