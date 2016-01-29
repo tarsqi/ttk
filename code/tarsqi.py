@@ -61,11 +61,6 @@ scriptPath = os.path.abspath(__file__)
 TTK_ROOT = os.path.dirname(scriptPath)
 os.environ['TTK_ROOT'] = TTK_ROOT
 
-# TODO: need to get rid of this by recompiling all FSA's, this is done for Evita
-# and removing the line below does not hurt Evita anymore, but Slinket patterns
-# still need to be recompiled
-sys.path[1:1] = [ os.path.join(TTK_ROOT, 'utilities') ]
-
 from components import COMPONENTS
 from docmodel.source_parser import SourceParser
 from docmodel.main import create_parser, get_default_pipeline

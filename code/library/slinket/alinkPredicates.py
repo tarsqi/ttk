@@ -1,19 +1,13 @@
-from timeMLspec import INIT, CULM, TERM, CONT, REINIT
+"""slinkPredicates.py
 
-# FORWARD patterns:
-#from slinketPatterns import THAT_clause_that, THAT_clause_NOT_that, THAT_clause_that_QUOTES, THAT_clause_NOT_that_QUOTES, THAT_clause_N_that_N_report, THAT_clause_that_NOT_report, THAT_clause_SIMPLE, THAT_clause_NOT_tensed, THAT_clause_if, IND_INTERROG
-from slinketPatterns import TO_clause1, TO_clause3, TO_clause5, TO_clause7, IND_INTERROG_nonfin#TO_clause1, TO_clause2, TO_clause3, TO_clause4, TO_clause5, TO_clause6, TO_clause7, IND_INTERROG_nonfin
-from slinketPatterns import ING_clause#, ABOUT_ING_clause, AGAINST_ING_clause, AT_ING_clause, FOR_ING_clause, FROM_ING_clause, IN_ING_clause, OF_ING_clause, WITH_ING_clause
-from slinketPatterns import ABOUT_NPev, AT_NPev, FOR_NPev, FROM_NPev, IN_NPev, OF_NPev, ON_NPev, OVER_NPev, TO_NPev, WITH_NPev, PP_ABOUT
-from slinketPatterns import NP_ev1, NP_ev2, NP_evAsSubj1, NP_evAsSubj2
-from slinketPatterns import OBJCOMPL_pastPart, OBJCOMPL_adj
-# BACKWARD patterns:
-from slinketPatterns import Passive1, RelClauseExplic, RelClauseExplicPerfect, RelClauseRestric, RelClauseRestricPerfect
-# REPORTING patterns:
-#from slinketPatterns import MAINsentence
+The nominal and verbal predicates that can be the subordinating event in an
+ALINK. All entries are associated with one or more patterns from
+slinketPatters.py.
+
+This file is not used by the runtime system, but it is used by create_dicts.py
+when it pickles the dictionaries.
 
 
-"""
 Each entry in the Predicate Dictionaries has the following structure:
 
 * KEY: the form of the predicate (eventually, er may want to think on the stem).
@@ -34,15 +28,30 @@ Each entry in the Predicate Dictionaries has the following structure:
 """
 
 
+from library.timeMLspec import INIT, CULM, TERM, CONT, REINIT
+
+# FORWARD patterns:
+#from slinketPatterns import THAT_clause_that, THAT_clause_NOT_that, THAT_clause_that_QUOTES, THAT_clause_NOT_that_QUOTES, THAT_clause_N_that_N_report, THAT_clause_that_NOT_report, THAT_clause_SIMPLE, THAT_clause_NOT_tensed, THAT_clause_if, IND_INTERROG
+from slinketPatterns import TO_clause1, TO_clause3, TO_clause5, TO_clause7, IND_INTERROG_nonfin#TO_clause1, TO_clause2, TO_clause3, TO_clause4, TO_clause5, TO_clause6, TO_clause7, IND_INTERROG_nonfin
+from slinketPatterns import ING_clause#, ABOUT_ING_clause, AGAINST_ING_clause, AT_ING_clause, FOR_ING_clause, FROM_ING_clause, IN_ING_clause, OF_ING_clause, WITH_ING_clause
+from slinketPatterns import ABOUT_NPev, AT_NPev, FOR_NPev, FROM_NPev, IN_NPev, OF_NPev, ON_NPev, OVER_NPev, TO_NPev, WITH_NPev, PP_ABOUT
+from slinketPatterns import NP_ev1, NP_ev2, NP_evAsSubj1, NP_evAsSubj2
+from slinketPatterns import OBJCOMPL_pastPart, OBJCOMPL_adj
+
+# BACKWARD patterns:
+from slinketPatterns import Passive1, RelClauseExplic, RelClauseExplicPerfect, RelClauseRestric, RelClauseRestricPerfect
+
+print "Creating Alink predicate dictionaries"
+
 nounDict = {
+
     #BEGINNING
-    "beginning" : {'forward' : ([[NP_ev1, NP_ev2, OF_NPev]], [INIT])
-                 },
-    "beginnings" : {'forward' : ([[NP_ev1, NP_ev2, OF_NPev]], [INIT])
-                 },
+    "beginning" : {'forward' : ([[NP_ev1, NP_ev2, OF_NPev]], [INIT]) },
+    "beginnings" : {'forward' : ([[NP_ev1, NP_ev2, OF_NPev]], [INIT]) },
+
     #CLOSE
-    "close" : {'forward' : ([[OF_NPev]], [TERM])
-               },    
+    "close" : {'forward' : ([[OF_NPev]], [TERM]) },    
+
     #COMPLETION
     "completion" : {'forward' : ([[OF_NPev]], [CULM])
                     },    
@@ -55,11 +64,10 @@ nounDict = {
     #STARTING
     "starting" : {'forward' : ([[NP_ev1, NP_ev2, OF_NPev]], [INIT])
                  },
-
-    
-    }
+}
 
 verbDict = {
+
     #BEGIN
     "begin" : {'forward' : ([[ING_clause, TO_clause1, TO_clause5], [NP_ev1, NP_ev2]], [INIT, INIT]),
               'backwards' : ([[NP_evAsSubj1, NP_evAsSubj2, RelClauseRestric,RelClauseRestricPerfect ]], [INIT])
@@ -263,5 +271,4 @@ verbDict = {
     "stops" : {'forward' : ([[NP_ev1, NP_ev2, ING_clause]], [TERM]),
                 'backwards' : ([[NP_evAsSubj1, NP_evAsSubj2, RelClauseRestric, RelClauseRestricPerfect]], [TERM])
                }
-    
-    }
+}

@@ -26,11 +26,9 @@ import os, sys, cPickle
 sys.path.append('../..')
 
 # This is ugly, but we need to do this because multi_chunk_patterns imports
-# library.forms which needs the TTK_ROOT environment variable
-scriptPath = os.path.abspath(__file__)
-scriptDir = os.path.dirname(scriptPath)
-ttk_root = os.sep.join(scriptPath.split(os.sep)[:-2])
-os.environ['TTK_ROOT'] = ttk_root
+# library.forms which needs the TTK_ROOT environment variable; however, the
+# variable is not used so we hand in a dummy value
+os.environ['TTK_ROOT'] = 'DUMMY'
 
 from utilities.FSA import compileOP
 from library.evita.multi_chunk_patterns import patternsGroups

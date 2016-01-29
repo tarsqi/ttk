@@ -1,12 +1,12 @@
 (dp1
-S'vital'
+S'relevant'
 p2
 (dp3
 S'forward'
 p4
 ((lp5
 (lp6
-(iFSA
+(iutilities.FSA
 FSA
 p7
 (dp8
@@ -17,2563 +17,3126 @@ p10
 sS'finalStates'
 p11
 (lp12
-I7
-asS'alphabet'
+I6
+asS'_isTrimmed'
 p13
-NsS'_isTrimmed'
-p14
 I1
-sS'label'
+sS'alphabet'
+p14
+NsS'label'
 p15
 S'[_\'_(_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_t_h_a_t_\'_,_ _\'_i_f_\'_,_ _\'_w_h_e_t_h_e_r_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_|_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_,_ _\'_D_T_\'_,_ _\'_P_D_T_\'_,_ _\'_P_O_S_\'_,_ _\'_C_D_\'_,_ _\'_S_Y_M_\'_]_}_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_)_\'_,_ _\'_+_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_t_h_a_t_\'_,_ _\'_i_f_\'_,_ _\'_w_h_e_t_h_e_r_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_,_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_t_h_a_t_\'_,_ _\'_i_f_\'_,_ _\'_w_h_e_t_h_e_r_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _\'_,_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_t_h_a_t_\'_,_ _\'_i_f_\'_,_ _\'_w_h_e_t_h_e_r_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_)_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_,_ _\'_D_T_\'_,_ _\'_P_D_T_\'_,_ _\'_P_O_S_\'_,_ _\'_C_D_\'_,_ _\'_S_Y_M_\'_]_}_,_ _\'_)_\'_,_ _\'_+_\'_,_ _\'_(_\'_,_ _{_\'_t_e_n_s_e_\'_:_ _[_\'_P_A_S_T_\'_,_ _\'_P_R_E_S_E_N_T_\'_,_ _\'_F_U_T_U_R_E_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_,_ _\'_m_o_d_a_l_i_t_y_\'_:_ _[_\'_m_a_y_\'_,_ _\'_c_a_n_\'_,_ _\'_m_u_s_t_\'_,_ _\'_m_i_g_h_t_\'_,_ _\'_c_o_u_l_d_\'_,_ _\'_s_h_o_u_l_d_\'_,_ _\'_w_o_u_l_d_\'_,_ _\'_o_u_g_h_t_\'_,_ _\'_h_a_v_e_ _t_o_\'_]_}_,_ _\'_)_\'_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_n_s_e_\'_:_ _[_\'_P_A_S_T_\'_,_ _\'_P_R_E_S_E_N_T_\'_,_ _\'_F_U_T_U_R_E_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_,_ _\'_m_o_d_a_l_i_t_y_\'_:_ _[_\'_m_a_y_\'_,_ _\'_c_a_n_\'_,_ _\'_m_u_s_t_\'_,_ _\'_m_i_g_h_t_\'_,_ _\'_c_o_u_l_d_\'_,_ _\'_s_h_o_u_l_d_\'_,_ _\'_w_o_u_l_d_\'_,_ _\'_o_u_g_h_t_\'_,_ _\'_h_a_v_e_ _t_o_\'_]_}_,_ _\'_)_\'_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_i_s_\'_,_ _\'_w_a_s_\'_,_ _\'_w_e_r_e_\'_,_ _\'_a_m_\'_,_ _\'_b_e_\'_,_ _"_\'_s_"_,_ _\'_a_r_e_\'_,_ _"_\'_r_e_"_,_ _"_\'_m_"_,_ _\'_b_e_e_n_\'_,_ _\'_b_e_i_n_g_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_}_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_,_ _\'_)_\'_]'
-sS'states'
 p16
-(lp17
-I6
-aI14
-aI15
-aI4
+sS'initialState'
+p17
+I0
+sS'states'
+p18
+(lp19
+I14
 aI0
 aI2
 aI1
-aI11
-aI3
-aI8
-aI12
-aI5
-aI13
-aI9
 aI10
+aI12
+aI9
+aI8
+aI6
 aI7
-asS'initialState'
-p18
-I0
-sS'_arcMetadata'
-p19
-(dsS'_isSorted'
+aI3
+aI4
+aI13
+aI5
+aI15
+aI11
+asS'_arcMetadata'
 p20
+(dp21
+sS'_isSorted'
+p22
 I1
 sS'transitions'
-p21
-(lp22
+p23
+(lp24
 (I0
 I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I1
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I0
-I1
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I0
-I1
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I0
-I2
-S"{'text': ('^', [','])}"
-ta(I0
-I3
 S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I0
+p25
+tp26
+a(I0
+I2
+S"{'nodeType': 'NounChunk'}"
+tp27
+a(I0
+I2
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp28
+a(I0
+I2
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+tp29
+a(I0
+I2
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp30
+a(I0
+I3
+S"{'text': ('^', [','])}"
+tp31
+a(I0
 I4
 S"{'text': ','}"
-ta(I0
+tp32
+a(I0
 I5
 S"{'text': ['that', 'if', 'whether'], 'nodeType': 'Token', 'pos': 'IN'}"
-ta(I1
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I1
-I1
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I1
-I1
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I1
-I1
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I1
+tp33
+a(I1
 I5
 S"{'text': ['that', 'if', 'whether'], 'nodeType': 'Token', 'pos': 'IN'}"
-ta(I2
-I5
-S"{'text': ['that', 'if', 'whether'], 'nodeType': 'Token', 'pos': 'IN'}"
-ta(I2
-I3
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I3
-I5
-S"{'text': ['that', 'if', 'whether'], 'nodeType': 'Token', 'pos': 'IN'}"
-ta(I3
+p34
+tp35
+a(I1
 I4
 S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I4
+tp36
+a(I2
+I2
+S"{'nodeType': 'NounChunk'}"
+tp37
+a(I2
+I2
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp38
+a(I2
+I2
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+tp39
+a(I2
+I2
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp40
+a(I2
 I5
 S"{'text': ['that', 'if', 'whether'], 'nodeType': 'Token', 'pos': 'IN'}"
-ta(I5
+tp41
+a(I3
+I5
+g34
+tp42
+a(I3
+I1
+g25
+tp43
+a(I4
+I5
+S"{'text': ['that', 'if', 'whether'], 'nodeType': 'Token', 'pos': 'IN'}"
+tp44
+a(I5
 I6
-S"{'nodeType': 'NounChunk'}"
-ta(I5
-I6
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I5
-I6
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I5
-I7
 S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I5
-I7
+tp45
+a(I5
+I6
 S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I5
+tp46
+a(I5
+I7
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp47
+a(I5
 I8
-S'{\'text\': [\'is\', \'was\', \'were\', \'am\', \'be\', "\'s", \'are\', "\'re", "\'m", \'been\', \'being\'], \'nodeType\': \'VerbChunk\'}'
-ta(I5
+S"{'nodeType': 'NounChunk'}"
+tp48
+a(I5
+I8
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp49
+a(I5
+I8
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+tp50
+a(I5
 I9
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I6
-I6
-S"{'nodeType': 'NounChunk'}"
-ta(I6
-I6
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I6
-I6
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I6
-I7
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I6
-I7
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I8
-I10
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I8
-I7
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I9
-I6
-S"{'nodeType': 'NounChunk'}"
-ta(I9
-I6
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I9
-I6
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I9
-I7
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I9
-I7
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I9
-I8
 S'{\'text\': [\'is\', \'was\', \'were\', \'am\', \'be\', "\'s", \'are\', "\'re", "\'m", \'been\', \'being\'], \'nodeType\': \'VerbChunk\'}'
-ta(I9
-I11
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I10
-I7
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I11
-I7
+p51
+tp52
+a(I7
+I6
 S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I11
-I7
+tp53
+a(I7
+I6
 S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I11
+tp54
+a(I7
+I10
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp55
+a(I7
+I8
+S"{'nodeType': 'NounChunk'}"
+tp56
+a(I7
+I8
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp57
+a(I7
+I8
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+tp58
+a(I7
+I9
+g51
+tp59
+a(I8
+I6
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp60
+a(I8
+I6
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp61
+a(I8
+I8
+S"{'nodeType': 'NounChunk'}"
+tp62
+a(I8
+I8
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp63
+a(I8
+I8
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+tp64
+a(I9
+I11
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp65
+a(I9
+I6
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p66
+tp67
+a(I10
+I6
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp68
+a(I10
+I6
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp69
+a(I10
 I12
 S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I12
-I7
+tp70
+a(I11
+I6
+g66
+tp71
+a(I12
+I6
 S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I12
-I7
+tp72
+a(I12
+I6
 S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I12
+tp73
+a(I12
 I13
 S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I13
-I7
+tp74
+a(I13
+I6
 S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I13
-I7
+tp75
+a(I13
+I6
 S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I13
+tp76
+a(I13
 I14
 S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I14
-I7
+tp77
+a(I14
+I6
 S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I14
-I7
+tp78
+a(I14
+I6
 S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I14
+tp79
+a(I14
 I15
 S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I15
-I7
+tp80
+a(I15
+I6
 S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I15
-I7
+tp81
+a(I15
+I6
 S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-tasS'_isDeterminized'
-p23
+tp82
+asS'_isDeterminized'
+p83
 I1
 sS'_isMinimized'
-p24
+p84
 I1
-sbaa(lp25
-S'MODAL'
-p26
-atsS'backwards'
-p27
-((lp28
-(lp29
-(iFSA
+sbaa(lp85
+(iutilities.FSA
 FSA
-p30
-(dp31
+p86
+(dp87
 g9
-S'NP_eventAsSubj3'
-p32
+S'toClause1'
+p88
 sg11
-(lp33
-I3
-asg13
-Nsg14
+(lp89
 I1
-sg15
-S"[_'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_p_o_s_'_:_ _[_'_V_B_G_'_,_ _'_V_B_N_'_]_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _(_'_^_'_,_ _'_1_'_)_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_R_B_'_]_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
-sg16
-(lp34
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_R_B_R_'_,_ _'_R_B_S_'_,_ _'_R_P_'_,_ _'_J_J_R_'_]_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_)_'_,_ _'_)_'_]"
+p90
+sg17
 I0
-aI2
+sg18
+(lp91
+I2
 aI1
+aI0
 aI4
 aI3
-asg18
-I0
-sg19
-(dsg20
+asg20
+(dp92
+sg22
 I1
-sg21
-(lp35
+sg23
+(lp93
+(I0
+I1
+S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
+p94
+tp95
+a(I0
+I2
+S"{'pos': ['RB', 'RBR', 'RBS', 'RP', 'JJR']}"
+tp96
+a(I0
+I3
+S"{'text': 'to', 'pos': 'TO'}"
+p97
+tp98
+a(I2
+I1
+g94
+tp99
+a(I2
+I3
+g97
+tp100
+a(I3
+I1
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+tp101
+a(I3
+I1
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp102
+a(I3
+I4
+S"{'pos': 'UH'}"
+tp103
+a(I4
+I1
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+tp104
+a(I4
+I1
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp105
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
+FSA
+p106
+(dp107
+g9
+S'toClause3'
+p108
+sg11
+(lp109
+I5
+asg13
+I1
+sg14
+Nsg15
+S"[_'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_)_'_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_a_n_d_'_,_ _'_o_r_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_C_'_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_?_'_,_ _'_|_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_P_P_'_,_ _'_P_P_$_'_,_ _'_P_R_P_$_'_,_ _'_P_R_P_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_t_h_i_s_'_,_ _'_t_h_a_t_'_,_ _'_t_h_e_s_e_'_,_ _'_t_h_o_s_e_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_a_n_d_'_,_ _'_o_r_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_C_'_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_)_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_)_'_,_ _'_)_'_]"
+p110
+sg17
+I0
+sg18
+(lp111
+I0
+aI5
+aI2
+aI8
+aI4
+aI6
+aI13
+aI9
+aI1
+aI12
+aI3
+aI11
+aI10
+aI7
+asg20
+(dp112
+sg22
+I1
+sg23
+(lp113
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']}"
+tp114
+a(I0
+I1
+S"{'text': ['this', 'that', 'these', 'those'], 'nodeType': 'Token'}"
+tp115
+a(I0
+I2
+S"{'nodeType': 'NounChunk'}"
+p116
+tp117
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp118
+a(I0
+I4
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+tp119
+a(I1
+I5
+S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
+p120
+tp121
+a(I1
+I6
+S"{'text': 'to', 'pos': 'TO'}"
+p122
+tp123
+a(I2
+I7
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp124
+a(I2
+I7
+S"{'text': ['and', 'or'], 'nodeType': 'Token', 'pos': 'CC'}"
+tp125
+a(I2
+I5
+g120
+tp126
+a(I2
+I6
+g122
+tp127
+a(I3
+I2
+g116
+tp128
+a(I3
+I1
+S"{'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']}"
+tp129
+a(I3
+I1
+S"{'text': ['this', 'that', 'these', 'those'], 'nodeType': 'Token'}"
+tp130
+a(I3
+I8
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+tp131
+a(I4
+I3
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp132
+a(I4
+I9
+S"{'nodeType': 'NounChunk'}"
+p133
+tp134
+a(I4
+I8
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp135
+a(I4
+I8
+S"{'pos': 'SYM'}"
+tp136
+a(I4
+I10
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+p137
+tp138
+a(I6
+I5
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+tp139
+a(I6
+I5
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp140
+a(I6
+I11
+S"{'pos': 'UH'}"
+tp141
+a(I7
+I12
+S"{'nodeType': 'NounChunk'}"
+tp142
+a(I8
+I9
+g133
+tp143
+a(I8
+I8
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp144
+a(I8
+I8
+S"{'pos': 'SYM'}"
+tp145
+a(I8
+I10
+g137
+tp146
+a(I9
+I13
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp147
+a(I9
+I13
+S"{'text': ['and', 'or'], 'nodeType': 'Token', 'pos': 'CC'}"
+tp148
+a(I9
+I5
+g120
+tp149
+a(I9
+I6
+g122
+tp150
+a(I10
+I9
+g133
+tp151
+a(I10
+I10
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp152
+a(I11
+I5
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+tp153
+a(I11
+I5
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp154
+a(I12
+I13
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp155
+a(I12
+I5
+g120
+tp156
+a(I12
+I6
+g122
+tp157
+a(I13
+I1
+S"{'nodeType': 'NounChunk'}"
+tp158
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
+FSA
+p159
+(dp160
+g9
+S'toClause5'
+p161
+sg11
+(lp162
+I4
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_)_'_,_ _'_)_'_]"
+p163
+sg17
+I0
+sg18
+(lp164
+I4
+aI0
+aI1
+aI2
+aI3
+aI8
+aI9
+aI5
+aI6
+aI7
+asg20
+(dp165
+sg22
+I1
+sg23
+(lp166
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp167
+a(I1
+I2
+S"{'nodeType': 'NounChunk'}"
+p168
+tp169
+a(I1
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp170
+a(I2
+I4
+S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
+p171
+tp172
+a(I2
+I5
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp173
+a(I2
+I6
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+p174
+tp175
+a(I2
+I7
+S"{'nodeType': 'NounChunk'}"
+p176
+tp177
+a(I2
+I8
+S"{'text': 'to', 'pos': 'TO'}"
+p178
+tp179
+a(I3
+I2
+g168
+tp180
+a(I5
+I7
+g176
+tp181
+a(I5
+I4
+g171
+tp182
+a(I5
+I6
+g174
+tp183
+a(I5
+I8
+g178
+tp184
+a(I6
+I7
+g176
+tp185
+a(I6
+I4
+g171
+tp186
+a(I6
+I8
+g178
+tp187
+a(I7
+I4
+g171
+tp188
+a(I7
+I8
+g178
+tp189
+a(I8
+I4
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+tp190
+a(I8
+I4
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp191
+a(I8
+I9
+S"{'pos': 'UH'}"
+tp192
+a(I9
+I4
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+tp193
+a(I9
+I4
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp194
+asg83
+I1
+sg84
+I1
+sbaa(lp195
+S'FACTIVE'
+p196
+aS'MODAL'
+p197
+atp198
+sS'backwards'
+p199
+((lp200
+(lp201
+(iutilities.FSA
+FSA
+p202
+(dp203
+g9
+S'NP_eventAsSubj3'
+p204
+sg11
+(lp205
+I3
+asg13
+I1
+sg14
+Nsg15
+S"[_'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_p_o_s_'_:_ _[_'_V_B_G_'_,_ _'_V_B_N_'_]_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _(_'_^_'_,_ _'_1_'_)_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_R_B_'_]_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
+p206
+sg17
+I0
+sg18
+(lp207
+I1
+aI4
+aI0
+aI2
+aI3
+asg20
+(dp208
+sg22
+I1
+sg23
+(lp209
 (I0
 I1
 S"{'nodeType': 'AdjectiveToken', 'eventStatus': '1'}"
-ta(I0
+tp210
+a(I0
 I1
 S"{'nodeType': 'VerbChunk', 'eventStatus': '1', 'pos': ['VBG', 'VBN']}"
-ta(I1
+tp211
+a(I1
 I2
 S"{'nodeType': 'VerbChunk', 'eventStatus': ('^', '1')}"
-ta(I2
+tp212
+a(I2
 I3
 S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I2
+p213
+tp214
+a(I2
 I4
 S"{'nodeType': 'Token', 'pos': ['JJ', 'RB']}"
-ta(I4
+tp215
+a(I4
 I3
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-tasg23
+g213
+tp216
+asg83
 I1
-sg24
+sg84
 I1
-sbaa(lp36
-g26
-atssS'crazy'
-p37
-(dp38
-g4
-((lp39
-(lp40
-g7
-aa(lp41
-(iFSA
-FSA
-p42
-(dp43
-g9
-S'toClause1'
-p44
-sg11
-(lp45
-I1
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_R_B_R_'_,_ _'_R_B_S_'_,_ _'_R_P_'_,_ _'_J_J_R_'_]_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_)_'_,_ _'_)_'_]"
-sg16
-(lp46
-I0
-aI2
-aI4
-aI3
-aI1
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp47
-(I0
-I1
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I0
-I2
-S"{'pos': ['RB', 'RBR', 'RBS', 'RP', 'JJR']}"
-ta(I0
-I3
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I2
-I1
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I2
-I3
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I3
-I1
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I3
-I1
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-ta(I3
-I4
-S"{'pos': 'UH'}"
-ta(I4
-I1
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I4
-I1
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
-p48
-(dp49
-g9
-S'toClause3'
-p50
-sg11
-(lp51
-I6
-asg13
-Nsg14
-I1
-sg15
-S"[_'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_)_'_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_a_n_d_'_,_ _'_o_r_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_C_'_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_?_'_,_ _'_|_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_P_P_'_,_ _'_P_P_$_'_,_ _'_P_R_P_$_'_,_ _'_P_R_P_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_t_h_i_s_'_,_ _'_t_h_a_t_'_,_ _'_t_h_e_s_e_'_,_ _'_t_h_o_s_e_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_a_n_d_'_,_ _'_o_r_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_C_'_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_)_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_)_'_,_ _'_)_'_]"
-sg16
-(lp52
-I5
-aI11
-aI0
-aI8
-aI3
-aI1
-aI4
-aI12
-aI9
-aI10
-aI2
-aI7
-aI13
-aI6
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp53
-(I0
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I2
-S"{'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']}"
-ta(I0
-I2
-S"{'text': ['this', 'that', 'these', 'those'], 'nodeType': 'Token'}"
-ta(I0
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I4
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I1
-I5
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I1
-I5
-S"{'text': ['and', 'or'], 'nodeType': 'Token', 'pos': 'CC'}"
-ta(I1
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I1
-I7
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I2
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I2
-I7
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I3
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I2
-S"{'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']}"
-ta(I3
-I2
-S"{'text': ['this', 'that', 'these', 'those'], 'nodeType': 'Token'}"
-ta(I3
-I8
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I4
-I9
-S"{'nodeType': 'NounChunk'}"
-ta(I4
-I3
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I4
-I8
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I4
-I8
-S"{'pos': 'SYM'}"
-ta(I4
-I10
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I5
-I11
-S"{'nodeType': 'NounChunk'}"
-ta(I7
-I6
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I7
-I6
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-ta(I7
-I12
-S"{'pos': 'UH'}"
-ta(I8
-I9
-S"{'nodeType': 'NounChunk'}"
-ta(I8
-I8
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I8
-I8
-S"{'pos': 'SYM'}"
-ta(I8
-I10
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I9
-I13
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I9
-I13
-S"{'text': ['and', 'or'], 'nodeType': 'Token', 'pos': 'CC'}"
-ta(I9
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I9
-I7
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I10
-I9
-S"{'nodeType': 'NounChunk'}"
-ta(I10
-I10
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I11
-I13
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I11
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I11
-I7
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I12
-I6
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I12
-I6
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-ta(I13
-I2
-S"{'nodeType': 'NounChunk'}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
-p54
-(dp55
-g9
-S'toClause5'
-p56
-sg11
-(lp57
-I6
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_)_'_,_ _'_)_'_]"
-sg16
-(lp58
-I8
-aI9
-aI6
-aI1
-aI0
-aI3
-aI2
-aI4
-aI7
-aI5
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp59
-(I0
-I1
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I1
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I1
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I2
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I2
-I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I2
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I2
-I7
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I2
-I8
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I4
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I4
-I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I5
-I6
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I5
-I6
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-ta(I5
-I9
-S"{'pos': 'UH'}"
-ta(I7
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I7
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I7
-I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I8
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I8
-I6
-S"{'tense': 'INFINITIVE', 'nodeType': 'VerbChunk'}"
-ta(I8
-I7
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I8
-I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I9
-I6
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I9
-I6
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-tasg23
-I1
-sg24
-I1
-sbaa(lp60
-(iFSA
-FSA
-p61
-(dp62
-g9
-S'thatClause_if'
-p63
-sg11
-(lp64
-I4
-asg13
-Nsg14
-I1
-sg15
-S'[_{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_,_\'_]_)_}_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_i_f_\'_,_ _\'_w_h_e_t_h_e_r_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_n_s_e_\'_:_ _[_\'_P_A_S_T_\'_,_ _\'_P_R_E_S_E_N_T_\'_,_ _\'_F_U_T_U_R_E_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_,_ _\'_m_o_d_a_l_i_t_y_\'_:_ _[_\'_m_a_y_\'_,_ _\'_c_a_n_\'_,_ _\'_m_u_s_t_\'_,_ _\'_m_i_g_h_t_\'_,_ _\'_c_o_u_l_d_\'_,_ _\'_s_h_o_u_l_d_\'_,_ _\'_w_o_u_l_d_\'_,_ _\'_o_u_g_h_t_\'_,_ _\'_h_a_v_e_ _t_o_\'_]_}_,_ _\'_)_\'_]'
-sg16
-(lp65
-I8
-aI7
-aI10
-aI9
-aI11
-aI1
-aI0
-aI3
-aI2
-aI4
-aI6
-aI5
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp66
-(I0
-I1
-S"{'text': ('^', [','])}"
-ta(I1
-I2
-S"{'text': ['if', 'whether'], 'nodeType': 'Token'}"
-ta(I1
-I3
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I2
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I2
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I2
-I5
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I3
-I2
-S"{'text': ['if', 'whether'], 'nodeType': 'Token'}"
-ta(I3
-I6
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I5
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I5
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I5
-I7
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I6
-I2
-S"{'text': ['if', 'whether'], 'nodeType': 'Token'}"
-ta(I7
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I7
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I7
-I8
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I8
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I8
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I8
-I9
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I9
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I9
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I9
-I10
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I10
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I10
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I10
-I11
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I11
-I4
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I11
-I4
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-tasg23
-I1
-sg24
-I1
-sbaa(lp67
-S'FACTIVE'
-p68
-ag26
-ag26
-atsg27
-((lp69
-(lp70
-g30
-aa(lp71
-g68
-atssS'relevant'
-p72
-(dp73
-g4
-((lp74
-(lp75
-g7
-aa(lp76
-g42
-ag48
-ag54
-aa(lp77
-g68
-ag26
-atsg27
-((lp78
-(lp79
-g30
-aa(lp80
-g68
-atssS'false'
-p81
-(dp82
-g4
-((lp83
-(lp84
-g7
-a(iFSA
-FSA
-p85
-(dp86
-g9
-S'thatClause_NOT_that'
-p87
-sg11
-(lp88
-I2
-asg13
-Nsg14
-I1
-sg15
-S'[_{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_,_\'_]_)_}_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_n_s_e_\'_:_ _[_\'_P_A_S_T_\'_,_ _\'_P_R_E_S_E_N_T_\'_,_ _\'_F_U_T_U_R_E_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_,_ _\'_m_o_d_a_l_i_t_y_\'_:_ _[_\'_m_a_y_\'_,_ _\'_c_a_n_\'_,_ _\'_m_u_s_t_\'_,_ _\'_m_i_g_h_t_\'_,_ _\'_c_o_u_l_d_\'_,_ _\'_s_h_o_u_l_d_\'_,_ _\'_w_o_u_l_d_\'_,_ _\'_o_u_g_h_t_\'_,_ _\'_h_a_v_e_ _t_o_\'_]_}_,_ _\'_)_\'_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_i_s_\'_,_ _\'_w_a_s_\'_,_ _\'_w_e_r_e_\'_,_ _\'_a_m_\'_,_ _\'_b_e_\'_,_ _"_\'_s_"_,_ _\'_a_r_e_\'_,_ _"_\'_r_e_"_,_ _"_\'_m_"_,_ _\'_b_e_e_n_\'_,_ _\'_b_e_i_n_g_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_}_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_,_ _\'_)_\'_]'
-sg16
-(lp89
-I7
-aI5
-aI9
-aI1
-aI3
-aI10
-aI4
-aI8
-aI0
-aI2
-aI6
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp90
-(I0
-I1
-S"{'text': ('^', [','])}"
-ta(I1
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I1
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I1
-I3
-S'{\'text\': [\'is\', \'was\', \'were\', \'am\', \'be\', "\'s", \'are\', "\'re", "\'m", \'been\', \'being\'], \'nodeType\': \'VerbChunk\'}'
-ta(I1
-I4
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'"])}'
-ta(I1
-I5
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I3
-I6
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I4
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I4
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I4
-I3
-S'{\'text\': [\'is\', \'was\', \'were\', \'am\', \'be\', "\'s", \'are\', "\'re", "\'m", \'been\', \'being\'], \'nodeType\': \'VerbChunk\'}'
-ta(I4
-I5
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I5
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I5
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I5
-I7
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I6
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I7
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I7
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I7
-I8
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I8
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I8
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I8
-I9
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I9
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I9
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-ta(I9
-I10
-S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
-ta(I10
-I2
-S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
-ta(I10
-I2
-S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
-tasg23
-I1
-sg24
-I1
-sbaa(lp91
-S'COUNTER_FACTIVE'
-p92
-atssS'worthwhile'
-p93
-(dp94
-g4
-((lp95
-(lp96
-g42
-ag48
-ag54
-aa(lp97
-g26
-atssS'certain'
-p98
-(dp99
-g4
-((lp100
-(lp101
-g7
-aa(lp102
-g68
-atssS'sad'
-p103
-(dp104
-g4
-((lp105
-(lp106
-g7
-aa(lp107
-g42
-ag48
-ag54
-aa(lp108
-g61
-aa(lp109
-g68
-ag26
-ag26
-atssS'well-known'
-(dp110
-g4
-((lp111
-(lp112
-g7
-aa(lp113
-g68
-atssS'improbable'
-p114
-(dp115
-g4
-((lp116
-(lp117
-g7
-ag85
-aa(lp118
-g42
-ag48
-ag54
-aa(lp119
-g26
-ag26
-atsg27
-((lp120
-(lp121
-g30
-aa(lp122
-g26
-atssS'likely'
-p123
-(dp124
-g4
-((lp125
-(lp126
-g42
-ag48
-ag54
-ag7
-ag85
-aa(lp127
-g26
-atsg27
-((lp128
-(lp129
-g30
-aa(lp130
-g26
-atssS'accused'
-p131
-(dp132
-g4
-((lp133
-(lp134
-(iFSA
-FSA
-p135
-(dp136
-g9
-S'of_NPev'
-p137
-sg11
-(lp138
-I4
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_o_f_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
-sg16
-(lp139
-I7
-aI6
-aI1
-aI0
-aI3
-aI2
-aI5
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp140
-(I0
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I2
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I3
-S"{'text': 'of'}"
-ta(I1
-I3
-S"{'text': 'of'}"
-ta(I2
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I2
-I3
-S"{'text': 'of'}"
-ta(I3
-I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I3
-I5
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I3
-I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I5
-I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I5
-I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I6
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I6
-I6
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I6
-I6
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I6
-I6
-S"{'pos': 'SYM'}"
-ta(I6
-I7
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I7
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I7
-I7
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
-p141
-(dp142
-g9
-S'ofING_clause'
-p143
-sg11
-(lp144
-I5
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_o_f_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
-sg16
-(lp145
-I1
-aI0
-aI3
-aI2
-aI5
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp146
-(I0
-I1
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I0
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I4
-S"{'text': 'of'}"
-ta(I1
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I1
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I1
-I4
-S"{'text': 'of'}"
-ta(I2
-I4
-S"{'text': 'of'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I4
-S"{'text': 'of'}"
-ta(I4
-I5
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-tasg23
-I1
-sg24
-I1
-sbaa(lp147
-g26
-atssS'unlikely'
-p148
-(dp149
-g4
-((lp150
-(lp151
-g7
-ag85
-aa(lp152
-g26
-atsg27
-((lp153
-(lp154
-g30
-aa(lp155
-g26
-atssS'impossible'
-p156
-(dp157
-g4
-((lp158
-(lp159
-g7
-ag85
-aa(lp160
-g42
-ag48
-ag54
-aa(lp161
-g26
-ag26
-atsg27
-((lp162
-(lp163
-g30
-aa(lp164
-g26
-atssS'responsable'
-p165
-(dp166
-g4
-((lp167
-(lp168
-g42
-ag48
-ag54
-aa(lp169
-g135
-ag141
-a(iFSA
-FSA
-p170
-(dp171
-g9
-S'for_NPev'
-p172
-sg11
-(lp173
-I4
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_f_o_r_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
-sg16
-(lp174
-I7
-aI6
-aI1
-aI0
-aI3
-aI2
-aI5
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp175
-(I0
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I2
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I3
-S"{'text': 'for'}"
-ta(I1
-I3
-S"{'text': 'for'}"
-ta(I2
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I2
-I3
-S"{'text': 'for'}"
-ta(I3
-I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I3
-I5
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I3
-I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I5
-I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I5
-I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I6
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I6
-I6
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I6
-I6
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I6
-I6
-S"{'pos': 'SYM'}"
-ta(I6
-I7
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I7
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I7
-I7
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
-p176
-(dp177
-g9
-S'forING_clause'
-p178
-sg11
-(lp179
-I5
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_f_o_r_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
-sg16
-(lp180
-I1
-aI0
-aI3
-aI2
-aI5
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp181
-(I0
-I1
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I0
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I4
-S"{'text': 'for'}"
-ta(I1
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I1
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I1
-I4
-S"{'text': 'for'}"
-ta(I2
-I4
-S"{'text': 'for'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I4
-S"{'text': 'for'}"
-ta(I4
-I5
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-tasg23
-I1
-sg24
-I1
-sbaa(lp182
-g26
-ag26
-atssS'odd'
-p183
-(dp184
-g4
-((lp185
-(lp186
-g7
-aa(lp187
-g42
-ag48
-ag54
-aa(lp188
-g61
-aa(lp189
-g68
-ag26
-ag26
-atsg27
-((lp190
-(lp191
-g30
-aa(lp192
-g68
-atssS'reluctant'
-p193
-(dp194
-g4
-((lp195
-(lp196
-g42
-ag48
-ag54
-aa(lp197
-g26
-atssS'afraid'
-p198
-(dp199
-g4
-((lp200
-(lp201
-g42
-ag48
-ag54
-aa(lp202
-g7
-aa(lp203
-g135
-aa(lp204
-g141
-aa(lp205
-g26
-ag26
-ag68
-ag26
-atssS'probable'
-p206
-(dp207
-g4
-((lp208
-(lp209
-g7
-ag85
-aa(lp210
-g26
-atsg27
-((lp211
-(lp212
-g30
-aa(lp213
-g26
-atssS'eager'
-p214
-(dp215
-g4
-((lp216
-(lp217
-g42
-ag48
-ag54
-aa(lp218
-g26
-atssS'unknown'
+sbaa(lp217
+g196
+atp218
+ssS'due'
 p219
 (dp220
 g4
 ((lp221
 (lp222
-g61
+g86
+ag106
+ag159
 aa(lp223
-g26
-atssS'able'
-p224
-(dp225
+g197
+atp224
+ssS'well-known'
+p225
+(dp226
 g4
-((lp226
-(lp227
-g42
-ag48
-ag54
-aa(lp228
-g26
-atssS'alleged'
-p229
-(dp230
+((lp227
+(lp228
+g7
+aa(lp229
+g196
+atp230
+ssS'improbable'
+p231
+(dp232
 g4
-((lp231
-(lp232
-(iFSA
+((lp233
+(lp234
+g7
+a(iutilities.FSA
 FSA
-p233
-(dp234
-g9
-S'NP_event1'
 p235
+(dp236
+g9
+S'thatClause_NOT_that'
+p237
 sg11
-(lp236
-I2
-asg13
-Nsg14
-I1
-sg15
-S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_,_ _\'_D_T_\'_,_ _\'_P_D_T_\'_,_ _\'_P_O_S_\'_,_ _\'_C_D_\'_,_ _\'_S_Y_M_\'_]_}_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _\'_o_f_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
-sg16
-(lp237
-I3
-aI0
-aI2
-aI5
-aI1
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
 (lp238
-(I0
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
 I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I0
-I3
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I0
-I4
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I1
-I3
-S"{'text': 'of'}"
-ta(I3
+asg13
 I1
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I3
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I4
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I4
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I4
-I3
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I4
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I5
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I5
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
+sg14
+Nsg15
+S'[_{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_,_\'_]_)_}_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_n_s_e_\'_:_ _[_\'_P_A_S_T_\'_,_ _\'_P_R_E_S_E_N_T_\'_,_ _\'_F_U_T_U_R_E_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_,_ _\'_m_o_d_a_l_i_t_y_\'_:_ _[_\'_m_a_y_\'_,_ _\'_c_a_n_\'_,_ _\'_m_u_s_t_\'_,_ _\'_m_i_g_h_t_\'_,_ _\'_c_o_u_l_d_\'_,_ _\'_s_h_o_u_l_d_\'_,_ _\'_w_o_u_l_d_\'_,_ _\'_o_u_g_h_t_\'_,_ _\'_h_a_v_e_ _t_o_\'_]_}_,_ _\'_)_\'_,_ _\'_|_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_i_s_\'_,_ _\'_w_a_s_\'_,_ _\'_w_e_r_e_\'_,_ _\'_a_m_\'_,_ _\'_b_e_\'_,_ _"_\'_s_"_,_ _\'_a_r_e_\'_,_ _"_\'_r_e_"_,_ _"_\'_m_"_,_ _\'_b_e_e_n_\'_,_ _\'_b_e_i_n_g_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_}_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_I_N_\'_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_,_ _\'_)_\'_]'
 p239
-(dp240
-g9
-S'NP_event2'
-p241
-sg11
-(lp242
-I5
-asg13
-Nsg14
-I1
-sg15
-S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_p_o_s_\'_:_ _[_\'_V_G_B_\'_,_ _\'_V_B_N_\'_]_}_,_ _\'_|_\'_,_ _{_\'_p_o_s_\'_:_ _\'_S_Y_M_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_C_D_\'_}_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
-sg16
-(lp243
-I2
+sg17
+I0
+sg18
+(lp240
+I0
+aI1
 aI7
-aI1
-aI0
 aI3
-aI5
+aI2
 aI4
+aI10
+aI8
 aI6
-asg18
-I0
-sg19
-(dsg20
+aI5
+aI9
+asg20
+(dp241
+sg22
 I1
-sg21
-(lp244
+sg23
+(lp242
 (I0
 I1
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I0
+S"{'text': ('^', [','])}"
+tp243
+a(I1
 I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I0
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp244
+a(I1
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp245
+a(I1
 I3
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I0
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I0
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I0
-I4
-S"{'pos': 'SYM'}"
-ta(I0
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I0
-I6
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I1
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I1
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I1
-I4
-S"{'pos': 'SYM'}"
-ta(I1
-I4
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I1
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I1
-I3
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I1
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I2
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I2
-I7
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I2
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I3
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I3
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I3
-I4
-S"{'pos': 'SYM'}"
-ta(I3
-I4
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I3
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I3
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I4
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I4
-I2
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I4
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I4
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I4
-I4
-S"{'pos': 'SYM'}"
-ta(I4
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I6
-I1
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I6
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I6
-I3
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I6
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I6
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I6
-I4
-S"{'pos': 'SYM'}"
-ta(I6
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I7
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-tasg23
-I1
-sg24
-I1
-sbaa(lp245
-g26
-atssS'confident'
+S'{\'text\': [\'is\', \'was\', \'were\', \'am\', \'be\', "\'s", \'are\', "\'re", "\'m", \'been\', \'being\'], \'nodeType\': \'VerbChunk\'}'
 p246
-(dp247
-g4
-((lp248
-(lp249
-g7
-ag85
-aa(lp250
-(iFSA
-FSA
-p251
-(dp252
-g9
-S'about_NPev'
-p253
-sg11
-(lp254
+tp247
+a(I1
 I4
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_a_b_o_u_t_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
-sg16
-(lp255
-I7
-aI6
-aI1
-aI0
-aI3
-aI2
-aI5
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp256
-(I0
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I2
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I0
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I1
-I2
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I2
-I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I2
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'"])}'
+tp248
+a(I1
 I5
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I2
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp249
+a(I3
 I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I3
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I2
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I5
-I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I5
-I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I6
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I6
-I6
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I6
-I6
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I6
-I6
-S"{'pos': 'SYM'}"
-ta(I6
-I7
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I7
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I7
-I7
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
-p257
-(dp258
-g9
-S'aboutING_clause'
-p259
-sg11
-(lp260
-I5
-asg13
-Nsg14
-I1
-sg15
-S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_a_b_o_u_t_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
-sg16
-(lp261
-I1
-aI0
-aI3
-aI2
-aI5
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp262
-(I0
-I1
 S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I0
+tp250
+a(I3
 I2
-S"{'nodeType': 'NounChunk'}"
-ta(I0
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p251
+tp252
+a(I4
+I2
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp253
+a(I4
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp254
+a(I4
 I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I4
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I1
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I1
-I4
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I1
-I3
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I2
-I4
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I4
-S"{'text': 'about', 'nodeType': 'Token'}"
-ta(I4
+g246
+tp255
+a(I4
 I5
-S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
-tasg23
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp256
+a(I5
+I2
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp257
+a(I5
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp258
+a(I5
+I7
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp259
+a(I6
+I2
+g251
+tp260
+a(I7
+I2
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp261
+a(I7
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp262
+a(I7
+I8
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp263
+a(I8
+I2
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp264
+a(I8
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp265
+a(I8
+I9
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp266
+a(I9
+I2
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp267
+a(I9
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp268
+a(I9
+I10
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp269
+a(I10
+I2
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp270
+a(I10
+I2
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp271
+asg83
 I1
-sg24
+sg84
 I1
-sbaa(lp263
-g26
-ag26
-atssS'strange'
-p264
-(dp265
-g4
-((lp266
-(lp267
-g7
-aa(lp268
-g42
-ag48
-ag54
-aa(lp269
-g61
-aa(lp270
-g68
-ag26
-ag26
-atsg27
-((lp271
-(lp272
-g30
+sbaa(lp272
+g86
+ag106
+ag159
 aa(lp273
-g68
-atssS'tragic'
-p274
-(dp275
+g197
+ag197
+atp274
+sg199
+((lp275
+(lp276
+g202
+aa(lp277
+g197
+atp278
+ssS'impossible'
+p279
+(dp280
 g4
-((lp276
-(lp277
+((lp281
+(lp282
 g7
-aa(lp278
-g42
-ag48
-ag54
-aa(lp279
-g61
-aa(lp280
-g68
-ag26
-ag26
-atssS'unfortunate'
-p281
-(dp282
+ag235
+aa(lp283
+g86
+ag106
+ag159
+aa(lp284
+g197
+ag197
+atp285
+sg199
+((lp286
+(lp287
+g202
+aa(lp288
+g197
+atp289
+ssS'vital'
+p290
+(dp291
 g4
-((lp283
-(lp284
+((lp292
+(lp293
 g7
-ag85
-aa(lp285
-g42
-ag48
-ag54
-aa(lp286
-g68
-ag68
-atssS'sorry'
-p287
-(dp288
-g4
-((lp289
-(lp290
-g7
-aa(lp291
-g251
-ag257
-aa(lp292
-g68
-ag68
-atssS'possible'
-p293
-(dp294
-g4
-((lp295
-(lp296
-g7
-ag85
-aa(lp297
-g42
-ag48
-ag54
+aa(lp294
+g197
+atp295
+sg199
+((lp296
+(lp297
+g202
 aa(lp298
-g26
-ag26
-atsg27
-((lp299
-(lp300
-g30
-aa(lp301
-g26
-atssS'sure'
-p302
-(dp303
+g197
+atp299
+ssS'reluctant'
+p300
+(dp301
 g4
-((lp304
-(lp305
-g7
-aa(lp306
-g251
-ag257
-aa(lp307
-g42
-ag48
-aa(lp308
-g68
-ag26
-ag26
-atssS'lucky'
-p309
-(dp310
+((lp302
+(lp303
+g86
+ag106
+ag159
+aa(lp304
+g197
+atp305
+ssS'inconceivable'
+p306
+(dp307
 g4
-((lp311
-(lp312
-g42
-ag48
-ag54
-aa(lp313
+((lp308
+(lp309
 g7
-ag85
+ag235
+aa(lp310
+g197
+atp311
+sg199
+((lp312
+(lp313
+g202
 aa(lp314
-g68
-atssS'aware'
-p315
-(dp316
+g197
+atp315
+ssS'confident'
+p316
+(dp317
 g4
-((lp317
-(lp318
+((lp318
+(lp319
 g7
-aa(lp319
-g135
+ag235
 aa(lp320
-g26
-ag68
-atssS'willing'
+(iutilities.FSA
+FSA
 p321
 (dp322
-g4
-((lp323
+g9
+S'about_NPev'
+p323
+sg11
 (lp324
-g42
-ag48
-ag54
-aa(lp325
-g26
-atssS'important'
-p326
+I4
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_a_b_o_u_t_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
+p325
+sg17
+I0
+sg18
+(lp326
+I7
+aI0
+aI1
+aI2
+aI3
+aI4
+aI5
+aI6
+asg20
 (dp327
-g4
-((lp328
-(lp329
-g7
-aa(lp330
-g42
-ag48
-ag54
-aa(lp331
-g68
-ag26
-atsg27
-((lp332
-(lp333
-g30
-aa(lp334
-g68
-atssS'significant'
+sg22
+I1
+sg23
+(lp328
+(I0
+I1
+S"{'nodeType': 'NounChunk'}"
+p329
+tp330
+a(I0
+I2
+S"{'text': 'about', 'nodeType': 'Token'}"
+p331
+tp332
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp333
+a(I1
+I2
+g331
+tp334
+a(I2
+I4
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
 p335
-(dp336
-g4
-((lp337
-(lp338
-g7
-aa(lp339
-g68
-ag26
-atsg27
-((lp340
-(lp341
-g30
-aa(lp342
-g68
-atssS'exciting'
-p343
-(dp344
-g4
-((lp345
-(lp346
-g7
-aa(lp347
-g42
-ag48
-ag54
-aa(lp348
-g61
-aa(lp349
-g68
-ag26
-ag26
-atsg27
-((lp350
-(lp351
-g30
-aa(lp352
-g68
-atssS'true'
-p353
-(dp354
-g4
-((lp355
-(lp356
-g7
-ag85
-aa(lp357
-g68
-atsg27
-((lp358
-(lp359
-g30
-aa(lp360
-g68
-atssS'conceivable'
-p361
-(dp362
-g4
-((lp363
-(lp364
-g7
-ag85
-aa(lp365
-g26
-atsg27
-((lp366
-(lp367
-g30
-aa(lp368
-g26
-atssS'imminent'
-p369
-(dp370
-g27
-((lp371
-(lp372
-g30
-aa(lp373
-g26
-atssS'inconceivable'
-p374
-(dp375
-g4
-((lp376
-(lp377
-g7
-ag85
-aa(lp378
-g26
-atsg27
-((lp379
-(lp380
-g30
-aa(lp381
-g26
-atssS'evident'
-p382
-(dp383
-g4
-((lp384
-(lp385
-g7
-ag85
-aa(lp386
-g68
-atsg27
-((lp387
-(lp388
-g30
-aa(lp389
-g68
-atssS'urgent'
-p390
-(dp391
-g4
-((lp392
-(lp393
-g7
-ag85
-aa(lp394
-g26
-atsg27
-((lp395
-(lp396
-g30
-aa(lp397
-g26
-atssS'clear'
-p398
-(dp399
-g4
-((lp400
-(lp401
-g7
-ag85
-aa(lp402
-g68
-atsg27
-((lp403
-(lp404
-g30
-aa(lp405
-g68
-atssS'proud'
-p406
-(dp407
-g4
-((lp408
-(lp409
-g141
-ag135
-aa(lp410
-(iFSA
+tp336
+a(I2
+I5
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp337
+a(I2
+I6
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+p338
+tp339
+a(I3
+I1
+g329
+tp340
+a(I3
+I2
+g331
+tp341
+a(I5
+I4
+g335
+tp342
+a(I5
+I6
+g338
+tp343
+a(I6
+I4
+S"{'nodeType': 'NounChunk'}"
+tp344
+a(I6
+I6
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp345
+a(I6
+I6
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp346
+a(I6
+I6
+S"{'pos': 'SYM'}"
+tp347
+a(I6
+I7
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp348
+a(I7
+I4
+S"{'nodeType': 'NounChunk'}"
+tp349
+a(I7
+I7
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp350
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
 FSA
-p411
-(dp412
+p351
+(dp352
+g9
+S'aboutING_clause'
+p353
+sg11
+(lp354
+I5
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_a_b_o_u_t_'_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
+p355
+sg17
+I0
+sg18
+(lp356
+I0
+aI1
+aI2
+aI3
+aI4
+aI5
+asg20
+(dp357
+sg22
+I1
+sg23
+(lp358
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp359
+a(I0
+I2
+S"{'nodeType': 'NounChunk'}"
+p360
+tp361
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+p362
+tp363
+a(I0
+I4
+S"{'text': 'about', 'nodeType': 'Token'}"
+p364
+tp365
+a(I1
+I2
+g360
+tp366
+a(I1
+I4
+g364
+tp367
+a(I1
+I3
+g362
+tp368
+a(I2
+I4
+g364
+tp369
+a(I3
+I2
+g360
+tp370
+a(I3
+I4
+g364
+tp371
+a(I4
+I5
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp372
+asg83
+I1
+sg84
+I1
+sbaa(lp373
+g197
+ag197
+atp374
+ssS'unknown'
+p375
+(dp376
+g4
+((lp377
+(lp378
+(iutilities.FSA
+FSA
+p379
+(dp380
+g9
+S'thatClause_if'
+p381
+sg11
+(lp382
+I4
+asg13
+I1
+sg14
+Nsg15
+S'[_{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_,_\'_]_)_}_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_i_f_\'_,_ _\'_w_h_e_t_h_e_r_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _(_\'_^_\'_,_ _[_\'_;_\'_,_ _\'_._\'_,_ _\'_!_\'_,_ _\'_?_\'_,_ _\'_._._._\'_,_ _\'_"_\'_,_ _\'_`_`_\'_]_)_,_ _\'_p_o_s_\'_:_ _(_\'_^_\'_,_ _[_\'_W_P_\'_,_ _\'_W_D_T_\'_,_ _\'_W_R_B_\'_,_ _\'_"_\'_,_ _"_\'_\'_"_,_ _\'_`_`_\'_]_)_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_t_e_n_s_e_\'_:_ _[_\'_P_A_S_T_\'_,_ _\'_P_R_E_S_E_N_T_\'_,_ _\'_F_U_T_U_R_E_\'_]_,_ _\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _[_\'_C_h_u_n_k_\'_,_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_A_d_j_e_c_t_i_v_e_T_o_k_e_n_\'_]_,_ _\'_m_o_d_a_l_i_t_y_\'_:_ _[_\'_m_a_y_\'_,_ _\'_c_a_n_\'_,_ _\'_m_u_s_t_\'_,_ _\'_m_i_g_h_t_\'_,_ _\'_c_o_u_l_d_\'_,_ _\'_s_h_o_u_l_d_\'_,_ _\'_w_o_u_l_d_\'_,_ _\'_o_u_g_h_t_\'_,_ _\'_h_a_v_e_ _t_o_\'_]_}_,_ _\'_)_\'_]'
+p383
+sg17
+I0
+sg18
+(lp384
+I0
+aI1
+aI2
+aI3
+aI4
+aI7
+aI8
+aI5
+aI9
+aI6
+aI10
+aI11
+asg20
+(dp385
+sg22
+I1
+sg23
+(lp386
+(I0
+I1
+S"{'text': ('^', [','])}"
+tp387
+a(I1
+I2
+S"{'text': ['if', 'whether'], 'nodeType': 'Token'}"
+p388
+tp389
+a(I1
+I3
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp390
+a(I2
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp391
+a(I2
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp392
+a(I2
+I5
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp393
+a(I3
+I2
+g388
+tp394
+a(I3
+I6
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp395
+a(I5
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp396
+a(I5
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp397
+a(I5
+I7
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp398
+a(I6
+I2
+g388
+tp399
+a(I7
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp400
+a(I7
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp401
+a(I7
+I8
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp402
+a(I8
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp403
+a(I8
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp404
+a(I8
+I9
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp405
+a(I9
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp406
+a(I9
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp407
+a(I9
+I10
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp408
+a(I10
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp409
+a(I10
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp410
+a(I10
+I11
+S'{\'text\': (\'^\', [\';\', \'.\', \'!\', \'?\', \'...\', \'"\', \'``\']), \'pos\': (\'^\', [\'WP\', \'WDT\', \'WRB\', \'"\', "\'\'", \'``\'])}'
+tp411
+a(I11
+I4
+S"{'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken'], 'modality': ['may', 'can', 'must', 'might', 'could', 'should', 'would', 'ought', 'have to']}"
+tp412
+a(I11
+I4
+S"{'tense': ['PAST', 'PRESENT', 'FUTURE'], 'nodeType': ['Chunk', 'NounChunk', 'VerbChunk', 'AdjectiveToken']}"
+tp413
+asg83
+I1
+sg84
+I1
+sbaa(lp414
+g197
+atp415
+ssS'alleged'
+p416
+(dp417
+g4
+((lp418
+(lp419
+(iutilities.FSA
+FSA
+p420
+(dp421
+g9
+S'NP_event1'
+p422
+sg11
+(lp423
+I2
+asg13
+I1
+sg14
+Nsg15
+S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_,_ _\'_D_T_\'_,_ _\'_P_D_T_\'_,_ _\'_P_O_S_\'_,_ _\'_C_D_\'_,_ _\'_S_Y_M_\'_]_}_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _\'_o_f_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
+p424
+sg17
+I0
+sg18
+(lp425
+I0
+aI2
+aI4
+aI3
+aI1
+aI5
+asg20
+(dp426
+sg22
+I1
+sg23
+(lp427
+(I0
+I1
+S"{'nodeType': 'NounChunk'}"
+p428
+tp429
+a(I0
+I2
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p430
+tp431
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp432
+a(I0
+I4
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+p433
+tp434
+a(I0
+I5
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+p435
+tp436
+a(I1
+I4
+S"{'text': 'of'}"
+tp437
+a(I3
+I1
+g428
+tp438
+a(I3
+I2
+g430
+tp439
+a(I3
+I4
+g433
+tp440
+a(I3
+I5
+g435
+tp441
+a(I4
+I1
+g428
+tp442
+a(I4
+I2
+g430
+tp443
+a(I4
+I5
+g435
+tp444
+a(I5
+I1
+g428
+tp445
+a(I5
+I5
+g435
+tp446
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
+FSA
+p447
+(dp448
+g9
+S'NP_event2'
+p449
+sg11
+(lp450
+I2
+asg13
+I1
+sg14
+Nsg15
+S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_p_o_s_\'_:_ _[_\'_V_G_B_\'_,_ _\'_V_B_N_\'_]_}_,_ _\'_|_\'_,_ _{_\'_p_o_s_\'_:_ _\'_S_Y_M_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_C_D_\'_}_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
+p451
+sg17
+I0
+sg18
+(lp452
+I0
+aI5
+aI2
+aI6
+aI3
+aI1
+aI4
+aI7
+asg20
+(dp453
+sg22
+I1
+sg23
+(lp454
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp455
+a(I0
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp456
+a(I0
+I1
+S"{'pos': 'SYM'}"
+tp457
+a(I0
+I2
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p458
+tp459
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp460
+a(I0
+I4
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+p461
+tp462
+a(I0
+I5
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+p463
+tp464
+a(I0
+I6
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+p465
+tp466
+a(I1
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp467
+a(I1
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp468
+a(I1
+I1
+S"{'pos': 'SYM'}"
+tp469
+a(I1
+I2
+g458
+tp470
+a(I1
+I5
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp471
+a(I1
+I5
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp472
+a(I3
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp473
+a(I3
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp474
+a(I3
+I1
+S"{'pos': 'SYM'}"
+tp475
+a(I3
+I2
+g458
+tp476
+a(I3
+I4
+g461
+tp477
+a(I3
+I5
+g463
+tp478
+a(I3
+I6
+g465
+tp479
+a(I4
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp480
+a(I4
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp481
+a(I4
+I1
+S"{'pos': 'SYM'}"
+tp482
+a(I4
+I1
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp483
+a(I4
+I2
+g458
+tp484
+a(I4
+I5
+g463
+tp485
+a(I4
+I6
+g465
+tp486
+a(I5
+I2
+g458
+tp487
+a(I5
+I7
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp488
+a(I5
+I5
+g463
+tp489
+a(I6
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp490
+a(I6
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp491
+a(I6
+I1
+S"{'pos': 'SYM'}"
+tp492
+a(I6
+I1
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp493
+a(I6
+I2
+g458
+tp494
+a(I6
+I5
+g463
+tp495
+a(I7
+I2
+g458
+tp496
+asg83
+I1
+sg84
+I1
+sbaa(lp497
+g197
+atp498
+ssS'eager'
+p499
+(dp500
+g4
+((lp501
+(lp502
+g86
+ag106
+ag159
+aa(lp503
+g197
+atp504
+ssS'responsable'
+p505
+(dp506
+g4
+((lp507
+(lp508
+g86
+ag106
+ag159
+aa(lp509
+(iutilities.FSA
+FSA
+p510
+(dp511
+g9
+S'of_NPev'
+p512
+sg11
+(lp513
+I4
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_o_f_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
+p514
+sg17
+I0
+sg18
+(lp515
+I7
+aI0
+aI1
+aI2
+aI3
+aI4
+aI5
+aI6
+asg20
+(dp516
+sg22
+I1
+sg23
+(lp517
+(I0
+I1
+S"{'nodeType': 'NounChunk'}"
+p518
+tp519
+a(I0
+I2
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp520
+a(I0
+I3
+S"{'text': 'of'}"
+p521
+tp522
+a(I1
+I3
+g521
+tp523
+a(I2
+I1
+g518
+tp524
+a(I2
+I3
+g521
+tp525
+a(I3
+I4
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p526
+tp527
+a(I3
+I5
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp528
+a(I3
+I6
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+p529
+tp530
+a(I5
+I4
+g526
+tp531
+a(I5
+I6
+g529
+tp532
+a(I6
+I4
+S"{'nodeType': 'NounChunk'}"
+tp533
+a(I6
+I6
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp534
+a(I6
+I6
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp535
+a(I6
+I6
+S"{'pos': 'SYM'}"
+tp536
+a(I6
+I7
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp537
+a(I7
+I4
+S"{'nodeType': 'NounChunk'}"
+tp538
+a(I7
+I7
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp539
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
+FSA
+p540
+(dp541
+g9
+S'ofING_clause'
+p542
+sg11
+(lp543
+I5
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_o_f_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
+p544
+sg17
+I0
+sg18
+(lp545
+I0
+aI1
+aI2
+aI3
+aI4
+aI5
+asg20
+(dp546
+sg22
+I1
+sg23
+(lp547
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp548
+a(I0
+I2
+S"{'nodeType': 'NounChunk'}"
+p549
+tp550
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+p551
+tp552
+a(I0
+I4
+S"{'text': 'of'}"
+p553
+tp554
+a(I1
+I2
+g549
+tp555
+a(I1
+I3
+g551
+tp556
+a(I1
+I4
+g553
+tp557
+a(I2
+I4
+g553
+tp558
+a(I3
+I2
+g549
+tp559
+a(I3
+I4
+g553
+tp560
+a(I4
+I5
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp561
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
+FSA
+p562
+(dp563
+g9
+S'for_NPev'
+p564
+sg11
+(lp565
+I4
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_f_o_r_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
+p566
+sg17
+I0
+sg18
+(lp567
+I7
+aI0
+aI1
+aI2
+aI3
+aI4
+aI5
+aI6
+asg20
+(dp568
+sg22
+I1
+sg23
+(lp569
+(I0
+I1
+S"{'nodeType': 'NounChunk'}"
+p570
+tp571
+a(I0
+I2
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp572
+a(I0
+I3
+S"{'text': 'for'}"
+p573
+tp574
+a(I1
+I3
+g573
+tp575
+a(I2
+I1
+g570
+tp576
+a(I2
+I3
+g573
+tp577
+a(I3
+I4
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p578
+tp579
+a(I3
+I5
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp580
+a(I3
+I6
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+p581
+tp582
+a(I5
+I4
+g578
+tp583
+a(I5
+I6
+g581
+tp584
+a(I6
+I4
+S"{'nodeType': 'NounChunk'}"
+tp585
+a(I6
+I6
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp586
+a(I6
+I6
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp587
+a(I6
+I6
+S"{'pos': 'SYM'}"
+tp588
+a(I6
+I7
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp589
+a(I7
+I4
+S"{'nodeType': 'NounChunk'}"
+tp590
+a(I7
+I7
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp591
+asg83
+I1
+sg84
+I1
+sba(iutilities.FSA
+FSA
+p592
+(dp593
+g9
+S'forING_clause'
+p594
+sg11
+(lp595
+I5
+asg13
+I1
+sg14
+Nsg15
+S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_f_o_r_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_]"
+p596
+sg17
+I0
+sg18
+(lp597
+I0
+aI1
+aI2
+aI3
+aI4
+aI5
+asg20
+(dp598
+sg22
+I1
+sg23
+(lp599
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp600
+a(I0
+I2
+S"{'nodeType': 'NounChunk'}"
+p601
+tp602
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+p603
+tp604
+a(I0
+I4
+S"{'text': 'for'}"
+p605
+tp606
+a(I1
+I2
+g601
+tp607
+a(I1
+I3
+g603
+tp608
+a(I1
+I4
+g605
+tp609
+a(I2
+I4
+g605
+tp610
+a(I3
+I2
+g601
+tp611
+a(I3
+I4
+g605
+tp612
+a(I4
+I5
+S"{'nodeType': 'VerbChunk', 'eventStatus': '1'}"
+tp613
+asg83
+I1
+sg84
+I1
+sbaa(lp614
+g197
+ag197
+atp615
+ssS'tragic'
+p616
+(dp617
+g4
+((lp618
+(lp619
+g7
+aa(lp620
+g86
+ag106
+ag159
+aa(lp621
+g379
+aa(lp622
+g196
+ag197
+ag197
+atp623
+ssS'sorry'
+p624
+(dp625
+g4
+((lp626
+(lp627
+g7
+aa(lp628
+g321
+ag351
+aa(lp629
+g196
+ag196
+atp630
+ssS'lucky'
+p631
+(dp632
+g4
+((lp633
+(lp634
+g86
+ag106
+ag159
+aa(lp635
+g7
+ag235
+aa(lp636
+g196
+atp637
+ssS'aware'
+p638
+(dp639
+g4
+((lp640
+(lp641
+g7
+aa(lp642
+g510
+aa(lp643
+g197
+ag196
+atp644
+ssS'true'
+p645
+(dp646
+g4
+((lp647
+(lp648
+g7
+ag235
+aa(lp649
+g196
+atp650
+sg199
+((lp651
+(lp652
+g202
+aa(lp653
+g196
+atp654
+ssS'conceivable'
+p655
+(dp656
+g4
+((lp657
+(lp658
+g7
+ag235
+aa(lp659
+g197
+atp660
+sg199
+((lp661
+(lp662
+g202
+aa(lp663
+g197
+atp664
+ssS'evident'
+p665
+(dp666
+g4
+((lp667
+(lp668
+g7
+ag235
+aa(lp669
+g196
+atp670
+sg199
+((lp671
+(lp672
+g202
+aa(lp673
+g196
+atp674
+ssS'anxious'
+p675
+(dp676
+g4
+((lp677
+(lp678
+g7
+ag235
+aa(lp679
+g86
+ag106
+ag159
+aa(lp680
+g321
+aa(lp681
+g197
+ag197
+ag196
+atp682
+ssS'obvious'
+p683
+(dp684
+g4
+((lp685
+(lp686
+g7
+ag235
+aa(lp687
+g196
+atp688
+sg199
+((lp689
+(lp690
+g202
+aa(lp691
+g196
+atp692
+ssS'crazy'
+p693
+(dp694
+g4
+((lp695
+(lp696
+g7
+aa(lp697
+g86
+ag106
+ag159
+aa(lp698
+g379
+aa(lp699
+g196
+ag197
+ag197
+atp700
+sg199
+((lp701
+(lp702
+g202
+aa(lp703
+g196
+atp704
+ssS'false'
+p705
+(dp706
+g4
+((lp707
+(lp708
+g7
+ag235
+aa(lp709
+S'COUNTER_FACTIVE'
+p710
+atp711
+ssS'worthwhile'
+p712
+(dp713
+g4
+((lp714
+(lp715
+g86
+ag106
+ag159
+aa(lp716
+g197
+atp717
+ssS'certain'
+p718
+(dp719
+g4
+((lp720
+(lp721
+g7
+aa(lp722
+g196
+atp723
+ssS'sad'
+p724
+(dp725
+g4
+((lp726
+(lp727
+g7
+aa(lp728
+g86
+ag106
+ag159
+aa(lp729
+g379
+aa(lp730
+g196
+ag197
+ag197
+atp731
+ssS'urgent'
+p732
+(dp733
+g4
+((lp734
+(lp735
+g7
+ag235
+aa(lp736
+g197
+atp737
+sg199
+((lp738
+(lp739
+g202
+aa(lp740
+g197
+atp741
+ssS'likely'
+p742
+(dp743
+g4
+((lp744
+(lp745
+g86
+ag106
+ag159
+ag7
+ag235
+aa(lp746
+g197
+atp747
+sg199
+((lp748
+(lp749
+g202
+aa(lp750
+g197
+atp751
+ssS'accused'
+p752
+(dp753
+g4
+((lp754
+(lp755
+g510
+ag540
+aa(lp756
+g197
+atp757
+ssS'unlikely'
+p758
+(dp759
+g4
+((lp760
+(lp761
+g7
+ag235
+aa(lp762
+g197
+atp763
+sg199
+((lp764
+(lp765
+g202
+aa(lp766
+g197
+atp767
+ssS'odd'
+p768
+(dp769
+g4
+((lp770
+(lp771
+g7
+aa(lp772
+g86
+ag106
+ag159
+aa(lp773
+g379
+aa(lp774
+g196
+ag197
+ag197
+atp775
+sg199
+((lp776
+(lp777
+g202
+aa(lp778
+g196
+atp779
+ssS'afraid'
+p780
+(dp781
+g4
+((lp782
+(lp783
+g86
+ag106
+ag159
+aa(lp784
+g7
+aa(lp785
+g510
+aa(lp786
+g540
+aa(lp787
+g197
+ag197
+ag196
+ag197
+atp788
+ssS'probable'
+p789
+(dp790
+g4
+((lp791
+(lp792
+g7
+ag235
+aa(lp793
+g197
+atp794
+sg199
+((lp795
+(lp796
+g202
+aa(lp797
+g197
+atp798
+ssS'imminent'
+p799
+(dp800
+g199
+((lp801
+(lp802
+g202
+aa(lp803
+g197
+atp804
+ssS'able'
+p805
+(dp806
+g4
+((lp807
+(lp808
+g86
+ag106
+ag159
+aa(lp809
+g197
+atp810
+ssS'strange'
+p811
+(dp812
+g4
+((lp813
+(lp814
+g7
+aa(lp815
+g86
+ag106
+ag159
+aa(lp816
+g379
+aa(lp817
+g196
+ag197
+ag197
+atp818
+sg199
+((lp819
+(lp820
+g202
+aa(lp821
+g196
+atp822
+ssS'unfortunate'
+p823
+(dp824
+g4
+((lp825
+(lp826
+g7
+ag235
+aa(lp827
+g86
+ag106
+ag159
+aa(lp828
+g196
+ag196
+atp829
+ssS'sure'
+p830
+(dp831
+g4
+((lp832
+(lp833
+g7
+aa(lp834
+g321
+ag351
+aa(lp835
+g86
+ag106
+aa(lp836
+g196
+ag197
+ag197
+atp837
+ssS'possible'
+p838
+(dp839
+g4
+((lp840
+(lp841
+g7
+ag235
+aa(lp842
+g86
+ag106
+ag159
+aa(lp843
+g197
+ag197
+atp844
+sg199
+((lp845
+(lp846
+g202
+aa(lp847
+g197
+atp848
+ssS'willing'
+p849
+(dp850
+g4
+((lp851
+(lp852
+g86
+ag106
+ag159
+aa(lp853
+g197
+atp854
+ssS'important'
+p855
+(dp856
+g4
+((lp857
+(lp858
+g7
+aa(lp859
+g86
+ag106
+ag159
+aa(lp860
+g196
+ag197
+atp861
+sg199
+((lp862
+(lp863
+g202
+aa(lp864
+g196
+atp865
+ssS'significant'
+p866
+(dp867
+g4
+((lp868
+(lp869
+g7
+aa(lp870
+g196
+ag197
+atp871
+sg199
+((lp872
+(lp873
+g202
+aa(lp874
+g196
+atp875
+ssS'exciting'
+p876
+(dp877
+g4
+((lp878
+(lp879
+g7
+aa(lp880
+g86
+ag106
+ag159
+aa(lp881
+g379
+aa(lp882
+g196
+ag197
+ag197
+atp883
+sg199
+((lp884
+(lp885
+g202
+aa(lp886
+g196
+atp887
+ssS'clear'
+p888
+(dp889
+g4
+((lp890
+(lp891
+g7
+ag235
+aa(lp892
+g196
+atp893
+sg199
+((lp894
+(lp895
+g202
+aa(lp896
+g196
+atp897
+ssS'proud'
+p898
+(dp899
+g4
+((lp900
+(lp901
+g540
+ag510
+aa(lp902
+(iutilities.FSA
+FSA
+p903
+(dp904
 g9
 S'toClause1_PERFECTIVE'
-p413
+p905
 sg11
-(lp414
+(lp906
 I3
 asg13
-Nsg14
 I1
-sg15
+sg14
+Nsg15
 S"[_{_'_p_o_s_'_:_ _[_'_R_B_'_,_ _'_R_B_R_'_,_ _'_R_B_S_'_,_ _'_R_P_'_,_ _'_J_J_R_'_]_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_a_s_p_e_c_t_'_:_ _'_P_E_R_F_E_C_T_I_V_E_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _{_'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_a_s_p_e_c_t_'_:_ _'_P_E_R_F_E_C_T_I_V_E_'_}_,_ _'_)_'_]"
-sg16
-(lp415
+p907
+sg17
 I0
-aI4
+sg18
+(lp908
+I4
 aI2
-aI3
+aI0
 aI1
-asg18
-I0
-sg19
-(dsg20
+aI3
+asg20
+(dp909
+sg22
 I1
-sg21
-(lp416
+sg23
+(lp910
 (I0
 I1
 S"{'text': 'to', 'pos': 'TO'}"
-ta(I0
+p911
+tp912
+a(I0
 I2
 S"{'pos': ['RB', 'RBR', 'RBS', 'RP', 'JJR']}"
-ta(I0
+tp913
+a(I0
 I3
 S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I1
+p914
+tp915
+a(I1
 I3
 S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I1
+p916
+tp917
+a(I1
 I4
 S"{'pos': 'UH'}"
-ta(I2
+tp918
+a(I2
 I1
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I2
+g911
+tp919
+a(I2
 I3
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I4
+g914
+tp920
+a(I4
 I3
-S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-tasg23
+g916
+tp921
+asg83
 I1
-sg24
+sg84
 I1
-sba(iFSA
+sba(iutilities.FSA
 FSA
-p417
-(dp418
+p922
+(dp923
 g9
 S'toClause3_PERFECTIVE'
-p419
+p924
 sg11
-(lp420
-I7
+(lp925
+I6
 asg13
-Nsg14
 I1
-sg15
+sg14
+Nsg15
 S"[_'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_)_'_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_a_n_d_'_,_ _'_o_r_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_C_'_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_?_'_,_ _'_|_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_P_P_'_,_ _'_P_P_$_'_,_ _'_P_R_P_$_'_,_ _'_P_R_P_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_t_h_i_s_'_,_ _'_t_h_a_t_'_,_ _'_t_h_e_s_e_'_,_ _'_t_h_o_s_e_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _[_'_a_n_d_'_,_ _'_o_r_'_]_,_ _'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_C_'_}_,_ _'_)_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_,_ _'_)_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_a_s_p_e_c_t_'_:_ _'_P_E_R_F_E_C_T_I_V_E_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _{_'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_a_s_p_e_c_t_'_:_ _'_P_E_R_F_E_C_T_I_V_E_'_}_,_ _'_)_'_]"
-sg16
-(lp421
-I1
-aI8
-aI7
-aI13
-aI0
-aI2
-aI11
-aI4
-aI12
-aI9
-aI3
-aI10
-aI5
-aI6
-asg18
+p926
+sg17
 I0
-sg19
-(dsg20
+sg18
+(lp927
+I7
+aI0
+aI1
+aI11
+aI13
+aI4
+aI10
+aI8
+aI5
+aI2
+aI3
+aI6
+aI9
+aI12
+asg20
+(dp928
+sg22
 I1
-sg21
-(lp422
+sg23
+(lp929
 (I0
 I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I2
 S"{'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']}"
-ta(I0
-I2
+tp930
+a(I0
+I1
 S"{'text': ['this', 'that', 'these', 'those'], 'nodeType': 'Token'}"
-ta(I0
+tp931
+a(I0
+I2
+S"{'nodeType': 'NounChunk'}"
+p932
+tp933
+a(I0
 I3
 S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
+tp934
+a(I0
 I4
 S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I1
+tp935
+a(I1
 I5
+S"{'text': 'to', 'pos': 'TO'}"
+p936
+tp937
+a(I1
+I6
+S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
+p938
+tp939
+a(I2
+I7
 S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I1
-I5
+tp940
+a(I2
+I7
 S"{'text': ['and', 'or'], 'nodeType': 'Token', 'pos': 'CC'}"
-ta(I1
+tp941
+a(I2
+I5
+g936
+tp942
+a(I2
 I6
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I1
-I7
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I2
-I6
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I2
-I7
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I3
+g938
+tp943
+a(I3
+I2
+g932
+tp944
+a(I3
 I1
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I2
 S"{'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']}"
-ta(I3
-I2
+tp945
+a(I3
+I1
 S"{'text': ['this', 'that', 'these', 'those'], 'nodeType': 'Token'}"
-ta(I3
+tp946
+a(I3
 I8
 S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I4
-I9
-S"{'nodeType': 'NounChunk'}"
-ta(I4
+tp947
+a(I4
 I3
 S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I4
-I8
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I4
-I8
-S"{'pos': 'SYM'}"
-ta(I4
-I10
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I5
-I11
-S"{'nodeType': 'NounChunk'}"
-ta(I6
-I7
-S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I6
-I12
-S"{'pos': 'UH'}"
-ta(I8
+tp948
+a(I4
 I9
 S"{'nodeType': 'NounChunk'}"
-ta(I8
+p949
+tp950
+a(I4
 I8
 S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I8
+tp951
+a(I4
 I8
 S"{'pos': 'SYM'}"
-ta(I8
+tp952
+a(I4
 I10
 S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I9
+p953
+tp954
+a(I5
+I6
+S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
+p955
+tp956
+a(I5
+I11
+S"{'pos': 'UH'}"
+tp957
+a(I7
+I12
+S"{'nodeType': 'NounChunk'}"
+tp958
+a(I8
+I9
+g949
+tp959
+a(I8
+I8
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp960
+a(I8
+I8
+S"{'pos': 'SYM'}"
+tp961
+a(I8
+I10
+g953
+tp962
+a(I9
 I13
 S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I9
+tp963
+a(I9
 I13
 S"{'text': ['and', 'or'], 'nodeType': 'Token', 'pos': 'CC'}"
-ta(I9
+tp964
+a(I9
+I5
+g936
+tp965
+a(I9
 I6
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I9
-I7
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I10
+g938
+tp966
+a(I10
 I9
-S"{'nodeType': 'NounChunk'}"
-ta(I10
+g949
+tp967
+a(I10
 I10
 S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I11
+tp968
+a(I11
+I6
+g955
+tp969
+a(I12
 I13
 S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I11
+tp970
+a(I12
+I5
+g936
+tp971
+a(I12
 I6
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I11
-I7
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I12
-I7
-S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I13
-I2
+g938
+tp972
+a(I13
+I1
 S"{'nodeType': 'NounChunk'}"
-tasg23
+tp973
+asg83
 I1
-sg24
+sg84
 I1
-sba(iFSA
+sba(iutilities.FSA
 FSA
-p423
-(dp424
+p974
+(dp975
 g9
 S'toClause5_PERFECTIVE'
-p425
+p976
 sg11
-(lp426
+(lp977
 I8
 asg13
-Nsg14
 I1
-sg15
+sg14
+Nsg15
 S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_I_N_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_t_e_n_s_e_'_:_ _'_I_N_F_I_N_I_T_I_V_E_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_a_s_p_e_c_t_'_:_ _'_P_E_R_F_E_C_T_I_V_E_'_}_,_ _'_|_'_,_ _{_'_t_e_x_t_'_:_ _'_t_o_'_,_ _'_p_o_s_'_:_ _'_T_O_'_}_,_ _{_'_p_o_s_'_:_ _'_U_H_'_}_,_ _'_?_'_,_ _{_'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_,_ _'_a_s_p_e_c_t_'_:_ _'_P_E_R_F_E_C_T_I_V_E_'_}_,_ _'_)_'_]"
-sg16
-(lp427
-I8
+p978
+sg17
+I0
+sg18
+(lp979
+I0
 aI9
 aI1
-aI0
-aI3
 aI2
-aI5
+aI3
 aI4
-aI7
+aI5
 aI6
-asg18
-I0
-sg19
-(dsg20
+aI8
+aI7
+asg20
+(dp980
+sg22
 I1
-sg21
-(lp428
+sg23
+(lp981
 (I0
 I1
 S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I1
+tp982
+a(I1
 I2
 S"{'nodeType': 'NounChunk'}"
-ta(I1
+p983
+tp984
+a(I1
 I3
 S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I2
+tp985
+a(I2
 I4
-S"{'nodeType': 'NounChunk'}"
-ta(I2
+S"{'nodeType': 'Token', 'pos': 'IN'}"
+tp986
+a(I2
 I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I2
+S"{'nodeType': 'NounChunk'}"
+p987
+tp988
+a(I2
 I6
 S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I2
+p989
+tp990
+a(I2
 I7
-S"{'nodeType': 'Token', 'pos': 'IN'}"
-ta(I2
-I8
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk'}"
-ta(I4
-I5
 S"{'text': 'to', 'pos': 'TO'}"
-ta(I4
+p991
+tp992
+a(I2
 I8
 S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I5
+p993
+tp994
+a(I3
+I2
+g983
+tp995
+a(I4
+I5
+g987
+tp996
+a(I4
+I7
+g991
+tp997
+a(I4
+I6
+g989
+tp998
+a(I4
+I8
+g993
+tp999
+a(I5
+I7
+g991
+tp1000
+a(I5
+I8
+g993
+tp1001
+a(I6
+I5
+g987
+tp1002
+a(I6
+I7
+g991
+tp1003
+a(I6
+I8
+g993
+tp1004
+a(I7
 I8
 S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I5
+p1005
+tp1006
+a(I7
 I9
 S"{'pos': 'UH'}"
-ta(I6
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I6
-I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I6
+tp1007
+a(I9
 I8
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I7
-I4
-S"{'nodeType': 'NounChunk'}"
-ta(I7
-I5
-S"{'text': 'to', 'pos': 'TO'}"
-ta(I7
-I6
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I7
-I8
-S"{'tense': 'INFINITIVE', 'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-ta(I9
-I8
-S"{'eventStatus': '1', 'aspect': 'PERFECTIVE'}"
-tasg23
+g1005
+tp1008
+asg83
 I1
-sg24
+sg84
 I1
-sbaa(lp429
-g42
-ag48
-ag54
-aa(lp430
-g68
-ag68
-ag26
-atssS'anxious'
-p431
-(dp432
+sbaa(lp1009
+g86
+ag106
+ag159
+aa(lp1010
+g196
+ag196
+ag197
+atp1011
+ssS'interesting'
+p1012
+(dp1013
 g4
-((lp433
-(lp434
+((lp1014
+(lp1015
 g7
-ag85
-aa(lp435
-g42
-ag48
-ag54
-aa(lp436
-g251
-aa(lp437
-g26
-ag26
-ag68
-atssS'obvious'
-p438
-(dp439
-g4
-((lp440
-(lp441
-g7
-ag85
-aa(lp442
-g68
-atsg27
-((lp443
-(lp444
-g30
-aa(lp445
-g68
-atssS'due'
-p446
-(dp447
-g4
-((lp448
-(lp449
-g42
-ag48
-ag54
-aa(lp450
-g26
-atssS'interesting'
-p451
-(dp452
-g4
-((lp453
-(lp454
-g7
-aa(lp455
-g42
-ag48
-ag54
-aa(lp456
-g61
-aa(lp457
-g68
-ag26
-ag26
-atsg27
-((lp458
-(lp459
-g30
-aa(lp460
-g68
-atss.
+aa(lp1016
+g86
+ag106
+ag159
+aa(lp1017
+g379
+aa(lp1018
+g196
+ag197
+ag197
+atp1019
+sg199
+((lp1020
+(lp1021
+g202
+aa(lp1022
+g196
+atp1023
+ss.

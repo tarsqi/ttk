@@ -6,7 +6,7 @@ S'forward'
 p4
 ((lp5
 (lp6
-(iFSA
+(iutilities.FSA
 FSA
 p7
 (dp8
@@ -18,390 +18,486 @@ sS'finalStates'
 p11
 (lp12
 I4
-asS'alphabet'
+asS'_isTrimmed'
 p13
-NsS'_isTrimmed'
-p14
 I1
-sS'label'
+sS'alphabet'
+p14
+NsS'label'
 p15
 S"[_{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_?_'_,_ _{_'_t_e_x_t_'_:_ _'_o_f_'_}_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_P_D_T_'_}_,_ _'_?_'_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_,_ _'_e_v_e_n_t_S_t_a_t_u_s_'_:_ _'_1_'_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_D_T_'_}_,_ _'_(_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _[_'_J_J_'_,_ _'_J_J_R_'_,_ _'_J_J_S_'_]_}_,_ _'_|_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_V_e_r_b_C_h_u_n_k_'_,_ _'_p_o_s_'_:_ _[_'_V_G_B_'_,_ _'_V_B_N_'_]_}_,_ _'_|_'_,_ _{_'_p_o_s_'_:_ _'_S_Y_M_'_}_,_ _'_)_'_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_T_o_k_e_n_'_,_ _'_p_o_s_'_:_ _'_C_D_'_}_,_ _'_*_'_,_ _{_'_n_o_d_e_T_y_p_e_'_:_ _'_N_o_u_n_C_h_u_n_k_'_}_,_ _'_)_'_]"
-sS'states'
 p16
-(lp17
-I7
-aI6
-aI1
-aI0
-aI3
-aI2
-aI5
-aI4
-asS'initialState'
-p18
+sS'initialState'
+p17
 I0
-sS'_arcMetadata'
-p19
-(dsS'_isSorted'
+sS'states'
+p18
+(lp19
+I7
+aI0
+aI1
+aI2
+aI3
+aI4
+aI5
+aI6
+asS'_arcMetadata'
 p20
+(dp21
+sS'_isSorted'
+p22
 I1
 sS'transitions'
-p21
-(lp22
+p23
+(lp24
 (I0
 I1
 S"{'nodeType': 'NounChunk'}"
-ta(I0
+p25
+tp26
+a(I0
 I2
 S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
+tp27
+a(I0
 I3
 S"{'text': 'of'}"
-ta(I1
+p28
+tp29
+a(I1
 I3
-S"{'text': 'of'}"
-ta(I2
+g28
+tp30
+a(I2
 I1
-S"{'nodeType': 'NounChunk'}"
-ta(I2
+g25
+tp31
+a(I2
 I3
-S"{'text': 'of'}"
-ta(I3
+g28
+tp32
+a(I3
 I4
 S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I3
+p33
+tp34
+a(I3
 I5
 S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I3
+tp35
+a(I3
 I6
 S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I5
+p36
+tp37
+a(I5
 I4
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I5
+g33
+tp38
+a(I5
 I6
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I6
+g36
+tp39
+a(I6
 I4
 S"{'nodeType': 'NounChunk'}"
-ta(I6
+tp40
+a(I6
 I6
 S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I6
+tp41
+a(I6
 I6
 S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I6
+tp42
+a(I6
 I6
 S"{'pos': 'SYM'}"
-ta(I6
+tp43
+a(I6
 I7
 S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I7
+tp44
+a(I7
 I4
 S"{'nodeType': 'NounChunk'}"
-ta(I7
+tp45
+a(I7
 I7
 S"{'nodeType': 'Token', 'pos': 'CD'}"
-tasS'_isDeterminized'
-p23
+tp46
+asS'_isDeterminized'
+p47
 I1
 sS'_isMinimized'
-p24
+p48
 I1
-sbaa(lp25
+sbaa(lp49
 S'CULMINATES'
-p26
-atssS'beginnings'
-p27
-(dp28
-g4
-((lp29
-(lp30
-(iFSA
-FSA
-p31
-(dp32
-g9
-S'NP_event1'
-p33
-sg11
-(lp34
-I2
-asg13
-Nsg14
-I1
-sg15
-S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_,_ _\'_D_T_\'_,_ _\'_P_D_T_\'_,_ _\'_P_O_S_\'_,_ _\'_C_D_\'_,_ _\'_S_Y_M_\'_]_}_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _\'_o_f_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
-sg16
-(lp35
-I3
-aI0
-aI2
-aI5
-aI1
-aI4
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp36
-(I0
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I0
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I0
-I3
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I0
-I4
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I0
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I1
-I3
-S"{'text': 'of'}"
-ta(I3
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I3
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I3
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I4
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I4
-I2
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I4
-I3
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I4
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-ta(I5
-I1
-S"{'nodeType': 'NounChunk'}"
-ta(I5
-I5
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
-tasg23
-I1
-sg24
-I1
-sba(iFSA
-FSA
-p37
-(dp38
-g9
-S'NP_event2'
-p39
-sg11
-(lp40
-I5
-asg13
-Nsg14
-I1
-sg15
-S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_p_o_s_\'_:_ _[_\'_V_G_B_\'_,_ _\'_V_B_N_\'_]_}_,_ _\'_|_\'_,_ _{_\'_p_o_s_\'_:_ _\'_S_Y_M_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_C_D_\'_}_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
-sg16
-(lp41
-I2
-aI7
-aI1
-aI0
-aI3
-aI5
-aI4
-aI6
-asg18
-I0
-sg19
-(dsg20
-I1
-sg21
-(lp42
-(I0
-I1
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I0
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I0
-I3
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I0
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I0
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I0
-I4
-S"{'pos': 'SYM'}"
-ta(I0
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I0
-I6
-S"{'nodeType': 'Token', 'pos': 'PDT'}"
-ta(I1
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I1
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I1
-I4
-S"{'pos': 'SYM'}"
-ta(I1
-I4
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I1
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I1
-I3
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I1
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I2
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I2
-I7
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I2
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I3
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I3
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I3
-I4
-S"{'pos': 'SYM'}"
-ta(I3
-I4
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I3
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I3
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I4
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I4
-I2
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I4
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I4
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I4
-I4
-S"{'pos': 'SYM'}"
-ta(I4
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I6
-I1
-S'{\'text\': [\'"\', \'``\', "\'\'"]}'
-ta(I6
-I2
-S"{'nodeType': 'Token', 'pos': 'CD'}"
-ta(I6
-I3
-S"{'nodeType': 'Token', 'pos': 'DT'}"
-ta(I6
-I4
-S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
-ta(I6
-I4
-S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
-ta(I6
-I4
-S"{'pos': 'SYM'}"
-ta(I6
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-ta(I7
-I5
-S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
-tasg23
-I1
-sg24
-I1
-sbag7
-aa(lp43
-S'INITIATES'
-p44
-atssS'opening'
-p45
-(dp46
-g4
-((lp47
-(lp48
-g31
-ag37
-ag7
-aa(lp49
-g44
-atssS'close'
 p50
-(dp51
+atp51
+ssS'beginnings'
+p52
+(dp53
 g4
-((lp52
-(lp53
-g7
-aa(lp54
-S'TERMINATES'
-p55
-atssS'beginning'
+((lp54
+(lp55
+(iutilities.FSA
+FSA
 p56
 (dp57
-g4
-((lp58
+g9
+S'NP_event1'
+p58
+sg11
 (lp59
-g31
-ag37
-ag7
-aa(lp60
-g44
-atssS'starting'
-p61
+I2
+asg13
+I1
+sg14
+Nsg15
+S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_,_ _\'_D_T_\'_,_ _\'_P_D_T_\'_,_ _\'_P_O_S_\'_,_ _\'_C_D_\'_,_ _\'_S_Y_M_\'_]_}_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_}_,_ _{_\'_t_e_x_t_\'_:_ _\'_o_f_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
+p60
+sg17
+I0
+sg18
+(lp61
+I0
+aI2
+aI4
+aI3
+aI1
+aI5
+asg20
 (dp62
-g4
-((lp63
-(lp64
-g31
-ag37
-ag7
-aa(lp65
-g44
-atssS'ending'
+sg22
+I1
+sg23
+(lp63
+(I0
+I1
+S"{'nodeType': 'NounChunk'}"
+p64
+tp65
+a(I0
+I2
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
 p66
-(dp67
+tp67
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp68
+a(I0
+I4
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+p69
+tp70
+a(I0
+I5
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}"
+p71
+tp72
+a(I1
+I4
+S"{'text': 'of'}"
+tp73
+a(I3
+I1
+g64
+tp74
+a(I3
+I2
+g66
+tp75
+a(I3
+I4
+g69
+tp76
+a(I3
+I5
+g71
+tp77
+a(I4
+I1
+g64
+tp78
+a(I4
+I2
+g66
+tp79
+a(I4
+I5
+g71
+tp80
+a(I5
+I1
+g64
+tp81
+a(I5
+I5
+g71
+tp82
+asg47
+I1
+sg48
+I1
+sba(iutilities.FSA
+FSA
+p83
+(dp84
+g9
+S'NP_event2'
+p85
+sg11
+(lp86
+I2
+asg13
+I1
+sg14
+Nsg15
+S'[_{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_P_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_D_T_\'_}_,_ _\'_?_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _\'_(_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _[_\'_J_J_\'_,_ _\'_J_J_R_\'_,_ _\'_J_J_S_\'_]_}_,_ _\'_|_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_V_e_r_b_C_h_u_n_k_\'_,_ _\'_p_o_s_\'_:_ _[_\'_V_G_B_\'_,_ _\'_V_B_N_\'_]_}_,_ _\'_|_\'_,_ _{_\'_p_o_s_\'_:_ _\'_S_Y_M_\'_}_,_ _\'_)_\'_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_T_o_k_e_n_\'_,_ _\'_p_o_s_\'_:_ _\'_C_D_\'_}_,_ _\'_*_\'_,_ _{_\'_t_e_x_t_\'_:_ _[_\'_"_\'_,_ _\'_`_`_\'_,_ _"_\'_\'_"_]_}_,_ _\'_?_\'_,_ _{_\'_n_o_d_e_T_y_p_e_\'_:_ _\'_N_o_u_n_C_h_u_n_k_\'_,_ _\'_e_v_e_n_t_S_t_a_t_u_s_\'_:_ _\'_1_\'_}_]'
+p87
+sg17
+I0
+sg18
+(lp88
+I0
+aI5
+aI2
+aI6
+aI3
+aI1
+aI4
+aI7
+asg20
+(dp89
+sg22
+I1
+sg23
+(lp90
+(I0
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp91
+a(I0
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp92
+a(I0
+I1
+S"{'pos': 'SYM'}"
+tp93
+a(I0
+I2
+S"{'nodeType': 'NounChunk', 'eventStatus': '1'}"
+p94
+tp95
+a(I0
+I3
+S"{'nodeType': 'Token', 'pos': 'PDT'}"
+tp96
+a(I0
+I4
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+p97
+tp98
+a(I0
+I5
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+p99
+tp100
+a(I0
+I6
+S"{'nodeType': 'Token', 'pos': 'DT'}"
+p101
+tp102
+a(I1
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp103
+a(I1
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp104
+a(I1
+I1
+S"{'pos': 'SYM'}"
+tp105
+a(I1
+I2
+g94
+tp106
+a(I1
+I5
+S"{'nodeType': 'Token', 'pos': 'CD'}"
+tp107
+a(I1
+I5
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp108
+a(I3
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp109
+a(I3
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp110
+a(I3
+I1
+S"{'pos': 'SYM'}"
+tp111
+a(I3
+I2
+g94
+tp112
+a(I3
+I4
+g97
+tp113
+a(I3
+I5
+g99
+tp114
+a(I3
+I6
+g101
+tp115
+a(I4
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp116
+a(I4
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp117
+a(I4
+I1
+S"{'pos': 'SYM'}"
+tp118
+a(I4
+I1
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp119
+a(I4
+I2
+g94
+tp120
+a(I4
+I5
+g99
+tp121
+a(I4
+I6
+g101
+tp122
+a(I5
+I2
+g94
+tp123
+a(I5
+I7
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp124
+a(I5
+I5
+g99
+tp125
+a(I6
+I1
+S"{'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}"
+tp126
+a(I6
+I1
+S"{'nodeType': 'VerbChunk', 'pos': ['VGB', 'VBN']}"
+tp127
+a(I6
+I1
+S"{'pos': 'SYM'}"
+tp128
+a(I6
+I1
+S'{\'text\': [\'"\', \'``\', "\'\'"]}'
+tp129
+a(I6
+I2
+g94
+tp130
+a(I6
+I5
+g99
+tp131
+a(I7
+I2
+g94
+tp132
+asg47
+I1
+sg48
+I1
+sbag7
+aa(lp133
+S'INITIATES'
+p134
+atp135
+ssS'opening'
+p136
+(dp137
 g4
-((lp68
-(lp69
-g31
-ag37
+((lp138
+(lp139
+g56
+ag83
 ag7
-aa(lp70
-g55
-atss.
+aa(lp140
+g134
+atp141
+ssS'starting'
+p142
+(dp143
+g4
+((lp144
+(lp145
+g56
+ag83
+ag7
+aa(lp146
+g134
+atp147
+ssS'ending'
+p148
+(dp149
+g4
+((lp150
+(lp151
+g56
+ag83
+ag7
+aa(lp152
+S'TERMINATES'
+p153
+atp154
+ssS'close'
+p155
+(dp156
+g4
+((lp157
+(lp158
+g7
+aa(lp159
+g153
+atp160
+ssS'beginning'
+p161
+(dp162
+g4
+((lp163
+(lp164
+g56
+ag83
+ag7
+aa(lp165
+g134
+atp166
+ss.

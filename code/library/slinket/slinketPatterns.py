@@ -1,15 +1,22 @@
-import forms
-from timeMLspec import *
-from FSA import compileOP
+"""slinketPatterns.py
 
+Slink and Alink Patterns used by Slinket. Contains the objects used in patterns,
+the patterns themselves and the compiled versions of the patterns. This module
+is used by alinkPredicates.py and slinkPredicates.py to connect slink and alink
+predicates to patterns.
 
+This file, as well as alinkPredicates.py and slinkPredicates.py, are not used by
+the runtime system, but they are used by create_dicts.py when it pickles the
+dictionaries.
 
+"""
 
-                     ########################                     
-                     #                      #
-                     # MULTI-CHUNK PATTERNS #
-                     #                      #
-                     ########################
+from library import forms
+
+from library.timeMLspec import *
+from utilities.FSA import compileOP
+
+print "Loading and compiling patterns"
 
                      
 # Note: Patterns must be sorted from shortest to longest,
@@ -18,9 +25,7 @@ from FSA import compileOP
 #       Some combinations are 'more possible' than others. But that's not
 #       a problems, since the list aims at a recognition task, not a
 #       generation one.
-#
-#
-# This module could eventually be conflated with patterns.py, from EVITA.
+
 
 
 # =======
