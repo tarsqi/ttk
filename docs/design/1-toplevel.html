@@ -65,6 +65,10 @@ which includes two instance variables: text and tags.
   <td class="name" colspan="2">docmodel.source_parser.SourceDoc</td>
 </tr>
 <tr>
+  <td class="attribute">filename</td>
+  <td>the file that the SourceDoc is created for</td>
+</tr>
+<tr>
   <td class="attribute">text</td>
   <td>unicode string</td>
 </tr>  
@@ -174,12 +178,53 @@ instance and create an instance of docmodel.document.TarsqiDocument.
 </tr>
 </table>
 
-The DefaultParser does some minimal processing of the source document,
-extracting a document creation time and putting it in the metadata dictionary
-under the 'dct' key and splitting the document into paragraphs and putting each
-paragraph in the elements list. In the current implementation, all elements are
-instances of TarsqiDocParagraph, a subclass of TarsqiDocElement, which has the
-following structure:
+The DefaultParser does some minimal processing of the source document. The first
+thing it does is to extract the document creation time (DCT) and put it in the
+metadata dictionary under the 'dct' key. In order to show how this happens, here
+is first a peak at the fragment of the process method which sets it all in
+motion:
+
+<pre class="example indent">
+<i>tarsqi.Tarsqi</i>
+
+def process(self):
+    self.docsource = SourceParser().parse_file(self.input)
+    self.document = self.parser.parse(self.docsource)
+</pre>
+
+The process() method uses the SourceParser to create an instance of DocSource
+and puts it in the docsource variable of the Tarsqi instance, this was outline
+in the item above. Then it asks a document-specific parser from
+docmodel.parsers, which is stored in the parser variable, to create the
+TarsqiDocument and put it in the document variable. Which parser depends on the
+--genre command line argument, but by default it uses the DefaultParser
+class. The parse(method on DefaultParser takes the SourceDoc instance and create
+the metdata dictionarry as follows (again, this is just a fragment of the
+parse method, but the get_dct method is listed in its entirity):
+
+<pre class="example indent">
+<i>docmodel.parsers.DefaultParser</i>
+
+def parse(self, sourcedoc):
+    self.sourcedoc = sourcedoc
+    metadata = { 'dct': self.get_dct() }
+
+def get_dct(self):
+    return get_today()
+</pre>
+
+<p>So the default parser sets the DCT to the current date (which is what
+get_today returns). Other parsers currently defined extract certain xml elements
+from the document or parse the name of the input file. But any piece of code
+could be inserted here and the DCT can be extracted using a full document parse
+or a database lookup if needed. Note that get_dct has access to the filename,
+the file content and the tags in the file through the docsource variable.</p>
+
+<p>The second task of the DefaultParser is to split the document into paragraphs
+and put each paragraph in the elements list of the TarsqiDocument. In the
+current implementation of DefaultParser, all elements are instances of
+TarsqiDocParagraph, a subclass of TarsqiDocElement, which has the following
+structure:</p>
 
 <table class="pythonclass indent spacy">
 <tr>
