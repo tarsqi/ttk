@@ -91,7 +91,7 @@ objects (d).
 
     In other words, the elements of the FSA vocabulary can be conceived as
     clusters of attribute-value pairs, and represented using python
-    dictionars. The format of the value in each key-value pair can be:
+    dictionaries. The format of the value in each key-value pair can be:
 
     -- An atomic element. E.g., {..., 'headForm':'is', ...}
 
@@ -115,7 +115,7 @@ objects (d).
     requirement is creating, within the class, a method capable of mapping the
     FSA vocabulary items (of the format described above) into your instance. As
     example, refer to the use of the function matchConsituent, specific for
-    Evitaand Slinket, which is called from labelMatches function (this module)
+    Evita and Slinket, which is called from labelMatches function (this module)
     and described in the Chunk class (Chunk.py)).
 
     

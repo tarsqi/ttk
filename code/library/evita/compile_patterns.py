@@ -38,6 +38,6 @@ for (listName, patternsList) in patternsGroups:
     pickleFile = open(fname, 'w')
     print "Compiling %d %s and saving them in %s" % (len(patternsList), listName, fname)
     toPickle = []
-    for pattern in patternsList:
-        toPickle.append(compileOP(pattern))
+    for name, pattern in patternsList:
+        toPickle.append(compileOP(pattern, name=name))
     cPickle.dump(toPickle, pickleFile)

@@ -44,6 +44,7 @@ def getPOSList(constituents):
     return [constituent.pos for constituent in constituents]
 
 def getWordPosList(constituents):
+    """Returns a list of word/POS for all constituents."""
     return ["%s/%s" % (s, t) for s, t
             in zip(getWordList(constituents), getPOSList(constituents))]
 
@@ -78,6 +79,7 @@ class GramChunk:
             self.polarity = gramvchunk.polarity
 
     def print_vars(self):
+        """Debugging method to print all variables."""
         pprint(vars(self))
 
     def as_verbose_string(self):
@@ -139,7 +141,7 @@ class GramNChunk(GramChunk):
 class GramVChunkList:
 
     """This class is used to create a list of GramVChunk instances. What it does
-    is (1) collecting information form a VerbChunk or a list of Tokens, (2) move
+    is (1) collecting information from a VerbChunk or a list of Tokens, (2) move
     this information into separate bins depending on the type of items in the
     source, (3) decide whether we need more than one GramVChunk for some input,
     and (4) create a list of VerbChunks.
@@ -181,26 +183,24 @@ class GramVChunkList:
         create a list of GramVChunks in self.gramVChunksList."""
         source = "VerbChunk" if verbchunk else "Tokens"
         logger.debug("Initializing GramVChunkList from %s" % source)
-        self._initialize_nodes(verbchunk, tokens)
+        self.node = verbchunk
+        self.tokens = tokens
+        self._initialize_nodes()
         self._initialize_lists()
         self._distributeNodes()
         self._generateGramVChunks()
         if DEBUG: print "\n", self
 
-    def _initialize_nodes(self, verbchunk, tokens):
+    def _initialize_nodes(self):
         """Given the VerbChunk or a list of Tokens, set the nodes variable to
         either the daughters of the VerbChunk or the list of Tokens. Also sets
         node and tokens, where the first one has the VerbChunk or None (this is
         so we can hand the chunk to GramVChunk, following GramChunk behaviour),
         and where the second one is the list of Tokens or None."""
-        if verbchunk:
-            self.node = verbchunk
-            self.tokens = None
-            self.nodes = verbchunk.dtrs
-        elif tokens:
-            self.node = None
-            self.tokens = tokens
-            self.nodes = tokens
+        if self.node:
+            self.nodes = self.node.dtrs
+        elif self.tokens:
+            self.nodes = self.tokens
         else:
             logger.error("Incorrect initialization of GramVChunkList")
 
@@ -208,9 +208,9 @@ class GramVChunkList:
         """Initializes the lists that contain items (Tokens) of the chunk. Since
         one chunk may spawn more than one GramVChunk, these lists are actually
         lists of lists."""
+        self.gramVChunksList = []   # the list of GramVChunk instances
         self.counter = 0            # controls different subchunks in a chunk
-        self.gramVChunksList = []   # this is the list of GramVChunk instances
-        self.trueChunkLists = [[]]  # the core of the chunk
+        self.trueChunkLists = [[]]  # the cores of the subchunks
         self.negMarksLists = [[]]
         self.infMarkLists = [[]]
         self.adverbsPreLists = [[]]
@@ -229,17 +229,6 @@ class GramVChunkList:
         return \
             "<GramVChunkList length=%d words=%s>\n\n" % (len(self), words) + \
             "\n".join([gvch.as_verbose_string() for gvch in self.gramVChunksList])
-
-    def is_wellformed(self):
-        """Return True if this GramVChunkList is well-formed, that is, it has content
-        and at least one true chunk."""
-        true_chunks = self.trueChunkLists
-        if len(true_chunks) == 1 and not true_chunks[0]:
-            return False
-        if len(self) == 0:
-            logger.warn("Empty GramVChList")
-            return False
-        return True
 
     def _distributeNodes(self):
         """Distribute the item's information over the lists in the GramVChunkLists."""
@@ -390,7 +379,7 @@ class GramVChunkList:
         """Add the element to the previous element (that is, the penultimate
         element) in sublist. The elements of the sublist are lists themselves."""
         # TODO. This method is never used in the 300+ sentences in the tests in
-        # testing/scripts/regression/evita/data-in. There us a use case for this
+        # testing/scripts/regression/evita/data-in. There is a use case for this
         # method though with phrases like "end up being eliminated", where "up"
         # should be added to the previous and not current list, which is now not
         # dealt with properly. Also, the logic of this method is a bit odd in
@@ -423,6 +412,8 @@ class GramVChunkList:
 class GramVChunk(GramChunk):
 
     def __init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost):
+        """Initialize with a verb chunk and the lists handed in from the
+        GramVChunkList object."""
         # TODO: note that there is not a straight correspondence between the
         # VerbChunk and the tokens that the GramVChunk is for, how do we know
         # that the right event is added?
@@ -449,16 +440,22 @@ class GramVChunk(GramChunk):
 
     def __str__(self):
         return \
-            "<GramVChunk>\n" + \
-            "\thead         = %s\n" % ( str(self.head) ) + \
-            "\tevClass      = %s\n" % ( str(self.evClass) ) + \
-            "\ttense        = %s\n" % ( str(self.tense) ) + \
-            "\taspect       = %s\n" % ( str(self.aspect) )
+            "<GramVChunk %s %s %s trueChunk=[%s]>" \
+            % (self.evClass, self.tense, self.aspect,
+               ', '.join(getWordPosList(self.trueChunk)))
+
+    def is_wellformed(self):
+        """Return True if this GramVChunk is well-formed, that is, it has content in its
+        trueChunks core and it has a head."""
+        return self.trueChunk and self.head
 
     def isAuxVerb(self):
+        """Return True if the head of the GramVChunk is an auxiliary verb."""
         return True if self.head.getText().lower() in forms.auxVerbs else False
 
     def getHead(self):
+        """Return the head of the GramVChunk, which is the last element of the
+        core in self.trueChunk, return None if there is no such core."""
         if self.trueChunk:
             return self.trueChunk[-1]
         else:
@@ -466,6 +463,9 @@ class GramVChunk(GramChunk):
             return None
 
     def getPreHead(self):
+        """Return the element before the head of the GramVChunk, which is the
+        last element of the core in self.trueChunk, return None if there is no
+        such element."""
         if self.trueChunk and len(self.trueChunk) > 1:
             return  self.trueChunk[-2]
         else:
@@ -602,6 +602,9 @@ class GramVChunk(GramChunk):
         except:
             logger.warn("Error running event class patterns")
 
+    def as_short_string(self):
+        return "<GramVChunk trueChunk=[%s]>" % ', '.join(getWordPosList(self.trueChunk))
+
     def as_verbose_string(self):
         if self.node is None:
             opening_string = 'GramVChunk: None'
@@ -623,3 +626,9 @@ class GramVChunk(GramChunk):
             + "\tinfinitive: [%s]\n"  % ', '.join(getWordPosList(self.infinitive)) \
             + "\tadverbs-pre: [%s]\n" % ', '.join(getWordPosList(self.adverbsPre)) \
             + "\tadverbs-post: [%s]\n" %  ', '.join(getWordPosList(self.adverbsPost))
+
+    def pp(self, verbose=False):
+        if verbose:
+            print self.as_verbose_string()
+        else:
+            print self

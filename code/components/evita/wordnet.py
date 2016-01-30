@@ -24,6 +24,8 @@ except:
     wnAllSensesAreEvents_TXT = open(forms.wnAllSensesAreEvents_TXT,'r')
     wnSomeSensesAreEvents_TXT = open(forms.wnSomeSensesAreEvents_TXT,'r')
     DBM_FILES_OPENED = False
+# TODO: these should not be specified in forms but somewhere in the evita
+# library (similar to how Slinket does it)
 
 
 ## code for lookup in WordNet

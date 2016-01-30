@@ -12,6 +12,8 @@ from utilities import logger
 # Open pickle files with semcor information
 DictSemcorEvent = open_pickle_file(forms.DictSemcorEventPickleFilename)
 DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
+# TODO: these should not be specified in forms but somewhere in the evita
+# library (similar to how Slinket does it)
 
 # Specify at which frequency training data are allowed to have an impact on sense
 # disambiguation

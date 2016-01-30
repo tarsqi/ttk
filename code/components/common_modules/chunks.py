@@ -7,6 +7,8 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 
 """
 
+import types
+
 import library.forms as forms
 import library.patterns as patterns
 from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL
@@ -33,6 +35,9 @@ nomEventRec = bayes.get_classifier()
 # This is another way of capturing messages. It is separate from the logger and
 # operates class based. It is used in VerbChunk to collect data from a run.
 DRIBBLE = False
+
+# Local throw-away debugging
+DEBUG = False
 
 
 def update_event_checked_marker(constituent_list):
@@ -90,7 +95,7 @@ class Chunk(Constituent):
         if name == 'pos':
             return None
         if name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
-                      EPOS, MOD, POL, EVENTID, EIID, CLASS]:
+                    EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
             if name == 'eventStatus':
@@ -150,7 +155,7 @@ class Chunk(Constituent):
         for tok in self.dtrs:
             tok.pretty_print(indent+2)
 
-        
+
 class NounChunk(Chunk):
 
     """Behaviour specific to noun chunks, most notably the NounChunk specific
@@ -277,16 +282,16 @@ class VerbChunk(Chunk):
         how many GramVChunks can be created for the chunk. For all non-final and
         non-axiliary GramVChunks in the chunk, just process them as events. For
         the chunk-final one there is more work to do."""
-#        print "Creating GramVChunkList in createEvent" #REMOVE
-#        print "  input =", self
         GramVChList = GramVChunkList(verbchunk=self)
-#        GramVChList = GramVChunkList(self)
-        if GramVChList.is_wellformed():
-            logger.debug("len(GramVChList) = %d" % len(GramVChList))
-            #if len(GramVChList) > 1:
-            #    self.dribble('COMPLEX', '')
-            for gramchunk in GramVChList:
-                logger.debug(gramchunk.as_verbose_string())
+        logger.debug("len(GramVChList) = %d" % len(GramVChList))
+        if len(GramVChList) > 0 and DEBUG:
+            for gvc in GramVChList:
+                print ' ',
+                gvc.pp()
+        for gramchunk in GramVChList:
+            logger.debug(gramchunk.as_verbose_string())
+        GramVChList = [gvchunk for gvchunk in GramVChList if gvchunk.is_wellformed()]
+        if GramVChList:
             for gramvchunk in GramVChList[:-1]:
                 if not gramvchunk.isAuxVerb():
                     self._conditionallyAddEvent(gramvchunk)
@@ -308,6 +313,12 @@ class VerbChunk(Chunk):
         else: self._createEventOnOtherVerb(GramVCh)
 
     def _createEventOnModal(self):
+        """Try to create an event when the head of the chunk is a modal. Check
+        the right context and see if you can extend the chunk into a complete
+        verb group with modal verb and main verb. If so, process the merged
+        constituents as a composed verb chunk."""
+        # NOTE: this does not tend to apply since the chunker usually groups the
+        # modal in with the rest of the verb group.
         logger.debug("Checking for modal pattern...")
         substring = self._lookForMultiChunk(patterns.MODAL_FSAs)
         if substring:
@@ -337,6 +348,7 @@ class VerbChunk(Chunk):
     def _createEventOnHave(self, GramVCh):
         logger.debug("Checking for toHave pattern...")
         substring = self._lookForMultiChunk(patterns.HAVE_FSAs)
+        #print substring
         if substring:
             self.dribble("HAVE-1", self.getText())
             self._processEventInMultiVChunk(substring)
@@ -458,6 +470,7 @@ class VerbChunk(Chunk):
             fsaCounter += 1
             lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
             if lenSubstring:
+                #print "Succesful application of %s" % fsa.fsaname
                 return (lenSubstring, fsaCounter)
         else:
             return (0, fsaCounter)

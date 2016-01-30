@@ -313,20 +313,20 @@ beAux_RegVerb = [
 #             The embedded comment has to extent between 2 and 3 items (excluding the colons).
 
 beAux_RegVerb_EmbedComment = [
-        particlesInVChunk, '*',
+    particlesInVChunk, '*',
     punct_COLON,
     '.',
     '.',
     '.', '?',
     punct_COLON,
-     '(',
-        tokenBEING,                      # Passive, PROGRESSIVE 
-        particlesInVChunk, '*',          # '[is] being eaten' 
-        tokenV_part,
-     '|',
-        tokenV_ger,                      # Active, PROGRESSIVE (infinitive): '[be] eating'
-     '|',
-        tokenV_part,                     # Passive, NONE: '[is] eaten'
+    '(',
+    tokenBEING,                      # Passive, PROGRESSIVE 
+    particlesInVChunk, '*',          # '[is] being eaten' 
+    tokenV_part,
+    '|',
+    tokenV_ger,                      # Active, PROGRESSIVE (infinitive): '[be] eating'
+    '|',
+    tokenV_part,                     # Passive, NONE: '[is] eaten'
     ')'
     ]
 
@@ -568,17 +568,48 @@ keepAdj2 = [
 #  List patterns:
 # ========================
 
+
 patternsGroups = [
-    ('BE_FSAs', [beGoingTo, beAux_RegVerb, beAux_RegVerb_EmbedComment]),
-    ('BE_N_FSAs', [beNomPredCompl]),
-    ('BE_A_FSAs', [beAdjPredCompl1, beAdjPredCompl2]),
-    ('BECOME_A_FSAs', [becomeAdj1, becomeAdj2]),
-    ('CONTINUE_A_FSAs', [continueAdj1, continueAdj2]),
-    ('DO_FSAs', [doAux]),
-    ('HAVE_FSAs', [haveTo, haveAux_RegVerb, haveAux_RegVerb_EmbedComment]),
-    ('GOINGto_FSAs', [goingTo]),
-    ('KEEP_A_FSAs', [keepAdj1, keepAdj2]),
-    ('MODAL_FSAs', [modal]),
-    ('USEDto_FSAs', [usedTo])
-    ]
+
+    ('BE_FSAs', [
+        ('beGoingTo', beGoingTo),
+        ('beAux_RegVerb', beAux_RegVerb),
+        ('beAux_RegVerb_EmbedComment', beAux_RegVerb_EmbedComment)]),
+
+    ('BE_N_FSAs', [
+        ('beNomPredCompl', beNomPredCompl)]),
+
+    ('BE_A_FSAs', [
+        ('beAdjPredCompl1', beAdjPredCompl1),
+        ('beAdjPredCompl2', beAdjPredCompl2)]),
+
+    ('BECOME_A_FSAs', [
+        ('becomeAdj1', becomeAdj1),
+        ('becomeAdj2', becomeAdj2)]),
+
+    ('CONTINUE_A_FSAs', [
+        ('continueAdj1', continueAdj1),
+        ('continueAdj2', continueAdj2)]),
+
+    ('DO_FSAs', [
+        ('doAux', doAux)]),
+
+    ('HAVE_FSAs', [
+        ('haveTo', haveTo),
+        ('haveAux_RegVerb', haveAux_RegVerb),
+        ('haveAux_RegVerb_EmbedComment', haveAux_RegVerb_EmbedComment)]),
+
+    ('GOINGto_FSAs', [
+        ('goingTo', goingTo)]),
+
+    ('KEEP_A_FSAs', [
+        ('keepAdj1', keepAdj1),
+        ('keepAdj2', keepAdj2)]),
+
+    ('MODAL_FSAs', [
+        ('modal', modal)]),
+
+    ('USEDto_FSAs', [
+        ('usedTo', usedTo)])
+]
 
