@@ -198,10 +198,19 @@ class TarsqiDocElement:
                 self.source_tags.append(copy(t))
 
     def add_timex(self, begin, end, attrs):
+        """Add a TIMEX3 tag to the tarsqi_tags tag repository."""
         self.tarsqi_tags.add_tag('TIMEX3', begin, end, attrs)
 
     def add_event(self, begin, end, attrs):
+        """Add an EVENT tag to the tarsqi_tags tag repository."""
         self.tarsqi_tags.add_tag('EVENT', begin, end, attrs)
+
+    def has_event(self, begin, end):
+        """Return True if there is already an event at the given begin and end."""
+        for tag in self.tarsqi_tags.find_tags('EVENT'):
+            if tag.begin == begin and tag.end == end:
+                return True
+        return False
 
     def pp(self):
         print "\n", self

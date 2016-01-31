@@ -14,6 +14,7 @@ from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import SENTENCE, NOUNCHUNK, VERBCHUNK, LEX
 from library.timeMLspec import EVENT, TIMEX, ALINK, SLINK, TLINK
 from library.timeMLspec import POS, POS_ADJ
+from utilities import logger
 
 
 def create_tarsqi_tree(element):
@@ -70,6 +71,8 @@ class Node(object):
 
     # TODO: that stipulation is actually wrong for times and we are missing some
     # imports from GUTime because of that
+
+    # TODO: this does not do well when there are two events at the same offsets
 
     def __init__(self, tag, parent, tree):
         """Initialize using a Tag object, a parent Node which can be None for the top
@@ -323,23 +326,27 @@ class TarsqiTree:
 
     def addEvent(self, event):
         """Takes an instance of evita.event.Event and adds it to the TagRepository on
-        the TarsqiDocElement."""
-        event_attrs = dict(event.attrs)
-        # with the current implementation, there is always one instance per
-        # event, so we just reuse the event identifier for the instance
-        eid = self.tarsqidoc.next_event_id()
-        eiid = "ei%s" % eid[1:]
-        event_attrs['eid'] = eid
-        event_attrs['eiid'] = eiid
-        # TODO: at least the second test does not seem needed anymore
-        event_attrs = { k:v for k,v in event_attrs.items()
-                        if v is not None and k is not 'eventID' }
+        the TarsqiDocElement. Does not add it if there is already an event at
+        the same location."""
         # NOTE: we now always have one token on this list, if there are more in
         # a future implementation we takes the last, but what probably should
-        # happen is that we take the begin offset form the first and the end
+        # happen is that we take the begin offset from the first and the end
         # offset from the last token.
         token = event.tokens[-1]
-        self.docelement.add_event(token.begin, token.end, event_attrs)
+        if self.docelement.has_event(token.begin, token.end):
+            logger.warn("There already is an event at that location.")
+        else:
+            event_attrs = dict(event.attrs)
+            # with the current implementation, there is always one instance per
+            # event, so we just reuse the event identifier for the instance
+            eid = self.tarsqidoc.next_event_id()
+            eiid = "ei%s" % eid[1:]
+            event_attrs['eid'] = eid
+            event_attrs['eiid'] = eiid
+            # TODO: at least the second test does not seem needed anymore
+            event_attrs = { k:v for k,v in event_attrs.items()
+                            if v is not None and k is not 'eventID' }
+            self.docelement.add_event(token.begin, token.end, event_attrs)
 
     def addLink(self, linkAttrs, linkType):
         """Add a link of type linkType with its attributes to the tree by appending
