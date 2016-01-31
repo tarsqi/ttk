@@ -31,6 +31,10 @@ EVENT_TESTS = [
 
     ('VERB-sleeps-today', "John sleeps today.", 5, 11),
 
+    # move is the event, not have
+    ('COMPLEX-would-have-to-move', "All Arabs would have to move behind Iraq.", 24, 28),
+    ('COMPLEX-would-have-to-move', "All Arabs would have to move behind Iraq.", 16, 20, None),
+
     # some tests to see if chunking was okay
     ('VBG-also-coming-home', "They are also coming home.", 14, 20), 
     ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 9, 15), 

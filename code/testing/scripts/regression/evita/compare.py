@@ -1,4 +1,4 @@
-"""
+"""compare.py
 
 Compare two files with TTK output, the first is considered the baseline and the
 second the response. Compare them for the tags listed in TAGS and the ATTRIBUTES
@@ -25,6 +25,9 @@ removed from the event for readability):
 
 The output gives tags in the baseline after < and tags in the response after > and for
 each of them it gives the text span in the primary data.
+
+This does generate some sub-optimal output if one of the files has multiple
+occurrences of the same tag name with the same begin and end.
 
 """
 

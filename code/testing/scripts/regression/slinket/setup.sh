@@ -1,4 +1,4 @@
-# Create baseline files for the SLinket regression tests
+# Create baseline files for the Slinket regression tests
 
 pipeline=PREPROCESSOR,EVITA,SLINKET
 
@@ -12,7 +12,6 @@ do
     outfile=$testing_dir_out/$basename
     echo "Creating new $outfile"
     if [ -f "$outfile" ]; then
-	echo "  removing current version $outfile"
 	rm $outfile
     fi
     #echo "python tarsqi.py --pipeline=$pipeline $infile $outfile &> /dev/null "

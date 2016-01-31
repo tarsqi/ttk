@@ -35,7 +35,10 @@ SIMPLE = [
 
     ('MODAL', None, None, (3,9), (13,17), "He wanted to walk."),
 
-    ('MODAL', None, None, (3,9), (13,17), "He xanted to walk.", False)
+    ('MODAL', None, None, (3,9), (13,17), "He xanted to walk.", False),
+
+    # this should not raise an error, but one time it did
+    ('DUMMY', None, None, (0,0), (0,0), "All Arabs would have to move behind Iraq.", False)
 ]
 
 
