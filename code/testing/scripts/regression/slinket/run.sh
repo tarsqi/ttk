@@ -22,13 +22,17 @@ function run_test () {
 	rm $outfile
     fi
     python tarsqi.py --pipeline=$pipeline $infile $outfile &> /dev/null 
-    diff $basefile $outfile
+    python $script_dir/compare.py $basefile $outfile
 
 }
 
 
-for infile in $testing_dir_in/*.xml;
-do
-    basename=`basename $infile`
-    run_test $basename
-done
+if [ "$#" -eq  "0" ]; then
+    for infile in $testing_dir_in/*.xml;
+    do
+	basename=`basename $infile`
+	run_test $basename
+    done
+ else
+    run_test $1
+ fi

@@ -1,8 +1,11 @@
 """compare.py
 
-Compare two files with TTK output, the first is considered the baseline and the
-second the response. Compare them for the tags listed in TAGS and the ATTRIBUTES
-listed in ATTRS.
+Compare two files with TTK entity output, the first is considered the baseline
+and the second the response. Compare them for the tags listed in TAGS and the
+ATTRIBUTES listed in ATTRS.
+
+This script is used pretty much only for comparing the events and chunks in
+Evita output.
 
 Example usage:
 
@@ -47,7 +50,6 @@ def compare_files(fname1, fname2):
     text2 = dom2.getElementsByTagName('text')[0].firstChild.data
     result = []
     for tag in TAGS:
-        sep = '-' * 80
         tags1 = dom1.getElementsByTagName(tag)
         tags2 = dom2.getElementsByTagName(tag)
         tags1_idx = group_on_start(tags1)
