@@ -60,16 +60,16 @@ def get_tokens_from_sequence(sequence):
     # TODO: this can probably use get_tokens
     tokens = []
     for item in sequence:
-        if item.nodeType[-5:] == 'Token':
+        if item.isToken():
             tokens.append(item)
-        elif item.nodeType[-5:] == 'Chunk':
+        elif item.isChunk():
             tokens += get_tokens(item)
-        elif item.nodeType == 'EVENT':
+        elif item.isEvent():
             tokens.append(item)
-        elif item.nodeType == 'TIMEX3':
+        elif item.isIimex():
             tokens += get_tokens(item)
         else:
-            raise "ERROR: unknown item type: " + item.nodeType
+            raise "ERROR: unknown item type: " + item.__class__.__name__
     return tokens
 
 

@@ -29,11 +29,6 @@ class Sentence(Constituent):
         self.position = None
         self.parent = None
         
-    def __getattr__(self, name):
-        """This is here so that an unknown attribute is not dealt with by
-        __getattr__ on Constituent, with possibly unwelcome results."""
-        raise AttributeError, name
-
     def set_event_list(self):
         """Set the value of self.eventList to the list of eLocation-eid tuples
         in the sentence. This is used by Slinket."""

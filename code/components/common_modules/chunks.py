@@ -83,7 +83,7 @@ class Chunk(Constituent):
         self.eiid = None
         self.checkedEvents = False
 
-    def __getattr__(self, name):
+    def feature_value(self, name):
         """Used by the matcher and needs cases for all instance variables used in the
         pattern matching phase. A similar method is used on Token."""
         if name == 'nodeType':

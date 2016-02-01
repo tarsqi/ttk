@@ -59,7 +59,7 @@ class Constituent:
         # this will cause errors
         return len(self.dtrs)
 
-    def __getattr__(self, name):
+    def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used
         in the pattern matching phase."""
         if name == 'nodeType':
@@ -67,7 +67,7 @@ class Constituent:
         elif name == 'text':
             return None
         elif name == 'pos':
-            return None        
+            return None
         else:
             raise AttributeError, name
 
@@ -124,32 +124,32 @@ class Constituent:
           a second constituent of a 2-position tuple whose initial position
           is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
 
-        This is a specialized version of the matchDict method in utiities/FSA.py
+        This is a specialized version of the matchDict method in utilities/FSA.py
         and it is intended to deal with Chunks and Tokens."""
 
-        # TODO: maybe use something like match_feature instead of __getattrs__
-
+        # this operates by trying to find a failed match, only if there is no
+        # such thing the method will return True
         for feat in description.keys():
             value = description[feat]
             if type(value) is TupleType:
                 if value[0] == '^':
                     if type(value[1]) is ListType:
-                        if self.__getattr__(feat) in value[1]:
+                        if self.feature_value(feat) in value[1]:
                             return False
                     else:
-                        if self.__getattr__(feat) == value[1]:
+                        if self.feature_value(feat) == value[1]:
                             return False
                 else:
                     raise "ERROR specifying description of pattern"
             elif type(value) is ListType:
-                if self.__getattr__(feat) not in value:
+                if self.feature_value(feat) not in value:
                     if self.isChunk() and feat == 'text':
                         if self._getHeadText() not in value:
                             return False
                     else:
                         return False
             else:
-                if self.__getattr__(feat) != value:
+                if self.feature_value(feat) != value:
                     return False
         return True
 
@@ -314,7 +314,7 @@ class Constituent:
 
         """Try to find an slink in the given event_context using lists of FSAs. If the
         context matches an FSA, then create an slink and insert it in the tree.""" 
-            
+
         for i in range(len(fsa_lists)):
 
             fsa_list = fsa_lists[i]
@@ -343,20 +343,10 @@ class Constituent:
 
 
     def _look_for_link(self, sentence_slice, fsa_list):
-
         """Given a slice of a sentence and a list of FSAs, return a tuple of the size of
         the matching slize and the number of the FSA that featured in the match. Return
         False if there is no match."""
-
-        # Eventually, if we want to merge EVITA and SLINKET common stuff, this method
-        # should call self._lookForStructuralPattern(FSA_set) But careful: _lookForLink
-        # MUST return also fsaNum and that will have effects on Evita code.
-
         lenSubstring, fsaNum = self._identify_substring(sentence_slice, fsa_list)
-        #print fsa_list[0]
-        #print "\nSENTENCE_SLICE"
-        #for sl in sentence_slice: sl.pp()
-            
         if lenSubstring: 
             return (lenSubstring, fsaNum)
         else:
@@ -380,7 +370,6 @@ class Constituent:
                 logger.debug("FSA %s matched" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
         return (0, fsaCounter)
-
         
     def _extract_quotation(self, fragment):
         for idx in range(len(fragment)):
@@ -394,7 +383,6 @@ class Constituent:
                 logger.warn('Quotation could not be extracted')
         else:
             return
-        
 
 def get_reltype(reltype_list, i):
     """Returns the reltype in reltype_list at index i. Returns the last element of reltype

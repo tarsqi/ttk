@@ -46,8 +46,8 @@ class Token(Constituent):
         else:
             raise IndexError("there is only one element in a Token")
 
-    def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance variables used in the
+    def feature_value(self, name):
+        """Used by matchConstituent. Needs cases for all instance variables used in the
         pattern matching phase."""
         if name == 'nodeType':
             return self.__class__.__name__
@@ -106,8 +106,8 @@ class Token(Constituent):
 
 class AdjectiveToken(Token):
 
-    def __getattr__(self, name):
-        """Used by Sentence._match. Needs cases for all instance variables used in the
+    def feature_value(self, name):
+        """Used by matchConstituent. Needs cases for all instance variables used in the
         pattern matching phase."""
         # TODO: this can probably be moved to Token and replace the method there
         if name == 'nodeType':

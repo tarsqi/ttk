@@ -11,10 +11,6 @@ from library.timeMLspec import CLASS, TENSE, ASPECT, EPOS, MOD, POL, FORM, STEM,
 from components.common_modules.constituent import Constituent
 from utilities import logger
 
-# just here for now to track when __getattr__ is used (MV)
-trackGetAttrUse = False
-trackGetAttrUse = True
-
 
 class Tag(Constituent):
 
@@ -32,32 +28,19 @@ class EventTag(Tag):
     """Class for TimeML EVENT tags."""
     
     def __init__(self, attrs):
-        """ The nodeType attribute is set to the same value as name because some methods
-        ask for a nodeType attribute."""
         Constituent.__init__(self)
         self.name = EVENT
-        self.nodeType = EVENT
         self.attrs = attrs
         self.eid = attrs[EID]
+        self.eiid = attrs[EIID]
         self.eClass = attrs[CLASS]
         self.token = None
 
     def __str__(self):
         return "<EventTag name=%s eid=%s>" % (self.name, self.eid)
 
-
-    def __getattr__(self, name):
-
-        # TODO. This method is used occasionally so it cannot be removed. But
-        # the way it is used does not make a lot of sense since it is not used
-        # for attribute access but as a custom function for matching.
-
-        # TODO: can probably use the local attrs dictionary for many of these,
-        # but keep this till I figure out what the weird error is on wsj_0584 in
-        # the slinket regression tests
-
-        if trackGetAttrUse:
-            print "*** EventTag.__getattr__('%s')" % name
+    def feature_value(self, name):
+        # TODO: can probably use the local attrs dictionary for many of these
         if name == 'eventStatus':
             return '1'
         elif name == 'nodeType':
@@ -81,12 +64,11 @@ class EventTag(Tag):
         else:
             raise AttributeError, name
 
-
     def _get_attribute(self, name, default):
         try:
-            return self.tree.events[self.eid][name]
+            return self.tree.events[self.eid+'d'][name]
         except:
-            return 'NONE'
+            return default
 
     def isEvent(self):
         return True
@@ -101,28 +83,17 @@ class EventTag(Tag):
 
 class TimexTag(Tag):
 
-    """There is something fishy about this class because it all breaks when you try to
-    print an instance. The problem probably stems from __getattr__."""
-    
     def __init__(self, attrs):
         Constituent.__init__(self)
-        # NOTE: need to standardize on using name or nodeType, but the latter is
-        # there for matching puproses and may be removed when __getattr__ has
-        # been revamped
         self.name = TIMEX
-        self.nodeType = TIMEX
         self.attrs = attrs
         self.checkedEvents = False
 
-    def XXX__getattr__(self, name):
-        # TODO. This method caused weird problems. The code seems to run okay
-        # without it, but it is used, typically for nodeType. Investigate what
-        # it is used for and eliminate that use, which was already done for
-        # nodeType. Need to test this more.
-        if trackGetAttrUse:
-            print "*** TimexTag.__getattr__", name
+    def feature_value(self, name):
         if name == 'eventStatus':
             return '0'
+        elif name == 'nodeType':
+            return self.__class__.__name__
         elif name in ['text', FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL,
                       EVENTID, EIID, CLASS]:
             return None
@@ -131,7 +102,7 @@ class TimexTag(Tag):
 
     def isTimex(self):
         return True
-        
+
     def pretty_print(self, indent=0):
         print "%s<%s tid=%s type=%s value=%s>" % \
             (indent * ' ', self.name, self.attrs.get('tid'),
@@ -162,9 +133,11 @@ class LinkTag():
         return self.attrs.get('relType')
 
     def eiid1(self):
+        """Return the eiid of the first event in the relation."""
         return self.attrs.get('eventInstanceID')
 
     def eiid2(self):
+        """Return the eiid of the second event in the relation."""
         return self.attrs.get('relatedToEventInstance')
 
 
@@ -180,6 +153,7 @@ class SlinkTag(LinkTag):
         LinkTag.__init__(self, SLINK, attrs)
 
     def eiid2(self):
+        """Return the eiid of the second event in the relation."""
         return self.attrs.get('subordinatedEventInstance')
 
 
