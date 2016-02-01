@@ -127,6 +127,8 @@ class Constituent:
         This is a specialized version of the matchDict method in utiities/FSA.py
         and it is intended to deal with Chunks and Tokens."""
 
+        # TODO: maybe use something like match_feature instead of __getattrs__
+
         for feat in description.keys():
             value = description[feat]
             if type(value) is TupleType:
@@ -233,19 +235,21 @@ class Constituent:
                 #           % (fsa.fsaname, length_of_match, reltype))
                 reltype = get_reltype(reltype_list, i)
                 eiid = event_context[length_of_match-1].eiid
+                #print self, self.eiid
                 alinkAttrs = {
                     EVENT_INSTANCE_ID: self.eiid, 
                     RELATED_TO_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
                 self.tree.addLink(alinkAttrs, ALINK)
+                #for l in self.tree.alink_list: print '  ', l
                 logger.debug("ALINK CREATED")
                 return True
             else:
                 logger.debug("REJECTED ALINK by FSA: "+str(i))  
 
         return False
-    
+
 
     def find_forward_slink(self, fsa_reltype_groups):
 
@@ -322,12 +326,14 @@ class Constituent:
                 #           % (fsa.fsaname, length_of_match, reltype))
                 reltype = get_reltype(reltype_list, i)
                 eiid = event_context[length_of_match-1].eiid
+                #print self, self.eiid
                 slinkAttrs = {
                     EVENT_INSTANCE_ID: self.eiid,
                     SUBORDINATED_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
                 self.tree.addLink(slinkAttrs, SLINK)
+                #for l in self.tree.slink_list: print '  ', l
                 logger.debug("SLINK CREATED")
                 return True
             else:
@@ -358,25 +364,18 @@ class Constituent:
 
 
     def _identify_substring(self, sentence_slice, fsa_list):
-
-        """Checks whether a token sequnce matches an pattern. Returns a tuple of the sub
-        sequence length that matched the pattern (where a zero length indicates
-        no match) and the index of the FSA that returned the match. This is the
-        method where the FSA is asked to find a substring in the sequence that
-        matches the FSA.
-
-        Arguments:
-           sentence_slice - a list of Chunks and Tokens
-           fsa_list - a list of FSAs
-
-        """
-
+        """Checks whether sentence_slice, a sequence of chunks and tokens, matches one
+        of the FSAs in fsa_list. Returns a tuple of the sub sequence length that
+        matched the pattern (where a zero length indicates no match) and the
+        index of the FSA that returned the match."""
         fsaCounter = -1 
         for fsa in fsa_list:
             logger.debug("Applying FSA %s" % fsa.fsaname)
-            #print "Applying FSA %s" % fsa.fsaname
             fsaCounter += 1
             lenSubstring = fsa.acceptsShortestSubstringOf(sentence_slice)
+            # TODO: would like to use the one below, but would need to check
+            # what happens with a proper Slink regression test
+            #lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
             if lenSubstring:
                 logger.debug("FSA %s matched" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
@@ -396,7 +395,7 @@ class Constituent:
         else:
             return
         
-        
+
 def get_reltype(reltype_list, i):
     """Returns the reltype in reltype_list at index i. Returns the last element of reltype
     list if i is out of bounds (which happens when patterns have a list of reltypes that
@@ -404,5 +403,6 @@ def get_reltype(reltype_list, i):
     try:
         reltype = reltype_list[i]
     except IndexError:
+        # TODO: why would this happen?
         reltype = reltype_list[-1]
     return reltype

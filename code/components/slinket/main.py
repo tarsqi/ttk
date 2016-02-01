@@ -7,7 +7,7 @@ the Chunk class.
 
 
 from components.common_modules.component import TarsqiComponent
-from components.common_modules.utils import get_events
+from components.common_modules.utils import get_events, get_words_as_string
 from library.slinket.main import SLINKET_DICTS
 from library.tarsqi_constants import SLINKET
 from library.timeMLspec import VERB, NOUN, ADJECTIVE
@@ -55,6 +55,7 @@ class Slinket (TarsqiComponent):
         self.docelement = tarsqidocelement
         self._build_event_dictionary()
         for sentence in self.doctree:
+            #print get_words_as_string(sentence)
             self._find_links(self.doctree, sentence)
         self._add_links_to_docelement()
 

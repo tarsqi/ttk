@@ -22,5 +22,6 @@ class SlinketWrapper:
         processing. Slinket processing will update the tags in the TarsqiDocElement when
         slinks are added."""
         for element in self.document.elements:
+            #print '>>>>>', element
             doctree = tree.create_tarsqi_tree(element)
             Slinket().process_doctree(doctree, element)

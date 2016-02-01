@@ -44,6 +44,7 @@ vp_initial_tags = [
 
 vp_internal_tags = [
     'RB', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
+    #'TO', 'RB', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
 
 vp_final_tags = [
     'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]

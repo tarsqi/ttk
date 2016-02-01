@@ -45,50 +45,48 @@ class EventTag(Tag):
     def __str__(self):
         return "<EventTag name=%s eid=%s>" % (self.name, self.eid)
 
-    def XXX__getattr__(self, name):
-        # TODO: remove this once it is established that blinker and s2t work
-        # without it, it does not appear to be used for Evita and for Slinket
-        # the attributes that this is used for are just __nonzero__, __str__ and
-        # __repr__ (and somehow the errors raised get trapped).
+
+    def __getattr__(self, name):
+
+        # TODO. This method is used occasionally so it cannot be removed. But
+        # the way it is used does not make a lot of sense since it is not used
+        # for attribute access but as a custom function for matching.
+
+        # TODO: can probably use the local attrs dictionary for many of these,
+        # but keep this till I figure out what the weird error is on wsj_0584 in
+        # the slinket regression tests
+
         if trackGetAttrUse:
-            print "*** EventTag.__getattr__", name
+            print "*** EventTag.__getattr__('%s')" % name
         if name == 'eventStatus':
             return '1'
-        elif name == TENSE:
-            #print "TENSE:", tree.events[self.eid][TENSE]
-            return tree.events[self.eid][TENSE]
-        elif name == ASPECT:
-            return tree.events[self.eid][ASPECT]
-        elif name == EPOS: #NF_MORPH:
-            return tree.events[self.eid][EPOS]#[NF_MORPH]
+        elif name == 'nodeType':
+            return self.__class__.__name__
+        elif name in (EVENTID, EIID, CLASS, TENSE, ASPECT, EPOS, STEM):
+            return self.tree.events[self.eid][name]
         elif name == MOD:
-            try: mod = tree.events[self.eid][MOD]
-            except: mod = 'NONE'
-            return mod
+            return self._get_attribute(name, 'NONE')
         elif name == POL:
-            try: pol = tree.events[self.eid][POL]
-            except: pol = 'POS'
-            return pol
-        elif name == EVENTID:
-            return tree.events[self.eid][EVENTID]
-        elif name == EIID:
-            return tree.events[self.eid][EIID]
-        elif name == CLASS:
-            return tree.events[self.eid][CLASS]
-        elif name == 'text' or name == FORM:
-            return tree.events[self.eid][FORM]
-        elif name == STEM:
-            return tree.events[self.eid][STEM]
+            return self._get_attribute(name, 'POS')
+        elif name in ('text', FORM):
+            return self.tree.events[self.eid][FORM]
         elif name == POS:
             try:
-                return tree.events[self.eid][POS]
+                return self.tree.events[self.eid][POS]
             except:
                 # I don't remember whether POS has a particular use here
                 # or is a left over from prior times
                 logger.warn("Returning 'epos' instead of 'pos' value")  
-                return tree.events[self.eid][EPOS]
+                return self.tree.events[self.eid][EPOS]
         else:
             raise AttributeError, name
+
+
+    def _get_attribute(self, name, default):
+        try:
+            return self.tree.events[self.eid][name]
+        except:
+            return 'NONE'
 
     def isEvent(self):
         return True
@@ -96,7 +94,7 @@ class EventTag(Tag):
     def pretty_print(self, indent=0):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'), self.attrs.get('class'))
         print "%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
-              ( indent * ' ', self.name, self.position, self.begin, self.end, str(eid), str(eiid), str(cl) )
+            (indent * ' ', self.name, self.position, self.begin, self.end, eid, eiid, cl)
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
@@ -108,7 +106,9 @@ class TimexTag(Tag):
     
     def __init__(self, attrs):
         Constituent.__init__(self)
-        # NOTE: need to standardize on using name or nodeType
+        # NOTE: need to standardize on using name or nodeType, but the latter is
+        # there for matching puproses and may be removed when __getattr__ has
+        # been revamped
         self.name = TIMEX
         self.nodeType = TIMEX
         self.attrs = attrs
@@ -118,13 +118,13 @@ class TimexTag(Tag):
         # TODO. This method caused weird problems. The code seems to run okay
         # without it, but it is used, typically for nodeType. Investigate what
         # it is used for and eliminate that use, which was already done for
-        # nodeType.
+        # nodeType. Need to test this more.
         if trackGetAttrUse:
             print "*** TimexTag.__getattr__", name
         if name == 'eventStatus':
             return '0'
         elif name in ['text', FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL,
-                      EVENTID, EIID, CLASS]: #NF_MORPH, 
+                      EVENTID, EIID, CLASS]:
             return None
         else:
             raise AttributeError, name
@@ -155,6 +155,18 @@ class LinkTag():
         self.name = name
         self.attrs = attrs
 
+    def __str__(self):
+        return "<%s %s %s %s>" % (self.name, self.rel(), self.eiid1(), self.eiid2())
+
+    def rel(self):
+        return self.attrs.get('relType')
+
+    def eiid1(self):
+        return self.attrs.get('eventInstanceID')
+
+    def eiid2(self):
+        return self.attrs.get('relatedToEventInstance')
+
 
 class AlinkTag(LinkTag):
 
@@ -166,6 +178,9 @@ class SlinkTag(LinkTag):
 
     def __init__(self, attrs):
         LinkTag.__init__(self, SLINK, attrs)
+
+    def eiid2(self):
+        return self.attrs.get('subordinatedEventInstance')
 
 
 class TlinkTag(LinkTag):

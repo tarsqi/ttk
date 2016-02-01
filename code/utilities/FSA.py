@@ -578,7 +578,6 @@ class FSA:
                                         if s1 not in newStates:
                                                 newStates.append(s1)
                         states = newStates
-                        
                 """Returning the length of the list containing all states s in states
                 that are also in self.finalStates"""
                 return len(filter(lambda s, finals=self.finalStates: s in finals, states)) > 0

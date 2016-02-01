@@ -37,7 +37,7 @@ SIMPLE = [
 
     ('MODAL', None, None, (3,9), (13,17), "He xanted to walk.", False),
 
-    # this should not raise an error, but one time it did
+    # this should not raise an error, which happens if there are two move events
     ('DUMMY', None, None, (0,0), (0,0), "All Arabs would have to move behind Iraq.", False)
 ]
 

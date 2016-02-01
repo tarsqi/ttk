@@ -70,7 +70,7 @@ class Chunk(Constituent):
     in the pipeline."""
 
     # TODO: maybe replace eid and eiid with event_tag (cf AdjectiveToken)
-    # TODO: the matcher may rely on event being 1, check that
+    # TODO: the matcher may rely on event being 1 instead of True, check that
 
     def __init__(self, phraseType):
         Constituent.__init__(self)
@@ -465,6 +465,9 @@ class VerbChunk(Chunk):
         calls acceptsSubstringOf() instead of acceptsShortestSubstringOf(). In
         some tests, for example in evita-test2.sh, this version results in a
         small number of extra events."""
+        # TODO: figure out when this one is used and when the one on Constituent
+        # TODO: when there is a Slinket regression test, see what happens when
+        # we remove this one
         fsaCounter = -1
         for fsa in fsa_list:
             fsaCounter += 1
