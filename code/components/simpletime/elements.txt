@@ -1,0 +1,31 @@
+# Time expression elements are building blocks for time expressions. They have
+# (1) a name, (2) a type, which is an indicator whether the definition is a list
+# of a regular expression (LIST or EXP) and (3) a list of strings or a regular
+# expression as the definition. The format is
+#
+#     'ELEMENT' NAME TYPE (STRING+ | EXPRESSION)
+#
+# The element is started with the 'ELEMENT' string, the name and the type are
+# both on the same line as the ELEMENT' string, but the list of strings and the
+# regular expression can be on the same line or on the following lines. Elements
+# are separated by one or more white lines, the subparts of the elements are
+# separated by spaces or tabs. Lines starting with a hash sign (#) are ignored.
+
+
+ELEMENT DayOfWeek LIST
+Monday Tuesday Wednesday Thursday Friday Saturday Sunday
+
+ELEMENT DayOfMonth1 LIST
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 
+21 22 23 24 25 26 27 28 29 30 31
+
+ELEMENT DayOfMonth2 LIST
+1st 2nd 3rd 4th 5th 6th 7th 8th 9th 10th 
+11th 12th 13 14th 15th 16th 17th 18th 19th 20th 
+21st 22nd 23rd 24th 25th 26th 27th 28th 29th 30th 31th
+
+ELEMENT Month LIST
+January February March April May June
+July August September October Novembery December
+
+ELEMENT Year EXP \d\d\d\d
