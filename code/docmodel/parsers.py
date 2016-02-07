@@ -1,6 +1,6 @@
 """
 
-This module contains document source parsers. That is, parsers that take an
+This module contains document source parsers, that is, parsers that take an
 instance of SourceDoc and create an instance of TarsqiDocument.
 
 """
@@ -12,51 +12,26 @@ from docmodel.document import TarsqiDocParagraph
 import utilities.logger as logger
 
 
-# Default content tags, used by the default parser to find the part of the text that is
-# worth parsing.
-CONTENT_TAGS = ('TEXT', 'text', 'DOC', 'doc')
+class SimpleParser:
 
+    """The simplest SourceDoc parser. It creates a TarsqiDocument instance
+    with a list of TarsqiDocParagraphs in it."""
 
-class XmlParser:
-
-    """The simplest parser for XML documents. It creates a TarsqiDocument instance
-    with a list of TarsqiDocParagraphs in it. It finds the target tag, which is
-    assumed to be TEXT, and considers all text inside as the content of a single
-    TarsqiDocParagraph.
-
-    TODO: figure out exactly what it does with the paragraphs and update the documentation
-
-    TODO: may want to allow the user to hand in a target_tag as a processing parameter,
-    thereby bypassing the default list in CONTENT_TAGS. Should include the option to use
-    --target_tag=None so that we overrule using any tag (for example for documents with
-    lots of TEXT tags, in which case only the first one of those would be used).
-
-    TODO: make this work with pure text input, taking all content, perhaps a default
-    should be to take all text if no target tag could be found.
-    
-    """
-    
     def __init__(self, parameters):
-        """Initializations now only sets the content_tag variable."""
-        self.content_tag = parameters.get('content_tag', True) 
+        """At the moment, initialization does not use any of the parameters,
+        but this could change."""
+        pass
 
     def parse(self, sourcedoc):
-
-        """Return an instance of TarsqiDocument. Use self.content_tag to determine what
-        part of the source to take and populate the TarsqiDocument with: (i)
-        sourcedoc: the SourceDoc instance that was created by the SourceParser,
-        (ii) elements: a list of TarsqiDocParagraphs, (iii) metadata: a
-        dictionary with now one element, the DCT, which is set to today."""
-
+        """Return an instance of TarsqiDocument. The TarsqiDocument includes the
+        SourceDoc instance and a meta data dictionary with just one element, the
+        DCT, which is set to today. The elements variable of the TarsqiDocument
+        is set to a list of TarsqiDocParagraph instance, using white lines to
+        separate the paragraphs."""
         self.sourcedoc = sourcedoc
-        self.target_tag = self._find_target_tag()
-        offset_adjustment = self.target_tag.begin if self.target_tag else 0
-        text = self.sourcedoc.text
-        if self.target_tag:
-            text = self.sourcedoc.text[self.target_tag.begin:self.target_tag.end]
         metadata = { 'dct': self.get_dct() }
         tarsqidoc = TarsqiDocument(self.sourcedoc, metadata)
-        element_offsets = split_paragraph(text, offset_adjustment)
+        element_offsets = split_paragraph(self.sourcedoc.text)
         for (p1, p2) in element_offsets:
             para = TarsqiDocParagraph(tarsqidoc, p1, p2)
             para.add_source_tags(self.sourcedoc.tags)
@@ -67,22 +42,6 @@ class XmlParser:
     def get_dct(self):
         """Return today's date in YYYYMMDD format."""
         return get_today()
-    
-    def _find_target_tag(self):
-        """Return the Tag that contains the main content that needs to be processed. Any
-        text outside of the tag will NOT be processed. Uses the tagnames in CONTENT_TAGS
-        or the overide in the self.content_tag, which originated from the user
-        parameters. Return None if there is no such tag."""
-        if self.content_tag is False:
-            return None
-        elif self.content_tag is True:
-            for tagname in CONTENT_TAGS:
-                tag = self.sourcedoc.tags.find_tag(tagname)
-                if tag is not None:
-                    return tag
-            return None
-        else:
-            return docsource.tags.find_tag(self.content_tag)
 
     def _get_tag_content(self, tagname):
         """Return the text content of the first tag with name tagname, return None if
@@ -96,7 +55,7 @@ class XmlParser:
             return None
 
 
-def split_paragraph(text, adjustment=0):
+def split_paragraph(text):
     """Very simplistic way to split a paragraph into more than one paragraph, simply
     by looking for an empty line."""
 
@@ -117,18 +76,18 @@ def split_paragraph(text, adjustment=0):
             seeking_space = False
             if space.count("\n") > 1:
                 par_end = p1
-                paragraphs.append((par_begin + adjustment, par_end + adjustment))
+                paragraphs.append((par_begin , par_end ))
                 par_begin = p2
                 par_end = None
 
     if seeking_space and p2 > par_begin:
-        paragraphs.append((par_begin + adjustment, par_end + adjustment))
+        paragraphs.append((par_begin, par_end))
 
     # this deals with the boundary case where there are no empty lines, should really have
     # a more elegant solution
     if not paragraphs:
-        paragraphs = [(0 + adjustment, text_end + adjustment)]
-        
+        paragraphs = [(0, text_end)]
+
     return paragraphs
 
 
@@ -146,14 +105,12 @@ def slurp(text, offset, test):
         else:
             return (begin, end, text[begin:end])
     return (begin, end, text[begin:end])
-    
 
 def slurp_space(text, offset):
     """Starting at offset consume a string of space characters, then return the
     begin and end position and the consumed string."""
     def test_space(char): return char.isspace()
     return slurp(text, offset, test_space)
-
 
 def slurp_token(text, offset):
     """Starting at offset consume a string of non-space characters, then return
@@ -162,7 +119,7 @@ def slurp_token(text, offset):
     return slurp(text, offset, test_nonspace)
 
 
-class TimebankParser(XmlParser):
+class TimebankParser(SimpleParser):
     """The parser for Timebank documents. All it does is overwriting the get_dct()
     method."""
     
@@ -215,7 +172,7 @@ class TimebankParser(XmlParser):
             return get_today()
 
 
-class ATEEParser(XmlParser):
+class ATEEParser(SimpleParser):
     """The parser for ATEE document."""
 
     def get_dct(self):
@@ -225,7 +182,7 @@ class ATEEParser(XmlParser):
         return date_tag.attrs['value']
 
 
-class RTE3Parser(XmlParser):
+class RTE3Parser(SimpleParser):
     """The parser for RTE3 documents, does not differ yet from the default
     parser."""
 
@@ -233,19 +190,19 @@ class RTE3Parser(XmlParser):
         return get_today()
 
 
-class VAExampleParser(XmlParser):
+class VAExampleParser(SimpleParser):
 
-    """A minimal example parser for VA data. It is identical to the XmlParser except
-    for how it gets the DCT. This is done by lookup in a database. This here is
-    the simplest possible case, and it is quite inefficient. It assumes there is an
-    sqlite databse at 'TTK_ROOT/code/data/in/va/dct.sqlite' which was created as
-    follows:
+    """A minimal example parser for VA data. It is identical to the SimpleParser
+    except for how it gets the DCT. This is done by lookup in a database. This
+    here is the simplest possible case, and it is quite inefficient. It assumes
+    there is an sqlite databse at 'TTK_ROOT/code/data/in/va/dct.sqlite' which
+    was created as follows:
 
        $ sqlite3 dct.sqlite
        sqlite> create table dct (filename TEXT, dct TEXT)
        sqlite> insert into dct values ("test.xml", "1999-12-31");
 
-    The get_dct method uses this database."""
+    The get_dct method uses this database. """
     
     def get_dct(self):
         fname = self.sourcedoc.filename
@@ -260,5 +217,3 @@ class VAExampleParser(XmlParser):
 def get_today():
     """Return today's date in YYYYMMDD format."""
     return time.strftime("%Y%m%d", time.localtime());
-
-

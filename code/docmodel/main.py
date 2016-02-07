@@ -6,13 +6,13 @@ Initialization of parsers responsible for document-level parsing.
 
 import os
 
-from docmodel.parsers import XmlParser, TimebankParser, ATEEParser, RTE3Parser, VAExampleParser
+from docmodel.parsers import SimpleParser, TimebankParser, ATEEParser, RTE3Parser, VAExampleParser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER
 
 
 PARSERS = {
-    'simple-xml': XmlParser,
+    'simple-xml': SimpleParser,
     'timebank': TimebankParser,
     'atee': ATEEParser,
     'rte3': RTE3Parser,
@@ -26,7 +26,7 @@ def create_parser(source, parameters):
     """Return a document parser. Should include some additional setup of the parser,
     where depending on the genre and perhaps other future arguments some aspects
     of the parser class are set."""
-    parser = PARSERS.get(source, XmlParser)
+    parser = PARSERS.get(source, SimpleParser)
     return parser(parameters)
 
 def get_default_pipeline(genre):
