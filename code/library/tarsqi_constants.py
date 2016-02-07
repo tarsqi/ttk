@@ -17,10 +17,4 @@ LINK_MERGER = 'LINK_MERGER'
 TRAP_ERRORS = 'trap_errors'
 EXTENSION = 'extension'
 PIPELINE = 'pipeline'
-CONTENT_TAG = 'content_tag'
-REMOVE_TAG = 'remove_tag'
 
-# PARAMETERS USED BY SETUP.PY
-
-PLATFORM = 'platform'
-PERL = 'perl'

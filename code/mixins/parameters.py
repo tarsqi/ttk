@@ -12,6 +12,10 @@ class ParameterMixin:
         """Return the 'genre' user option. The default is None."""
         return self.parameters.get('genre', None)
 
+    def getopt_source(self):
+        """Return the 'source' user option. The default is None."""
+        return self.parameters.get('source', None)
+
     def getopt_platform(self):
         """Return the 'platform' user option. The default is None."""
         return self.parameters.get('platform', None)

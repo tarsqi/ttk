@@ -138,6 +138,9 @@ class SimpleTime():
         for rule in self.rules:
             rule.pp()
 
+    def extract_times(self, text):
+        print 'On <TIMEX3 type="DATE" val="2012-04-25>April 25th, 2012</TIMEX3>, they approached the border.'
+
 
 if __name__ == '__main__':
 

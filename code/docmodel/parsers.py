@@ -5,7 +5,7 @@ instance of SourceDoc and create an instance of TarsqiDocument.
 
 """
 
-import re, time
+import re, time, os, sqlite3
 
 from docmodel.document import TarsqiDocument
 from docmodel.document import TarsqiDocParagraph
@@ -17,14 +17,14 @@ import utilities.logger as logger
 CONTENT_TAGS = ('TEXT', 'text', 'DOC', 'doc')
 
 
-class DefaultParser:
+class XmlParser:
 
-    """The simplest parser, much like the SimpleXml parser for the old simple-xml
-    doctype. It creates a TarsqiDocument instance with a list of TarsqiDocParagraphs in
-    it. It finds the target tag, which is assumed to be TEXT, and considers all text
-    inside as the content of a single TarsqiDocParagraph.
+    """The simplest parser for XML documents. It creates a TarsqiDocument instance
+    with a list of TarsqiDocParagraphs in it. It finds the target tag, which is
+    assumed to be TEXT, and considers all text inside as the content of a single
+    TarsqiDocParagraph.
 
-    TODO: figure out exatly what it does with the paragraphs and update the documentation
+    TODO: figure out exactly what it does with the paragraphs and update the documentation
 
     TODO: may want to allow the user to hand in a target_tag as a processing parameter,
     thereby bypassing the default list in CONTENT_TAGS. Should include the option to use
@@ -34,23 +34,20 @@ class DefaultParser:
     TODO: make this work with pure text input, taking all content, perhaps a default
     should be to take all text if no target tag could be found.
     
-    Instance variables:
-       sourcedoc - a SourceDoc instance
-       elements - a list with TarsqiDocParagraph elements
-       metadata - a dictionary"""
-
+    """
     
     def __init__(self, parameters):
-        """Not used now but could be used to hand in specific metadata parsers or other
-        functionality that cuts through genres."""
+        """Initializations now only sets the content_tag variable."""
         self.content_tag = parameters.get('content_tag', True) 
 
     def parse(self, sourcedoc):
+
         """Return an instance of TarsqiDocument. Use self.content_tag to determine what
         part of the source to take and populate the TarsqiDocument with: (i)
         sourcedoc: the SourceDoc instance that was created by the SourceParser,
         (ii) elements: a list of TarsqiDocParagraphs, (iii) metadata: a
         dictionary with now one element, the DCT, which is set to today."""
+
         self.sourcedoc = sourcedoc
         self.target_tag = self._find_target_tag()
         offset_adjustment = self.target_tag.begin if self.target_tag else 0
@@ -165,7 +162,7 @@ def slurp_token(text, offset):
     return slurp(text, offset, test_nonspace)
 
 
-class TimebankParser(DefaultParser):
+class TimebankParser(XmlParser):
     """The parser for Timebank documents. All it does is overwriting the get_dct()
     method."""
     
@@ -218,7 +215,7 @@ class TimebankParser(DefaultParser):
             return get_today()
 
 
-class ATEEParser(DefaultParser):
+class ATEEParser(XmlParser):
     """The parser for ATEE document."""
 
     def get_dct(self):
@@ -228,12 +225,36 @@ class ATEEParser(DefaultParser):
         return date_tag.attrs['value']
 
 
-class RTE3Parser(DefaultParser):
+class RTE3Parser(XmlParser):
     """The parser for RTE3 documents, does not differ yet from the default
     parser."""
-    
+
     def get_dct(self):
         return get_today()
+
+
+class VAExampleParser(XmlParser):
+
+    """A minimal example parser for VA data. It is identical to the XmlParser except
+    for how it gets the DCT. This is done by lookup in a database. This here is
+    the simplest possible case, and it is quite inefficient. It assumes there is an
+    sqlite databse at 'TTK_ROOT/code/data/in/va/dct.sqlite' which was created as
+    follows:
+
+       $ sqlite3 dct.sqlite
+       sqlite> create table dct (filename TEXT, dct TEXT)
+       sqlite> insert into dct values ("test.xml", "1999-12-31");
+
+    The get_dct method uses this database."""
+    
+    def get_dct(self):
+        fname = self.sourcedoc.filename
+        fname = os.path.basename(fname)
+        db_connection = sqlite3.connect('data/in/va/dct.sqlite')
+        db_cursor = db_connection.cursor()
+        db_cursor.execute('SELECT dct FROM dct WHERE filename=?', (fname,))
+        dct = db_cursor.fetchone()[0]
+        return dct
 
 
 def get_today():

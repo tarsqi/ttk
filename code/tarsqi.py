@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-"""
-
-Main script that drives all tarsqi toolkit processing.
+"""Main script that drives all tarsqi toolkit processing.
 
 Low-level and source-specific processing is delegated to the docmodel package, which has
 access to an XML Parser and metadata processors. This script calls on preprocessing and
@@ -20,19 +18,25 @@ USAGE
    OPTIONS
 
       --genre=GENRE_NAME
-             the genre of the file, None by default
+             the genre of the file, None by default; this would in the future
+             distinguish between genres or domains like newswire, historical,
+             medial etcetera, but it is not yet used
+
+      --source=SOURCE_NAME
+             the source of the file, None by default; this refelcts the source
+             of the document and allows later components, especially the
+             document parser, to be sensitive to idiosyncratic properties of the
+             text (for example, location of the DCT and the format of the text)
 
       --pipeline=LIST
-             comma-separated list of Tarsqi components, defaults to the full pipeline
+             comma-separated list of Tarsqi components, defaults to the full
+             pipeline
 
       --perl=PATH
              path to the Perl executable
 
       --treetagger=PATH
              path to the TreeTagger
-
-      --stanford-parser=PATH
-             path to the Stanford parser
 
       --trap-errors=BOOLEAN
              set error trapping, errors are trapped by default
@@ -86,7 +90,7 @@ class Tarsqi(ParameterMixin):
        output        -  absolute path
        basename      -  basename of input file
        parameters    -  dictionary with processing options
-       parser        -  a genre-specific document parsers
+       parser        -  a source-specific document parsers
        pipeline      -  list of name-wrapper pairs
        components    -  dictionary of components
        docsource     -  instance of DocSource
@@ -120,7 +124,7 @@ class Tarsqi(ParameterMixin):
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
 
         self.components = COMPONENTS
-        self.parser = create_parser(self.getopt_genre(), self.parameters)
+        self.parser = create_parser(self.getopt_source(), self.parameters)
         self.pipeline = self._create_pipeline()
         
 
@@ -230,7 +234,7 @@ class TarsqiError(Exception):
 def _read_arguments(args):
     """ Read the list of arguments given to the tarsqi.py script.  Return a tuple with
     three elements: processing options dictionary, input path and output path."""
-    options = ['genre=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=',
+    options = ['genre=', 'source=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=',
                'loglevel=', 'ignore=', 'platform=', 'treetagger=']
     try:
         (opts, args) = getopt.getopt(args,'', options)
