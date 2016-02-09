@@ -169,6 +169,9 @@ class NounChunk(Chunk):
         """Return True if self includes a Token that is a POS, PRP$ or a definite
         determiner."""
         for token in self.dtrs[:self.head]:
+            # sometimes the daughter is not a token but a timex, skip it
+            if not token.isToken():
+                continue
             if (token.pos == forms.possessiveEndingTag
                 or token.pos == forms.possessivePronounTag
                 or (token.pos in forms.determinerTags
