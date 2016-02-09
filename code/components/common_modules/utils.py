@@ -7,6 +7,7 @@ Some utilities common to all the objects in the common_modules module.
 import types
 
 from library import forms
+from utilities import logger
 
 
 def get_tokens(node_or_sequence):
@@ -66,10 +67,10 @@ def get_tokens_from_sequence(sequence):
             tokens += get_tokens(item)
         elif item.isEvent():
             tokens.append(item)
-        elif item.isIimex():
+        elif item.isTimex():
             tokens += get_tokens(item)
         else:
-            raise "ERROR: unknown item type: " + item.__class__.__name__
+            logger.error("unknown item type: %s" % item.__class__.__name__)
     return tokens
 
 
