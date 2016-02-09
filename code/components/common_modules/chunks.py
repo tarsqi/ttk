@@ -472,6 +472,11 @@ class VerbChunk(Chunk):
         # TODO: when there is a Slinket regression test, see what happens when
         # we remove this one
         fsaCounter = -1
+        if type(fsa_list) != types.ListType:
+            # TODO: this happens for example when Slinket processes "I was
+            # delighted to see advertised.", find out why
+            logger.warn("fsa_list is not a list, skipping")
+            return (0, fsaCounter)
         for fsa in fsa_list:
             fsaCounter += 1
             lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
