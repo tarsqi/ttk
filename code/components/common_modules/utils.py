@@ -94,25 +94,34 @@ def remove_interjections(gchunklist):
          >> ['ah', 'coming', 'up']
        - ['she', 'has', ',',  'I', 'think', ',', 'to', 'go']
          >> ['she', 'has', 'to', 'go']"""
+
     # TODO. In the 6000 tokens of evita-test2.xml, this applies only once,
     # replacing 'has, I think, been' with 'has been', but that seems like an
     # error because the input had an extra verb after 'been' ('has, I think,
     # been demolished'). Could perhaps remove this method. Also, it is a bit
     # peculiar how 'has, I think, been' ends up as a sequence, find out why.
+
     before = []  # nodes before first punctuation
     after = []   # nodes after last punctuation
-    for item in gchunklist.nodes:
+
+    # TODO: this is to avoid that the code breaks on embedded timexes, this did
+    # not break the regression test; but what is the impact, generally, of
+    # ignoring inernal structure? (the nodes distributed in the gramchunk are
+    # now always tokens, which may be as it should be)
+    nodes = get_tokens(gchunklist.nodes)
+
+    for item in nodes:
         if item.pos not in (',', '"', '``'):
             before.append(item)
         else: break
-    for item in reversed(gchunklist.nodes):
+    for item in reversed(nodes):
         if item.pos not in (',', '"', '``'):
             after.insert(0, item)
         else: break
-    if len(before) == len(after) == len(gchunklist.nodes):
+    if len(before) == len(after) == len(nodes):
         # no punctuations or interjections
         return before
-    elif len(before) + len(after) == len(gchunklist.nodes) - 1:
+    elif len(before) + len(after) == len(nodes) - 1:
         # one punctuation
         return before + after
     else:
