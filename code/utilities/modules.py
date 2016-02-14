@@ -56,7 +56,6 @@ import docmodel.source_parser
 import utilities.binsearch
 import utilities.logger
 import utilities.porterstemmer
-import utilities.xml_utils
 
 #import utilities.sputlink.main
 #import utilities.sputlink.graph
@@ -112,7 +111,6 @@ MODULES = [
     utilities.binsearch,
     utilities.logger,
     utilities.porterstemmer,
-    utilities.xml_utils,
 
 #    utilities.sputlink.main,
 #    utilities.sputlink.graph,
