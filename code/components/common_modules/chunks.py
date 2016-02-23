@@ -470,11 +470,12 @@ class VerbChunk(Chunk):
         small number of extra events."""
         # TODO: figure out when this one is used and when the one on Constituent
         # TODO: when there is a Slinket regression test, see what happens when
-        # we remove this one
+        # we remove this one --> NOTHING
         fsaCounter = -1
         if type(fsa_list) != types.ListType:
             # TODO: this happens for example when Slinket processes "I was
-            # delighted to see advertised.", find out why
+            # delighted to see advertised.", find out why, once we do, we can
+            # remove this method and just have the one on Constituent
             logger.warn("fsa_list is not a list, skipping")
             return (0, fsaCounter)
         for fsa in fsa_list:

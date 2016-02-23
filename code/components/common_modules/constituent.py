@@ -362,16 +362,18 @@ class Constituent:
         for fsa in fsa_list:
             logger.debug("Applying FSA %s" % fsa.fsaname)
             fsaCounter += 1
-            lenSubstring = fsa.acceptsShortestSubstringOf(sentence_slice)
-            # TODO: would like to use the one below, but would need to check
-            # what happens with a proper Slink regression test
-            #lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
+            # We first used acceptsShortestSubstringOf(), now we use the longest
+            # match. The latter gave a marginally better result, but this was
+            # only apparent on one Slink in the Slink regression test so more
+            # tests may be needed.
+            lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
             if lenSubstring:
                 logger.debug("FSA %s matched" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
         return (0, fsaCounter)
         
     def _extract_quotation(self, fragment):
+        # TODO: this is a bit messy
         for idx in range(len(fragment)):
             try:
                 # For some reason, it may break here (though rarely)
