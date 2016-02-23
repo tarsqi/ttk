@@ -1,5 +1,7 @@
 import sys, codecs
 from copy import copy
+from xml.sax.saxutils import escape
+
 from mixins.parameters import ParameterMixin
 from source_parser import TagRepository
 
@@ -97,7 +99,14 @@ class TarsqiDocument(ParameterMixin):
         """Write source string, source tags and ttk tags all to one file."""
         fh = codecs.open(fname, mode='w', encoding='UTF-8')
         fh.write("<ttk>\n")
-        fh.write("<text>%s</text>\n" % self.source.text)
+        fh.write("<text>%s</text>\n" % escape(self.source.text))
+        if self.source.comments:
+            fh.write("<comments>\n")
+            for offset in sorted(self.source.comments.keys()):
+                for comment in self.source.comments[offset]:
+                    comment = escape(comment.replace("\n", '\\n'))
+                    fh.write("  <comment offset=\"%s\">%s</comment>\n" % (offset, comment))
+            fh.write("</comments>\n")
         fh.write("<source_tags>\n")
         for tag in self.source.tags.tags:
             fh.write("  %s\n" % tag.as_ttk_tag())
