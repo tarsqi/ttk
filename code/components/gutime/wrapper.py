@@ -24,7 +24,7 @@ wrapper or obsolete. They are kept around for reference.
 
 """
 
-import os, subprocess, codecs
+import os, sys, subprocess, codecs
 from xml.dom.minidom import parse
 
 from library.tarsqi_constants import GUTIME
@@ -83,8 +83,9 @@ def _run_gutime(fin, fout):
     """Run the GUTIME Perls script."""
     command = "perl TimeTag.pl %s > %s" % (fin, fout)
     pipe = subprocess.PIPE
+    close_fds = False if sys.platform == 'win32' else True
     p = subprocess.Popen(command, shell=True,
-                         stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
+                         stdin=pipe, stdout=pipe, stderr=pipe, close_fds=close_fds)
     (fh_in, fh_out, fh_errors) = (p.stdin, p.stdout, p.stderr)
     for line in fh_errors:
         logger.warn(line)

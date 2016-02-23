@@ -697,8 +697,10 @@ class TreeTagger (object) :
         tagcmd = self.tagbin+" "+self.tagopt+" "+self.tagparfile
         try :
             pipe = subprocess.PIPE
+            # when using subprocess, need to use a different close_fds for windows
+            close_fds = False if sys.platform == 'win32' else True
             p = subprocess.Popen(tagcmd, shell=True, 
-                                 stdin=pipe, stdout=pipe, close_fds=True)
+                                 stdin=pipe, stdout=pipe, close_fds=close_fds)
             (self.taginput,self.tagoutput) = (p.stdin, p.stdout)
             #self.taginput,self.tagoutput = os.popen2(tagcmd)
             logger.info("Started TreeTagger from command: %s",tagcmd)

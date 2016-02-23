@@ -10,7 +10,7 @@ determined by the value of USE_HERITAGE_CODE.
 USE_HERITAGE_CODE = True
 #USE_HERITAGE_CODE = False
 
-import os, subprocess
+import os, sys, subprocess
 
 from library.tarsqi_constants import LINK_MERGER
 
@@ -108,8 +108,9 @@ class MergerWrapper:
             command = "%s merge.pl %s %s" % (perl, in_fragment, tmp_fragment)
 
             pipe = subprocess.PIPE
-            p = subprocess.Popen(command, shell=True, 
-                                 stdin=pipe, stdout=pipe, stderr=pipe, close_fds=True)
+            close_fds = False if sys.platform == 'win32' else True
+            p = subprocess.Popen(command, shell=True,
+                                 stdin=pipe, stdout=pipe, stderr=pipe, close_fds=clse_fds)
             (i, o, e) = (p.stdin, p.stdout, p.stderr)
             #(i, o, e) = os.popen3(command)
             for line in e:
