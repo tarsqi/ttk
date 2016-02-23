@@ -72,7 +72,7 @@ def adjust_lex_offsets(tokens, offset):
 
 
 class PreprocessorWrapper:
-    
+
     """Wrapper for the preprocessing components."""
 
     def __init__(self, tarsqidocument):
@@ -94,6 +94,8 @@ class PreprocessorWrapper:
             tokens = self.tokenize_text(element.get_text())
             adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)
+            # TODO: add some code to get lemmas when the TreeTagger just gets
+            # <unknown>, see https://github.com/tarsqi/ttk/issues/5
             text = self.chunk_text(text)
             export(text, element)
         logger.info("tokenizer processing time: %.3f seconds" % self.tokenize_time)
@@ -181,7 +183,7 @@ def export(text, tarsqi_element):
 
             elif type(token) == TupleType:
                 ltag = Tag(TagId.next('l'), 'lex', token[3], token[4],
-                           { 'lemma': token[2], 'pos': token[1] })
+                           { 'lemma': token[2], 'pos': token[1], 'text': token[0] })
                 tarsqi_element.tarsqi_tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]

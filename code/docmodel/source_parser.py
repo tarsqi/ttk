@@ -1,12 +1,11 @@
-"""
+"""Parser for Toolkit input
 
-Parser for Toolkit input
-
-Module that contains classes to parse and represent the input document. It contains a
-simple XML parser that splits inline XML into a source string and a list of tags. The
-source string and the tags are stored in a SourceDoc instance, which is intended to
-provide just enough functionailty to deal with the input in a read-only fashion, that is,
-additional annotations should not be in this instance.
+Module that contains classes to parse and represent the input document. It
+contains a simple XML parser that splits inline XML into a source string and a
+list of tags. The source string and the tags are stored in a SourceDoc instance,
+which is intended to provide just enough functionality to deal with the input in
+a read-only fashion, that is, additional annotations should not be in this
+instance.
 
 Classes:
 
@@ -18,31 +17,47 @@ Classes:
        ClosingTag
     TarsqiInputError
     
-TODO: we now assume that the input is valid XML and has at least a root, should change
-this and make a distinction between XML and non-XML, which will simply be treated by
-adding the entire file content to DocSource.source while leaving DocSource.tags
-empty. Implement this by adding ExPat error trapping to SourceParser.parse_file().
+The SourceParser provides the first processing step over a document. It takes
+any document and it does not matter what the --genre and/or --source options
+specifiy, those options are relevent to the second stage of processing which is
+done by the docmodel.parsers module.
+
+The SourceParser uses the Expat XML parser. If the input is not well-formed XML
+and the parse fails, a fall-back approach is taken and the SourceParser will
+simply put the entire text of the document in the source while the list of tags
+remains empty.
 
 """
 
-import sys
+import sys, codecs, pprint
 import xml.parsers.expat
-import pprint
 from xml.sax.saxutils import escape, quoteattr
+
+
+class TextParser:
+    pass
+
+
+class TtkParser:
+    pass
 
 
 class SourceParser:
 
-    """ Simple XML parser, using the Expat parser. 
+    """Simple XML parser, using the Expat parser, but defaulting to just getting
+    the contents if the Expat parser fails.
 
     Instance variables
        encoding - a string
        sourcedoc - an instance of SourceDoc
        parser - an Expat parser
 
-    TODO: need to add other handlers, see http://docs.python.org/library/pyexpat.html
-    """
-    
+    TODO: may need to add other handlers for completeness, see
+    http://docs.python.org/library/pyexpat.html """
+
+    DEBUG = False
+    #DEBUG = True
+
     def __init__(self, encoding='utf-8'):
         """Set up the Expat parser."""
         self.encoding = encoding
@@ -56,61 +71,93 @@ class SourceParser:
         self.parser.EndElementHandler = self._handle_end
         self.parser.CharacterDataHandler = self._handle_characters
         self.parser.DefaultHandler = self._handle_default
-        
+
     def parse_file(self, filename):
-        """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
-        file object as its single argument and returns the SourceDoc. """
+        """Parses filename and returns a SourceDoc. Uses the ParseFile routine of the
+        expat parser, where all the handlers are set up to fill in the text and
+        tags in SourceDoc. If there is an expat error then the fallback is to
+        not add any tags and dump the full file content in the SourceDoc text
+        variable. """
         self.sourcedoc = SourceDoc(filename)
-        # TODO: should this be codecs.open() for non-ascii?
-        self.parser.ParseFile(open(filename))  # this adds content to the sourcedoc variable
-        self.sourcedoc.finish()
+        try:
+            # TODO: should this be codecs.open() for non-ascii?
+            self.parser.ParseFile(open(filename))
+            self.sourcedoc.finish()
+        except xml.parsers.expat.ExpatError:
+            self.sourcedoc.text = codecs.open(filename, encoding='utf8').read()
         return self.sourcedoc
-    
+
     def parse_string(self, text):
-        """Parse a file, forwards to the ParseFile routine of the expat parser. Takes a
-        file object as its single argument and returns the SourceDoc. """
+        """Parses a text string and returns a SourceDoc. Uses the ParseFile routine of
+        the expat parser, where all the handlers are set up to fill in the text
+        and tags in SourceDoc. If there is an expat error then the fallback is
+        to not add any tags and dump the full file content in the SourceDoc text
+        variable. """
         self.sourcedoc = SourceDoc(None)
-        # TODO: should this be codecs.open() for non-ascii?
-        self.parser.Parse(text)  # this adds content to the sourcedoc variable
-        self.sourcedoc.finish()
+        try:
+            # TODO: do we need to make sure that text is unicode?
+            self.parser.Parse(text)
+            self.sourcedoc.finish()
+        except xml.parsers.expat.ExpatError:
+            self.sourcedoc.text = text
         return self.sourcedoc
 
     def _handle_xmldecl(self, version, encoding, standalone):
         """Store the XML declaration."""
+        self._debug('xmldec')
         self.sourcedoc.xmldecl = (version, encoding, standalone)
 
     def _handle_processing_instruction(self, target, data):
         """Store processing instructions"""
+        self._debug('proc', target, len(data))
         self.sourcedoc.add_processing_instruction(target, data)
 
     def _handle_comment(self, data):
         """Store comments."""
+        self._debug('comment', len(data))
         self.sourcedoc.add_comment(data)
         
     def _handle_start(self, name, attrs):
         """Handle opening tags. Takes two arguments: a tag name and a dictionary of
         attributes. Asks the SourceDoc instance in the sourcedoc variable to add an
         opening tag."""
+        self._debug('start', name, attrs)
         self.sourcedoc.add_opening_tag(name, attrs)
-        
+
     def _handle_end(self, name):
         """Add closing tags to the SourceDoc."""
+        self._debug('end', name)
         self.sourcedoc.add_closing_tag(name)
-        
+
     def _handle_characters(self, string):
         """Handle character data by asking the SourceDocument to add the data. This will
         not necesarily add a contiguous string of character data as one data element. This
         should include ingnorable whtespace, but see the comment in the method below, I
         apparantly had reason t think otherwise."""
+        self._debug('chars', len(string), string)
         self.sourcedoc.add_characters(string)
-        
+
     def _handle_default(self, string):
         """Handle default data by asking the SourceDoc to add it as characters. This is
         here to get the 'ignoreable' whitespace, which I do not want to ignore."""
+        # TODO: maybe ignore that whitespace after all, it does not seem to matter though
+        self._debug('default', len(string), string)
         self.sourcedoc.add_characters(string)
 
+    def _debug(self, *rest):
+        if SourceParser.DEBUG:
+            p1 = "%s-%s" % (self.parser.CurrentLineNumber,
+                            self.parser.CurrentColumnNumber)
+            p2 = "%s" % self.parser.CurrentByteIndex
+            print "%-5s  %-4s    %s" % (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest]))
 
-        
+
+def replace_newline(text):
+    """Just used for debugging, make sure to not use this elsewhere because it
+    is dangerous since it turns unicode into non-unicode."""
+    return str(text).replace("\n",'\\n')
+
+
 class SourceDoc:
 
     """A SourceDoc is created by the SourceParser and contains source data and annotations
@@ -134,18 +181,21 @@ class SourceDoc:
 
     def add_opening_tag(self, name, attrs):
         """Add an opening tag."""
+        #print self.offset
         self.tag_number += 1
         self.tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
     def add_closing_tag(self, name):
         """Add a closing tag."""
+        #print self.offset
         self.tag_number += 1
         self.tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
         
     def add_characters(self, string):
         """Add a character string to the source and increment the current offset."""
+        #print 'adding', len(string), 'characters'
         self.text.append(string) # this is already unicode
-        self.offset += len(string)        
+        self.offset += len(string)
 
     def add_comment(self, string):
         self.comments.setdefault(self.offset,[]).append(string)
@@ -343,15 +393,15 @@ class TagRepository:
         self.pp_tags(indent='    ')
         #print; self.pp_opening_tags()
         #print; self.pp_closing_tags()
-        
+
     def pp_tags(self, indent=''):
         for tag in self.tags: print "%s%s" % (indent, tag)
-    
+
     def pp_opening_tags(self):
         print '<TagRepository>.opening_tags'
         for offset, list in sorted(self.opening_tags.items()):
             print "  %5d " % offset, "\n         ".join([x.__str__() for x in list])
-        
+
     def pp_closing_tags(self):
         print '<TagRepository>.closing_tags'
         for offset, dict in sorted(self.closing_tags.items()):
@@ -378,14 +428,17 @@ class Tag:
 
     def __str__(self):
         attrs = ''.join([" %s='%s'" % (k,v) for k,v in self.attrs.items()])
-        return "<Tag %s id=%s %d:%d {%s }>" % \
+        return "<Tag %s id=%s %s:%s {%s }>" % \
                (self.name, self.id, self.begin, self.end, attrs)
 
     def __cmp__(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with an
         earlier begin will be ranked before tags with a later begin, with equal
-        begins the tag with the higher end will be ranked first. The order of
+        begins the tag with the higher end will be ranked first. Tags with no
+        begin (that is, it is set to -1) will be ordered at the end. The order of
         two tags with the same begin and end is undefined."""
+        if self.begin == -1: return 1
+        if other.begin == -1: return -1
         begin_cmp = cmp(self.begin, other.begin)
         end_cmp =  cmp(other.end, self.end)
         return end_cmp if begin_cmp == 0 else begin_cmp

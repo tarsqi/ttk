@@ -2,9 +2,9 @@
 
 """Main script that drives all tarsqi toolkit processing.
 
-Low-level and source-specific processing is delegated to the docmodel package, which has
-access to an XML Parser and metadata processors. This script calls on preprocessing and
-tarsqi modules to do the real work.
+Low-level and source-specific processing is delegated to the docmodel package,
+which has access to an XML Parser and metadata processors. This script calls on
+preprocessing and tarsqi modules to do the real work.
 
 USAGE
 
@@ -12,8 +12,8 @@ USAGE
 
    INPUT/OUTPUT
 
-      Input and output files or directories. If the input is a directory than the output
-      directory needs to exist.
+      Input and output files or directories. If the input is a directory than
+      the output directory needs to exist.
 
    OPTIONS
 
@@ -42,7 +42,9 @@ USAGE
              set error trapping, errors are trapped by default
 
       --loglevel=LEVEL
-             set log level to an integer from 0 to 4
+             set log level to an integer from 0 to 4, the higher the level the
+             more messages will be written to the log, see utilities.logger for
+             more details
 
       --ignore=REGEXP
              determines wat files in a directory are skipped
@@ -85,7 +87,7 @@ class Tarsqi(ParameterMixin):
     """Main Tarsqi class that drives all processing.
 
     Instance variables:
-        
+
        input         -  absolute path
        output        -  absolute path
        basename      -  basename of input file
@@ -96,7 +98,7 @@ class Tarsqi(ParameterMixin):
        docsource     -  instance of DocSource
        document      -  instance of TarsqiDocument
        DIR_TMP_DATA  -  path
-       
+
     The first seven instance variables are initialized using the arguments provided by the
     user, docsource and document are filled in during processing."""
 
@@ -126,7 +128,35 @@ class Tarsqi(ParameterMixin):
         self.components = COMPONENTS
         self.parser = create_parser(self.getopt_source(), self.parameters)
         self.pipeline = self._create_pipeline()
-        
+
+        # TODO: maybe instead of just doing the create_parser thing for the
+        # parser, which now really is just a metadata parser, we may want to do
+        # this for the source parser as well, and in both cases we want to hand
+        # in the parameters:
+        #
+        # self.source_parser = create_source_parser(self.getopt_source(), self.parameters)
+        # self.meradata_parser = create_metadata_parser(self.getopt_source(), self.parameters)
+
+        # Then, we can have the docmodel parsers have this:
+        #
+        # PARSERS = {
+        #   'simple-xml': (SourceParserXml, MetadataParser),
+        #   'timebank': (SourceParserXml, MetadataParserTimebank),
+        #   'text': (SourceParserText, MetadataParser),
+        #   'ttk': (SourceParserTtk, MetadataParserTtk) }
+        #
+        # Now SourceParserXml can fail on non-XML input, as we would like.
+
+        # Also, maybe just hand in the parameters and make Parameters a class
+        # which deals with all the get_opt stuff instead of that slightly dumb
+        # mixin thing. So we will have
+        #
+        # self.parameters = Parameters(opts)
+        # self.source_parser = create_source_parser(self.parameters)
+        # self.meradata_parser = create_metadata_parser(self.parameters)
+
+
+
 
     def _create_pipeline(self):
         """Return the pipeline as a list of pairs with the component name and wrapper."""
