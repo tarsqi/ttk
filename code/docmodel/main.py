@@ -22,12 +22,12 @@ DEFAULT_PIPELINE = [ PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T,
                      BLINKER, CLASSIFIER, LINK_MERGER ]
 
 
-def create_parser(source, parameters):
+def create_parser(source, options):
     """Return a document parser. Should include some additional setup of the parser,
     where depending on the genre and perhaps other future arguments some aspects
     of the parser class are set."""
     parser = PARSERS.get(source, SimpleParser)
-    return parser(parameters)
+    return parser(options)
 
 def get_default_pipeline(genre):
     """Now always returns the same but can be used for genre-specific pipelines."""

@@ -2,11 +2,10 @@ import sys, codecs
 from copy import copy
 from xml.sax.saxutils import escape
 
-from mixins.parameters import ParameterMixin
 from source_parser import TagRepository
 
 
-class TarsqiDocument(ParameterMixin):
+class TarsqiDocument:
 
     """An instance of TarsqiDocument should contain all information that may be needed by
     the wrappers to do their work. It will contain minimal document structure in its
@@ -18,16 +17,15 @@ class TarsqiDocument(ParameterMixin):
        doctree - instance of TarsqiTree
        elements - list of TarsqiDocElements
        metadata - a dictionary
-       parameters - parameter dictionary from the Tasqi instance
+       options - the Options instance from the Tasqi instance
        counters - a set of counters used to create unique identifiers
 
     Note that more variables will be needed. Currently, several wrappers use data from
     the Tarsqi instance, should check what these data are and get them elsewhere,
     potentially by adding them here.
 
-    Also note that parameters are available to the wrappers only through this class. Use
-    the methods in the mixin class to access the parameters, these methods all start with
-    'getopt' and all they do is access parameters.
+    Also note that he processing options are available to the wrappers only
+    through this class by accessing th eoptions variable.
 
     Also note that we may need a tarsqi_tags variable, to store those tags that are not
     internal to any of the elements."""
@@ -36,15 +34,14 @@ class TarsqiDocument(ParameterMixin):
         self.source = docsource
         self.elements = []
         self.metadata = metadata
-        self.parameters = {}
-        self.counters = { 'TIMEX3': 0, 'EVENT': 0,
-                          'ALINK': 0, 'SLINK': 0, 'TLINK': 0 }
+        self.options = {}
+        self.counters = { 'TIMEX3': 0, 'EVENT': 0, 'ALINK': 0, 'SLINK': 0, 'TLINK': 0 }
 
     def __str__(self):
         return "<%s on '%s'>" % (self.__class__, self.source.filename)
 
-    def add_parameters(self, parameter_dictionary):
-        self.parameters = parameter_dictionary
+    def add_options(self, options):
+        self.options = options
 
     def get_dct(self):
         return self.metadata.get('dct')
@@ -56,8 +53,8 @@ class TarsqiDocument(ParameterMixin):
         print "\n", self, "\n"
         for key, value in self.metadata.items():
             print "   metadata.%-17s  -->  %s" % (key, value)
-        for key, value in self.parameters.items():
-            print "   parameters.%-15s  -->  %s" % (key, value)
+        for key, value in self.options.items():
+            print "   options.%-15s  -->  %s" % (key, value)
         if source:
             self.source.pp()
         if elements:

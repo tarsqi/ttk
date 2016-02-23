@@ -4,29 +4,27 @@ This module contains document source parsers, that is, parsers that take an
 instance of SourceDoc and create an instance of TarsqiDocument.
 
 The only requirements on each parser is that it defines an __init__() method
-that takes a dictionary of parameters and a parse() method that takes a
-SourceDoc instance.
+that takes a dictionary of options and a parse() method that takes a SourceDoc
+instance.
 
 """
 
 import re, time, os, sqlite3
 
-from mixins.parameters import ParameterMixin
 from docmodel.document import TarsqiDocument
 from docmodel.document import TarsqiDocParagraph
 import utilities.logger as logger
 
 
-class SimpleParser(ParameterMixin):
+class SimpleParser:
 
     """The simplest SourceDoc parser. It creates a TarsqiDocument instance
     with a list of TarsqiDocParagraphs in it."""
 
-    def __init__(self, parameters):
-        """At the moment, initialization does not use any of the parameters,
+    def __init__(self, options):
+        """At the moment, initialization does not use any of the options,
         but this could change."""
-        self.paremeters = parameters
-        pass
+        self.options = options
 
     def parse(self, sourcedoc):
         """Return an instance of TarsqiDocument. The TarsqiDocument includes the

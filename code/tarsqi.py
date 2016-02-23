@@ -70,7 +70,6 @@ os.environ['TTK_ROOT'] = TTK_ROOT
 from components import COMPONENTS
 from docmodel.source_parser import SourceParser
 from docmodel.main import create_parser, get_default_pipeline
-from mixins.parameters import ParameterMixin
 from utilities import logger
 from utilities.file import read_settings
 
@@ -82,7 +81,7 @@ USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
 
-class Tarsqi(ParameterMixin):
+class Tarsqi:
 
     """Main Tarsqi class that drives all processing.
 
@@ -91,7 +90,7 @@ class Tarsqi(ParameterMixin):
        input         -  absolute path
        output        -  absolute path
        basename      -  basename of input file
-       parameters    -  dictionary with processing options
+       options       -  an instance of Options, containing processing options
        parser        -  a source-specific document parsers
        pipeline      -  list of name-wrapper pairs
        components    -  dictionary of components
@@ -119,14 +118,15 @@ class Tarsqi(ParameterMixin):
         self.input = infile
         self.output = outfile
         self.basename = _basename(infile) if infile else None
-        self.parameters = self._read_parameters(opts)
-        if self.parameters.has_key('loglevel'):
-            logger.set_level(self.parameters['loglevel'])
+        self.parameters = self._read_parameters(opts) ## REMOVE
+        self.options = Options(opts)
+        if self.options.has_key('loglevel'):
+            logger.set_level(self.options['loglevel'])
         
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
 
         self.components = COMPONENTS
-        self.parser = create_parser(self.getopt_source(), self.parameters)
+        self.parser = create_parser(self.options.getopt_source(), self.options)
         self.pipeline = self._create_pipeline()
 
         # TODO: maybe instead of just doing the create_parser thing for the
@@ -160,9 +160,9 @@ class Tarsqi(ParameterMixin):
 
     def _create_pipeline(self):
         """Return the pipeline as a list of pairs with the component name and wrapper."""
-        component_names = get_default_pipeline(self.getopt_genre())
-        if self.getopt_pipeline():
-            component_names = self.getopt_pipeline().split(',')
+        component_names = get_default_pipeline(self.options.getopt_genre())
+        if self.options.getopt_pipeline():
+            component_names = self.options.getopt_pipeline().split(',')
         return [(name, self.components[name]) for name in component_names]
 
     def _read_parameters(self, opts):
@@ -181,14 +181,14 @@ class Tarsqi(ParameterMixin):
     def process(self):
         """Parse the source with source parser and the document parser. Then apply all
         components and write the results to a file. The actual processing itself is driven
-        using the processing parameters set at initialization. Each component is given the
+        using the processing options set at initialization. Each component is given the
         TarsqiDocument and updates it."""
         if self._skip_file(): return
         self._cleanup_directories()
         logger.info(self.input)
         self.docsource = SourceParser().parse_file(self.input)
         self.document = self.parser.parse(self.docsource)
-        self.document.add_parameters(self.parameters)
+        self.document.add_options(self.options)
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
         os.chdir(TTK_ROOT)
@@ -197,12 +197,12 @@ class Tarsqi(ParameterMixin):
     def process_string(self, input_string):
         """Parse the input string with source parser and create a TarsqiDocument
         with the document parser. Then the processing itself is driven by the
-        processing parameters set at initialization. Each component is given the
+        processing options set at initialization. Each component is given the
         TarsqiDocument and updates it. Returns the TarsqiDocument instance."""
         logger.info(input_string)
         self.docsource = SourceParser().parse_string(input_string)
         self.document = self.parser.parse(self.docsource)
-        self.document.add_parameters(self.parameters)
+        self.document.add_options(self.options)
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
         return self.document
@@ -211,7 +211,7 @@ class Tarsqi(ParameterMixin):
         """Return true if file does not match specified extension. Useful when
         the script is given a directory as input. Probably obsolete, use ignore
         option instead."""
-        extension = self.getopt_extension()
+        extension = self.options.getopt_extension()
         if not extension: return False
         return self.input.endswith(extension)
 
@@ -226,13 +226,13 @@ class Tarsqi(ParameterMixin):
 
     def apply_component(self, name, wrapper, tarsqidocument):
         """Apply a component by taking the TarsqDocument, which includes the
-        parameters from the Tarsqi instance, and passing it to the component
+        options from the Tarsqi instance, and passing it to the component
         wrapper. Component-level errors are trapped here if --trap-errors is
         True. If errors are trapped, it is still possible that partial results
         were written to the TagRepositories in the TarsqiDocument."""
         logger.info(name + '............')
         t1 = time.time()
-        if self.getopt_trap_errors():
+        if self.options.getopt_trap_errors():
             try:
                 wrapper(tarsqidocument).process()
             except:
@@ -254,6 +254,65 @@ class Tarsqi(ParameterMixin):
         print '   metadata    ', self.metadata
         print '   content_tag ', self.content_tag
         print '   document    ', self.xml_document
+
+
+
+class Options:
+
+    """A dictionary to keep track of all the options."""
+
+    def __init__(self, options):
+        """Initialize options from the settings file and the opts parameter. Loop through
+        the options dictionary and replace some of the strings with other objects: replace
+        'True' with True, 'False' with False, and strings indicating an integer with that
+        integer."""
+        self.options = read_settings(SETTINGS)
+        for (option, value) in options:
+            self.options[option[2:]] = value
+        for (attr, value) in self.options.items():
+            if value in ('True', 'False') or value.isdigit():
+                self.options[attr] = eval(value)
+
+    def __str__(self):
+        return str(self.options)
+
+    def __getitem__(self, key):
+        return self.options[key]
+
+    def has_key(self, key):
+        return self.options.has_key(key)
+
+    def getopt(self, option_name):
+        """Return the option, use None as default."""
+        return self.options.get(option_name, None)
+
+    def getopt_genre(self):
+        """Return the 'genre' user option. The default is None."""
+        return self.options.get('genre', None)
+
+    def getopt_source(self):
+        """Return the 'source' user option. The default is None."""
+        return self.options.get('source', None)
+
+    def getopt_platform(self):
+        """Return the 'platform' user option. The default is None."""
+        return self.options.get('platform', None)
+
+    def getopt_trap_errors(self):
+        """Return the 'trap_errors' user option. The default is False."""
+        return self.options.get('trap-errors', True)
+
+    def getopt_pipeline(self):
+        """Return the 'pipeline' user option. The default is None."""
+        return self.options.get('pipeline', None)
+
+    def getopt_extension(self):
+        """Return the 'extension' user option. The default is ''."""
+        return self.options.get('extension', '')
+
+    def getopt_perl(self):
+        """Return the 'perl' user option. The default is 'perl'."""
+        return self.options.get('perl', 'perl')
 
 
 class TarsqiError(Exception):
@@ -310,7 +369,7 @@ def run_tarsqi(args):
             raise TarsqiError('output file ' + outpath + ' already exists')
         Tarsqi(opts, inpath, outpath).process()
     else:
-        raise TarsqiError('Invalid input and/or output parameters')
+        raise TarsqiError('Invalid input and/or output options')
     logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
 
 

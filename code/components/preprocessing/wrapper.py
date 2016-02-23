@@ -79,7 +79,7 @@ class PreprocessorWrapper:
         """Set component_name, add the TarsqiDocument and initialize the TreeTagger."""
         self.component_name = PREPROCESSOR
         self.document = tarsqidocument
-        self.treetagger_dir = self.document.getopt('treetagger')
+        self.treetagger_dir = self.document.options.getopt('treetagger')
         self.treetagger = initialize_treetagger(self.treetagger_dir)
         self.tokenize_time = 0
         self.tag_time = 0
