@@ -1,36 +1,54 @@
 """
 
-Initialization of parsers responsible for document-level parsing.
+Initialization of parsers responsible for first-level processing.
 
 """
 
 import os
 
-from docmodel.parsers import SimpleParser, TimebankParser, ATEEParser, RTE3Parser, VAExampleParser
+from docmodel.source_parser import SourceParserXML, SourceParserText, SourceParserTTK
+from docmodel.parsers import MetadataParser, MetadataParserTTK, MetadataParserText
+from docmodel.parsers import MetadataParserTimebank, MetadataParserVA
+from docmodel.parsers import MetadataParserATEE, MetadataParserRTE3
+from docmodel.docstructure_parser import DocumentStructureParser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER
 
 
 PARSERS = {
-    'simple-xml': SimpleParser,
-    'timebank': TimebankParser,
-    'atee': ATEEParser,
-    'rte3': RTE3Parser,
-    'va': VAExampleParser }
+    'xml': (SourceParserXML, MetadataParser),
+    'timebank': (SourceParserXML, MetadataParserTimebank),
+    'atee': (SourceParserXML, MetadataParserATEE),
+    'rte3': (SourceParserXML, MetadataParserRTE3),
+    'va': (SourceParserXML, MetadataParserVA),
+    'text': (SourceParserText, MetadataParserText),
+    'ttk': (SourceParserTTK, MetadataParserTTK) }
+
 
 DEFAULT_PIPELINE = [ PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T,
                      BLINKER, CLASSIFIER, LINK_MERGER ]
 
+DEFAULT_SOURCE_PARSER = SourceParserXML
+DEFAULT_METADATA_PARSER = MetadataParser
+DEFAULT_PARSERS = (DEFAULT_SOURCE_PARSER, DEFAULT_METADATA_PARSER)
 
-def create_parser(source, options):
-    """Return a document parser. Should include some additional setup of the parser,
-    where depending on the genre and perhaps other future arguments some aspects
-    of the parser class are set."""
-    parser = PARSERS.get(source, SimpleParser)
-    return parser(options)
 
-def get_default_pipeline(genre):
+def create_source_parser(options):
+    source_parser, metadata_parser = PARSERS.get(options.source, DEFAULT_PARSERS)
+    return source_parser()
+
+def create_metadata_parser(options):
+    source_parser, metadata_parser = PARSERS.get(options.source, DEFAULT_PARSERS)
+    return metadata_parser(options)
+
+def create_docstructure_parser():
+    """Return the default document structure parser."""
+    # NOTE. This is just the default parser, no options needed
+    # TODO. It is also a stub, awaiting the full docstructure parser redesign,
+    # where the parser creates tags similar to other components and where the
+    # elements variable is gone.
+    return DocumentStructureParser()
+
+def get_default_pipeline(options):
     """Now always returns the same but can be used for genre-specific pipelines."""
     return DEFAULT_PIPELINE
-
-

@@ -23,10 +23,11 @@ USAGE
              medial etcetera, but it is not yet used
 
       --source=SOURCE_NAME
-             the source of the file, None by default; this refelcts the source
-             of the document and allows later components, especially the
-             document parser, to be sensitive to idiosyncratic properties of the
-             text (for example, location of the DCT and the format of the text)
+             the source of the file, None by default; this reflects the source
+             of the document and allows later components, especially the source
+             parser, metadata parser and document structure parser, to be
+             sensitive to idiosyncratic properties of the text (for example,
+             location of the DCT and the format of the text)
 
       --pipeline=LIST
              comma-separated list of Tarsqi components, defaults to the full
@@ -68,8 +69,10 @@ TTK_ROOT = os.path.dirname(scriptPath)
 os.environ['TTK_ROOT'] = TTK_ROOT
 
 from components import COMPONENTS
-from docmodel.source_parser import SourceParser
-from docmodel.main import create_parser, get_default_pipeline
+from docmodel.main import get_default_pipeline
+from docmodel.main import create_source_parser
+from docmodel.main import create_metadata_parser
+from docmodel.main import create_docstructure_parser
 from utilities import logger
 from utilities.file import read_settings
 
@@ -87,29 +90,28 @@ class Tarsqi:
 
     Instance variables:
 
-       input         -  absolute path
-       output        -  absolute path
-       basename      -  basename of input file
-       options       -  an instance of Options, containing processing options
-       parser        -  a source-specific document parsers
-       pipeline      -  list of name-wrapper pairs
-       components    -  dictionary of components
-       docsource     -  instance of DocSource
-       document      -  instance of TarsqiDocument
-       DIR_TMP_DATA  -  path
+       input                -  absolute path
+       output               -  absolute path
+       basename             -  basename of input file
+       options              -  an instance of Options with processing options
+       source_parser        -  a source-specific parser for the source
+       metadata_parser      -  a source-specific metadata parser
+       docstructure_parser  -  a source-specific document structure parser
+       pipeline             -  list of name-wrapper pairs
+       components           -  dictionary of components
+       document             -  instance of TarsqiDocument
+       DIR_TMP_DATA         -  path for temporary files
 
-    The first seven instance variables are initialized using the arguments provided by the
-    user, docsource and document are filled in during processing."""
+    The first nine instance variables are initialized using the arguments
+    provided by the user, document is initialized and changed during processing."""
 
 
     def __init__(self, opts, infile, outfile):
-
-        """Initialize Tarsqi object conform the data source identifier and the processing
-        options. Does not set the instance variables related to the document model and the
-        meta data. Arguments:
-           opts - dictionary of command line options
-           input - absolute path
-           output - absolute path"""
+        """Initialize Tarsqi object conform the data source identifier and the
+        processing options. Does not set the instance variables related to the
+        document model and the meta data. The opts argument has a list of
+        commanid line options and the infile and outfile arguments are typically
+        absolute paths, but they can be None when we are processing strings."""
 
         # Make sure we're in the right directory. If the toolkit crashed on a previous
         # file it may end up being in a different directory.
@@ -118,90 +120,51 @@ class Tarsqi:
         self.input = infile
         self.output = outfile
         self.basename = _basename(infile) if infile else None
-        self.parameters = self._read_parameters(opts) ## REMOVE
         self.options = Options(opts)
-        if self.options.has_key('loglevel'):
-            logger.set_level(self.options['loglevel'])
-        
+        if self.options.loglevel:
+            logger.set_level(self.options.loglevel)
+
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
 
         self.components = COMPONENTS
-        self.parser = create_parser(self.options.getopt_source(), self.options)
+        self.source_parser = create_source_parser(self.options)
+        self.metadata_parser = create_metadata_parser(self.options)
+        self.docstructure_parser = create_docstructure_parser()
         self.pipeline = self._create_pipeline()
-
-        # TODO: maybe instead of just doing the create_parser thing for the
-        # parser, which now really is just a metadata parser, we may want to do
-        # this for the source parser as well, and in both cases we want to hand
-        # in the parameters:
-        #
-        # self.source_parser = create_source_parser(self.getopt_source(), self.parameters)
-        # self.meradata_parser = create_metadata_parser(self.getopt_source(), self.parameters)
-
-        # Then, we can have the docmodel parsers have this:
-        #
-        # PARSERS = {
-        #   'simple-xml': (SourceParserXml, MetadataParser),
-        #   'timebank': (SourceParserXml, MetadataParserTimebank),
-        #   'text': (SourceParserText, MetadataParser),
-        #   'ttk': (SourceParserTtk, MetadataParserTtk) }
-        #
-        # Now SourceParserXml can fail on non-XML input, as we would like.
-
-        # Also, maybe just hand in the parameters and make Parameters a class
-        # which deals with all the get_opt stuff instead of that slightly dumb
-        # mixin thing. So we will have
-        #
-        # self.parameters = Parameters(opts)
-        # self.source_parser = create_source_parser(self.parameters)
-        # self.meradata_parser = create_metadata_parser(self.parameters)
-
-
 
 
     def _create_pipeline(self):
         """Return the pipeline as a list of pairs with the component name and wrapper."""
-        component_names = get_default_pipeline(self.options.getopt_genre())
-        if self.options.getopt_pipeline():
-            component_names = self.options.getopt_pipeline().split(',')
+        component_names = get_default_pipeline(self.options)
+        if self.options.pipeline:
+            component_names = self.options.pipeline.split(',')
         return [(name, self.components[name]) for name in component_names]
 
-    def _read_parameters(self, opts):
-        """Initialize options from the settings file and the opts parameter. Loop through
-        the options dictionary and replace some of the strings with other objects: replace
-        'True' with True, 'False' with False, and strings indicating an integer with that
-        integer."""
-        parameters = read_settings(SETTINGS)
-        for (option, value) in opts:
-            parameters[option[2:]] = value
-        for (attr, value) in parameters.items():
-            if value == 'True' or value == 'False' or value.isdigit():
-                parameters[attr] = eval(value)
-        return parameters
-
     def process(self):
-        """Parse the source with source parser and the document parser. Then apply all
-        components and write the results to a file. The actual processing itself is driven
-        using the processing options set at initialization. Each component is given the
-        TarsqiDocument and updates it."""
-        if self._skip_file(): return
-        self._cleanup_directories()
-        logger.info(self.input)
-        self.docsource = SourceParser().parse_file(self.input)
-        self.document = self.parser.parse(self.docsource)
-        self.document.add_options(self.options)
-        for (name, wrapper) in self.pipeline:
-            self.apply_component(name, wrapper, self.document)
-        os.chdir(TTK_ROOT)
-        self.write_output()
+        """Parse the source with the source parser, the metadata parser and the
+        document structure parser, apply all components and write the results to
+        a file. The actual processing itself is driven using the processing
+        options set at initialization. Components are given the TarsqiDocument
+        and update it."""
+        if not self._skip_file():
+            self._cleanup_directories()
+            logger.info(self.input)
+            self.document = self.source_parser.parse_file(self.input)
+            self.metadata_parser.parse(self.document)
+            self.docstructure_parser.parse(self.document)
+            self.document.add_options(self.options)
+            for (name, wrapper) in self.pipeline:
+                self.apply_component(name, wrapper, self.document)
+            os.chdir(TTK_ROOT)
+            self.write_output()
 
     def process_string(self, input_string):
-        """Parse the input string with source parser and create a TarsqiDocument
-        with the document parser. Then the processing itself is driven by the
-        processing options set at initialization. Each component is given the
-        TarsqiDocument and updates it. Returns the TarsqiDocument instance."""
+        """Same as process(), but runs on an input string and not on files given
+        at initialization. It also returns the tarsqiDocument."""
         logger.info(input_string)
-        self.docsource = SourceParser().parse_string(input_string)
-        self.document = self.parser.parse(self.docsource)
+        self.document = self.source_parser.parse_string(input_string)
+        self.metadata_parser.parse(self.document)
+        self.docstructure_parser.parse(self.document)
         self.document.add_options(self.options)
         for (name, wrapper) in self.pipeline:
             self.apply_component(name, wrapper, self.document)
@@ -211,7 +174,7 @@ class Tarsqi:
         """Return true if file does not match specified extension. Useful when
         the script is given a directory as input. Probably obsolete, use ignore
         option instead."""
-        extension = self.options.getopt_extension()
+        extension = self.options.extension
         if not extension: return False
         return self.input.endswith(extension)
 
@@ -232,7 +195,7 @@ class Tarsqi:
         were written to the TagRepositories in the TarsqiDocument."""
         logger.info(name + '............')
         t1 = time.time()
-        if self.options.getopt_trap_errors():
+        if self.options.trap_errors:
             try:
                 wrapper(tarsqidocument).process()
             except:
@@ -244,6 +207,7 @@ class Tarsqi:
 
     def write_output(self):
         """Write the TarsqiDocument to the output file."""
+        self.document.print_all(self.output)
         try:
             self.document.print_all(self.output)
         except:
@@ -259,60 +223,44 @@ class Tarsqi:
 
 class Options:
 
-    """A dictionary to keep track of all the options."""
+    """A dictionary to keep track of all the options. Options are stored in a
+    dictionary, but are also accessable directly through instance variables."""
 
     def __init__(self, options):
         """Initialize options from the settings file and the opts parameter. Loop through
         the options dictionary and replace some of the strings with other objects: replace
         'True' with True, 'False' with False, and strings indicating an integer with that
         integer."""
-        self.options = read_settings(SETTINGS)
+        self._options = read_settings(SETTINGS)
         for (option, value) in options:
-            self.options[option[2:]] = value
-        for (attr, value) in self.options.items():
+            self._options[option[2:]] = value
+        for (attr, value) in self._options.items():
             if value in ('True', 'False') or value.isdigit():
-                self.options[attr] = eval(value)
+                self._options[attr] = eval(value)
+        self.genre = self.getopt('genre', None)
+        self.source = self.getopt('source', None)
+        self.platform = self.getopt('platform', None)
+        self.pipeline = self.getopt('pipeline', None)
+        self.loglevel = self.getopt('loglevel', None)
+        self.trap_errors = self.getopt('trap-errors', True)
+        self.extension = self.getopt('extension', '')
+        self.perl = self.getopt('perl', 'perl')
+        self.treetagger = self.getopt('genre', None)
 
     def __str__(self):
-        return str(self.options)
+        return str(self._options)
 
     def __getitem__(self, key):
-        return self.options[key]
+        return self._options[key]
 
-    def has_key(self, key):
-        return self.options.has_key(key)
+    def items(self):
+        # TODO: there must be a better way to do this dictionary emulation
+        return self._options.items()
 
-    def getopt(self, option_name):
+    def getopt(self, option_name, default=None):
         """Return the option, use None as default."""
-        return self.options.get(option_name, None)
+        return self._options.get(option_name, default)
 
-    def getopt_genre(self):
-        """Return the 'genre' user option. The default is None."""
-        return self.options.get('genre', None)
-
-    def getopt_source(self):
-        """Return the 'source' user option. The default is None."""
-        return self.options.get('source', None)
-
-    def getopt_platform(self):
-        """Return the 'platform' user option. The default is None."""
-        return self.options.get('platform', None)
-
-    def getopt_trap_errors(self):
-        """Return the 'trap_errors' user option. The default is False."""
-        return self.options.get('trap-errors', True)
-
-    def getopt_pipeline(self):
-        """Return the 'pipeline' user option. The default is None."""
-        return self.options.get('pipeline', None)
-
-    def getopt_extension(self):
-        """Return the 'extension' user option. The default is ''."""
-        return self.options.get('extension', '')
-
-    def getopt_perl(self):
-        """Return the 'perl' user option. The default is 'perl'."""
-        return self.options.get('perl', 'perl')
 
 
 class TarsqiError(Exception):

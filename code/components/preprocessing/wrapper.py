@@ -10,7 +10,8 @@ from types import StringType, TupleType
 from xml.sax.saxutils import escape, quoteattr
 
 from utilities import logger
-from docmodel.source_parser import Tag
+#from docmodel.source_parser import Tag
+from docmodel.document import Tag
 from library.tarsqi_constants import PREPROCESSOR
 
 from components.preprocessing.tokenizer import Tokenizer
