@@ -2,14 +2,20 @@
 
 Initialization of parsers responsible for first-level processing.
 
+This file includes the PARSERS dictionary, which is indexed on a source
+identifier (handed in by the --source option). If a new source type is
+introduced, then an item needs to be added to the PARSERS dictionary. In
+addition, if new parsers are required they should be added to source_parser.py
+and metadata_parser.py.
+
 """
 
 import os
 
 from docmodel.source_parser import SourceParserXML, SourceParserText, SourceParserTTK
-from docmodel.parsers import MetadataParser, MetadataParserTTK, MetadataParserText
-from docmodel.parsers import MetadataParserTimebank, MetadataParserVA
-from docmodel.parsers import MetadataParserATEE, MetadataParserRTE3
+from docmodel.metadata_parser import MetadataParser, MetadataParserTTK, MetadataParserText
+from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserVA
+from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
 from docmodel.docstructure_parser import DocumentStructureParser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER

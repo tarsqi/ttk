@@ -133,13 +133,6 @@ class Tarsqi:
         self.pipeline = self._create_pipeline()
 
 
-    def _create_pipeline(self):
-        """Return the pipeline as a list of pairs with the component name and wrapper."""
-        component_names = get_default_pipeline(self.options)
-        if self.options.pipeline:
-            component_names = self.options.pipeline.split(',')
-        return [(name, self.components[name]) for name in component_names]
-
     def process(self):
         """Parse the source with the source parser, the metadata parser and the
         document structure parser, apply all components and write the results to
@@ -150,25 +143,27 @@ class Tarsqi:
             self._cleanup_directories()
             logger.info(self.input)
             self.document = self.source_parser.parse_file(self.input)
-            self.metadata_parser.parse(self.document)
-            self.docstructure_parser.parse(self.document)
-            self.document.add_options(self.options)
-            for (name, wrapper) in self.pipeline:
-                self.apply_component(name, wrapper, self.document)
+            self._process_document()
             os.chdir(TTK_ROOT)
-            self.write_output()
+            self._write_output()
 
     def process_string(self, input_string):
-        """Same as process(), but runs on an input string and not on files given
-        at initialization. It also returns the tarsqiDocument."""
+        """Similar to process(), except that (1) it runs on an input string and
+        not a file given at initialization, (2) it does not write th eoutput to
+        a file and (3) it returns the TarsqiDocument."""
         logger.info(input_string)
         self.document = self.source_parser.parse_string(input_string)
+        self._process_document()
+        return self.document
+
+    def _process_document(self):
+        """Process the document by running the metadata parser, the document
+        structure parser and the pipeline components."""
         self.metadata_parser.parse(self.document)
         self.docstructure_parser.parse(self.document)
         self.document.add_options(self.options)
         for (name, wrapper) in self.pipeline:
-            self.apply_component(name, wrapper, self.document)
-        return self.document
+            self._apply_component(name, wrapper, self.document)
 
     def _skip_file(self):
         """Return true if file does not match specified extension. Useful when
@@ -187,7 +182,7 @@ class Tarsqi:
                 if not file.startswith('.'):
                     os.remove(self.DIR_TMP_DATA + os.sep + file)
 
-    def apply_component(self, name, wrapper, tarsqidocument):
+    def _apply_component(self, name, wrapper, tarsqidocument):
         """Apply a component by taking the TarsqDocument, which includes the
         options from the Tarsqi instance, and passing it to the component
         wrapper. Component-level errors are trapped here if --trap-errors is
@@ -205,7 +200,14 @@ class Tarsqi:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
-    def write_output(self):
+    def _create_pipeline(self):
+        """Return the pipeline as a list of pairs with the component name and wrapper."""
+        component_names = get_default_pipeline(self.options)
+        if self.options.pipeline:
+            component_names = self.options.pipeline.split(',')
+        return [(name, self.components[name]) for name in component_names]
+
+    def _write_output(self):
         """Write the TarsqiDocument to the output file."""
         self.document.print_all(self.output)
         try:
