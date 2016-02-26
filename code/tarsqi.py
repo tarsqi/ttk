@@ -144,13 +144,12 @@ class Tarsqi:
             logger.info(self.input)
             self.document = self.source_parser.parse_file(self.input)
             self._process_document()
-            os.chdir(TTK_ROOT)
             self._write_output()
 
     def process_string(self, input_string):
-        """Similar to process(), except that (1) it runs on an input string and
-        not a file given at initialization, (2) it does not write th eoutput to
-        a file and (3) it returns the TarsqiDocument."""
+        """Similar to process(), except that it runs on an input string and not
+        on a file, it does not write the output to a file and it returns the
+        TarsqiDocument."""
         logger.info(input_string)
         self.document = self.source_parser.parse_string(input_string)
         self._process_document()

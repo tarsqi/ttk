@@ -30,7 +30,6 @@ class MetadataParser:
     def parse(self, tarsqidoc):
         """Adds metadata to the TarsqiDocument. The only thing it adds to the metadata
         dictionary is the DCT, which is set to today."""
-        self.sourcedoc = tarsqidoc.source
         tarsqidoc.metadata['dct'] = self.get_dct()
 
     def get_dct(self):

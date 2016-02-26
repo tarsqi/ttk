@@ -21,6 +21,9 @@
 
 <p class="navigation">
 [ <a href="#toplevel">toplevel</a>
+| <a href="#source">source processing</a>
+| <a href="#pipeline">pipeline</a>
+| <a href="#output">output</a>
 | <a href="#tags">tags</a>
 ]
 </p>
@@ -42,9 +45,16 @@ also be overridden on the command line invocation.
 a list of pairs where each pair has the name of the component and the Python
 class that implements it.
 
-<li>Select the source parser. There are four parsers defined in
-docmodel.parsers: DefaultParser, TimebankParser, ATEEParser and RTE3Parser. The
-choice of parser is guided by the --genre parameter.
+<li>Select the source parser and the metadata parser using the value of the
+--source option. There are three source parsers defined in
+docmodel.source_parser: SourceParserXML, SourceParserText and
+SourceParserTTK. These deal with the three input formats that the Tarsqi Toolkit
+is sensitive to. Metadata parsers are defined in docmodel.metadata_parse,
+currently there are five of them: MetadataParser, MetadataParserTTK,
+MetadataParserTimebank, MetadataParserATEE, MetadataParserRTE3 and
+MetadataParserVA.
+
+<li>Set the minimal document structure parser that is used as a default.
 
 </ol>
 
@@ -54,15 +64,55 @@ things:</p>
 
 <ol class="spacy">
 
-<li>The class docmodel.source_parser.SourceParser parses the input file using
-parse_file(filename) and returns an instance of docmodel.source_parser.SourceDoc
-which includes two instance variables: text and tags.
+<li>Parse the input document and create a TarsqiDocument. This involves running
+a source parser, a metadata parser and a minimal document structure parser.</li>
 
-<img src="images/sourceparser.png"/ height="75">
+<img src="images/sourceparser.png"/ height="95">
+
+<li>Add processing options to the TarsqiDocument.</li>
+
+<li>Apply components as specified by the pipeline.</li>
+
+<li>Write the output to a file.</li>
+
+</ol>
+
+<p>We will discuss most of these steps in some more detail, but let's first take
+a look at the structure of the TarsqiDocument object since it is central to a
+lot of the processing in the Tarsqi toolkit. The four main elements of a
+TarsqiDocument are shown in the table below.</p>
 
 <table class="pythonclass indent spacy">
 <tr>
-  <td class="name" colspan="2">docmodel.source_parser.SourceDoc</td>
+  <td class="name" colspan="2">docmodel.document.TarsqiDocument</td>
+</tr>
+<tr>
+  <td class="attribute">source</td>
+  <td>an instance of docmodel.document.SourceDoc</td>
+</tr>
+<tr>
+  <td class="attribute">metadata</td>
+  <td>a dictionary with meta data</td>
+</tr>
+<tr>
+  <td class="attribute">options</td>
+  <td>an instance of tarsqi.Options containing processing options</td>
+</tr>
+<tr>
+  <td class="attribute">elements</td>
+  <td>a list of instances of docmodel.document.TarsqiDocElement</td>
+</tr>
+</table>
+
+<p>The SourceDoc is created by the source parser in step 1 above, the metadata
+dictionary by the metadata parser in step 1, and the list of elements by the
+document structure parser in step 1. The options are set in step 2. Application
+of pipeline components (step 3) changes elements in the elements list. The
+SourceDoc has the following structure:</p>
+
+<table class="pythonclass indent spacy">
+<tr>
+  <td class="name" colspan="2">docmodel.document.SourceDoc</td>
 </tr>
 <tr>
   <td class="attribute">filename</td>
@@ -77,15 +127,15 @@ which includes two instance variables: text and tags.
   <td>
     <table class="pythonclass embedded">
       <tr>
-	<td class="name" colspan="2">docmodel.source_parser.TagRepository</td>
+	<td class="name" colspan="2">docmodel.document.TagRepository</td>
       </tr>
       <tr>
 	<td class="attribute">tags</td>
-	<td>list of instances of docmodel.source_parser.Tag</td>
+	<td>list of instances of docmodel.document.Tag</td>
       </tr>  
       <tr>
 	<td class="attribute">opening_tags</td>
-	<td>dictionary of instances of docmodel.source_parser.Tag, indexed on
+	<td>dictionary of instances of docmodel.document.Tag, indexed on
 	opening offsets</td>
       </tr>  
       <tr>
@@ -98,13 +148,64 @@ which includes two instance variables: text and tags.
 </tr>  
 </table>
 
-The input is assumed to be an XML file with inline XML tags and the SourceParser
-turns it into the primary text data (text without tags) and a dictionary of
-class TagRepository which has tags with character offsets pointing into the
-primary data. Both instance variables are intended to be read-only. That is,
-after the SourceDoc is created the primary data string never changes and tags
-are not added to the TagRepository. Here is a minimal example as an
-illustration:
+<p>We now turn to how the three parsers of step 1 operate and how they fill in
+the above structures.</p>
+
+
+<a name="source"/>
+<h3>Parsing the source, its metadata and its structure</h3>
+
+<p>As the first part of step 1, the TarsqiDocument is initialized by subclasses
+of docmodel.source_parser.SourceParser. These classes parse the input file using
+parse_file(filename) and build the embedded SourceDoc instance in the source
+variable. The other variables (metadata, options and elements) are not filled in
+yet.</p>
+
+<p>Three subclasses of SourceParser are defined: SourceParserXML,
+SourceParserText and SourceParserTTK. Which one is picked depends on the
+--source option. There is a dictionary in docmodel.main that maps the source to
+a source parser and to a metadata parser and the function create_source_parser()
+is used in the tarsqi module to get this parser.</p>
+
+<pre class="example indent">
+<i>docmodel.main</i>
+
+PARSERS = {
+    'xml': (SourceParserXML, MetadataParser),
+    'timebank': (SourceParserXML, MetadataParserTimebank),
+    'text': (SourceParserText, MetadataParserText),
+    'ttk': (SourceParserTTK, MetadataParserTTK) }
+</pre>
+
+<p>The Tarsqi initialization method takes the result of create_source_parser()
+and uses it to set the value of the source_parser variable of the Tarsqi
+instance. And this parser is used by the Tarsqi.process() method, a fragment of
+which is hown here, together with its helper method _process_document().</p>
+
+<pre class="example indent">
+<i>tarsqi.Tarsqi</i>
+
+def process(self):
+    self.document = self.source_parser.parse_file(self.input)
+    self._process_document()
+    self._write_output()
+
+def _process_document(self):
+    self.metadata_parser.parse(self.document)
+    self.docstructure_parser.parse(self.document)
+    self.document.add_options(self.options)
+    for (name, wrapper) in self.pipeline:
+        self._apply_component(name, wrapper, self.document)
+</pre>
+
+<p>When we use --source=xml on the command line then the SourceParserXML is the
+source parser and The input is assumed to be an XML file with inline XML tags
+which SourceParserXML splits the input into the primary text data (text without tags)
+and a dictionary of class TagRepository which has tags with character offsets
+pointing into the primary data. Both instance variables are intended to be
+read-only. That is, after the SourceDoc is created the primary data string never
+changes and tags are not added to the TagRepository. Here is a minimal example
+as an illustration:
 
 <pre class="example indent">
 &lt;?xml version="1.0" ?>
@@ -147,84 +248,87 @@ dictionary for the above example is:
   14: { 1: {u'text': True} } }
 </pre>
 
-This dictionary says that at character offset 8 we close a noun tag that was
+<p>This dictionary says that at character offset 8 we close a noun tag that was
 opened at offset 5. The TagRepository class has convenience methods to access
-tags.
+tags.</p>
 
-<li>One of the parsers from docmodel.parsers is then used to take the SourceDoc
-instance and create an instance of docmodel.document.TarsqiDocument.
+<p>The second part of step 1 is to run a metadata parser, all metadata parser
+are defined in docmodel.metadata_parser. Again, what metadata parser to use is
+determined by the --source command line option and the mapping in the PARSERS
+dictionary in docmodel.main.</p>
 
-<img src="images/defaultparser.png"/ height="75">
-
-<table class="pythonclass indent spacy">
-<tr>
-  <td class="name" colspan="2">docmodel.document.TarsqiDocument</td>
-</tr>
-<tr>
-  <td class="attribute">source</td>
-  <td>an instance of docmodel.source_parser.SourceDoc</td>
-</tr>
-<tr>
-  <td class="attribute">metadata</td>
-  <td>a dictionary</td>
-</tr>
-<tr>
-  <td class="attribute">parameters</td>
-  <td>a dictionary</td>
-</tr>
-<tr>
-  <td class="attribute">elements</td>
-  <td>a list of instances of docmodel.document.TarsqiDocElement</td>
-</tr>
-</table>
-
-The DefaultParser does some minimal processing of the source document. The first
-thing it does is to extract the document creation time (DCT) and put it in the
-metadata dictionary under the 'dct' key. In order to show how this happens, here
-is first a peak at the fragment of the process method which sets it all in
-motion:
+<p>For vanilla XML we use the default MetadataParser which takes a
+TarsqiDocument and fills in elements in its metadata dictionary. In fact, it
+only fills in one element, the Document Creation Time (DCT) which is added under
+the 'dct' key. To show how this happens, first recall the process() and
+_process_document() methods in the Tarsqi class, the latter is repeated here,
+with the call to the metadata parser in bold face.</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
 
-def process(self):
-    self.docsource = SourceParser().parse_file(self.input)
-    self.document = self.parser.parse(self.docsource)
+def _process_document(self):
+    <b>self.metadata_parser.parse(self.document)</b>
+    self.docstructure_parser.parse(self.document)
+    self.document.add_options(self.options)
+    for (name, wrapper) in self.pipeline:
+        self._apply_component(name, wrapper, self.document)
 </pre>
 
-The process() method uses the SourceParser to create an instance of DocSource
-and puts it in the docsource variable of the Tarsqi instance, this was outline
-in the item above. Then it asks a document-specific parser from
-docmodel.parsers, which is stored in the parser variable, to create the
-TarsqiDocument and put it in the document variable. Which parser depends on the
---genre command line argument, but by default it uses the DefaultParser
-class. The parse(method on DefaultParser takes the SourceDoc instance and create
-the metdata dictionarry as follows (again, this is just a fragment of the
-parse method, but the get_dct method is listed in its entirity):
+<p>All metadata parsers define a parse() method, which in the case of the
+default MetadataParser simply sets the DCT to today's date, which is what
+get_today() returns:</p>
 
 <pre class="example indent">
-<i>docmodel.parsers.DefaultParser</i>
+<i>docmodel.metadata_parser.MetadataParser</i>
 
-def parse(self, sourcedoc):
-    self.sourcedoc = sourcedoc
-    metadata = { 'dct': self.get_dct() }
+def parse(self, tarsqidoc):
+    tarsqidoc.metadata['dct'] = self.get_dct()
 
 def get_dct(self):
     return get_today()
 </pre>
 
-<p>So the default parser sets the DCT to the current date (which is what
-get_today returns). Other parsers currently defined extract certain xml elements
-from the document or parse the name of the input file. But any piece of code
-could be inserted here and the DCT can be extracted using a full document parse
-or a database lookup if needed. Note that get_dct has access to the filename,
-the file content and the tags in the file through the docsource variable.</p>
+<p>There are other metadata parsers with different approaches to getting the
+DCT. For example, the MetadataParserTimebank extracts certain xml elements from
+the document or parses the name of the input file. Any piece of code could be
+inserted in the parse() method and the DCT can be extracted using a full
+document parse or a database lookup if needed. Note that the metadata parser has
+access to the TarsqiDocument and its embedded SourceDoc, metadata and processing
+options. As for the options, the processing options are taken from the command
+line options and the code/settings.txt file. Therefore, any settings there are
+available to the metadata parser simpy by using something like the following:</p>
 
-<p>The second task of the DefaultParser is to split the document into paragraphs
-and put each paragraph in the elements list of the TarsqiDocument. In the
-current implementation of DefaultParser, all elements are instances of
-TarsqiDocParagraph, a subclass of TarsqiDocElement, which has the following
-structure:</p>
+<pre class="example indent">
+def parse(self, tarsqidoc):
+    dct_db = tarsqidoc.options.getopt('dct-database')
+    tarsqidoc.metadata['dct'] = lookup(tarsqidoc.source.filename, dct_db)
+</pre>
+
+<p>This piece of code assumes that 'dct-database' was given as a command line
+option (for example, "--dct-database=/home/databases/dct.sqlite") or was added
+to code/settings.txt, it also requires that lookup() is defined appropriately.</p>
+
+<p>The third and last part of step 1 is to apply the document parser. We again
+print the relevant code, this time with the document parser invocation
+highlighted.</p>
+
+<pre class="example indent">
+<i>tarsqi.Tarsqi</i>
+
+def _process_document(self):
+    self.metadata_parser.parse(self.document)
+    <b>self.docstructure_parser.parse(self.document)</b>
+    self.document.add_options(self.options)
+    for (name, wrapper) in self.pipeline:
+        self._apply_component(name, wrapper, self.document)
+</pre>
+
+<p>There is a simple default document parser named DocumentStructureParser
+defined in docmodel.docstructure_parser. This parser splits the document into
+paragraphs and puts each paragraph in the elements list of the
+TarsqiDocument. All elements are instances of TarsqiDocParagraph, a subclass of
+TarsqiDocElement, which has the following structure:</p>
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -244,32 +348,51 @@ structure:</p>
 </tr>
 <tr>
   <td class="attribute">source_tags</td>
-  <td>an instance of docmodel.source_parser.TagRepository, containing a subset
+  <td>an instance of docmodel.document.TagRepository, containing a subset
   of the tags in the source document, namely those that span part or all of the
   paragraph</td>
 </tr>
 <tr>
   <td class="attribute">tarsqi_tags</td>
-  <td>an instance of docmodel.source_parser.TagRepository, initially empty</td>
+  <td>an instance of docmodel.document.TagRepository, initially empty</td>
 </tr>
 </table>
 
-In the future, other sub classes of TarsqiDocElement will be added (for example
-SectionHeader) and most likely the elements variable will become a tree rather
-than a flat list.
+<p>In the future, other sub classes of TarsqiDocElement will be added (for example
+SectionHeader) and most possibly the elements variable will become a tree rather
+than a flat list. However, more advanced document processing will be done as a
+separate components and will probably be the first element of the pipeline
+described in the next sub section. It would overwrite the results of the default
+document structure parser.</p>
 
-<li>Add the parameters from the settings.txt file and the command line options
-to the TarsqiDocument, filling in the parameters dictionary.
 
-<li>Apply components as specified in the pipeline. Recall that on initialization
-the Tarsqi class creates a pipeline of components from the user's --pipeline
-option. If we had used a command line invocation like
+<a name="pipeline"/>
+<h3>Pipeline processing</h3>
+
+<p>Pipeline processing starts off from the same spot in the code as the parsers
+described above:</p>
+
+<pre class="example indent">
+<i>tarsqi.Tarsqi</i>
+
+def _process_document(self):
+    self.metadata_parser.parse(self.document)
+    self.docstructure_parser.parse(self.document)
+    self.document.add_options(self.options)
+    <b>for (name, wrapper) in self.pipeline:
+        self._apply_component(name, wrapper, self.document)</b>
+</pre>
+
+
+<p>This applies all components as specified in the pipeline. Recall that on
+initialization the Tarsqi class creates a pipeline of components from the user's
+--pipeline option. If we had used a command line invocation like</p>
 
 <pre class="example indent">
 $ python tarsqi.py --pipeline=PREPROCESSOR,GUTIME,EVITA in.xml out.xml
 </pre>
 
-then the pipeline as stored in the Tarsqi instance would be
+<p>then the pipeline as stored in the Tarsqi instance would be</p>
 
 <pre class="example indent">
 [('PREPROCESSOR', &lt;class components.preprocessing.wrapper.PreprocessorWrapper at 0x10514a668>), 
@@ -277,11 +400,11 @@ then the pipeline as stored in the Tarsqi instance would be
  ('EVITA', &lt;class components.evita.wrapper.EvitaWrapper at 0x1051c3ce8>)]
 </pre>
 
-The code for all components is wrapped in special wrapper classes like
+<p>The code for all components is wrapped in special wrapper classes like
 PreprocessorWrapper and EvitaWrapper in the example above. All available
 wrappers are defined in the COMPONENTS dictiornary in
 components.__init__.py. Every wrapper is required to have the following two
-methods:
+methods:</p>
 
 <ol class="tight">
 <li>an initialization method that takes the TarsqiDocument as its sole argument</li>
@@ -289,22 +412,22 @@ methods:
 instance.</li>
 </ol>
 
-Components update the TarsqiDocument by updating the TagRepository instances
+<p>Components update the TarsqiDocument by updating the TagRepository instances
 inside the TarsqiDocElement instances in the elements list. In some cases,
 another data structure is updated first and then the results are exported to the
-TarsqiDocElements.
+TarsqiDocElements.</p>
 
-<li>Print results. The Tarsqi class does this by asking the TarsqiDocument to
-print the source string and all tags to a document, which in turn is done by
-retrieving the source and the source tags from the SourceDoc instance and the
-added Tarsqi tags from the TagRepository in the tarsqi_tags attributes on
-TarsqiDocElements. The output is written to one file with both the primary data
-and the tags.</li>
 
-</ol>
+<a name="output"/>
+<h3>Tarsqi output</h3>
 
-<p>To close this section, here is an example of an output file that the Tarsqi
-toolkit produces. Suppose we have the input below.</p>
+<p>The Tarsqi class prints results by asking the TarsqiDocument to print the
+source text and all tags to a document, which in turn is done by retrieving the
+source and the source tags from the SourceDoc instance and the added Tarsqi tags
+from the TagRepository in the tarsqi_tags attributes on TarsqiDocElements. The
+output is written to one file with both the primary data and the tags. Here is
+an example of an output file that the Tarsqi toolkit produces. Suppose we have
+the input below.</p>
 
 <pre class="example indent">
 &lt;?xml version="1.0" ?>
@@ -343,8 +466,8 @@ He sleeps on Friday.
 </pre>
 
 <p>All elements, with the exception of the Document Creation Time occurr inside
-of doc_element tags. Note that the EVENT tag will actually be printed on one
-line only, it is split over two lines here for readability.</p>
+of doc_element tags. Note that in real life the EVENT tag will actually be
+printed on one line only, it is split over two lines here for readability.</p>
 
 
 
@@ -363,7 +486,7 @@ prefixes and the tags they go with are listed in the table below.</p>
   </tr>
   <tr>
     <td>&lt;doc_element&gt;</td>
-    <td>DefaultParser and subclasses</td>
+    <td>DocumentStructureParser</td>
     <td>paragraphs</td>
   </tr>
   <tr>
