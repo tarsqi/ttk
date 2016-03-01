@@ -40,49 +40,7 @@ class MetadataParser:
         """Return the text content of the first tag with name tagname, return None if
         there is no such tag."""
         try:
-            tag = self.sourcedoc.tags.find_tags(tagname)[0]
-            content = self.sourcedoc.text[tag.begin:tag.end].strip()
-            return content
-        except IndexError:
-            logger.warn("Cannot get the %s tag in this document" % tagname)
-            return None
-
-
-class SimpleParser:
-
-    """The simplest SourceDoc parser. It creates a TarsqiDocument instance
-    with a list of TarsqiDocParagraphs in it."""
-
-    def __init__(self, options):
-        """At the moment, initialization does not use any of the options,
-        but this could change."""
-        self.options = options
-
-    def parse(self, tarsqidoc):
-        """The TarsqiDocument includes the SourceDoc instance and a meta data dictionary
-        with just one element, the DCT, which is set to today. The elements
-        variable of the TarsqiDocument is set to a list of TarsqiDocParagraph
-        instances, using white lines to separate the paragraphs.
-
-        """
-        self.sourcedoc = tarsqidoc.source
-        tarsqidoc.metadata['dct'] = self.get_dct()
-        element_offsets = split_paragraph(self.sourcedoc.text)
-        for (p1, p2) in element_offsets:
-            para = TarsqiDocParagraph(tarsqidoc, p1, p2)
-            para.add_source_tags(self.sourcedoc.tags)
-            para.source_tags.index()
-            tarsqidoc.elements.append(para)
-
-    def get_dct(self):
-        """Return today's date in YYYYMMDD format."""
-        return get_today()
-
-    def _get_tag_content(self, tagname):
-        """Return the text content of the first tag with name tagname, return None if
-        there is no such tag."""
-        try:
-            tag = self.sourcedoc.tags.find_tags(tagname)[0]
+            tag = self.sourcedoc.source_tags.find_tags(tagname)[0]
             content = self.sourcedoc.text[tag.begin:tag.end].strip()
             return content
         except IndexError:
@@ -165,7 +123,7 @@ class MetadataParserATEE(MetadataParser):
     def get_dct(self):
         """All ATEE documents have a DATE tag with a value attribute, the value
         of that attribute is returned."""
-        date_tag = self.sourcedoc.tags.find_tag('DATE')
+        date_tag = self.sourcedoc.source_tags.find_tag('DATE')
         return date_tag.attrs['value']
 
 

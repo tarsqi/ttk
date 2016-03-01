@@ -109,7 +109,7 @@ class TarsqiDocument:
                     fh.write("  <comment offset=\"%s\">%s</comment>\n" % (offset, comment))
             fh.write("</comments>\n")
         fh.write("<source_tags>\n")
-        for tag in self.source.tags.tags:
+        for tag in self.source.source_tags.tags:
             fh.write("  %s\n" % tag.as_ttk_tag())
         fh.write("</source_tags>\n")
         fh.write("<ttk_tags>\n")
@@ -127,7 +127,7 @@ class TarsqiDocument:
     def print_source_tags(self, fname=None):
         """Prints all the tags from the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
-        for tag in self.source.tags.tags:
+        for tag in self.source.source_tags.tags:
             fh.write(tag.as_ttk_tag()+"\n")
 
     def print_tarsqi_tags(self, fname=None):
@@ -143,7 +143,7 @@ class TarsqiDocument:
         """Prints all the tarsqi tags added to the source documents to a layer file."""
         fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
         for e in self.elements:
-            for tag in tag_repository.tags:
+            for tag in tag_repository.source_tags:
                 fh.write(tag.as_ttk_tag()+"\n")
 
     def list_of_sentences(self):
@@ -242,9 +242,10 @@ class TarsqiDocParagraph(TarsqiDocElement):
 
 class SourceDoc:
 
-    """A SourceDoc is created by the SourceParser and contains source data and annotations
-    of those data. The source data are put in the text variable as a unicode string,
-    tags are in the tags variable and contain begin and end positions in the source."""
+    """A SourceDoc is created by a SourceParser and contains source data and
+    annotations of those data. The source data are put in the text variable as a
+    unicode string, tags are in the source_tags and tarsqi_tags variables and
+    contain begin and end positions in the source."""
 
     def __init__(self, filename='<STRING>'):
         """Initialize a SourceDoc on a filename or a string."""
@@ -254,7 +255,8 @@ class SourceDoc:
         self.text = []
         self.comments = {}
         self.processing_instructions = {}
-        self.tags = TagRepository()
+        self.source_tags = TagRepository()
+        self.tarsqi_tags = TagRepository()
         self.offset = 0
         self.tag_number = 0
 
@@ -262,19 +264,22 @@ class SourceDoc:
         return self.text[i]
 
     def add_opening_tag(self, name, attrs):
-        """Add an opening tag."""
+        """Add an opening tag to source_tags. This is used by the StartElementHandler of
+        the Expat parser in SourceParserXML."""
         #print self.offset
         self.tag_number += 1
-        self.tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
+        self.source_tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
     def add_closing_tag(self, name):
-        """Add a closing tag."""
+        """Add a closing tag  to source_tags. This is used by the EndElementHandler of
+        the Expat parser in SourceParserXML."""
         #print self.offset
         self.tag_number += 1
-        self.tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
+        self.source_tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
 
     def add_characters(self, string):
-        """Add a character string to the source and increment the current offset."""
+        """Add a character string to the source and increment the current offset. Used
+        by the CharacterDataHandler of the Expat parser in SourceParserXML."""
         #print 'adding', len(string), 'characters'
         self.text.append(string) # this is already unicode
         self.offset += len(string)
@@ -288,16 +293,17 @@ class SourceDoc:
     def finish(self):
         """Transform the source list into a string, merge the begin and end tags, and
         index the tags on offsets."""
+        # TODO: this is probably different depending on what source parser is used
         self.text = ''.join(self.text)
-        self.tags.merge()
-        self.tags.index()
+        self.source_tags.merge()
+        self.source_tags.index()
 
     def pp(self):
         """Print source and tags."""
         print "\n<SourceDoc on '%s'>\n" % self.filename
         print self.text.encode('utf-8').strip()
         print "\nTAGS:"
-        self.tags.pp()
+        self.source_tags.pp()
         print "\nXMLDECL:", self.xmldecl
         print "COMMENTS:", self.comments
         print "PROCESSING:", self.processing_instructions
@@ -311,7 +317,7 @@ class SourceDoc:
         """Print all the tags to a file. Each tag is printed on a tab-separated line with
         opening offset, closing offset, tag name, and attribute value pairs."""
         fh = open(filename, 'w')
-        for t in self.tags.tags:
+        for t in self.source_tags.tags:
             fh.write("%d\t%d\t%s" % (t.begin, t.end, t.name))
             for (attr, val) in t.attrs.items():
                 fh.write("\t%s=\"%s\"" % (attr, val.replace('"','&quot;')))
@@ -344,7 +350,7 @@ class SourceDoc:
                 xml_string += "</%s>" % t.name
 
             # any new opening tags?
-            for t in self.tags.opening_tags.get(offset,[]):
+            for t in self.source_tags.opening_tags.get(offset,[]):
                 stack.append(t)
                 xml_string += "<%s%s>" % (t.name, t.attributes_as_string())
 
@@ -366,7 +372,7 @@ class SourceDoc:
         if not stack:
             return (stack, matching)
         last = stack[-1]
-        if self.tags.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
+        if self.source_tags.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
             stack.pop()
             matching.append(last)
             return self._matching_closing_tags(offset, stack, matching)

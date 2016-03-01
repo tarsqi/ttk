@@ -34,6 +34,7 @@ SourceParserTTK
 import sys, codecs, pprint
 import xml.parsers.expat
 from xml.sax.saxutils import escape, quoteattr
+from xml.dom import minidom
 
 from docmodel.document import TarsqiDocument, SourceDoc
 
@@ -64,8 +65,53 @@ class SourceParserText(SourceParser):
 
 class SourceParserTTK(SourceParser):
 
-    pass
+    def parse_file(self, filename):
+        # TODO: does this do the right thing for non-ascii?
+        dom = minidom.parse(open(filename))
+        topnodes = {}
+        for node in dom.firstChild.childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                topnodes[node.tagName] = node
+        print_dom(dom.firstChild)
+        self.sourcedoc = SourceDoc(filename)
+        self.sourcedoc.text = topnodes['text'].firstChild.data
 
+        # add all tags to TagRepository, (need to distinguish between source
+        # tags and tarsqi tags, meaning that the sourcedoc also needs a
+        # tarsqi_tags field)
+
+        print topnodes.keys()
+        for node in topnodes['source_tags'].childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                print node, node.attributes.items()
+#                for a in node.attributes:
+#                    print a
+
+        # then the metadata parser needs to get the metadata
+        # then the document parser needs to build the elements list of the
+        # do something with the comments
+
+        self.sourcedoc.pp()
+        self.sourcedoc.finish()
+
+
+        tarsqidoc = TarsqiDocument(self.sourcedoc, {})
+        return tarsqidoc
+
+
+    def parse_string(self, text):
+        dom = minidom.parseString(text)
+        exit()
+
+
+def print_dom(node, indent=0):
+    if node is None:
+        return
+    if node.nodeType == minidom.Node.TEXT_NODE and not node.data.strip():
+        return
+    print "%s%s" % (indent*' ', node)
+    for childnode in node.childNodes:
+        print_dom(childnode, indent+3)
 
 
 class SourceParserXML(SourceParser):
@@ -76,11 +122,16 @@ class SourceParserXML(SourceParser):
     Instance variables
        encoding - a string
        sourcedoc - an instance of SourceDoc
-       parser - an Expat parser
+       parser - an Expat parser """
 
-    TODO: may need to add other handlers for completeness, see
-    http://docs.python.org/library/pyexpat.html """
+    # TODO: may need to add other handlers for completeness, see
+    # http://docs.python.org/library/pyexpat.html
 
+    # TODO. The way this is set up now requires the SourceDoc to know a lot
+    # about the internal workings of the Expat parser (with for example the
+    # notion that begin and end tags are found separately. It is probably better
+    # to keep that knowledge here, by building lists of tags here and only
+    # export them after all elements are gathered (see note in parse_file).
 
     def __init__(self, encoding='utf-8'):
         """Set up the Expat parser."""
@@ -103,6 +154,10 @@ class SourceParserXML(SourceParser):
         self.sourcedoc = SourceDoc(filename)
         # TODO: should this be codecs.open() for non-ascii?
         self.parser.ParseFile(open(filename))
+        # TODO: if we move functionality from SourceDoc (see TODO above) then we
+        # would gather our things here and then send generalized tags (probably
+        # just dictionaries) to the source doc, these tags would be the same for
+        # SourceParserXML and SourceParserTTK.
         self.sourcedoc.finish()
         tarsqidoc = TarsqiDocument(self.sourcedoc, {})
         return tarsqidoc

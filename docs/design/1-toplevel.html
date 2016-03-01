@@ -123,7 +123,7 @@ SourceDoc has the following structure:</p>
   <td>unicode string</td>
 </tr>  
 <tr>
-  <td class="attribute">tags</td>
+  <td class="attribute">source_tags</td>
   <td>
     <table class="pythonclass embedded">
       <tr>
@@ -146,10 +146,39 @@ SourceDoc has the following structure:</p>
     </table>
   </td>
 </tr>  
+<tr>
+  <td class="attribute">tarsqi_tags</td>
+  <td>
+    <table class="pythonclass embedded">
+      <tr>
+	<td class="name" colspan="2">docmodel.document.TagRepository</td>
+      </tr>
+      <tr>
+	<td class="attribute">tags</td>
+	<td>list of instances of docmodel.document.Tag</td>
+      </tr>
+      <tr>
+	<td class="attribute">opening_tags</td>
+	<td>dictionary of instances of docmodel.document.Tag, indexed on
+	opening offsets</td>
+      </tr>
+      <tr>
+	<td class="attribute">closing_tags</td>
+	<td>dictionary of tag names, indexed on closing offsets and opening
+	offsets</td>
+      </tr>
+    </table>
+  </td>
+</tr>
 </table>
 
-<p>We now turn to how the three parsers of step 1 operate and how they fill in
-the above structures.</p>
+<p>Note how the tags are split between source_tags and tarsqi_tags. The latter
+contains tags that were at some point added by the Tarsqi Toolkit. In many
+cases, that TagRepository will be empty, but if what we open is a TTK document
+that has been processed by TTK before, there will be Tarsqi tags in the
+document. This is further explained in the next sub section, where we turn to
+how the three parsers of step 1 operate and how they fill in the above
+structures.</p>
 
 
 <a name="source"/>
@@ -435,7 +464,9 @@ the input below.</p>
 </pre>
 
 <p>And suppose we have a pipeline that includes the preprocessor, GUTime and
-Evita. Then the output will be:</p>
+Evita. Then the output will be as follows (note that in real life the EVENT tag
+would actually be printed on one line only, it is split over two lines here for
+readability).</p>
 
 <pre class="example indent">
 &lt;ttk>
@@ -465,11 +496,13 @@ He sleeps on Friday.
 &lt;/ttk>
 </pre>
 
-<p>All elements, with the exception of the Document Creation Time occurr inside
-of doc_element tags. Note that in real life the EVENT tag will actually be
-printed on one line only, it is split over two lines here for readability.</p>
-
-
+<p>All elements, with the exception of the Document Creation Time occur inside
+of doc_element tags. The DCT tag and other meta tags will all be immediate
+daughters of ttk_tags, preferably before all the doc_element tags. Some tags,
+like TLINK tags, do not necessarily fall into one document element because they
+can link two events from different document elements. These tags will be added
+to the document element of one of the events, preferably the source of the
+link.</p>
 
 <a name="tags"/>
 <h2>Tags added by the Tarsqi Toolkit</h2>

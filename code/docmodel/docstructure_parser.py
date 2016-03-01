@@ -1,3 +1,4 @@
+
 """Document Structure Parser.
 
 This module contains a minimal document structure parser. It is meant as a
@@ -26,7 +27,8 @@ class DocumentStructureParser:
         element_offsets = split_paragraph(self.sourcedoc.text)
         for (p1, p2) in element_offsets:
             para = TarsqiDocParagraph(tarsqidoc, p1, p2)
-            para.add_source_tags(self.sourcedoc.tags)
+            para.add_source_tags(self.sourcedoc.source_tags)
+            # TODO: add ttk tags for those documents that started off as ttk documents
             para.source_tags.index()
             tarsqidoc.elements.append(para)
 
