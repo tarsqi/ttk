@@ -97,10 +97,18 @@ class TarsqiDocument:
         fh.write("\n")
 
     def print_all(self, fname):
-        """Write source string, source tags and ttk tags all to one file."""
+        """Write source string, metadata, comments, source tags and tarsqi tags
+        all to one file."""
         fh = codecs.open(fname, mode='w', encoding='UTF-8')
         fh.write("<ttk>\n")
         fh.write("<text>%s</text>\n" % escape(self.source.text))
+        self._print_comments(fh)
+        self._print_metadata(fh)
+        self._print_source_tags(fh)
+        self._print_tarsqi_tags(fh)
+        fh.write("</ttk>\n")
+
+    def _print_comments(self, fh):
         if self.source.comments:
             fh.write("<comments>\n")
             for offset in sorted(self.source.comments.keys()):
@@ -108,43 +116,28 @@ class TarsqiDocument:
                     comment = escape(comment.replace("\n", '\\n'))
                     fh.write("  <comment offset=\"%s\">%s</comment>\n" % (offset, comment))
             fh.write("</comments>\n")
+
+    def _print_metadata(self, fh):
+        fh.write("<metadata>\n")
+        for k,v in self.metadata.items():
+            fh.write("  <%s value=\"%s\"/>\n" % (k, v))
+        fh.write("</metadata>\n")
+
+    def _print_source_tags(self, fh):
         fh.write("<source_tags>\n")
         for tag in self.source.source_tags.tags:
             fh.write("  %s\n" % tag.as_ttk_tag())
         fh.write("</source_tags>\n")
-        fh.write("<ttk_tags>\n")
-        fh.write("  <TIMEX3 tid=\"t0\" type=\"DATE\" value=\"%s\"" % self.metadata['dct']
-                 + " functionInDocument=\"CREATION_TIME\"/>\n")
+
+    def _print_tarsqi_tags(self, fh):
+        fh.write("<tarsqi_tags>\n")
         for e in self.elements:
             fh.write("  <doc_element type=\"%s\" begin=\"%s\" end=\"%s\">\n"
                      % (e.__class__.__name__, e.begin, e.end))
             for tag in sorted(e.tarsqi_tags.tags):
                 fh.write("    %s\n" % tag.as_ttk_tag())
             fh.write("  </doc_element>\n")
-        fh.write("</ttk_tags>\n")
-        fh.write("</ttk>\n")
-
-    def print_source_tags(self, fname=None):
-        """Prints all the tags from the source documents to a layer file."""
-        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
-        for tag in self.source.source_tags.tags:
-            fh.write(tag.as_ttk_tag()+"\n")
-
-    def print_tarsqi_tags(self, fname=None):
-        """Prints all the tarsqi tags added to the source documents to a layer file."""
-        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
-        fh.write("<ttk>\n")
-        for e in self.elements:
-            for tag in e.tarsqi_tags.tags:
-                fh.write('  ' + tag.as_ttk_tag() + "\n")
-        fh.write("</ttk>\n")
-
-    def _print_tags(self, tag_repository, fname=None):
-        """Prints all the tarsqi tags added to the source documents to a layer file."""
-        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
-        for e in self.elements:
-            for tag in tag_repository.source_tags:
-                fh.write(tag.as_ttk_tag()+"\n")
+        fh.write("</tarsqi_tags>\n")
 
     def list_of_sentences(self):
         sentences = []
@@ -245,7 +238,17 @@ class SourceDoc:
     """A SourceDoc is created by a SourceParser and contains source data and
     annotations of those data. The source data are put in the text variable as a
     unicode string, tags are in the source_tags and tarsqi_tags variables and
-    contain begin and end positions in the source."""
+    contain begin and end positions in the source. In addition, metadata,
+    comments, and any other data from the input is stored here.
+
+    Note that the SourceDoc is the input to further Tarsqi processing and it
+    stores everything that was given as input to the pipeline. This could be a
+    text document or a TimeBank document without any TimeML annotations. But it
+    could also be a TTK document that was the result of prior application of
+    another pipeline and that document can contain Tarsqi tags. The metadata and
+    tarsqi_tags will be exported to the relevant places in the TarsqiDocument
+    when the metadata parse and the document structure parsers apply to the
+    TarsqiDocument."""
 
     def __init__(self, filename='<STRING>'):
         """Initialize a SourceDoc on a filename or a string."""
@@ -257,6 +260,7 @@ class SourceDoc:
         self.processing_instructions = {}
         self.source_tags = TagRepository()
         self.tarsqi_tags = TagRepository()
+        self.metadata = {}
         self.offset = 0
         self.tag_number = 0
 
@@ -297,13 +301,17 @@ class SourceDoc:
         self.text = ''.join(self.text)
         self.source_tags.merge()
         self.source_tags.index()
+        self.tarsqi_tags.merge()
+        self.tarsqi_tags.index()
 
     def pp(self):
         """Print source and tags."""
         print "\n<SourceDoc on '%s'>\n" % self.filename
         print self.text.encode('utf-8').strip()
-        print "\nTAGS:"
+        print "\nSOURCE_TAGS:"
         self.source_tags.pp()
+        print "\nTARSQI_TAGS:"
+        self.tarsqi_tags.pp()
         print "\nXMLDECL:", self.xmldecl
         print "COMMENTS:", self.comments
         print "PROCESSING:", self.processing_instructions
@@ -423,7 +431,7 @@ class TagRepository:
         return self.tags
 
     def add_tmp_tag(self, tagInstance):
-        """Add a OpeningTag or ClosingTag to a temporary list. Used by the XML
+        """Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
         self.tmp.append(tagInstance)
 
@@ -572,7 +580,7 @@ class OpeningTag(Tag):
 class ClosingTag(Tag):
 
     "Like Tag, but self.begin and self.attrs are always None."""
-    
+
     def __init__(self, id, name, offset):
         Tag.__init__(self, id, name, None, offset, None)
 

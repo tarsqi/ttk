@@ -39,10 +39,10 @@ def parse_file(fname):
     dom = parse(fname)
     text = dom.getElementsByTagName('text')[0]
     source_tags = dom.getElementsByTagName('source_tags')[0]
-    ttk_tags = dom.getElementsByTagName('ttk_tags')[0]
-    sentences = ttk_tags.getElementsByTagName('s')
-    events = ttk_tags.getElementsByTagName('EVENT')
-    slinks = ttk_tags.getElementsByTagName('SLINK')
+    tarsqi_tags = dom.getElementsByTagName('tarsqi_tags')[0]
+    sentences = tarsqi_tags.getElementsByTagName('s')
+    events = tarsqi_tags.getElementsByTagName('EVENT')
+    slinks = tarsqi_tags.getElementsByTagName('SLINK')
     source_text = text.firstChild.data
     parse_slinks(os.path.basename(fname), slinks, events, sentences, source_text)
 
