@@ -43,17 +43,17 @@ class Sentence(Constituent):
             elif element.isEvent():
                 self.eventList.append((eventLocation, element.eid))
 
-    def pretty_print(self, tree=True, verbose=False):
+    def pretty_print(self, tree=True, verbose=False, indent=0):
         """Pretty print the sentence by pretty printing all daughters"""
         if verbose:
             print "SENTENCE %s\n" % self.position
             print "  parent     =  %s" % self.parent
             print "  eventList  =  %s\n" % self.eventList
         else:
-            print "<Sentence position=%s %d-%d>" % (self.position, self.begin, self.end)
+            print "%s<Sentence position=%s %d-%d>" % (indent*' ', self.position, self.begin, self.end)
         if tree or verbose:
             for dtr in self.dtrs:
-                dtr.pretty_print(indent=2)
+                dtr.pretty_print(indent=indent+2)
 
     def pp(self, tree=True):
         """Delegates to self.pretty_print()."""

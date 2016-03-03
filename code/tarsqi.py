@@ -208,7 +208,6 @@ class Tarsqi:
 
     def _write_output(self):
         """Write the TarsqiDocument to the output file."""
-        self.document.print_all(self.output)
         try:
             self.document.print_all(self.output)
         except:

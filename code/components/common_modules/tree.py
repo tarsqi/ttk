@@ -4,7 +4,6 @@ import sys
 import re
 from xml.sax.saxutils import escape, quoteattr
 
-#from docmodel.source_parser import Tag
 from docmodel.document import Tag
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
