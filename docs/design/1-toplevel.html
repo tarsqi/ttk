@@ -100,7 +100,9 @@ TarsqiDocument are shown in the table below.</p>
 </tr>
 <tr>
   <td class="attribute">elements</td>
-  <td>a list of instances of docmodel.document.TarsqiDocElement</td>
+  <td>a list of instances of docmodel.document.TarsqiDocElement; the elements in
+  this list are used by pipeline components like the preprocessor, Evita and
+  Slinket</td>
 </tr>
 </table>
 
@@ -121,7 +123,16 @@ SourceDoc has the following structure:</p>
 <tr>
   <td class="attribute">text</td>
   <td>unicode string</td>
-</tr>  
+</tr>
+<tr>
+  <td class="attribute">metadata</td>
+  <td>a dictionary with the metadata expressed in the source document</td>
+</tr>
+<tr>
+  <td class="attribute">comments</td>
+  <td>a dictionary of comments in the source documents, indexed on text offset
+  of the comment; currently, these comments are always XML comments</td>
+</tr>
 <tr>
   <td class="attribute">source_tags</td>
   <td>
@@ -132,20 +143,20 @@ SourceDoc has the following structure:</p>
       <tr>
 	<td class="attribute">tags</td>
 	<td>list of instances of docmodel.document.Tag</td>
-      </tr>  
+      </tr>
       <tr>
 	<td class="attribute">opening_tags</td>
 	<td>dictionary of instances of docmodel.document.Tag, indexed on
 	opening offsets</td>
-      </tr>  
+      </tr>
       <tr>
 	<td class="attribute">closing_tags</td>
 	<td>dictionary of tag names, indexed on closing offsets and opening
 	offsets</td>
-      </tr>  
+      </tr>
     </table>
   </td>
-</tr>  
+</tr>
 <tr>
   <td class="attribute">tarsqi_tags</td>
   <td>
@@ -184,8 +195,9 @@ structures.</p>
 <a name="source"/>
 <h3>Parsing the source, its metadata and its structure</h3>
 
-<p>As the first part of step 1, the TarsqiDocument is initialized by subclasses
-of docmodel.source_parser.SourceParser. These classes parse the input file using
+<p><span class="header">SourceParser</span>. As the first part of step 1, the
+TarsqiDocument is initialized by one of the subclasses of
+docmodel.source_parser.SourceParser. These classes parse the input file using
 parse_file(filename) and build the embedded SourceDoc instance in the source
 variable. The other variables (metadata, options and elements) are not filled in
 yet.</p>
@@ -209,7 +221,7 @@ PARSERS = {
 <p>The Tarsqi initialization method takes the result of create_source_parser()
 and uses it to set the value of the source_parser variable of the Tarsqi
 instance. And this parser is used by the Tarsqi.process() method, a fragment of
-which is hown here, together with its helper method _process_document().</p>
+which is shown here, together with its helper method _process_document().</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
@@ -228,7 +240,7 @@ def _process_document(self):
 </pre>
 
 <p>When we use --source=xml on the command line then the SourceParserXML is the
-source parser and The input is assumed to be an XML file with inline XML tags
+source parser and the input is assumed to be an XML file with inline XML tags
 which SourceParserXML splits the input into the primary text data (text without tags)
 and a dictionary of class TagRepository which has tags with character offsets
 pointing into the primary data. Both instance variables are intended to be
@@ -273,7 +285,7 @@ the tag, its attributes and its begin and end offsets. The closing tags
 dictionary for the above example is:
 
 <pre class="example indent">
-{  8: { 5: {u'noun': True} }, 
+{  8: { 5: {u'noun': True} },
   14: { 1: {u'text': True} } }
 </pre>
 
@@ -281,16 +293,28 @@ dictionary for the above example is:
 opened at offset 5. The TagRepository class has convenience methods to access
 tags.</p>
 
-<p>The second part of step 1 is to run a metadata parser, all metadata parser
-are defined in docmodel.metadata_parser. Again, what metadata parser to use is
-determined by the --source command line option and the mapping in the PARSERS
-dictionary in docmodel.main.</p>
+<p>The two other source parsers, SourceParserText and SourceParserTTK, produce a
+TarsqiDocument with a SourceDoc instance, just as SourceParserXML does. There
+are differences however in what is put in the SourceDoc. The SourceParserText
+justs puts a string in the text variable and leaves all others empty. The
+SourceParserTTK however is used to deal with documents that were previsously
+save as TTK document and which may contain metadata and Tarsqi tags. Therefore,
+this parser also adds elements to the metadata dictionary and the tarsqi_tags
+TagRepository, and in some cases to the comments variable as well (if the TTK
+document was created from an XML documentg with comments).</p>
 
-<p>For vanilla XML we use the default MetadataParser which takes a
+
+<p><span class="header">MetadataParser</span>. The second part of step 1 is to
+run a metadata parser, all metadata parser are defined in
+docmodel.metadata_parser. Again, what metadata parser to use is determined by
+the --source command line option and the mapping in the PARSERS dictionary in
+docmodel.main.</p>
+
+<p>For generic XML we can use the default MetadataParser which takes a
 TarsqiDocument and fills in elements in its metadata dictionary. In fact, it
 only fills in one element, the Document Creation Time (DCT) which is added under
-the 'dct' key. To show how this happens, first recall the process() and
-_process_document() methods in the Tarsqi class, the latter is repeated here,
+the 'dct' key. To see how this happens, recall the process() and
+_process_document() methods in the Tarsqi class, the latter is repeated here
 with the call to the metadata parser in bold face.</p>
 
 <pre class="example indent">
@@ -305,8 +329,8 @@ def _process_document(self):
 </pre>
 
 <p>All metadata parsers define a parse() method, which in the case of the
-default MetadataParser simply sets the DCT to today's date, which is what
-get_today() returns:</p>
+MetadataParser simply sets the DCT to today's date, which is what get_today()
+returns:</p>
 
 <pre class="example indent">
 <i>docmodel.metadata_parser.MetadataParser</i>
@@ -338,9 +362,9 @@ def parse(self, tarsqidoc):
 option (for example, "--dct-database=/home/databases/dct.sqlite") or was added
 to code/settings.txt, it also requires that lookup() is defined appropriately.</p>
 
-<p>The third and last part of step 1 is to apply the document parser. We again
-print the relevant code, this time with the document parser invocation
-highlighted.</p>
+<p><span class="header">DocumentStructureParser</span>. The third and last part
+of step 1 is to apply the document parser. We again print the relevant code,
+this time with the document parser invocation highlighted.</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
@@ -354,10 +378,14 @@ def _process_document(self):
 </pre>
 
 <p>There is a simple default document parser named DocumentStructureParser
-defined in docmodel.docstructure_parser. This parser splits the document into
-paragraphs and puts each paragraph in the elements list of the
-TarsqiDocument. All elements are instances of TarsqiDocParagraph, a subclass of
-TarsqiDocElement, which has the following structure:</p>
+defined in docmodel.docstructure_parser. This parser creates from the SourceDoc
+a list of TarsqiDocElements that are the input to later processing stages. In
+some cases, the source will already have some document structure in the shape of
+doc_element tags inside the tarsqi_tags TagRepository, in that case the parser
+will copy that information into the elements list. Otherwise, the parser splits
+the document into paragraphs and puts each paragraph in the elements list of the
+TarsqiDocument. Currently, all elements are instances of TarsqiDocParagraph, a
+subclass of TarsqiDocElement, which has the following structure:</p>
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -366,7 +394,7 @@ TarsqiDocElement, which has the following structure:</p>
 <tr>
   <td class="attribute">doc</td>
   <td>an instance of docmodel.document.TarsqiDocument</td>
-</tr>  
+</tr>
 <tr>
   <td class="attribute">begin</td>
   <td>the beginning offset in the SourceDoc in doc.source</td>
@@ -387,12 +415,12 @@ TarsqiDocElement, which has the following structure:</p>
 </tr>
 </table>
 
-<p>In the future, other sub classes of TarsqiDocElement will be added (for example
-SectionHeader) and most possibly the elements variable will become a tree rather
-than a flat list. However, more advanced document processing will be done as a
-separate components and will probably be the first element of the pipeline
-described in the next sub section. It would overwrite the results of the default
-document structure parser.</p>
+<p>In the future, other sub classes of TarsqiDocElement may be added (for
+example SectionHeader) and possibly the elements variable will become a tree
+rather than a flat list. However, more advanced document processing will be done
+as a separate components and will probably be the first element of the pipeline
+described in the next sub section. Such a component would overwrite the results
+of the default document structure parser.</p>
 
 
 <a name="pipeline"/>

@@ -13,6 +13,7 @@ img { margin-top: 10pt; margin-left: 10pt; border: thin solid grey; display: blo
 .image { margin: 5pt; margin-left: 15pt; padding: 0pt; }
 .indent { margin-left: 10pt; }
 .embedded { margin-right: 5pt; margin-bottom: 5pt; }
+.header { font-weight: bold; }
 
 h1 { border-bottom: thick solid green; }
 h2 { margin-top: 25pt; border-bottom: medium solid green; }
