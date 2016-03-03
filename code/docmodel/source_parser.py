@@ -37,6 +37,7 @@ from xml.sax.saxutils import escape, quoteattr
 from xml.dom import minidom
 
 from docmodel.document import TarsqiDocument, SourceDoc
+from docmodel.document import OpeningTag, ClosingTag
 
 
 class SourceParser:
@@ -65,39 +66,83 @@ class SourceParserText(SourceParser):
 
 class SourceParserTTK(SourceParser):
 
+    def __init__(self):
+        """Initialize the three variables dom, topnodes and sourcedoc."""
+        self.dom = None
+        self.topnodes = {}
+        self.sourcedoc = None
+
     def parse_file(self, filename):
-        # TODO: does this do the right thing for non-ascii?
-        dom = minidom.parse(open(filename))
-        topnodes = {}
-        for node in dom.firstChild.childNodes:
-            if node.nodeType == minidom.Node.ELEMENT_NODE:
-                topnodes[node.tagName] = node
-        print_dom(dom.firstChild)
+        """Parse the TTK file and put the contents in the appropriate parts of
+        the SourceDoc."""
+        self._load_dom(filename)
         self.sourcedoc = SourceDoc(filename)
-        self.sourcedoc.text = topnodes['text'].firstChild.data
-
-        # add all tags to TagRepository, (need to distinguish between source
-        # tags and tarsqi tags, meaning that the sourcedoc also needs a
-        # tarsqi_tags field)
-
-        print topnodes.keys()
-        for node in topnodes['source_tags'].childNodes:
-            if node.nodeType == minidom.Node.ELEMENT_NODE:
-                print node, node.attributes.items()
-#                for a in node.attributes:
-#                    print a
-
-        # then the metadata parser needs to get the metadata
-        # then the document parser needs to build the elements list of the
-        # do something with the comments
-
-        self.sourcedoc.pp()
+        self.sourcedoc.text = self.topnodes['text'].firstChild.data
+        self._add_source_tags()
+        self._add_tarsqi_tags()
+        self._add_comments()
+        self._add_metadata()
         self.sourcedoc.finish()
-
-
+        #self.sourcedoc.pp()
         tarsqidoc = TarsqiDocument(self.sourcedoc, {})
         return tarsqidoc
 
+    def _load_dom(self, filename):
+        """Loads the DOM object in the file into the dom variable and fills the
+        topnodes dictionary with text, metadata, source_tags and tarsqi_tags and
+        comment keys."""
+        # TODO: does this do the right thing for non-ascii?
+        self.dom = minidom.parse(open(filename))
+        for node in self.dom.firstChild.childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                self.topnodes[node.tagName] = node
+
+    def _add_source_tags(self):
+        """Add the source_tags in the TTK document to the source_tags repository
+        on the SourceDoc."""
+        for node in self.topnodes['source_tags'].childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                self._add_to_source_tags(node)
+
+    def _add_tarsqi_tags(self):
+        """Add the tarsqi_tags in the TTK document to the tarsqi_tags repository
+        on the SourceDoc."""
+        for docelement in self.topnodes['tarsqi_tags'].getElementsByTagName('doc_element'):
+            self._add_to_tarsqi_tags(docelement)
+            for node in docelement.childNodes:
+                if node.nodeType == minidom.Node.ELEMENT_NODE:
+                    self._add_to_tarsqi_tags(node)
+
+    def _add_comments(self):
+        for node in self.topnodes['comments'].childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                offset =  node.getAttribute('offset')
+                comment = node.firstChild.data
+                self.sourcedoc.comments[int(offset)] = [comment]
+
+    def _add_metadata(self):
+        for node in self.topnodes['metadata'].childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                self.sourcedoc.metadata[node.nodeName] = node.getAttribute('value')
+
+    def _add_to_source_tags(self, node):
+        tag_repository = self.sourcedoc.source_tags
+        self._add_to_tag_repository(node, tag_repository)
+
+    def _add_to_tarsqi_tags(self, node):
+        tag_repository = self.sourcedoc.tarsqi_tags
+        self._add_to_tag_repository(node, tag_repository)
+
+    def _add_to_tag_repository(self, node, tag_repository):
+        name = node.tagName
+        o1 = int(node.getAttribute('begin'))
+        o2 = int(node.getAttribute('end'))
+        attrs = dict(node.attributes.items())
+        attrs = dict([(k,v) for (k,v) in attrs.items() if k not in ('begin', 'end')])
+        opening_tag = OpeningTag(None, name, o1, attrs)
+        closing_tag = ClosingTag(None, name, o2)
+        tag_repository.add_tmp_tag(opening_tag)
+        tag_repository.add_tmp_tag(closing_tag)
 
     def parse_string(self, text):
         dom = minidom.parseString(text)
@@ -128,10 +173,10 @@ class SourceParserXML(SourceParser):
     # http://docs.python.org/library/pyexpat.html
 
     # TODO. The way this is set up now requires the SourceDoc to know a lot
-    # about the internal workings of the Expat parser (with for example the
-    # notion that begin and end tags are found separately. It is probably better
-    # to keep that knowledge here, by building lists of tags here and only
-    # export them after all elements are gathered (see note in parse_file).
+    # about the internal workings of the Expat parser (for example the notion
+    # that begin and end tags are found separately). It is probably better to
+    # keep that knowledge here, by building lists of tags here and only export
+    # them after all elements are gathered (see note in parse_file).
 
     def __init__(self, encoding='utf-8'):
         """Set up the Expat parser."""
@@ -154,10 +199,6 @@ class SourceParserXML(SourceParser):
         self.sourcedoc = SourceDoc(filename)
         # TODO: should this be codecs.open() for non-ascii?
         self.parser.ParseFile(open(filename))
-        # TODO: if we move functionality from SourceDoc (see TODO above) then we
-        # would gather our things here and then send generalized tags (probably
-        # just dictionaries) to the source doc, these tags would be the same for
-        # SourceParserXML and SourceParserTTK.
         self.sourcedoc.finish()
         tarsqidoc = TarsqiDocument(self.sourcedoc, {})
         return tarsqidoc
@@ -187,7 +228,7 @@ class SourceParserXML(SourceParser):
         """Store comments."""
         self._debug('comment', len(data))
         self.sourcedoc.add_comment(data)
-        
+
     def _handle_start(self, name, attrs):
         """Handle opening tags. Takes two arguments: a tag name and a dictionary of
         attributes. Asks the SourceDoc instance in the sourcedoc variable to add an

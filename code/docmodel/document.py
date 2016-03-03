@@ -190,15 +190,36 @@ class TarsqiDocElement:
         return self.doc.text(self.begin, self.end)
     
     def add_source_tags(self, tag_repository):
-        """Add all tags from a TagRepostitory (handed in from the SourceDoc) that fall
-        within the scope of this element. Also includes tags whose begin is
-        before and whose end is after the element. Makes a shallow copy of the
-        Tag from the SourceDoc TagRepository."""
-        # note that tag_repository is also available in self.doc.source.tags
-        for t in tag_repository.tags:
+        """Add to the source_tags TagRepository all tags from a TagRepostitory (handed
+        in from the SourceDoc) that fall within the scope of this element. Also
+        includes tags whose begin is before and whose end is after the
+        element. Makes a shallow copy of the Tag from the SourceDoc
+        TagRepository. """
+        self._add_tags(tag_repository, self.source_tags)
+
+    def add_tarsqi_tags(self, tag_repository):
+        """Add to the tarsqi_tags TagRepository all tags from a TagRepostitory (handed
+        in from the SourceDoc) that fall within the scope of this element. Also
+        includes tags whose begin is before and whose end is after the
+        element. Makes a shallow copy of the Tag from the SourceDoc
+        TagRepository. """
+        self._add_tags(tag_repository, self.tarsqi_tags)
+
+    def _add_tags(self, from_repository, to_repository):
+        """Add tags from from_repository to to_repository if those tags fall within the
+        scope of this element. Also includes tags whose begin is before and
+        whose end is after the element. The from_repository comes from the
+        SourceDoc, the to_repository is the source_tags or tarsqi_tags
+        repository on the doument element. Makes a shallow copy of the Tag from
+        the SourceDoc TagRepository. Helper method for add_tarsqi_tags and
+        add_source_tags. """
+        for t in from_repository.tags:
+            # skip document elements because they are treated in a special way
+            if t.name == 'doc_element':
+                continue
             if (t.begin >= self.begin and t.end <= self.end) \
                     or (t.begin <= self.begin and t.end >= self.end):
-                self.source_tags.append(copy(t))
+                to_repository.append(copy(t))
 
     def add_timex(self, begin, end, attrs):
         """Add a TIMEX3 tag to the tarsqi_tags tag repository."""
@@ -308,6 +329,7 @@ class SourceDoc:
         """Print source and tags."""
         print "\n<SourceDoc on '%s'>\n" % self.filename
         print self.text.encode('utf-8').strip()
+        print "\nMETADATA:", self.metadata
         print "\nSOURCE_TAGS:"
         self.source_tags.pp()
         print "\nTARSQI_TAGS:"
@@ -545,6 +567,11 @@ class Tag:
 
     def as_ttk_tag(self):
         """Return the tag as a tag in the Tarsqi output format."""
+        # move id tag from attrs to toplevel if needed
+        # TODO: maybe this should happen elsewhere
+        if self.id is None and self.attrs.get('id'):
+            self.id = self.attrs.get('id')
+            del(self.attrs['id'])
         begin = " begin=\"%s\"" % self.begin if self.begin >= 0 else ''
         end = " end=\"%s\"" % self.end if self.end >= 0 else ''
         identifier = "" if self.id is None else " id=" + quoteattr(str(self.id))
@@ -557,9 +584,8 @@ class Tag:
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
-        if not self.attrs:
-            return ''
-        return ' ' + ' '.join(["%s=%s" % (k,quoteattr(v)) for (k,v) in self.attrs.items()])
+        attrs = ["%s=%s" % (k,quoteattr(v)) for (k,v) in self.attrs.items()]
+        return '' if not attrs else ' ' + ' '.join(sorted(attrs))
 
 
 class OpeningTag(Tag):

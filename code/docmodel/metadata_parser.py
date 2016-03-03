@@ -53,7 +53,14 @@ class MetadataParserTTK(MetadataParser):
 
     """The metadata parser for the ttk format, simply copies the meta data."""
 
-    # TO BE IMPLEMENTED
+    def parse(self, tarsqidoc):
+        """Adds metadata to the TarsqiDocument. The only thing it adds to the metadata
+        dictionary is the DCT, which is copied from the metadata in the SourceDoc."""
+        tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.source)
+
+    def get_dct(self, sourcedoc):
+        return sourcedoc.metadata.get('dct')
+
 
 
 
