@@ -16,7 +16,6 @@ from docmodel.document import TarsqiDocParagraph
 import utilities.logger as logger
 
 
-
 class MetadataParser:
 
     """This is the minimal metadata parser that is used as a default. It sets the
@@ -48,7 +47,6 @@ class MetadataParser:
             return None
 
 
-
 class MetadataParserTTK(MetadataParser):
 
     """The metadata parser for the ttk format, simply copies the meta data."""
@@ -62,18 +60,15 @@ class MetadataParserTTK(MetadataParser):
         return sourcedoc.metadata.get('dct')
 
 
-
-
 class MetadataParserText(MetadataParser):
 
     """For now this one adds nothing to the default metadata parser."""
 
 
-
 class MetadataParserTimebank(MetadataParser):
     """The parser for Timebank documents. All it does is overwriting the get_dct()
     method."""
-    
+
     def get_dct(self):
         """Extracts the document creation time, and returns it as a string of the form
         YYYYMMDD. Depending on the source, the DCT can be found in one of the
@@ -114,7 +109,7 @@ class MetadataParserTimebank(MetadataParser):
     def _parse_tag_content(self, regexpr, tagname):
         """Return the DCT part of the tag content of tagname, requires a reqular
         expression as one of the arguments."""
-        content_string =  self._get_tag_content(tagname)
+        content_string = self._get_tag_content(tagname)
         result = re.compile(regexpr).match(content_string)
         if result:
             (month, day, year) = result.groups()
@@ -155,7 +150,7 @@ class MetadataParserVA(MetadataParser):
        sqlite> insert into dct values ("test.xml", "1999-12-31");
 
     The get_dct method uses this database. """
-    
+
     def get_dct(self):
         fname = self.sourcedoc.filename
         fname = os.path.basename(fname)
@@ -168,4 +163,4 @@ class MetadataParserVA(MetadataParser):
 
 def get_today():
     """Return today's date in YYYYMMDD format."""
-    return time.strftime("%Y%m%d", time.localtime());
+    return time.strftime("%Y%m%d", time.localtime())

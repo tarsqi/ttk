@@ -47,11 +47,9 @@ class GUTimeWrapper:
         """Create the input required by TimeTag.pl, call the Perl script and collect the
         TIMEX3 tags."""
         os.chdir(self.DIR_GUTIME)
-        count = 0
-        for element in self.document.elements:
-            count += 1
-            fin = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.in.xml" % count)
-            fout = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.out.xml" % count)
+        for (count, element) in enumerate(self.document.elements):
+            fin = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.in.xml" % (count + 1))
+            fout = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.out.xml" % (count + 1))
             _create_gutime_input(element, fin)
             _run_gutime(fin, fout)
             _export_timex_tags(fout, element)

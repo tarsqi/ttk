@@ -28,7 +28,8 @@ PARSERS = {
     'rte3': (SourceParserXML, MetadataParserRTE3),
     'va': (SourceParserXML, MetadataParserVA),
     'text': (SourceParserText, MetadataParserText),
-    'ttk': (SourceParserTTK, MetadataParserTTK) }
+    'ttk': (SourceParserTTK, MetadataParserTTK)
+}
 
 
 DEFAULT_PIPELINE = [ PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T,
@@ -43,9 +44,11 @@ def create_source_parser(options):
     source_parser, metadata_parser = PARSERS.get(options.source, DEFAULT_PARSERS)
     return source_parser()
 
+
 def create_metadata_parser(options):
     source_parser, metadata_parser = PARSERS.get(options.source, DEFAULT_PARSERS)
     return metadata_parser(options)
+
 
 def create_docstructure_parser():
     """Return the default document structure parser."""
@@ -54,6 +57,7 @@ def create_docstructure_parser():
     # where the parser creates tags similar to other components and where the
     # elements variable is gone.
     return DocumentStructureParser()
+
 
 def get_default_pipeline(options):
     """Now always returns the same but can be used for genre-specific pipelines."""

@@ -25,10 +25,8 @@ SLINK_CASES = {}
 
 
 def parse_directory(dname):
-    count = 0
-    for fname in os.listdir(dname):
-        count += 1
-        #if count > 10: break
+    for (counter, fname) in os.listdir(dname):
+        # if counter > 10: break
         sys.stderr.write("%s\n" % fname)
         try:
             parse_file(os.path.join(dname, fname))

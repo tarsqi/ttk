@@ -50,8 +50,8 @@ USAGE
       --ignore=REGEXP
              determines wat files in a directory are skipped
 
-      All these options can also be set in the settings.txt file. See the manual in
-      docs/manual/ for more details on the parameters.
+      All these options can also be set in the settings.txt file. See the manual
+      in docs/manual/ for more details on the parameters.
 
 VARIABLES:
 
@@ -64,10 +64,7 @@ VARIABLES:
 
 import sys, os, time, types, getopt
 
-scriptPath = os.path.abspath(__file__)
-TTK_ROOT = os.path.dirname(scriptPath)
-os.environ['TTK_ROOT'] = TTK_ROOT
-
+import root
 from components import COMPONENTS
 from docmodel.main import get_default_pipeline
 from docmodel.main import create_source_parser
@@ -76,12 +73,12 @@ from docmodel.main import create_docstructure_parser
 from utilities import logger
 from utilities.file import read_settings
 
-logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=3)
-
-
+TTK_ROOT = os.environ['TTK_ROOT']
 SETTINGS = 'settings.txt'
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
+
+logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=3)
 
 
 class Tarsqi:
@@ -104,7 +101,6 @@ class Tarsqi:
 
     The first nine instance variables are initialized using the arguments
     provided by the user, document is initialized and changed during processing."""
-
 
     def __init__(self, opts, infile, outfile):
         """Initialize Tarsqi object conform the data source identifier and the
@@ -131,7 +127,6 @@ class Tarsqi:
         self.metadata_parser = create_metadata_parser(self.options)
         self.docstructure_parser = create_docstructure_parser()
         self.pipeline = self._create_pipeline()
-
 
     def process(self):
         """Parse the source with the source parser, the metadata parser and the
@@ -169,7 +164,8 @@ class Tarsqi:
         the script is given a directory as input. Probably obsolete, use ignore
         option instead."""
         extension = self.options.extension
-        if not extension: return False
+        if not extension:
+            return False
         return self.input.endswith(extension)
 
     def _cleanup_directories(self):
@@ -193,7 +189,7 @@ class Tarsqi:
             try:
                 wrapper(tarsqidocument).process()
             except:
-                print  "%s error:\n\t%s\n\t%s\n" \
+                print "%s error:\n\t%s\n\t%s\n" \
                     % (name, sys.exc_type, sys.exc_value)
         else:
             wrapper(tarsqidocument).process()
@@ -218,7 +214,6 @@ class Tarsqi:
         print '   metadata    ', self.metadata
         print '   content_tag ', self.content_tag
         print '   document    ', self.xml_document
-
 
 
 class Options:
@@ -262,7 +257,6 @@ class Options:
         return self._options.get(option_name, default)
 
 
-
 class TarsqiError(Exception):
     """Tarsqi Exception class, so far only used in this file."""
     pass
@@ -274,22 +268,25 @@ def _read_arguments(args):
     options = ['genre=', 'source=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=',
                'loglevel=', 'ignore=', 'platform=', 'treetagger=']
     try:
-        (opts, args) = getopt.getopt(args,'', options)
+        (opts, args) = getopt.getopt(args, '', options)
         return (opts, args)
     except getopt.GetoptError:
         print "ERROR: %s" % sys.exc_value
         sys.exit(_usage_string())
 
+
 def _usage_string():
     return "Usage: % python tarsqi.py [OPTIONS] INPUT OUTPUT\n" + \
            "See tarsqy.py and docs/manual for more details"
 
+
 def _basename(path):
     basename = os.path.basename(path)
     if basename.endswith('.xml'):
-       basename = basename[0:-4]
+        basename = basename[0:-4]
     return basename
-            
+
+
 def run_tarsqi(args):
     """Main method that is called when the script is executed from the command
     line. It creates a Tarsqi instance and lets it process the input. If the
@@ -328,11 +325,13 @@ def run_profiler(args):
     print 'Running profiler on:', command
     profile.run(command, PROFILER_OUTPUT)
 
+
 def test():
     os.remove('out.xml')
     run_tarsqi(['--pipeline=PREPROCESSOR,GUTIME,EVITA',
                 'data/in/simple-xml/tiny.xml',
                 'out.xml'])
+
 
 def process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False):
     """Run tarsqi on a bare string without any XML tags, handing in pipeline,

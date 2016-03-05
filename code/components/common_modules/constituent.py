@@ -69,16 +69,31 @@ class Constituent:
         elif name == 'pos':
             return None
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
-    def isToken(self): return False
-    def isAdjToken(self): return False
-    def isChunk(self): return False
-    def isVerbChunk(self): return False
-    def isNounChunk(self): return False
-    def isTimex(self): return False
-    def isEvent(self): return False
-    def isPreposition(self): return False
+    def isToken(self):
+        return False
+
+    def isAdjToken(self):
+        return False
+
+    def isChunk(self):
+        return False
+
+    def isVerbChunk(self):
+        return False
+
+    def isNounChunk(self):
+        return False
+
+    def isTimex(self):
+        return False
+
+    def isEvent(self):
+        return False
+
+    def isPreposition(self):
+        return False
 
     def setCheckedEvents(self):
         if self.parent.__class__.__name__ == 'Sentence':
@@ -94,11 +109,11 @@ class Constituent:
 
     def nextNode(self):
         """Return the right sibling in the tree or None if there is none. Works nicely
-        when called on Sentence elements. If called on the last token in a chunk, then
-        it returns None even if there is another chunk following."""
+        when called on Sentence elements. If called on the last token in a
+        chunk, then it returns None even if there is another chunk following."""
         # TODO: make this work for tokens as well, maybe by adding this method to Token
         try:
-            return self.parent[self.position+1]
+            return self.parent[self.position + 1]
         except IndexError:
             return None
 
@@ -107,7 +122,6 @@ class Constituent:
         unexpected is going on. Event creation is only attempted on some sub
         classes."""
         logger.warn("Unexpected recipient of createEvent()")
-
 
     def matchConstituent(self, description):
 
@@ -153,7 +167,6 @@ class Constituent:
                     return False
         return True
 
-
     def get_event(self):
         """Return None or the EventTag that is contained in the constituent."""
         if self.isEvent():
@@ -183,25 +196,19 @@ class Constituent:
     def pretty_print(self):
         print "<<pretty_print() not defined for this object>>"
 
-
-
     # SLINKET METHODS
-    
     # There is some serious redundancy here, refactor these methods.
 
-        
     def find_forward_alink(self, fsa_reltype_groups):
         """Search for an alink to the right of the event. Return True
         is event was found, False otherwise."""
         logger.debug("len(fsa_reltype_groups) = %s" % len(fsa_reltype_groups))
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
-        alinkedEventContext = self.parent[self.position+1:]
+        alinkedEventContext = self.parent[self.position + 1:]
         return self._find_alink(alinkedEventContext, fsa_lists, reltypes_list)
 
-    
     def find_backward_alink(self, fsa_reltype_groups):
-
         """Search for an alink to the left of the event. Return True is event was found,
         False otherwise. Note that the context includes the event itself and the token to
         its immediate right. It is not quite clear why but it has tro do with how the
@@ -213,17 +220,15 @@ class Constituent:
 
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
-        alinkedEventContext = self.parent[:self.position+1]
+        alinkedEventContext = self.parent[:self.position + 1]
         alinkedEventContext.reverse()
         return self._find_alink(alinkedEventContext, fsa_lists, reltypes_list)
 
-
     def _find_alink(self, event_context, fsa_lists, reltype_list):
-
         """Try to create an alink using the context and patterns from the
         dictionary. Alinks are created as a side effect. Returns True if an alink was
         created, False otherwise."""
-       
+
         for i in range(len(fsa_lists)):
 
             fsa_list = fsa_lists[i]
@@ -231,28 +236,26 @@ class Constituent:
             if result:
                 (length_of_match, fsa_num) = result
                 fsa = fsa_list[fsa_num]
-                #logger.debug("match found, FSA=%s size=%d reltype=%s"
+                # logger.debug("match found, FSA=%s size=%d reltype=%s"
                 #           % (fsa.fsaname, length_of_match, reltype))
                 reltype = get_reltype(reltype_list, i)
-                eiid = event_context[length_of_match-1].eiid
-                #print self, self.eiid
+                eiid = event_context[length_of_match - 1].eiid
+                # print self, self.eiid
                 alinkAttrs = {
-                    EVENT_INSTANCE_ID: self.eiid, 
+                    EVENT_INSTANCE_ID: self.eiid,
                     RELATED_TO_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
                 self.tree.addLink(alinkAttrs, ALINK)
-                #for l in self.tree.alink_list: print '  ', l
+                # for l in self.tree.alink_list: print '  ', l
                 logger.debug("ALINK CREATED")
                 return True
             else:
-                logger.debug("REJECTED ALINK by FSA: "+str(i))  
+                logger.debug("REJECTED ALINK by FSA: " + str(i))
 
         return False
 
-
     def find_forward_slink(self, fsa_reltype_groups):
-
         """Tries to create forward Slinks, using a group of FSAs.
 
         Arguments:
@@ -265,12 +268,10 @@ class Constituent:
         logger.debug("len(fsa_reltype_groups) = %s" % len(fsa_reltype_groups))
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
-        event_context = self.parent[self.position+1:]
-        return self._find_slink(event_context, fsa_lists, reltypes_list) 
-
+        event_context = self.parent[self.position + 1:]
+        return self._find_slink(event_context, fsa_lists, reltypes_list)
 
     def find_backward_slink(self, fsa_reltype_groups):
-
         """Tries to create backward Slinks, using a group of FSAs.  Backward Slinks should
         check for the adequacy (e.g., in terms of TENSE or ASPECT) of the Subordinating
         Event. For cases such as 'the <EVENT>transaction</EVENT> has been
@@ -281,13 +282,11 @@ class Constituent:
 
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
-        event_context = self.parent[:self.position+1]
+        event_context = self.parent[:self.position + 1]
         event_context.reverse()
-        return self._find_slink(event_context, fsa_lists, reltypes_list) 
-
+        return self._find_slink(event_context, fsa_lists, reltypes_list)
 
     def find_reporting_slink(self, fsa_reltype_groups):
-
         """Reporting Slinks are applied to reporting predicates ('say', 'told', etc) that
         link an event in a preceeding quoted sentence which is separated from the clause
         of the reporting event by a comma; e.g.,
@@ -302,18 +301,16 @@ class Constituent:
         reltypes_list = fsa_reltype_groups[1]
         sentenceBeginning = self.parent[:self.position]
         if len(sentenceBeginning) > 0 and sentenceBeginning[0].getText() == "``":
-            #quotation does not contain quotation marks
+            # quotation does not contain quotation marks
             quotation = self._extract_quotation(sentenceBeginning)
             if quotation is not None:
                 logger.debug("TRYING reporting slink")
                 return self._find_slink(quotation, fsa_lists, reltypes_list)
         return False
-    
 
     def _find_slink(self, event_context, fsa_lists, reltype_list):
-
         """Try to find an slink in the given event_context using lists of FSAs. If the
-        context matches an FSA, then create an slink and insert it in the tree.""" 
+        context matches an FSA, then create an slink and insert it in the tree."""
 
         for i in range(len(fsa_lists)):
 
@@ -322,43 +319,41 @@ class Constituent:
             if result:
                 (length_of_match, fsa_num) = result
                 fsa = fsa_list[fsa_num]
-                #logger.debug("match found, FSA=%s size=%d reltype=%s"
+                # logger.debug("match found, FSA=%s size=%d reltype=%s"
                 #           % (fsa.fsaname, length_of_match, reltype))
                 reltype = get_reltype(reltype_list, i)
-                eiid = event_context[length_of_match-1].eiid
-                #print self, self.eiid
+                eiid = event_context[length_of_match - 1].eiid
+                # print self, self.eiid
                 slinkAttrs = {
                     EVENT_INSTANCE_ID: self.eiid,
                     SUBORDINATED_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
                 self.tree.addLink(slinkAttrs, SLINK)
-                #for l in self.tree.slink_list: print '  ', l
+                # for l in self.tree.slink_list: print '  ', l
                 logger.debug("SLINK CREATED")
                 return True
             else:
-                logger.debug("REJECTED SLINK by FSA: "+str(i))
-                
-        return False
+                logger.debug("REJECTED SLINK by FSA: " + str(i))
 
+        return False
 
     def _look_for_link(self, sentence_slice, fsa_list):
         """Given a slice of a sentence and a list of FSAs, return a tuple of the size of
         the matching slize and the number of the FSA that featured in the match. Return
         False if there is no match."""
         lenSubstring, fsaNum = self._identify_substring(sentence_slice, fsa_list)
-        if lenSubstring: 
+        if lenSubstring:
             return (lenSubstring, fsaNum)
         else:
             return False
-
 
     def _identify_substring(self, sentence_slice, fsa_list):
         """Checks whether sentence_slice, a sequence of chunks and tokens, matches one
         of the FSAs in fsa_list. Returns a tuple of the sub sequence length that
         matched the pattern (where a zero length indicates no match) and the
         index of the FSA that returned the match."""
-        fsaCounter = -1 
+        fsaCounter = -1
         for fsa in fsa_list:
             logger.debug("Applying FSA %s" % fsa.fsaname)
             fsaCounter += 1
@@ -371,25 +366,26 @@ class Constituent:
                 logger.debug("FSA %s matched" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
         return (0, fsaCounter)
-        
+
     def _extract_quotation(self, fragment):
         # TODO: this is a bit messy
         for idx in range(len(fragment)):
             try:
                 # For some reason, it may break here (though rarely)
                 if (fragment[idx].getText() == "''" and
-                    (fragment[idx-1].getText() == "," or
-                     fragment[idx+1].getText() == ",")):
+                    (fragment[idx - 1].getText() == "," or
+                     fragment[idx + 1].getText() == ",")):
                     return fragment[1:idx]
             except:
                 logger.warn('Quotation could not be extracted')
         else:
             return
 
+
 def get_reltype(reltype_list, i):
-    """Returns the reltype in reltype_list at index i. Returns the last element of reltype
-    list if i is out of bounds (which happens when patterns have a list of reltypes that
-    is shorter than the list of FSAs."""
+    """Returns the reltype in reltype_list at index i. Returns the last element of
+    reltype list if i is out of bounds (which happens when patterns have a list
+    of reltypes that is shorter than the list of FSAs."""
     try:
         reltype = reltype_list[i]
     except IndexError:

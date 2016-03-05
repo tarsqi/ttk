@@ -124,13 +124,10 @@ def checkWNEvent(wnWord):
 
 IN = open(forms.WORDNET_NOUNS_FILE,'r');
 
-count = 0
+for (line_number, line) in IN:
 
-for line in IN:
-
-    count = count + 1
-    if not (count % 1000):
-        print count
+    if not ((line_number + 1) % 1000):
+        print line_number + 1
     token = line.split()[0]
 
     # first sense is event

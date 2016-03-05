@@ -84,7 +84,7 @@ def split_paragraph(text):
     par_begin = p2
     seeking_space = False
     paragraphs = []
-    
+
     while (p2 < text_end):
         if not seeking_space:
             (p1, p2, token) = slurp_token(text, p2)
@@ -95,7 +95,7 @@ def split_paragraph(text):
             seeking_space = False
             if space.count("\n") > 1:
                 par_end = p1
-                paragraphs.append((par_begin , par_end ))
+                paragraphs.append((par_begin, par_end))
                 par_begin = p2
                 par_end = None
 
@@ -125,14 +125,18 @@ def slurp(text, offset, test):
             return (begin, end, text[begin:end])
     return (begin, end, text[begin:end])
 
+
 def slurp_space(text, offset):
     """Starting at offset consume a string of space characters, then return the
     begin and end position and the consumed string."""
-    def test_space(char): return char.isspace()
+    def test_space(char):
+        return char.isspace()
     return slurp(text, offset, test_space)
+
 
 def slurp_token(text, offset):
     """Starting at offset consume a string of non-space characters, then return
     the begin and end position and the consumed string."""
-    def test_nonspace(char): return not char.isspace()
+    def test_nonspace(char):
+        return not char.isspace()
     return slurp(text, offset, test_nonspace)

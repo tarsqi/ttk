@@ -103,14 +103,14 @@ class Chunk(Constituent):
             if name == 'text' or name == FORM:
                 return self.tree.events[self.eid][FORM]
             if name == MOD:
-                return self.tree.events[self.eid].get(MOD,'NONE')
+                return self.tree.events[self.eid].get(MOD, 'NONE')
             if name == POL:
-                return self.tree.events[self.eid].get(POL,'POS')
+                return self.tree.events[self.eid].get(POL, 'POS')
             if name == POS:
-                return self.tree.events[self.eid].get(POS,'NONE')
+                return self.tree.events[self.eid].get(POS, 'NONE')
             return self.tree.events[self.eid][name]
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def getHead(self):
         """Return the head of the chunk (by default the last element)."""
@@ -127,8 +127,8 @@ class Chunk(Constituent):
         # the second and third tests seem relevant for verbs only, but we keep
         # them anyway for all chunks
         if (gchunk.evClass
-            and text not in forms.be
-            and text not in forms.spuriousVerb):
+                and text not in forms.be
+                and text not in forms.spuriousVerb):
             self.tree.addEvent(Event(gchunk))
 
     def _getHeadText(self):
@@ -153,7 +153,7 @@ class Chunk(Constituent):
             (indent * ' ', self.__class__.__name__, self.position,
              self.begin, self.end, self.checkedEvents, self.event, self.eid)
         for tok in self.dtrs:
-            tok.pretty_print(indent+2)
+            tok.pretty_print(indent + 2)
 
 
 class NounChunk(Chunk):
@@ -175,7 +175,7 @@ class NounChunk(Chunk):
             if (token.pos == forms.possessiveEndingTag
                 or token.pos == forms.possessivePronounTag
                 or (token.pos in forms.determinerTags
-                   and token.getText() in forms.definiteDeterminers)):
+                    and token.getText() in forms.definiteDeterminers)):
                 return True
         return False
 
@@ -195,7 +195,6 @@ class NounChunk(Chunk):
             logger.warn("There are no dtrs in the NounChunk")
         else:
             self.gramchunk = GramNChunk(self, gramvchunk)
-            #self.gramchunk.print_vars()
             logger.debug(self.gramchunk.as_verbose_string())
             # Even if preceded by a BE or a HAVE form, only tagging NounChunks
             # headed by an eventive noun, so "was an intern" will NOT be tagged
@@ -304,16 +303,26 @@ class VerbChunk(Chunk):
         if GramVCh.nodeIsNotEventCandidate():
             return
         next_node = self.nextNode()
-        if GramVCh.nodeIsModal(next_node): self._createEventOnModal()
-        elif GramVCh.nodeIsBe(next_node): self._createEventOnBe(GramVCh)
-        elif GramVCh.nodeIsHave(): self._createEventOnHave(GramVCh)
-        elif GramVCh.nodeIsFutureGoingTo(): self._createEventOnFutureGoingTo(GramVCh)
-        elif GramVCh.nodeIsPastUsedTo(): self._createEventOnPastUsedTo(GramVCh)
-        elif GramVCh.nodeIsDoAuxiliar(): self._createEventOnDoAuxiliar(GramVCh)
-        elif GramVCh.nodeIsBecome(next_node): self._createEventOnBecome(GramVCh)
-        elif GramVCh.nodeIsContinue(next_node): self._createEventOnContinue(GramVCh)
-        elif GramVCh.nodeIsKeep(next_node): self._createEventOnKeep(GramVCh)
-        else: self._createEventOnOtherVerb(GramVCh)
+        if GramVCh.nodeIsModal(next_node):
+            self._createEventOnModal()
+        elif GramVCh.nodeIsBe(next_node):
+            self._createEventOnBe(GramVCh)
+        elif GramVCh.nodeIsHave():
+            self._createEventOnHave(GramVCh)
+        elif GramVCh.nodeIsFutureGoingTo():
+            self._createEventOnFutureGoingTo(GramVCh)
+        elif GramVCh.nodeIsPastUsedTo():
+            self._createEventOnPastUsedTo(GramVCh)
+        elif GramVCh.nodeIsDoAuxiliar():
+            self._createEventOnDoAuxiliar(GramVCh)
+        elif GramVCh.nodeIsBecome(next_node):
+            self._createEventOnBecome(GramVCh)
+        elif GramVCh.nodeIsContinue(next_node):
+            self._createEventOnContinue(GramVCh)
+        elif GramVCh.nodeIsKeep(next_node):
+            self._createEventOnKeep(GramVCh)
+        else:
+            self._createEventOnOtherVerb(GramVCh)
 
     def _createEventOnModal(self):
         """Try to create an event when the head of the chunk is a modal. Check
@@ -351,7 +360,6 @@ class VerbChunk(Chunk):
     def _createEventOnHave(self, GramVCh):
         logger.debug("Checking for toHave pattern...")
         substring = self._lookForMultiChunk(patterns.HAVE_FSAs)
-        #print substring
         if substring:
             self.dribble("HAVE-1", self.getText())
             self._processEventInMultiVChunk(substring)
@@ -456,9 +464,9 @@ class VerbChunk(Chunk):
         'flat' and as a list of constituents if structure type is 'chunked'. Log a
         warning and return a list of constituents for an unknown structure type."""
         if structure_type == 'flat':
-            restSentence = utils.get_tokens(self.parent[self.position+1:])
+            restSentence = utils.get_tokens(self.parent[self.position + 1:])
         elif structure_type == 'chunked':
-            restSentence = self.parent[self.position+1:]
+            restSentence = self.parent[self.position + 1:]
             if structure_type != 'chunked':
                 logger.warn("unknown structure type: %s" % structure_type)
         return restSentence
@@ -472,7 +480,7 @@ class VerbChunk(Chunk):
         # TODO: when there is a Slinket regression test, see what happens when
         # we remove this one --> NOTHING
         fsaCounter = -1
-        if type(fsa_list) != types.ListType:
+        if not isinstance(fsa_list, types.ListType):
             # TODO: this happens for example when Slinket processes "I was
             # delighted to see advertised.", find out why, once we do, we can
             # remove this method and just have the one on Constituent
@@ -482,7 +490,8 @@ class VerbChunk(Chunk):
             fsaCounter += 1
             lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
             if lenSubstring:
-                #print "Succesful application of %s" % fsa.fsaname
+                if DEBUG:
+                    print "Succesful application of %s" % fsa.fsaname
                 return (lenSubstring, fsaCounter)
         else:
             return (0, fsaCounter)

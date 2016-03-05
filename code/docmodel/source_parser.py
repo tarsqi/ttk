@@ -43,7 +43,6 @@ from docmodel.document import OpeningTag, ClosingTag
 class SourceParser:
 
     DEBUG = False
-    #DEBUG = True
 
 
 class SourceParserText(SourceParser):
@@ -83,7 +82,6 @@ class SourceParserTTK(SourceParser):
         self._add_comments()
         self._add_metadata()
         self.sourcedoc.finish()
-        #self.sourcedoc.pp()
         tarsqidoc = TarsqiDocument(self.sourcedoc, {})
         return tarsqidoc
 
@@ -116,7 +114,7 @@ class SourceParserTTK(SourceParser):
     def _add_comments(self):
         for node in self.topnodes['comments'].childNodes:
             if node.nodeType == minidom.Node.ELEMENT_NODE:
-                offset =  node.getAttribute('offset')
+                offset = node.getAttribute('offset')
                 comment = node.firstChild.data
                 self.sourcedoc.comments[int(offset)] = [comment]
 
@@ -138,7 +136,7 @@ class SourceParserTTK(SourceParser):
         o1 = int(node.getAttribute('begin'))
         o2 = int(node.getAttribute('end'))
         attrs = dict(node.attributes.items())
-        attrs = dict([(k,v) for (k,v) in attrs.items() if k not in ('begin', 'end')])
+        attrs = dict([(k, v) for (k, v) in attrs.items() if k not in ('begin', 'end')])
         opening_tag = OpeningTag(None, name, o1, attrs)
         closing_tag = ClosingTag(None, name, o2)
         tag_repository.add_tmp_tag(opening_tag)
@@ -154,9 +152,9 @@ def print_dom(node, indent=0):
         return
     if node.nodeType == minidom.Node.TEXT_NODE and not node.data.strip():
         return
-    print "%s%s" % (indent*' ', node)
+    print "%s%s" % (indent * ' ', node)
     for childnode in node.childNodes:
-        print_dom(childnode, indent+3)
+        print_dom(childnode, indent + 3)
 
 
 class SourceParserXML(SourceParser):
@@ -264,18 +262,14 @@ class SourceParserXML(SourceParser):
             print "%-5s  %-4s    %s" % (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest]))
 
 
-
 def replace_newline(text):
     """Just used for debugging, make sure to not use this elsewhere because it
     is dangerous since it turns unicode into non-unicode."""
-    return str(text).replace("\n",'\\n')
+    return str(text).replace("\n", '\\n')
 
 
-                 
-
-        
 if __name__ == '__main__':
-    
+
     IN = sys.argv[1]
     OUT = sys.argv[2]
     doc = SourceParser().parse_file(IN)
