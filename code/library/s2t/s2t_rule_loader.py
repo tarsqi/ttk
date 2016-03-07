@@ -20,6 +20,9 @@ class S2TRule:
        -- Optional Conditions:  tense, aspect, reltype.
        -- Mandatory Condition:  relation (the reltype for the new TLINK)."""
 
+    # TODO: that is NOT a mandatory condition, change this so we talk about lhs
+    # and rhs or something like that
+
     def __init__(self, ruleNum):
         self.id = "%s" % (ruleNum)
         self.attrs = {}

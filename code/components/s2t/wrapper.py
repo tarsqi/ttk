@@ -6,25 +6,21 @@ Contains the S2tWrapper.
 
 from library.tarsqi_constants import S2T
 from components.s2t.main import Slink2Tlink
+from components.common_modules import tree
 
 
 class S2tWrapper:
 
     """Wraps the S2T components."""
 
-    
     def __init__(self, document):
 
         self.component_name = S2T
         self.document = document
-        
-        
+
     def process(self):
-
-        """Retrieve the XmlDocument and hand it to S2T for processing. Processing will
-        update this slice."""
-
-        xmldocs = [self.document.xmldoc]
-        for xmldoc in xmldocs:
-            xmldoc.reset()
-            Slink2Tlink().process_xmldoc(xmldoc)
+        """Try to add TLINKS for all the SLINKS in each TarsqiDocElement."""
+        for element in self.document.elements:
+            # print '>>>>>', element
+            doctree = tree.create_tarsqi_tree(element)
+            Slink2Tlink().process_doctree(doctree)

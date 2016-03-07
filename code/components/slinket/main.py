@@ -16,23 +16,26 @@ from library.timeMLspec import EID, EIID, EVENTID, POS, EPOS, FORM
 from library.timeMLspec import TENSE, ASPECT, POL, MOD, CLASS, STEM
 from utilities import logger
 
+DEBUG = False
+
 
 class Slinket (TarsqiComponent):
 
     """Class that implements the Slinket SLINK and ALINK parser. Only lexical alinks
     and slinks are found.
 
-    Purpose clause are not yet implemented. But note that some purpose clause SLINKS are
-    already introduced in the lexically-triggered process. This is so for those events
-    that discoursively tend to appear modified by a Purpose Clause (e.g., 'address'). The
-    data are based on TimeBank. Conditionals are not implemented either.
+    Purpose clause are not yet implemented. But note that some purpose clause
+    SLINKS are already introduced in the lexically-triggered process. This is so
+    for those events that discoursively tend to appear modified by a Purpose
+    Clause (e.g., 'address'). The data are based on TimeBank. Conditionals are
+    not implemented either.
 
     Instance variables:
        NAME - a string
        doctree - a TarsqiTree
        docelement - a TarsqiDocElement
-    """
 
+    """
 
     def __init__(self):
         """Initialize Slinket. Sets doctree and docelement to None, these are added by
@@ -43,19 +46,19 @@ class Slinket (TarsqiComponent):
         # Load the Slinket dictionaries if they have not been loaded yet
         SLINKET_DICTS.load()
 
-    def process_doctree(self, doctree, tarsqidocelement):
+    def process_doctree(self, doctree):
         """Find alinks and slinks in doctree and export them to self.docelement."""
         self.doctree = doctree
-        if True and False:
+        if DEBUG:
             for s in doctree:
                 for e in s:
                     print e
                     e.print_vars()
             doctree.pp()
-        self.docelement = tarsqidocelement
+        self.docelement = self.doctree.docelement
         self._build_event_dictionary()
         for sentence in self.doctree:
-            #print get_words_as_string(sentence)
+            # print get_words_as_string(sentence)
             self._find_links(self.doctree, sentence)
         self._add_links_to_docelement()
 
@@ -136,16 +139,15 @@ class Slinket (TarsqiComponent):
             logger.debug("reporting slink created = %s" % slink_created)
 
     def _add_links_to_docelement(self):
-        for alink in self.doctree.alink_list:
+        for alink in self.doctree.alinks:
             self._add_link(ALINK, alink.attrs)
-        for slink in self.doctree.slink_list:
+        for slink in self.doctree.slinks:
             self._add_link(SLINK, slink.attrs)
 
     def _add_link(self, tagname, attrs):
         """Add the link to the TagRepository instance on the TarsqiDocElement."""
         logger.debug("Adding %s: %s" % (tagname, attrs))
         self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
-
 
 
 class EventExpression:
@@ -221,9 +223,9 @@ class EventExpression:
         otherwise. This ability is determined by dictionary lookup."""
         form = self.form.lower()
         if self.nf_morph == VERB:
-            return SLINKET_DICTS.alinkVerbsDict.has_key(form)
+            return form in SLINKET_DICTS.alinkVerbsDict
         if self.nf_morph == NOUN:
-            return SLINKET_DICTS.alinkNounsDict.has_key(form)
+            return form in SLINKET_DICTS.alinkNounsDict
         return False
 
     def can_introduce_slink(self):
@@ -231,11 +233,11 @@ class EventExpression:
         otherwise. This ability is determined by dictionary lookup."""
         form = self.form.lower()
         if self.nf_morph == VERB:
-            return SLINKET_DICTS.slinkVerbsDict.has_key(form)
+            return form in SLINKET_DICTS.slinkVerbsDict
         if self.nf_morph == NOUN:
-            return SLINKET_DICTS.slinkNounsDict.has_key(form)
+            return form in SLINKET_DICTS.slinkNounsDict
         if self.nf_morph == ADJECTIVE:
-            return SLINKET_DICTS.slinkAdjsDict.has_key(form)
+            return form in SLINKET_DICTS.slinkAdjsDict
         return False
 
     def alinkingContexts(self, key):
@@ -246,9 +248,10 @@ class EventExpression:
         elif self.nf_morph == NOUN:
             pattern_dictionary = SLINKET_DICTS.alinkNounsDict
         else:
-            logger.warn("SLINKS of type "+str(key)+" for EVENT form "+str(form)+" should be in the dict")
+            logger.warn("SLINKS of type " + str(key) + " for EVENT form " +
+                        str(form) + " should be in the dict")
             return []
-        return pattern_dictionary.get(form,{}).get(key,[])
+        return pattern_dictionary.get(form, {}).get(key, [])
 
     def slinkingContexts(self, key):
         """Returns the list of slink patterns from the dictionary."""
@@ -260,6 +263,7 @@ class EventExpression:
         elif self.nf_morph == ADJECTIVE:
             pattern_dictionary = SLINKET_DICTS.slinkAdjsDict
         else:
-            logger.warn("SLINKS of type "+str(key)+" for EVENT form "+str(form)+" should be in the dict")
+            logger.warn("SLINKS of type " + str(key) + " for EVENT form " +
+                        str(form) + " should be in the dict")
             return []
-        return pattern_dictionary.get(form,{}).get(key,[])
+        return pattern_dictionary.get(form, {}).get(key, [])

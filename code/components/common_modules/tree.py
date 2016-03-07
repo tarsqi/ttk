@@ -35,8 +35,11 @@ def create_tarsqi_tree(element):
     top_node.set_event_markers()
     # recursively import all nodes into the doc, but skip the topnode itself
     top_node.add_to_tree(tree)
-    #top_node.pp()
-    #tree.pp()
+    tree.initialize_alinks(element.tarsqi_tags.find_tags(ALINK))
+    tree.initialize_slinks(element.tarsqi_tags.find_tags(SLINK))
+    tree.initialize_tlinks(element.tarsqi_tags.find_tags(TLINK))
+    # top_node.pp()
+    # tree.pp()
     return tree
 
 
@@ -268,18 +271,17 @@ class Node(object):
             dtr.pp(indent + 1)
 
 
-
 class TarsqiTree:
 
     """Implements the shallow tree that is input to some of the Tarsqi components.
 
     Instance variables
-        tarsqidoc     -  the TarsqiDocument instance that the tree is part of
-        docelement    -  the TarsqiDocElement that the tree was made for
-        events        -  a dictionary with events found by Evita
-        alink_list    -  a list of AlinkTags, filled in by Slinket
-        slink_list    -  a list of SlinkTags, filled in by Slinket
-        tlink_list    -  a list of TlinkTags
+        tarsqidoc   -  the TarsqiDocument instance that the tree is part of
+        docelement  -  the TarsqiDocElement that the tree was made for
+        events      -  a dictionary with events found by Evita
+        alinks      -  a list of AlinkTags, filled in by Slinket
+        slinks      -  a list of SlinkTags, filled in by Slinket
+        tlinks      -  a list of TlinkTags
 
     The events dictionary is used by Slinket and stores events from the tree
     indexed on event eids."""
@@ -290,9 +292,9 @@ class TarsqiTree:
         self.docelement = tarsqidocelement
         self.dtrs = []
         self.events = {}
-        self.alink_list = []
-        self.slink_list = []
-        self.tlink_list = []
+        self.alinks = []
+        self.slinks = []
+        self.tlinks = []
 
     def __len__(self):
         """Length is determined by the length of the dtrs list."""
@@ -302,23 +304,37 @@ class TarsqiTree:
         """Indexing occurs on the dtrs variable."""
         return self.dtrs[index]
 
+    def initialize_alinks(self, alinks):
+        for alink in alinks:
+            self.alinks.append(AlinkTag(alink.attrs))
+
+    def initialize_slinks(self, slinks):
+        for slink in slinks:
+            self.slinks.append(SlinkTag(slink.attrs))
+
+    def initialize_tlinks(self, tlinks):
+        for tlink in tlinks:
+            self.tlinks.append(TlinkTag(tlink.attrs))
+
     def hasEventWithAttribute(self, eid, att):
         """Returns the attribute value if the events dictionary has an event with the given
         id that has a value for the given attribute, returns False otherwise
         Arguments
            eid - a string indicating the eid of the event
            att - a string indicating the attribute"""
-        return self.events.get(eid,{}).get(att,False)
+        return self.events.get(eid, {}).get(att, False)
 
     def storeEventValues(self, pairs):
         """Store attributes associated with an event (that is, they live on an event or
         makeinstance tag) in the events dictionary. The pairs argument is a
         dcitionary of attributes"""
         # get eid from event or instance
-        try: eid = pairs[EID]
-        except KeyError: eid = pairs[EVENTID]
+        try:
+            eid = pairs[EID]
+        except KeyError:
+            eid = pairs[EVENTID]
         # initialize dictionary if it is not there yet
-        if not eid in self.events:
+        if eid not in self.events:
             self.events[eid] = {}
         # add data
         for (att, val) in pairs.items():
@@ -344,7 +360,7 @@ class TarsqiTree:
             event_attrs['eid'] = eid
             event_attrs['eiid'] = eiid
             # TODO: at least the second test does not seem needed anymore
-            event_attrs = { k:v for k,v in event_attrs.items()
+            event_attrs = { k: v for k, v in event_attrs.items()
                             if v is not None and k is not 'eventID' }
             self.docelement.add_event(token.begin, token.end, event_attrs)
 
@@ -355,24 +371,27 @@ class TarsqiTree:
         newly created links in the TarsqiTree. The linkType argument is'ALINK',
         'SLINK' or 'TLINK' and linkAttrs is a dictionary of attributes."""
         linkAttrs['lid'] = self.tarsqidoc.next_link_id(linkType)
-        if linkType == ALINK: self.alink_list.append(AlinkTag(linkAttrs))
-        elif linkType == SLINK: self.slink_list.append(SlinkTag(linkAttrs))
-        elif linkType == TLINK: self.tlink_list.append(TlinkTag(linkAttrs))
+        if linkType == ALINK:
+            self.alinks.append(AlinkTag(linkAttrs))
+        elif linkType == SLINK:
+            self.slinks.append(SlinkTag(linkAttrs))
+        elif linkType == TLINK:
+            self.tlinks.append(TlinkTag(linkAttrs))
 
     def pp(self):
         """Short form of pretty_print()"""
         self.pretty_print()
 
     def pretty_print(self):
-        """Pretty printer that prints all instance variables and a neat representation of
-        the sentences."""
+        """Pretty printer that prints all instance variables and a neat representation
+        of the sentences."""
         print "\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.source.filename
         print "len(dtrs) = %s" % (len(self.dtrs))
         self.pretty_print_tagged_events_dict()
-        print 'alink_list =', self.alink_list
-        print 'slink_list =', self.slink_list
-        print 'tlink_list =', self.tlink_list
         self.pretty_print_sentences()
+        self.pretty_print_links(self.alinks)
+        self.pretty_print_links(self.slinks)
+        self.pretty_print_links(self.tlinks)
 
     def pretty_print_tagged_events_dict(self):
         print 'events = {',
@@ -392,3 +411,6 @@ class TarsqiTree:
             sentence.pretty_print(verbose=False)
         print
 
+    def pretty_print_links(self, links):
+        for link in links:
+            print ' ', link

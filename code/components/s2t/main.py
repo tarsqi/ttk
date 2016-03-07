@@ -1,5 +1,5 @@
 """
-Main module for the S2T component. 
+Main module for the S2T component.
 
 Responsible for the top-level processing of S2T. It contains
 Slink2Tlink, which inherits from TarsqiComponent as well as Slink, a
@@ -7,12 +7,13 @@ class that takes care of applying s2t-rules to each SLINK.
 
 """
 
-#from docmodel.xml_parser import Parser
 from utilities import logger
 from components.common_modules.component import TarsqiComponent
 from library.tarsqi_constants import S2T
 from library.s2t import s2t_rule_loader
+from library.timeMLspec import RELTYPE, SYNTAX, TLINK
 from library.timeMLspec import EVENT_INSTANCE_ID
+from library.timeMLspec import RELATED_TO_EVENT_INSTANCE
 from library.timeMLspec import SUBORDINATED_EVENT_INSTANCE
 
 
@@ -27,52 +28,34 @@ class Slink2Tlink (TarsqiComponent):
        rules - a list of S2TRules"""
 
     def __init__(self):
-        """Set component name and load rules into an S2TRuleDictionary object.
-        This object knows where the rules are stored."""
+        """Set component name and load rules into an S2TRuleDictionary object."""
         self.NAME = S2T
+        self.doctree = None
+        self.docelement = None
         self.rules = s2t_rule_loader.read_rules()
 
-    def process_file(self, infile, outfile):
-        """Apply all S2T rules to the input file.  Parses the xml file with
-        xml_parser.Parser and converts it using FragmentConverter. Then calls
-        createTLinksFromSlinks."""
-        xmlfile = open(infile, "r")
-        self.xmldoc = Parser().parse_file(xmlfile)
-        self.createTLinksFromSLinks()
-        self.xmldoc.save_to_file(outfile)
-
-    def process_xmldoc(self, xmldoc):
-        """Apply all S2T rules to xmldoc. Creates a Document object using
-        FragmentConverter (the only reason this is done is to get easy
-        access to the Alinks and Slinks). Then calls
-        createTLinksFromSlinks."""
-        self.xmldoc = xmldoc
-        self.createTLinksFromSLinks()
-
-    def createTLinksFromALinks(self):
-        """Calls alink.lookForAtlinks to add Tlinks from Alinks. This is
-        rather moronic unfortunately because it will never do anything
-        because at the time of application there are no tlinks in the
-        document. Needs to be separated out and apply at a later
-        processing stage, after all other tlinking."""
-        for alinkTag in self.doctree.alink_list:
+    def process_doctree(self, doctree):
+        """Apply all S2T rules to doctree."""
+        self.doctree = doctree
+        self.docelement = self.doctree.docelement
+        events = self.doctree.docelement.tarsqi_tags.find_tags('EVENT')
+        eventsIdx = dict([(e.attrs['eiid'], e) for e in events])
+        for slinktag in self.doctree.slinks:
+            slink = Slink(self.doctree, eventsIdx, slinktag)
             try:
-                alink = Alink(self.xmldoc, self.doctree, alinkTag)
-                alink.lookForAtlinks()
-            except:
-                logger.error("Error processing ALINK")
-
-    def createTLinksFromSLinks(self):
-        """Calls lookForStlinks for a given Slink object."""
-        instances = {}
-        for inst in self.xmldoc.get_tags('MAKEINSTANCE'):
-            instances[inst.attrs['eiid']] = inst
-        for el in self.xmldoc.get_tags('SLINK'):
-            try:
-                slink = Slink(self.xmldoc, instances, el)
                 slink.match_rules(self.rules)
             except:
-                logger.error("Error processing SLINK")
+                logger.error("S2T Error when processing Slink instance")
+        self._add_links_to_docelement()
+
+    def _add_links_to_docelement(self):
+        for tlink in self.doctree.tlinks:
+            self._add_link(TLINK, tlink.attrs)
+
+    def _add_link(self, tagname, attrs):
+        """Add the link to the TagRepository instance on the TarsqiDocElement."""
+        logger.debug("Adding %s: %s" % (tagname, attrs))
+        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
 
 
 class Slink:
@@ -83,15 +66,15 @@ class Slink:
     event instances involved in the link.
 
     Instance variables:
-       xmldoc - an XmlDocument
+       doctree - a TarsqiTree
        attrs - adictionary containing the attributes of the slink
        eventInstance - an InstanceTag
        subEventInstance - an InstanceTag"""
 
-    def __init__(self, xmldoc, instances, slinkTag):
+    def __init__(self, doctree, instances, slinkTag):
         """Initialize an Slink using an XMLDocument, a dictionary of
         instances and the slink element from xmldoc."""
-        self.xmldoc = xmldoc
+        self.doctree = doctree
         self.attrs = slinkTag.attrs
         eiid1 = self.attrs[EVENT_INSTANCE_ID]
         eiid2 = self.attrs[SUBORDINATED_EVENT_INSTANCE]
@@ -100,14 +83,13 @@ class Slink:
 
     def match_rules(self, rules):
         """Match all the rules in the rules argument to the SLINK. If a rule
-        matches, this method creates a TLINK and returns. There is no
-        return value."""
+        matches, this method creates a TLINK and breaks out of the loop."""
         for rule in rules:
             result = self.match(rule)
             if result:
                 self.create_tlink(rule)
                 break
-            
+
     def match(self, rule):
         """ The match method applies an S2TRule object to an the Slink. It
         returns the rule if the Slink is a match, False otherwise."""
@@ -119,9 +101,8 @@ class Slink:
             # relation is the rhs of the rule, so need not match
             elif attr == 'relation':
                 continue
-            # all other features are features on the events in the
-            # SLINK, only consider those that are on event and
-            # subevent.
+            # all other features are features on the events in the SLINK, only
+            # consider those that are on event and subevent.
             elif '.' in attr:
                 (event_object, attribute) = attr.split('.')
                 if event_object == 'event':
@@ -131,15 +112,17 @@ class Slink:
                     if (val != self.subEventInstance.attrs.get(attribute)):
                         return False
         return rule
-    
+
     def create_tlink(self, rule):
-        """Takes an S2T rule object and calls the add_tlink method from xmldoc
-        to create a new TLINK using the appropriate SLINK event
-        instance IDs and the relation attribute of the S2T rule."""
-        self.xmldoc.add_tlink(rule.attrs['relation'],
-                              self.attrs[EVENT_INSTANCE_ID],
-                              self.attrs[SUBORDINATED_EVENT_INSTANCE],
-                              'S2T Rule ' + rule.id)
+        """Takes an S2T rule object and calls the add_tlink method from xmldoc to create
+        a new TLINK using the appropriate SLINK event instance IDs and the
+        relation attribute of the S2T rule. """
+        tlinkAttrs = {
+            EVENT_INSTANCE_ID: self.attrs[EVENT_INSTANCE_ID],
+            RELATED_TO_EVENT_INSTANCE: self.attrs[SUBORDINATED_EVENT_INSTANCE],
+            RELTYPE: rule.attrs['relation'],
+            SYNTAX: "S2T-RULE-%s" % rule.id }
+        self.doctree.addLink(tlinkAttrs, TLINK)
 
 
 class Alink:
@@ -150,7 +133,7 @@ class Alink:
         self.xmldoc = xmldoc
         self.doctree = doctree
         self.attrs = alinkTag.attrs
-        
+
     def lookForAtlinks(self):
         """Examine whether the Alink can generate a Tlink."""
         if self.is_a2t_candidate():
@@ -158,22 +141,19 @@ class Alink:
                          self.attrs['relType'])
             apply_patterns(self)
         else:
-            logger.debug("A2T Alink not a candidate " + self.attrs['lid'] + " " +
-                         self.attrs['relType'])
-            
+            logger.debug("A2T Alink not a candidate " + self.attrs['lid'] +
+                         " " + self.attrs['relType'])
+
     def is_a2t_candidate(self):
-        if a2tCandidate.attrs['relType'] in ('INITIATES', 'CULMINATES', 'TERMINATES'):
-            return True
-        else:
-            return False
+        reltype = a2tCandidate.attrs['relType']
+        return reltype in ('INITIATES', 'CULMINATES', 'TERMINATES')
 
     def apply_patterns(self):
         """Loop through TLINKs to match A2T pattern"""
         logger.debug("SELF Properties:")
-        logger.debug(self.attrs['lid'] + " " + self.attrs['eventInstanceID']
-                     + " " + self.attrs['relatedToEventInstance']
-                     + " " + self.attrs['relType'])
-        
+        logger.debug(self.attrs['lid'] + " " + self.attrs['eventInstanceID'] +
+                     " " + self.attrs['relatedToEventInstance'] +
+                     " " + self.attrs['relType'])
         for tlink in self.doctree.alink_list:
             logger.debug("Current TLINK ID: " + tlink.attrs['lid'])
             if 'relatedToTime' not in tlink.attrs and 'timeID' not in tlink.attrs:
