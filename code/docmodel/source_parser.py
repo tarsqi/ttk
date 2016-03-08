@@ -112,11 +112,14 @@ class SourceParserTTK(SourceParser):
                     self._add_to_tarsqi_tags(node)
 
     def _add_comments(self):
-        for node in self.topnodes['comments'].childNodes:
-            if node.nodeType == minidom.Node.ELEMENT_NODE:
-                offset = node.getAttribute('offset')
-                comment = node.firstChild.data
-                self.sourcedoc.comments[int(offset)] = [comment]
+        # unlike the other top-level tags, comments are optional
+        comments = self.topnodes.get('comments')
+        if comments:
+            for node in self.topnodes['comments'].childNodes:
+                if node.nodeType == minidom.Node.ELEMENT_NODE:
+                    offset = node.getAttribute('offset')
+                    comment = node.firstChild.data
+                    self.sourcedoc.comments[int(offset)] = [comment]
 
     def _add_metadata(self):
         for node in self.topnodes['metadata'].childNodes:
