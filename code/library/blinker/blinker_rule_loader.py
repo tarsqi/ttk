@@ -69,8 +69,8 @@ class BlinkerRule:
     
     def pp(self):
         print "<BlinkerRule %s>" % self.id
-        for attr, val in self.attrs.items():
-            print "  %s=\"%s\"" % (attr, val)
+        for attr, val in sorted(self.attrs.items()):
+            print "   %-12s  =  %s" % (attr, val)
 
 
 

@@ -53,6 +53,8 @@ STEM = 'stem'
 
 TIMEX = 'TIMEX3'
 TID = 'tid'
+TYPE = 'type'
+VALUE = 'value'
 
 SIGNAL = 'SIGNAL'
 

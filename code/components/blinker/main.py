@@ -6,22 +6,23 @@ Responsible for loading the libraries and other top-level processing.
 
 import re
 
-#from docmodel.xml_parser import create_dct_element
 from utilities import logger
 from library.tarsqi_constants import BLINKER
-from library.timeMLspec import TIMEX, EIID, TID, POL
+from library.timeMLspec import TIMEX, TYPE, VALUE, EIID, TID, POL
+from library.timeMLspec import TLINK, RELTYPE, ORIGIN
+from library.timeMLspec import EVENT_INSTANCE_ID, RELATED_TO_EVENT_INSTANCE
+from library.timeMLspec import TIME_ID, RELATED_TO_TIME
 from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.tree import create_tarsqi_tree
 from components.blinker.compare import compare_date
 
 
-_DEBUG2 = False
-_DEBUG3 = False
-_DEBUG5 = False
+_DEBUG = False
+
 
 # possible quotation marks; should be imported from elsewhere
-QUOTES = ["``", '"', "'"]  
+QUOTES = ["``", '"', "'"]
 
 
 class Blinker (TarsqiComponent):
@@ -35,20 +36,22 @@ class Blinker (TarsqiComponent):
        NAME - a string
        rules - a BlinkerRuleDictionary
        rule2_index - a dictionary, quick access to type 2 rules
-       dct - a string of the form YYYYMMDD, representing the document creation time
+       dct - document creation time: a string of the form YYYYMMDD
        doctree - a TarsqiTree"""
 
     def __init__(self, tarsqidoc):
         """Set component name and load rules into a BlinkerRuleDictionary
         object, this object knows where the rules are stored."""
+        # TODO: this loads the rules for every paragraph, get rid of that
         self.NAME = BLINKER
         self.doctree = None         # instance of TarsqiTree
         self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
         self.rules = BlinkerRuleDictionary()
         self.rule2_index = {}
-        #self.rules.pp_ruletype(3)
+        # self.rules.pp_ruletype(3)
         self._populate_rule2_index()
-        
+        # print self.rule2_index.keys()
+
     def _populate_rule2_index(self):
         """Rules of type 2 (timex-signal-event) can be simply put in a
         hash keyed on the signals."""
@@ -56,24 +59,35 @@ class Blinker (TarsqiComponent):
             relation = rule.get_attribute('relation')[0]  # vals are now lists
             signal = rule.get_attribute('signal')[0]
             self.rule2_index[signal] = relation
-            
+
     def process_element(self, element, dct):
-        """Apply all Blinker rules to the element. Creates a TarsqiTree instance and then
-        applies the Blinker rules. Curently only applies rules of type 2."""
+        """Apply all Blinker rules to the element. Creates a TarsqiTree instance and
+        then applies the Blinker rules. Curently only applies rules of type 2."""
         self.dct = dct
         self.doctree = create_tarsqi_tree(element)
-        #self.pp_doctree(BLINKER)
+        self.docelement = element
+        # self.pp_doctree(BLINKER)
         self._run_blinker()
+        self._export_links()
 
+    def _export_links(self):
+        """Export the links that we store in self.doctree.tlinks to the
+        TarsqiDocElement."""
+        # TODO: this, and _add_link, are defined in several places, not nice,
+        # they are now renamed here, which is an improvement
+        for tlink in self.doctree.tlinks:
+            self._export_link(TLINK, tlink.attrs)
 
+    def _export_link(self, tagname, attrs):
+        """Add the link to the TagRepository instance on the TarsqiDocElement."""
+        logger.debug("Adding %s: %s" % (tagname, attrs))
+        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
 
     def _run_blinker(self):
-
-        """Apply BLinker rules to the sentences in the doctree
-        variable. Currently only deals with rule type 2, anchoring an
-        event to a timex in those cases where there is a signal (that
-        is, a preposition) available. New Tlinks are added just before
-        the closing tag of the fragment."""
+        """Apply BLinker rules to the sentences in the doctree variable. Currently only
+        deals with rule type 2, anchoring an event to a timex in those cases
+        where there is a signal (that is, a preposition) available. New Tlinks
+        are added just before the closing tag of the fragment. """
 
         self._run_timex_linking()
         self._apply_event_ordering_with_signal_rules()
@@ -85,20 +99,22 @@ class Blinker (TarsqiComponent):
         for si in range(len(self.doctree)):
             sentence = self.doctree[si]
             r3_main_event = None
-            if _DEBUG5: print "processing sentence", si
+            if _DEBUG:
+                print "processing sentence", si
 
             # iterate over elements within a sentence
             for i in range(len(sentence)):
                 element = sentence[i]
                 timex = element.get_timex()
                 event = element.get_event()
-                # RULE TYPE 2 
+                # RULE TYPE 2
                 if timex:
                     # chunk contains a timex, now try to anchor events to it
                     self._apply_event_anchoring_rules(sentence, timex, i)
                 # RULE TYPE 3
                 if event and element.isChunk() and element.isVerbChunk():
-                    # the first verb event in a sentence is considered the main event
+                    # the first verbal event in a sentence is considered the
+                    # main event
                     if not r3_main_event:
                         r3_main_event = event
                         # if previous sentence contained an event, create a link
@@ -109,89 +125,65 @@ class Blinker (TarsqiComponent):
                         # else set event1
                         else:
                             r3_event1 = r3_main_event
-                #"""
                 # RULE TYPE 5
                 if event and element.isChunk() \
                         and element.isVerbChunk() \
                         and event.attrs['class'] == 'REPORTING':
-                    if _DEBUG5:
+                    if _DEBUG:
                         print "applying type 5 rules"
                     self._apply_type5_rules(sentence, event, i)
-                #"""
 
             # R3: if no main event in sentence
             if not r3_main_event:
                 r3_event1 = None
 
-
-
     def _run_timex_linking(self):
-
         """Apply the rules that govern relations between TIMEX3 tags. Only
-        applies to TIMEX3 tags with a VAL attribute equal to DATE."""
+        applies to TIMEX3 tags with type=DATE."""
+        # TODO: add a DCT TIMEX tag if it is not in the tags dictionary, but
+        # maybe check first whether it is in the dictionary in case we care
+        # about duplications (see https://github.com/tarsqi/ttk/issues/10 and
+        # https://github.com/tarsqi/ttk/issues/13)
+        timexes = self.docelement.tarsqi_tags.find_tags(TIMEX)
+        timexes = [t for t in timexes if t.attrs[TYPE] == 'DATE']
+        pairs = _timex_pairs(timexes)
+        for timex1, timex2 in pairs:
+            try:
+                self._create_timex_link(timex1, timex2)
+            except Exception:
+                logger.error("Error linking:\n%s\n%s" % (timex1, timex2))
 
-        timexes = [timex for timex in self.xmldoc.get_tags(TIMEX)
-                   if timex.attrs['TYPE'] == 'DATE']
-        # add DCT separately because it is not in the tags dictionary
-        timexes.append(create_dct_element(self.dct))
-        
-        for t in timexes:
-            if t.attrs.get('VAL', None) is None:
-                logger.warn("Missing VAL: %s" % t.get_content())
-                
-        for i in range(len(timexes)):
-            for j in range(len(timexes)):
-                if i < j:
-                    try:
-                        self._create_timex_link(timexes[i], timexes[j])
-                    except Exception:
-                        logger.error("Error in Timex Linking:\n%s\n%s" % \
-                                     (timexes[i].get_content(),
-                                      timexes[j].get_content()))
-
-                        
     def _create_timex_link(self, timex1, timex2):
-
         """Try to create a TLINK between two timexes."""
-        
         creation_year = self.dct[0:4]
-        date1 = timex1.attrs.get('VAL', None)
-        date2 = timex2.attrs.get('VAL', None)
+        date1 = timex1.attrs.get(VALUE)
+        date2 = timex2.attrs.get(VALUE)
         if date1 is None or date2 is None:
+            logger.warning("Missing value in %s or %s" % (date1, date2))
             return
-        date1 = fix_timex_val(date1)
-        date2 = fix_timex_val(date2)
+        date1 = _fix_timex_val(date1)
+        date2 = _fix_timex_val(date2)
         tid1 = timex1.attrs['tid']
         tid2 = timex2.attrs['tid']
-        comment = "Blinker - Timex Linking"
+        origin = "BLINKER-TimexLinking"
         if date1 == date2:
             if date1 not in ('PAST_REF', 'FUTURE_REF'):
-                self.xmldoc.add_tlink('IDENTITY', tid1, tid2, comment)
+                self.NEW_add_tlink('IDENTITY', tid1, tid2, origin)
         else:
             rel = compare_date(date1, date2, creation_year)
             if rel != 'IDENTITY':
-                self.xmldoc.add_tlink(rel, tid1, tid2, comment)
-
+                self.NEW_add_tlink(rel, tid1, tid2, origin)
 
     def _apply_type3_rules(self, event1, event2):
-
         """ Creates a TLINK between two main events """
 
-        if _DEBUG3:
-            print event1.dtrs[0].getText(), event2.dtrs[0].getText()
-            print event1.dtrs[0].getText(), event1.attrs['class'], \
-                event1.attrs['tense'], event1.attrs['aspect']
-            print event2.dtrs[0].getText(), event2.attrs['class'], \
-                event2.attrs['tense'], event2.attrs['aspect']
+        if _DEBUG:
+            _pp_events(event1, event2)
 
         for i in range(len(self.rules[3])):
             rule = self.rules[3][i]
-            if _DEBUG3:
-                print "RULE %s:" % (rule.rule_number)
-                print rule.attrs['arg1.class'], rule.attrs['arg1.tense'], \
-                    rule.attrs['arg1.aspect']
-                print rule.attrs['arg2.class'], rule.attrs['arg2.tense'], \
-                    rule.attrs['arg2.aspect']
+            if _DEBUG:
+                rule.pp()
 
             # see tags.py and library.timeMLspec.py for attribute names
             if event1.attrs['class'] in rule.attrs['arg1.class'] and \
@@ -200,17 +192,14 @@ class Blinker (TarsqiComponent):
                event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
                event1.attrs['aspect'] in rule.attrs['arg1.aspect'] and \
                event2.attrs['aspect'] in rule.attrs['arg2.aspect']:
-
-                rel = rule.attrs['relation'][0]
-                self.xmldoc.add_tlink( rel,
-                                       event1.attrs[EIID],
-                                       event2.attrs[EIID],
-                                       "Blinker - Type 3 (rule %s)" % rule.rule_number)
-                if _DEBUG3: print "RULE %s fired!" % rule.rule_number
-                # apply the first matching rule
+                self.NEW_add_tlink(rule.attrs['relation'][0],
+                                   event1.attrs[EIID],
+                                   event2.attrs[EIID],
+                                   "%s-RULE-%s" % (BLINKER, rule.id))
+                if _DEBUG:
+                    print "RULE %s fired!" % rule.rule_number
                 return
 
-            
     def _apply_type5_rules(self, sentence, event1, position):
 
         """ Creates TLINKs between the reporting event and reported events
@@ -228,55 +217,48 @@ class Blinker (TarsqiComponent):
 
         # forward
 
-        if _DEBUG5:
+        if _DEBUG:
             print "inside rule application function"
             sentence.pretty_print()
         for i in range(position+1, len(sentence)):
-            if _DEBUG5: print "processing element", i
+            if _DEBUG:
+                print "processing element", i
             element = sentence[i]
 
             # quote
             if element.isToken() and element.getText() in QUOTES:
-                if direct == 'DIRECT': direct = 'INDIRECT'
-                if direct == 'INDIRECT': direct = 'DIRECT'
+                if direct == 'DIRECT':
+                    direct = 'INDIRECT'
+                if direct == 'INDIRECT':
+                    direct = 'DIRECT'
 
-            # event 
+            # event
             event2 = element.get_event()
             if event2 and element.isChunk() and element.isVerbChunk():
                 current_rules = applicable_rules[:]
                 current_rules = [rule for rule in current_rules
                                  if direct in rule.attrs['sentType']]
-                if _DEBUG5:
-                    print event1.dtrs[0].getText(), event2.dtrs[0].getText()
-                    print event1.dtrs[0].getText(), event1.attrs['class'], \
-                        event1.attrs['tense'], event1.attrs['aspect']
-                    print event2.dtrs[0].getText(), event2.attrs['class'], \
-                        event2.attrs['tense'], event2.attrs['aspect']
+                if _DEBUG:
+                    _pp_events(event1, event2)
                 for rule in current_rules:
                     # if attribute not set in the rule, accept any value
                     for att in ['class', 'tense', 'aspect']:
                         if not rule.attrs.has_key('arg2.'+att):
                             rule.attrs['arg2.'+att] = [event2.attrs[att]]
-                    if _DEBUG5:
-                        print "RULE %s (%s):" % (rule.rule_number, rule.attrs['sentType'][0])
-                        print rule.attrs['arg1.class'], rule.attrs['arg1.tense'], \
-                            rule.attrs['arg1.aspect']
-                        print rule.attrs['arg2.class'], rule.attrs['arg2.tense'], \
-                            rule.attrs['arg2.aspect']
+                    if _DEBUG:
+                        rule.pp()
                     # check that specified values match
                     if event2.attrs['class'] in rule.attrs['arg2.class'] and \
                        event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
                        event2.attrs['aspect'] in rule.attrs['arg2.aspect']:
-
-                        rel = rule.attrs['relation'][0]
-                        self.xmldoc.add_tlink( rel,
-                                               event1.attrs['eiid'],
-                                               event2.attrs['eiid'],
-                                               "Blinker - Type 5 (rule %s)" % rule.rule_number)
-                        if _DEBUG5: print "RULE %s fired!" % rule.rule_number
+                        self.NEW_add_tlink(rule.attrs['relation'][0],
+                                           event1.attrs[EIID],
+                                           event2.attrs[EIID],
+                                           "%s-RULE-%s" % (BLINKER, rule.id))
+                        if _DEBUG:
+                            print "RULE %s fired!" % rule.rule_number
                         # apply the first matching rule
                         return
-                
 
         # backward
 
@@ -284,27 +266,25 @@ class Blinker (TarsqiComponent):
         # - may add the appropriate rules to the rule file instead
         direct = 'INDIRECT'
         for i in range(position-1, -1, -1):   # ..,3,2,1,0
-            if _DEBUG5: print "processing element", i
+            if _DEBUG:
+                print "processing element", i
             element = sentence[i]
 
             # quote
             if element.isToken() and element.getText() in QUOTES:
-                if direct == 'DIRECT': direct = 'INDIRECT'
-                if direct == 'INDIRECT': direct = 'DIRECT'
-                    
+                if direct == 'DIRECT':
+                    direct = 'INDIRECT'
+                if direct == 'INDIRECT':
+                    direct = 'DIRECT'
 
-            # event 
+            # event
             event2 = element.get_event()
             if event2 and element.isChunk() and element.isVerbChunk():
                 current_rules = applicable_rules[:]
                 current_rules = [rule for rule in current_rules
                                  if direct in rule.attrs['sentType']]
-                if _DEBUG5:
-                    print event1.dtrs[0].getText(), event2.dtrs[0].getText()
-                    print event1.dtrs[0].getText(), event1.attrs['class'], \
-                        event1.attrs['tense'], event1.attrs['aspect']
-                    print event2.dtrs[0].getText(), event2.attrs['class'], \
-                        event2.attrs['tense'], event2.attrs['aspect']
+                if _DEBUG:
+                    _pp_events(event1, event2)
                     print "Applying rules for sentence type:", \
                         direct, len(current_rules), "rules"
                 for rule in current_rules:
@@ -312,8 +292,9 @@ class Blinker (TarsqiComponent):
                     for att in ['class', 'tense', 'aspect']:
                         if not rule.attrs.has_key('arg2.'+att):
                             rule.attrs['arg2.'+att] = [event2.attrs[att]]
-                    if _DEBUG5:
-                        print "RULE %s (%s):" % (rule.rule_number, rule.attrs['sentType'][0])
+                    if _DEBUG:
+                        print "RULE %s (%s):" % (rule.rule_number,
+                                                 rule.attrs['sentType'][0])
                         print rule.attrs['arg1.class'], rule.attrs['arg1.tense'], \
                             rule.attrs['arg1.aspect']
                         print rule.attrs['arg2.class'], rule.attrs['arg2.tense'], \
@@ -322,17 +303,15 @@ class Blinker (TarsqiComponent):
                     if event2.attrs['class'] in rule.attrs['arg2.class'] and \
                        event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
                        event2.attrs['aspect'] in rule.attrs['arg2.aspect']:
-
                         rel = rule.attrs['relation'][0]
-                        self.xmldoc.add_tlink( rel,
-                                               event1.attrs['eiid'],
-                                               event2.attrs['eiid'],
-                                               "Blinker - Type 5 (rule %s)" % rule.rule_number)
-                        if _DEBUG5: print "RULE %s fired!" % rule.rule_number
+                        self.NEW_add_tlink(rel,
+                                           event1.attrs['eiid'],
+                                           event2.attrs['eiid'],
+                                           "Blinker - Type 5 (rule %s)" % rule.rule_number)
+                        if _DEBUG:
+                            print "RULE %s fired!" % rule.rule_number
                         # apply the first matching rule
                         return
-
-
 
     def _apply_event_anchoring_rules(self, sentence, timex, i):
 
@@ -354,9 +333,9 @@ class Blinker (TarsqiComponent):
         if event:
             eiid = event.attrs[EIID]
             tid = timex.attrs[TID]
-            self.xmldoc.add_tlink('IS_INCLUDED', eiid, tid, "Blinker - Type 1")
+            self.NEW_add_tlink('IS_INCLUDED', eiid, tid, "Blinker - Type 1")
             return
-        
+
         # Pattern: [CHUNK-WITH-EVENT] Prep [CHUNK-WITH-TIMEX]
         if i > 1:
             event = sentence[i-2].get_event()
@@ -365,25 +344,34 @@ class Blinker (TarsqiComponent):
                 rel = self.rule2_index.get(signal)
                 eiid = event.attrs[EIID]
                 tid = timex.attrs[TID]
-                if _DEBUG2:
+                if _DEBUG:
                     print "FOUND: [%s] %s [%s] --> %s" % \
                         (event.dtrs[0].getText(), signal, timex.getText(), rel)
-                self.xmldoc.add_tlink(rel, eiid, tid, "Blinker - Type 2 (%s)" % signal)
+                self.NEW_add_tlink(rel, eiid, tid,
+                                   "Blinker - Type 2 (%s)" % signal)
                 return
-            
+
         # Pattern: [CHUNK-WITH-VERBAL-EVENT] [CHUNK-WITH_TIMEX]
         if i > 0:
             previous_chunk = sentence[i-1]
             if previous_chunk.isVerbChunk():
                 event = previous_chunk.get_event()
                 if event:
-                    #if event.attrs[POL] != 'NEG':
+                    # if event.attrs[POL] != 'NEG':
                     eiid = event.attrs[EIID]
                     tid = timex.attrs[TID]
-                    self.xmldoc.add_tlink('IS_INCLUDED', eiid, tid, "Blinker - Type 1a")
+                    self.NEW_add_tlink('IS_INCLUDED', eiid, tid, "Blinker - Type 1a")
                     return
-            
 
+    def NEW_add_tlink(self, reltype, id1, id2, source):
+        """Add a TLINK to self.doctree.tlinks."""
+        id1_attr = TIME_ID if id1.startswith('t') else EVENT_INSTANCE_ID
+        id2_attr = RELATED_TO_TIME if id2.startswith('t') else RELATED_TO_EVENT_INSTANCE
+        attrs = { id1_attr: id1,
+                  id2_attr: id2,
+                  RELTYPE: reltype,
+                  ORIGIN: source }
+        self.doctree.addLink(attrs, TLINK)
 
     def _apply_event_ordering_with_signal_rules(self):
 
@@ -395,56 +383,64 @@ class Blinker (TarsqiComponent):
             'before': 'BEFORE',
             'during': 'DURING'
             }
-        
+
         for si in range(len(self.doctree)):
             sentence = self.doctree[si]
             for i in range(len(sentence)):
-
                 try:
-                    #print sentence[i:i+4]
+                    # print sentence[i:i+4]
                     (VG1, Prep, NG, VG2) = sentence[i:i+4]
                     event1 = VG1.get_event()
                     event2 = VG2.get_event()
-                
                     # Pattern: [VG +Event] [Prep] [NG -Event] [VG +Event]
-
                     if event1 and VG1.isVerbChunk() and \
                             Prep.isPreposition() and \
                             NG.isNounChunk() and not NG.get_event() and \
                             event2 and VG2.isVerbChunk():
-                        
-                        #print "[VG +Event] [Prep] [NG -Event] [VG +Event]"
-                        #print Prep
+                        # print "[VG +Event] [Prep] [NG -Event] [VG +Event]"
+                        # print Prep
                         prep_token = Prep.getText().lower()
-                        #print prep_token
+                        # print prep_token
                         rel = signal_mapping.get(prep_token)
-                        #print rel
+                        # print rel
                         if rel:
-                            #print 'adding tlink'
+                            # print 'adding tlink'
                             eiid1 = event1.attrs[EIID]
                             eiid2 = event2.attrs[EIID]
-                            self.xmldoc.add_tlink(rel, eiid1, eiid2,
-                                                  "Blinker - Event:Signal:Event")
-                            
+                            self.NEW_add_tlink(rel, eiid1, eiid2,
+                                               "Blinker - Event:Signal:Event")
                 except:
                     pass
 
 
-def fix_timex_val(date):
+def _timex_pairs(timexes):
+    """Return a list of timex pairs where the first element occurs before the
+    second element on the input list."""
+    pairs = []
+    for i in range(len(timexes)):
+        for j in range(len(timexes)):
+            if i < j:
+                pairs.append([timexes[i], timexes[j]])
+    return pairs
 
+
+def _fix_timex_val(date):
     """Rather simplistic way to add in hyphens. There are probably a lot
     of cases it does not deal with."""
-    
     match = re.compile("^(\d\d\d\d)(\d\d)(\d\d)(.*)").match(date)
     if match:
         (year, month, days, rest) = match.groups()
         return "%s-%s-%s%s" % (year, month, days, rest)
-    
     match = re.compile("^(\d\d\d\d)(\d\d)(.*)").match(date)
     if match:
         (year, month, rest) = match.groups()
         return "%s-%s%s" % (year, month, rest)
-
     return date
 
 
+def _pp_events(event1, event2):
+    print(event1.dtrs[0].getText(), event2.dtrs[0].getText())
+    print('   e1', event1.dtrs[0].getText(), event1.attrs['class'],
+          event1.attrs['tense'], event1.attrs['aspect'])
+    print('   e2', event2.dtrs[0].getText(), event2.attrs['class'],
+          event2.attrs['tense'], event2.attrs['aspect'])
