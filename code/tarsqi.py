@@ -124,7 +124,7 @@ class Tarsqi:
 
         self.components = COMPONENTS
         self.source_parser = create_source_parser(self.options)
-        self.metadata_parser = create_metadata_parser(self.options)
+        self.metadata_parser = create_metadata_parser(self, self.options)
         self.docstructure_parser = create_docstructure_parser()
         self.pipeline = self._create_pipeline()
 

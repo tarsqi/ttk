@@ -45,8 +45,9 @@ def create_source_parser(options):
     return source_parser()
 
 
-def create_metadata_parser(options):
+def create_metadata_parser(tarsqi, options):
     source_parser, metadata_parser = PARSERS.get(options.source, DEFAULT_PARSERS)
+    metadata_parser.tarsqi = tarsqi
     return metadata_parser(options)
 
 

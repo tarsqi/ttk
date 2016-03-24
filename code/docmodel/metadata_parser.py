@@ -35,12 +35,16 @@ class MetadataParser:
         """Return today's date in YYYYMMDD format."""
         return get_today()
 
+    def get_source(self):
+        """A convenience method to lift the SourceDoc out of the tarsqi instance."""
+        return self.tarsqi.document.source
+
     def _get_tag_content(self, tagname):
         """Return the text content of the first tag with name tagname, return None if
         there is no such tag."""
         try:
-            tag = self.sourcedoc.source_tags.find_tags(tagname)[0]
-            content = self.sourcedoc.text[tag.begin:tag.end].strip()
+            tag = self.get_source().source_tags.find_tags(tagname)[0]
+            content = self.get_source().text[tag.begin:tag.end].strip()
             return content
         except IndexError:
             logger.warn("Cannot get the %s tag in this document" % tagname)
