@@ -81,7 +81,8 @@ class SourceParserTTK(SourceParser):
         self._add_tarsqi_tags()
         self._add_comments()
         self._add_metadata()
-        self.sourcedoc.finish()
+        # seems not needed here
+        # self.sourcedoc.finish()
         tarsqidoc = TarsqiDocument(self.sourcedoc, {})
         return tarsqidoc
 
@@ -136,14 +137,18 @@ class SourceParserTTK(SourceParser):
 
     def _add_to_tag_repository(self, node, tag_repository):
         name = node.tagName
-        o1 = int(node.getAttribute('begin'))
-        o2 = int(node.getAttribute('end'))
+        o1 = node.getAttribute('begin')
+        o2 = node.getAttribute('end')
+        o1 = int(o1) if o1 else -1
+        o2 = int(o2) if o2 else -1
         attrs = dict(node.attributes.items())
         attrs = dict([(k, v) for (k, v) in attrs.items() if k not in ('begin', 'end')])
+        # print name, o1, o2, attrs
         opening_tag = OpeningTag(None, name, o1, attrs)
         closing_tag = ClosingTag(None, name, o2)
         tag_repository.add_tmp_tag(opening_tag)
         tag_repository.add_tmp_tag(closing_tag)
+        # tag_repository.add_tag(name, o1, o2, attrs)
 
     def parse_string(self, text):
         dom = minidom.parseString(text)

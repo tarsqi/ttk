@@ -1,5 +1,5 @@
 
-from docmodel.xml_parser import Parser, XmlDocElement, create_dct_element
+#from docmodel.xml_parser import Parser, XmlDocElement, create_dct_element
 
 from graph import Graph
 from objects import Node, Edge, Constraint

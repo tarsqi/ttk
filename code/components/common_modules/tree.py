@@ -101,8 +101,7 @@ class Node(object):
         the tag cannot be inserted."""
         # first check if tag offsets fit in self offsets
         if tag.begin < self.begin or tag.end > self.end:
-            print "WARNING: cannot insert tag because " \
-                + "its boundaries are outside of the nodes boundaries"
+            pass
         # add tag as first daughter if there are no daughters
         elif not self.dtrs:
             self.dtrs.append(Node(tag, self, self.tree))

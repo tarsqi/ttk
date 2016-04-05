@@ -218,10 +218,22 @@ PARSERS = {
     'ttk': (SourceParserTTK, MetadataParserTTK) }
 </pre>
 
-<p>The Tarsqi initialization method takes the result of create_source_parser()
-and uses it to set the value of the source_parser variable of the Tarsqi
-instance. And this parser is used by the Tarsqi.process() method, a fragment of
-which is shown here, together with its helper method _process_document().</p>
+<p>As an aside, note that with these source types we can split a processing
+chain by storing intermediate results and then later applying components further
+downstream. In the code below for example we take an XML file and just run the
+preprocessor.  Results are always stored in Tarsqi's native ttk format which is
+then used as the source format for the next invocation.</p>
+
+<pre class="example indent">
+python tarsqi.py --pipeline=PREPROCESSOR --source=xml test.xml test-p.xml
+python tarsqi.py --pipeline=EVITA,SLINKET --source=ttk test-p.xml test-pge.xml
+</pre>
+
+<p>Back to the document parsing. The Tarsqi initialization method takes the
+result of create_source_parser() and uses it to set the value of the
+source_parser variable of the Tarsqi instance. And this parser is used by the
+Tarsqi.process() method, a fragment of which is shown here, together with its
+helper method _process_document().</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
@@ -301,7 +313,7 @@ SourceParserTTK however is used to deal with documents that were previsously
 save as TTK document and which may contain metadata and Tarsqi tags. Therefore,
 this parser also adds elements to the metadata dictionary and the tarsqi_tags
 TagRepository, and in some cases to the comments variable as well (if the TTK
-document was created from an XML documentg with comments).</p>
+document was created from an XML document with comments).</p>
 
 
 <p><span class="header">MetadataParser</span>. The second part of step 1 is to
@@ -499,29 +511,31 @@ readability).</p>
 <pre class="example indent">
 &lt;ttk>
 &lt;text>
-He sleeps on Friday.
+She sleeps on Friday.
 &lt;/text>
+&lt;metadata>
+  &lt;dct value="20160304"/>
+&lt;/metadata>
 &lt;source_tags>
-  &lt;text id="1" begin="1" end="21" />
+  &lt;text id="1" begin="1" end="22" />
 &lt;/source_tags>
-&lt;ttk_tags>
-  &lt;TIMEX3 tid="t0" type="DATE" value="20160105" functionInDocument="CREATION_TIME"/>
-  &lt;doc_element type="TarsqiDocParagraph" begin="1" end="21">
-    &lt;lex id="l1" begin="1" end="3" lemma="he" pos="PP" />
-    &lt;ng id="c1" begin="1" end="3" targets="l1 l1" />
-    &lt;lex id="l2" begin="4" end="10" lemma="sleep" pos="VBZ" />
-    &lt;vg id="c2" begin="4" end="10" targets="l2 l2" />
-    &lt;lex id="l3" begin="11" end="13" lemma="on" pos="IN" />
-    &lt;lex id="l4" begin="14" end="20" lemma="Friday" pos="NNP" />
-    &lt;ng id="c3" begin="14" end="20" targets="l4 l4" />
-    &lt;lex id="l5" begin="20" end="21" lemma="." pos="." />
-    &lt;s id="s1" begin="1" end="21" targets="l1 l5" />
-    &lt;TIMEX3 id="1" begin="14" end="20" type="DATE" value="" />
-    &lt;EVENT id="2" begin="4" end="10" polarity="POS" pos="VERB" eiid="ei1"
-         tense="PRESENT" eid="e1" aspect="NONE" class="OCCURRENCE" />
+&lt;tarsqi_tags>
+  &lt;doc_element type="TarsqiDocParagraph" begin="0" end="23">
+    &lt;s id="s1" begin="1" end="22" />
+    &lt;lex id="l1" begin="1" end="4" lemma="she" pos="PP" text="She" />
+    &lt;ng id="c1" begin="1" end="4" />
+    &lt;lex id="l2" begin="5" end="11" lemma="sleep" pos="VBZ" text="sleeps" />
+    &lt;vg id="c2" begin="5" end="11" />
+    &lt;EVENT begin="5" end="11" aspect="NONE" class="OCCURRENCE" eid="e1" eiid="ei1"
+           epos="VERB" form="sleeps" pos="VBZ" tense="PRESENT" />
+    &lt;lex id="l3" begin="12" end="14" lemma="on" pos="IN" text="on" />
+    &lt;lex id="l4" begin="15" end="21" lemma="Friday" pos="NNP" text="Friday" />
+    &lt;ng id="c3" begin="15" end="21" />
+    &lt;lex id="l5" begin="21" end="22" lemma="." pos="." text="." />
   &lt;/doc_element>
-&lt;/ttk_tags>
+&lt;/tarsqi_tags>
 &lt;/ttk>
+
 </pre>
 
 <p>All elements, with the exception of the Document Creation Time occur inside

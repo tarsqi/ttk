@@ -198,14 +198,14 @@ class TarsqiDocElement:
         self._add_tags(tag_repository, self.source_tags)
 
     def add_tarsqi_tags(self, tag_repository):
-        """Add to the tarsqi_tags TagRepository all tags from a TagRepostitory (handed
-        in from the SourceDoc) that fall within the scope of this element. Also
-        includes tags whose begin is before and whose end is after the
-        element. Makes a shallow copy of the Tag from the SourceDoc
-        TagRepository. """
-        self._add_tags(tag_repository, self.tarsqi_tags)
+        """Add to the tarsqi_tags TagRepository all tags from a TagRepostitory
+        (handed in from the SourceDoc) that fall within the scope of this
+        element. Also includes tags whose begin is before and whose end is after
+        the element. Makes a shallow copy of the Tag from the SourceDoc
+        TagRepository."""
+        self._add_tags(tag_repository, self.tarsqi_tags, check=False)
 
-    def _add_tags(self, from_repository, to_repository):
+    def _add_tags(self, from_repository, to_repository, check=True):
         """Add tags from from_repository to to_repository if those tags fall within the
         scope of this element. Also includes tags whose begin is before and
         whose end is after the element. The from_repository comes from the
@@ -217,8 +217,13 @@ class TarsqiDocElement:
             # skip document elements because they are treated in a special way
             if t.name == 'doc_element':
                 continue
-            if (t.begin >= self.begin and t.end <= self.end) \
-                    or (t.begin <= self.begin and t.end >= self.end):
+            if check:
+                # check offsets if we need to
+                if (t.begin >= self.begin and t.end <= self.end) \
+                        or (t.begin <= self.begin and t.end >= self.end):
+                    to_repository.append(copy(t))
+            else:
+                # or just add the tag
                 to_repository.append(copy(t))
 
     def add_timex(self, begin, end, attrs):

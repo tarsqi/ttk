@@ -1,14 +1,12 @@
 """
 
-Python wrapper around the merging code. This code now both works with the old perl merging
-and closure code as well as with the new Python version of that code. Which one is used is
-determined by the value of USE_HERITAGE_CODE.
+Python wrapper around the merging code.
 
 """
 
 
 USE_HERITAGE_CODE = True
-#USE_HERITAGE_CODE = False
+USE_HERITAGE_CODE = False
 
 import os, sys, subprocess
 
@@ -70,7 +68,7 @@ class MergerWrapper:
     def process_fragments_new(self):
 
         """Set fragment names and ask the link merger component to process the fragments."""
-
+        return
         for fragment in self.fragments:
             # set fragment names
             base = fragment[0]
