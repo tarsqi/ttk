@@ -18,10 +18,11 @@ class SlinketWrapper:
         self.document = tarsqi_document
 
     def process(self):
-        """Create a TarsqiTree instance for each TarsqiDocElement hand them to Slinket
-        for processing. Slinket processing will update the tags in the
-        TarsqiDocElement when slinks are added."""
-        for element in self.document.elements:
-            # print '>>>>>', element
-            doctree = tree.create_tarsqi_tree(element)
+        """Create a TarsqiTree instance for each docelement slice of the TarsqiDocument
+        and hand them to Slinket for processing. Slinket processing will update
+        the tags in the TarsqiDocument when slinks are added."""
+        self.document.tags.index_events()
+        self.document.tags.index_timexes()
+        for element in self.document.elements():
+            doctree = tree.create_tarsqi_tree(self.document, element)
             Slinket().process_doctree(doctree)

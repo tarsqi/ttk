@@ -1,6 +1,6 @@
 """Contains the GUTime wrapper.
 
-The wrapper takes the content of all TarsqiDocElements in the TarsqiDocument and
+The wrapper takes the content of all element Tags in the TarsqiDocument and
 creates the input needed by TimeTag.pl, which is the wrapper around TempEx.pm.
 
 The input required by TimeTag.pl looks as follows:
@@ -47,31 +47,32 @@ class GUTimeWrapper:
         """Create the input required by TimeTag.pl, call the Perl script and collect the
         TIMEX3 tags."""
         os.chdir(self.DIR_GUTIME)
-        for (count, element) in enumerate(self.document.elements):
+        for (count, element) in enumerate(self.document.elements()):
             fin = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.in.xml" % (count + 1))
             fout = os.path.join(self.DIR_DATA, "doc-element-%03d.gut.out.xml" % (count + 1))
-            _create_gutime_input(element, fin)
+            _create_gutime_input(self.document, element, fin)
             _run_gutime(fin, fout)
-            _export_timex_tags(fout, element)
+            _export_timex_tags(self.document, fout)
 
 
-def _create_gutime_input(element, fname):
+def _create_gutime_input(tarsqidoc, element, fname):
     """Create input needed by GUTime (TimeTag.pl plus Tempex.pm)"""
     fh = codecs.open(fname, 'w', encoding='utf8')
     closing_s_needed = False
     fh.write("<DOC>\n")
-    fh.write("<DATE>%s</DATE>\n" % element.doc.metadata.get('dct'))
-    offsets = sorted(element.tarsqi_tags.opening_tags.keys())
+    fh.write("<DATE>%s</DATE>\n" % tarsqidoc.metadata.get('dct'))
+    offsets = sorted(tarsqidoc.tags.opening_tags.keys())
+    offsets = [off for off in offsets if element.begin <= off and off <= element.end]
     for offset in offsets:
-        for tag in element.tarsqi_tags.opening_tags[offset]:
+        for tag in tarsqidoc.tags.opening_tags[offset]:
             if tag.name == 's':
                 if closing_s_needed:
                     fh.write("</s>\n")
                 fh.write("<s>\n")
                 closing_s_needed = True
-        for tag in element.tarsqi_tags.opening_tags[offset]:
+        for tag in tarsqidoc.tags.opening_tags[offset]:
             if tag.name == 'lex':
-                text = element.doc.text(tag.begin, tag.end)
+                text = tarsqidoc.source.text[tag.begin:tag.end]
                 fh.write("   %s\n" % tag.as_lex_xml_string(text))
     if closing_s_needed:
         fh.write("</s>\n")
@@ -88,7 +89,7 @@ def _run_gutime(fin, fout):
     for line in fh_errors:
         logger.warn(line)
 
-def _export_timex_tags(fname, element):
+def _export_timex_tags(tarsqidoc, fname):
     """Take the TIMEX3 tags from the GUTime output and add them to the tarsqi
     tags dictionary."""
     dom = parse(fname)
@@ -100,5 +101,6 @@ def _export_timex_tags(fname, element):
             p2 = int(lexes[-1].getAttribute('end'))
             attrs = { 'tid': timex.getAttribute('tid'),
                       'type': timex.getAttribute('TYPE'),
-                      'value': timex.getAttribute('VAL') }
-            element.add_timex(p1, p2, attrs)
+                      'value': timex.getAttribute('VAL'),
+                      'origin': GUTIME }
+            tarsqidoc.add_timex(p1, p2, attrs)

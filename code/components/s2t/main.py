@@ -15,17 +15,19 @@ from library.timeMLspec import RELTYPE, SYNTAX, TLINK
 from library.timeMLspec import EVENT_INSTANCE_ID
 from library.timeMLspec import RELATED_TO_EVENT_INSTANCE
 from library.timeMLspec import SUBORDINATED_EVENT_INSTANCE
+from library.timeMLspec import ORIGIN
 
 
 class Slink2Tlink (TarsqiComponent):
 
-    """Implements the S2T component of Tarsqi.
-    S2T takes the output of the Slinket component and applies rules to the
-    Slinks to create new Tlinks.
+    """Implements the S2T component of Tarsqi. S2T takes the output of the Slinket
+    component and applies rules to the Slinks to create new Tlinks.
 
     Instance variables:
        NAME - a string
-       rules - a list of S2TRules"""
+       rules - a list of S2TRules
+    
+    """
 
     def __init__(self):
         """Set component name and load rules into an S2TRuleDictionary object."""
@@ -38,7 +40,7 @@ class Slink2Tlink (TarsqiComponent):
         """Apply all S2T rules to doctree."""
         self.doctree = doctree
         self.docelement = self.doctree.docelement
-        events = self.doctree.docelement.tarsqi_tags.find_tags('EVENT')
+        events = self.doctree.tarsqidoc.tags.find_tags('EVENT')
         eventsIdx = dict([(e.attrs['eiid'], e) for e in events])
         for slinktag in self.doctree.slinks:
             slink = Slink(self.doctree, eventsIdx, slinktag)
@@ -53,9 +55,9 @@ class Slink2Tlink (TarsqiComponent):
             self._add_link(TLINK, tlink.attrs)
 
     def _add_link(self, tagname, attrs):
-        """Add the link to the TagRepository instance on the TarsqiDocElement."""
+        """Add the link to the TagRepository instance on the TarsqiDocument."""
         logger.debug("Adding %s: %s" % (tagname, attrs))
-        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
+        self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, attrs)
 
 
 class Slink:
@@ -121,7 +123,8 @@ class Slink:
             EVENT_INSTANCE_ID: self.attrs[EVENT_INSTANCE_ID],
             RELATED_TO_EVENT_INSTANCE: self.attrs[SUBORDINATED_EVENT_INSTANCE],
             RELTYPE: rule.attrs['relation'],
-            SYNTAX: "S2T-RULE-%s" % rule.id }
+            ORIGIN: S2T,
+            SYNTAX: "RULE-%s" % rule.id }
         self.doctree.addLink(tlinkAttrs, TLINK)
 
 

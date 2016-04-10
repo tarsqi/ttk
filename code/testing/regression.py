@@ -130,10 +130,8 @@ def run_evita():
 def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
     # NOTE: apart from the options this is the same function as in unittests.py
-    options = [('--pipeline', pipeline),
-               ('--loglevel', '1')]
-    td = tarsqi.process_string(sentence, options)
-    tags = td.elements[0].tarsqi_tags.find_tags(tag)
+    td = tarsqi.process_string(sentence, pipeline=pipeline, loglevel='1')
+    tags = td.tags.find_tags(tag)
     for t in tags:
         if t.begin == o1 and t.end == o2:
             return True
@@ -141,7 +139,8 @@ def check_tag(pipeline, sentence, tag, o1, o2):
 
 def load_tagger():
     # a dummy run just to get the tagger messages out of the way
-    tarsqi.process_string("Fido barks.", [('--pipeline', 'PREPROCESSOR')])
+    #tarsqi.process_string("Fido barks.", [('--pipeline', 'PREPROCESSOR')])
+    tarsqi.process_string("Fido barks.", pipeline='PREPROCESSOR')
 
 def timestamp():
     return time.strftime('%Y%m%d-%H%M%S')

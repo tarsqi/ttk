@@ -14,7 +14,7 @@ from utilities import logger
 class Evita (TarsqiComponent):
 
     """Class that implements Evita's event recognizer. Instance variables contain
-    the name of the component, the TarsqiDocument, a TarsqiDocElement and a
+    the name of the component, the TarsqiDocument, a docelement Tag and a
     TarsqiTree instance. The TarsqiTree instance in the doctree variable is the
     tree for just one element and not for the whole document or string."""
 
@@ -23,16 +23,15 @@ class Evita (TarsqiComponent):
         processing."""
         self.NAME = EVITA
         self.tarsqidoc = tarsqidoc    # instance of TarsqiDocument
-        self.docelement = docelement  # instance of TarsqiDocElement
+        self.docelement = docelement  # instance of Tag
         self.doctree = None           # instance of TarsqiTree
 
     def process_element(self):
-        """Process an instance of docmodel.document.TarsqiDocParagraph. Loop through all
+        """Process the element slice of the TarsqiDocument. Loop through all
         sentences in self.doctree and through all nodes in each sentence and
         determine if the node contains an event. Events are added to the tag
         repository on the element."""
-        self.doctree = create_tarsqi_tree(self.docelement)
-        #self.doctree.pp()
+        self.doctree = create_tarsqi_tree(self.tarsqidoc, self.docelement)
         for sentence in self.doctree:
             #print get_words_as_string(sentence)
             logger.debug("SENTENCE: %s" % get_words_as_string(sentence))

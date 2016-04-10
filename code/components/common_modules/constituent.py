@@ -23,7 +23,7 @@ class Constituent:
 
     On initialization these are all set to None or the empty list (for the dtrs
     variabe). All values are filled in when the TarsqiTree is created from a
-    TarsqiDocElement.
+    docelement Tag.
 
     """
 

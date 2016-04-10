@@ -45,12 +45,6 @@ FORM = 'form'
 
 TIMEML = 'TimeML'
 
-EVENT = 'EVENT'
-MAKEINSTANCE = 'MAKEINSTANCE'
-EID = 'eid'
-CLASS = 'class'
-STEM = 'stem'
-
 TIMEX = 'TIMEX3'
 TID = 'tid'
 TYPE = 'type'
@@ -58,9 +52,12 @@ VALUE = 'value'
 
 SIGNAL = 'SIGNAL'
 
-INSTANCE = 'MAKEINSTANCE'
-EVENTID = 'eventID'
+EVENT = 'EVENT'
+EID = 'eid'
 EIID = 'eiid'
+EVENTID = 'eventID'
+CLASS = 'class'
+STEM = 'stem'
 EPOS = 'epos' #NF_MORPH = 'nf_morph'
 TENSE = 'tense'
 ASPECT = 'aspect'

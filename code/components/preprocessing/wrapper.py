@@ -10,7 +10,6 @@ from types import StringType, TupleType
 from xml.sax.saxutils import escape, quoteattr
 
 from utilities import logger
-#from docmodel.source_parser import Tag
 from docmodel.document import Tag
 from library.tarsqi_constants import PREPROCESSOR
 
@@ -61,10 +60,11 @@ def normalizePOS(pos):
     return pos
 
 def adjust_lex_offsets(tokens, offset):
-    """The tokenizer works on isolated strings, adding offsets relative to the beginning
-    of the string. But for the lex tags we need to relate the offset to the beginning of
-    the file, not to the beginning of some random string. This procedure is used to
-    increment offsets on instances of TokenizedLex."""
+    """The tokenizer works on isolated strings, adding offsets relative to the
+    beginning of the string. But for the lex tags we need to relate the offset
+    to the beginning of the file, not to the beginning of some random
+    string. This procedure is used to increment offsets on instances of
+    TokenizedLex."""
     for token_string, token_object in tokens:
         # skip the ('<s>', None) pairs
         if token_object is not None:
@@ -77,7 +77,8 @@ class PreprocessorWrapper:
     """Wrapper for the preprocessing components."""
 
     def __init__(self, tarsqidocument):
-        """Set component_name, add the TarsqiDocument and initialize the TreeTagger."""
+        """Set component_name, add the TarsqiDocument and initialize the
+        TreeTagger."""
         self.component_name = PREPROCESSOR
         self.document = tarsqidocument
         self.treetagger_dir = self.document.options.getopt('treetagger')
@@ -87,18 +88,20 @@ class PreprocessorWrapper:
         self.chunk_time = 0
 
     def process(self):
-        """Retrieve the elements from the TarsqiDocument and hand these as strings to the
-        preprocessing chain. The result is a shallow tree with sentences and tokens. These
-        are inserted into the element's tarsqi_tags TagRepositories."""
+        """Retrieve the element tags from the TarsqiDocument and hand the text for the
+        elements as strings to the preprocessing chain. The result is a shallow
+        tree with sentences and tokens. These are inserted into the
+        TarsqiDocument's tags TagRepositories."""
         TagId.reset()
-        for element in self.document.elements:
-            tokens = self.tokenize_text(element.get_text())
+        for element in self.document.elements():
+            text = self.document.source.text[element.begin:element.end]
+            tokens = self.tokenize_text(text)
             adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)
             # TODO: add some code to get lemmas when the TreeTagger just gets
             # <unknown>, see https://github.com/tarsqi/ttk/issues/5
             text = self.chunk_text(text)
-            export(text, element)
+            export(text, self.document)
         logger.info("tokenizer processing time: %.3f seconds" % self.tokenize_time)
         logger.info("tagger processing time: %.3f seconds" % self.tag_time)
         logger.info("chunker processing time: %.3f seconds" % self.chunk_time)
@@ -159,10 +162,10 @@ class PreprocessorWrapper:
                 (tok, pos, stem) = item.split("\t")
                 pos = normalizePOS(pos)
                 current_sentence.append((tok, pos, stem, lex.begin, lex.end))
-        return text    
+        return text
 
 
-def export(text, tarsqi_element):
+def export(text, tarsqidoc):
     """Export preprocessing information to the tag repository. Updates the
     TagRepository with the text that is the result of preprocessing."""
 
@@ -170,22 +173,24 @@ def export(text, tarsqi_element):
 
     for sentence in text:
 
-        stag = Tag(TagId.next('s'), 's', None, None, {})
+        stag = Tag(TagId.next('s'), 's', None, None, {'origin': PREPROCESSOR})
 
         for token in sentence:
 
             if type(token) == StringType and token.startswith('<') and token.endswith('>'):
                 if not token.startswith('</'):
-                    ctag = Tag(TagId.next('c'), token[1:-1], None, None, {})
+                    ctag = Tag(TagId.next('c'), token[1:-1], None, None,
+                               {'origin': PREPROCESSOR})
                 else:
                     ctag.end = last_ltag.end
-                    tarsqi_element.tarsqi_tags.append(ctag)
+                    tarsqidoc.tags.append(ctag)
                     ctag = None
 
             elif type(token) == TupleType:
                 ltag = Tag(TagId.next('l'), 'lex', token[3], token[4],
-                           { 'lemma': token[2], 'pos': token[1], 'text': token[0] })
-                tarsqi_element.tarsqi_tags.append(ltag)
+                           { 'lemma': token[2], 'pos': token[1], 'text': token[0],
+                             'origin': PREPROCESSOR })
+                tarsqidoc.tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]
                 if ctag is not None and ctag.begin is None:
@@ -197,8 +202,8 @@ def export(text, tarsqi_element):
                 logger.warn('Unexpected token type')
 
         stag.end = last_ltag.end
-        tarsqi_element.tarsqi_tags.append(stag)
+        tarsqidoc.tags.append(stag)
 
     # indexing is needed because we bypassed the add_tag method on TagRepository
     # and instead directly appended to the tags list
-    tarsqi_element.tarsqi_tags.index()
+    tarsqidoc.tags.index()

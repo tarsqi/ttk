@@ -10,7 +10,7 @@ from utils import CompositionTable
 #from timeml_specs import TLINK, EVENT, INSTANCE, TIMEX, TID, EIID
 #from timeml_specs import RELTYPE, EVENT_INSTANCE_ID, TIME_ID, CONFIDENCE
 #from timeml_specs import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME, ORIGIN
-from library.timeMLspec import TLINK, EVENT, INSTANCE, TIMEX, TID, EIID
+from library.timeMLspec import TLINK, EVENT, TIMEX, TID, EIID
 from library.timeMLspec import RELTYPE, EVENT_INSTANCE_ID, TIME_ID, CONFIDENCE
 from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME, ORIGIN
 

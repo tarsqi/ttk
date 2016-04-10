@@ -198,7 +198,7 @@ def run_pipeline(pipeline, sentence):
 def get_tag(td, tag, o1, o2):
     """Return the tag between offsets o1 and o2 if there is one, return None if
     there is no such tag."""
-    tags = td.elements[0].tarsqi_tags.find_tags(tag)
+    tags = td.tags.find_tags(tag)
     for t in tags:
         if t.begin == o1 and t.end == o2:
             return t
@@ -207,8 +207,10 @@ def get_tag(td, tag, o1, o2):
 def get_link(td, tagname, e1_offsets, e2_offsets, reltype):
     """Return the link tag with the specified tagname (SLINK, ALINK or TLINK),
     relation type and event locations. Return None if there is no such link"""
-    link_tags = td.elements[0].tarsqi_tags.find_tags(tagname)
-    event_tags = td.elements[0].tarsqi_tags.find_tags('EVENT')
+    #link_tags = td.elements[0].tarsqi_tags.find_tags(tagname)
+    #event_tags = td.elements[0].tarsqi_tags.find_tags('EVENT')
+    link_tags = td.tags.find_tags(tagname)
+    event_tags = td.tags.find_tags('EVENT')
     if not link_tags:
         return None
     for link_tag in link_tags:

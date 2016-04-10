@@ -17,29 +17,32 @@ from library.timeMLspec import POS, POS_ADJ
 from utilities import logger
 
 
-def create_tarsqi_tree(element):
-    """Return an instance of TarsqiTree, using the tags in element, which is an
-    instance of TarsqiDocElement or a subclass."""
+def create_tarsqi_tree(tarsqidoc, element, links=False):
+    """Return an instance of TarsqiTree, using the tags in tarsqidoc included in
+    an element, which is an Tag instance with name=docelement. Include links that
+    fall within the boundaries of the elements if the optional links parameter
+    is set to True."""
     # start with a Tag with just the begin and end offsets
-    tree = TarsqiTree(element.doc, element)
-    top_tag = Tag(None, None, element.begin, element.end, {})
+    tree = TarsqiTree(tarsqidoc, element)
+    o1 = element.begin
+    o2 = element.end
+    top_tag = Tag(None, None, o1, o2, {})
     top_node = Node(top_tag, None, tree)
-    for tag in (element.tarsqi_tags.find_tags(SENTENCE) +
-                element.tarsqi_tags.find_tags(NOUNCHUNK) +
-                element.tarsqi_tags.find_tags(VERBCHUNK) +
-                element.tarsqi_tags.find_tags(LEX) +
-                element.tarsqi_tags.find_tags(EVENT) +
-                element.tarsqi_tags.find_tags(TIMEX)):
+    for tag in (tarsqidoc.tags.find_tags(SENTENCE, o1, o2) +
+                tarsqidoc.tags.find_tags(NOUNCHUNK, o1, o2) +
+                tarsqidoc.tags.find_tags(VERBCHUNK, o1, o2) +
+                tarsqidoc.tags.find_tags(LEX, o1, o2) +
+                tarsqidoc.tags.find_tags(EVENT, o1, o2) +
+                tarsqidoc.tags.find_tags(TIMEX, o1, o2)):
         top_node.insert(tag)
     top_node.set_positions()
     top_node.set_event_markers()
     # recursively import all nodes into the doc, but skip the topnode itself
     top_node.add_to_tree(tree)
-    tree.initialize_alinks(element.tarsqi_tags.find_tags(ALINK))
-    tree.initialize_slinks(element.tarsqi_tags.find_tags(SLINK))
-    tree.initialize_tlinks(element.tarsqi_tags.find_tags(TLINK))
-    # top_node.pp()
-    # tree.pp()
+    if links:
+        tree.initialize_alinks(tarsqidoc.tags.find_tags(ALINK))
+        tree.initialize_slinks(tarsqidoc.tags.find_linktags_in_range(SLINK, o1, o2))
+        tree.initialize_tlinks(tarsqidoc.tags.find_tags(TLINK))
     return tree
 
 
@@ -276,7 +279,7 @@ class TarsqiTree:
 
     Instance variables
         tarsqidoc   -  the TarsqiDocument instance that the tree is part of
-        docelement  -  the TarsqiDocElement that the tree was made for
+        docelement  -  the Tag with name=docelement that the tree was made for
         events      -  a dictionary with events found by Evita
         alinks      -  a list of AlinkTags, filled in by Slinket
         slinks      -  a list of SlinkTags, filled in by Slinket
@@ -285,10 +288,10 @@ class TarsqiTree:
     The events dictionary is used by Slinket and stores events from the tree
     indexed on event eids."""
 
-    def __init__(self, tarsqidoc, tarsqidocelement):
+    def __init__(self, tarsqidoc, docelement_tag):
         """Initialize all dictionaries, list and counters and set the file name."""
         self.tarsqidoc = tarsqidoc
-        self.docelement = tarsqidocelement
+        self.docelement = docelement_tag
         self.dtrs = []
         self.events = {}
         self.alinks = []
@@ -341,14 +344,14 @@ class TarsqiTree:
 
     def addEvent(self, event):
         """Takes an instance of evita.event.Event and adds it to the TagRepository on
-        the TarsqiDocElement. Does not add it if there is already an event at
+        the TarsqiDocument. Does not add it if there is already an event at
         the same location."""
         # NOTE: we now always have one token on this list, if there are more in
         # a future implementation we takes the last, but what probably should
         # happen is that we take the begin offset from the first and the end
         # offset from the last token.
         token = event.tokens[-1]
-        if self.docelement.has_event(token.begin, token.end):
+        if self.tarsqidoc.has_event(token.begin, token.end):
             logger.warn("There already is an event at that location.")
         else:
             event_attrs = dict(event.attrs)
@@ -361,7 +364,7 @@ class TarsqiTree:
             # TODO: at least the second test does not seem needed anymore
             event_attrs = { k: v for k, v in event_attrs.items()
                             if v is not None and k is not 'eventID' }
-            self.docelement.add_event(token.begin, token.end, event_attrs)
+            self.tarsqidoc.add_event(token.begin, token.end, event_attrs)
 
     def addLink(self, linkAttrs, linkType):
         """Add a link of type linkType with its attributes to the tree by appending

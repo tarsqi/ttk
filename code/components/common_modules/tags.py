@@ -5,7 +5,7 @@ Contains classes for TimeML tags.
 """
 
 
-from library.timeMLspec import EVENT, INSTANCE, TIMEX, ALINK, SLINK, TLINK
+from library.timeMLspec import EVENT, TIMEX, ALINK, SLINK, TLINK
 from library.timeMLspec import EID, EIID, EVENTID
 from library.timeMLspec import CLASS, TENSE, ASPECT, EPOS, MOD, POL, FORM, STEM, POS
 from components.common_modules.constituent import Constituent

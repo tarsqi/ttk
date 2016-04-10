@@ -4,17 +4,22 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 """
 
-import sys, codecs
+import sys, codecs, StringIO
 from copy import copy
 from xml.sax.saxutils import escape, quoteattr
+
+from library.timeMLspec import TIMEX, EVENT, TID, EIID, ALINK, SLINK, TLINK
+from library.timeMLspec import EVENT_INSTANCE_ID, TIME_ID, SUBORDINATED_EVENT_INSTANCE
+from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
 
 
 class TarsqiDocument:
 
-    """An instance of TarsqiDocument should contain all information that may be needed by
-    the wrappers to do their work. It will contain minimal document structure in its
-    elements variable, at this point just a list of TarsqiDocElements. Elements will be
-    typed and include the source string and a dictionary of tags. 
+    """An instance of TarsqiDocument should contain all information that may be
+    needed by the wrappers to do their work. It will contain minimal document
+    structure in its elements variable, at this point just a list of
+    TarsqiDocElements. Elements will be typed and include the source string and
+    a dictionary of tags.
 
     Instance Variables:
        source - instance of DocSource
@@ -24,25 +29,25 @@ class TarsqiDocument:
        options - the Options instance from the Tasqi instance
        counters - a set of counters used to create unique identifiers
 
-    Note that more variables will be needed. Currently, several wrappers use data from
-    the Tarsqi instance, should check what these data are and get them elsewhere,
-    potentially by adding them here.
+    Note that more variables will be needed. Currently, several wrappers use
+    data from the Tarsqi instance, should check what these data are and get them
+    elsewhere, potentially by adding them here.
 
     Also note that he processing options are available to the wrappers only
     through this class by accessing th eoptions variable.
 
-    Also note that we may need a tarsqi_tags variable, to store those tags that are not
-    internal to any of the elements."""
+    Also note that we may need a tarsqi_tags variable, to store those tags that
+    are not internal to any of the elements."""
 
     def __init__(self, docsource, metadata):
         self.source = docsource
-        self.elements = []
         self.metadata = metadata
+        self.tags = TagRepository()
         self.options = {}
-        self.counters = { 'TIMEX3': 0, 'EVENT': 0, 'ALINK': 0, 'SLINK': 0, 'TLINK': 0 }
+        self.counters = { TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0 }
 
     def __str__(self):
-        return "<%s on '%s'>" % (self.__class__, self.source.filename)
+        return "<TarsqiDocument on '%s'>" % (self.source.filename)
 
     def add_options(self, options):
         self.options = options
@@ -53,16 +58,38 @@ class TarsqiDocument:
     def text(self, p1, p2):
         return self.source.text[p1:p2]
 
-    def pp(self, source=True, elements=True):
+    def elements(self):
+        return self.tags.find_tags('docelement')
+
+    def has_event(self, begin, end):
+        """Return True if there is already an event at the given begin and
+        end."""
+        for tag in self.tags.find_tags('EVENT'):
+            if tag.begin == begin and tag.end == end:
+                return True
+        return False
+
+    def add_timex(self, begin, end, attrs):
+        """Add a TIMEX3 tag to the tag repository."""
+        self.tags.add_tag('TIMEX3', begin, end, attrs)
+
+    def add_event(self, begin, end, attrs):
+        """Add an EVENT tag to the tarsqi_tags tag repository."""
+        self.tags.add_tag('EVENT', begin, end, attrs)
+
+    def pp(self, text=True, source_tags=True, tarsqi_tags=True):
         print "\n", self, "\n"
         for key, value in self.metadata.items():
-            print "   metadata.%-17s  -->  %s" % (key, value)
+            print "   metadata.%-14s  -->  %s" % (key, value)
         for key, value in self.options.items():
             print "   options.%-15s  -->  %s" % (key, value)
-        if source:
-            self.source.pp()
-        if elements:
-            for e in self.elements: e.pp()
+        if source_tags:
+            print "\nSOURCE_TAGS:"
+            self.source.tags.pp()
+        if tarsqi_tags:
+            print "\nTARSQI_TAGS:"
+            self.tags.pp()
+            print
 
     def next_event_id(self):
         self.counters['EVENT'] += 1
@@ -73,25 +100,27 @@ class TarsqiDocument:
         return "t%d" % self.counters['TIMEX3']
 
     def next_link_id(self, link_type):
-        """Return a unique lid. The link_type argument is one of {ALINK,SLINK,TLINK} and
-         determines what link counter is incremented. The lid itself is the sum
-         of all the link counts. Assumes that all links are added using the link
-         counters in the document. Breaks down if there are already links added
-         without using those counters."""
+        """Return a unique lid. The link_type argument is one of {ALINK, SLINK,
+         TLINK} and determines what link counter is incremented. The lid itself
+         is the sum of all the link counts. Assumes that all links are added
+         using the link counters in the document. Breaks down if there are
+         already links added without using those counters."""
         self.counters[link_type] += 1
         return "l%d" % (self.counters['ALINK']
                         + self.counters['SLINK']
                         + self.counters['TLINK'])
 
     def print_source(self, fname):
-        """Print the original source of the document, without the tags to file fname."""
+        """Print the original source of the document, without the tags to file
+        fname."""
         self.source.print_source(fname)
 
     def print_sentences(self, fname=None):
-        """Write to file (or stadard output if no filename was given) a Python variable
-        assignment where the content of the variable the list of sentences as a list of
-        lists of token strings."""
-        fh = sys.stdout if fname == None else codecs.open(fname, mode='w', encoding='UTF-8')
+        """Write to file (or stadard output if no filename was given) a Python
+        variable assignment where the content of the variable the list of
+        sentences as a list of lists of token strings."""
+        fh = sys.stdout if fname == None else codecs.open(fname, mode='w',
+                                                          encoding='UTF-8')
         fh.write("sentences = ")
         fh.write(str(self.list_of_sentences()))
         fh.write("\n")
@@ -104,8 +133,8 @@ class TarsqiDocument:
         fh.write("<text>%s</text>\n" % escape(self.source.text))
         self._print_comments(fh)
         self._print_metadata(fh)
-        self._print_source_tags(fh)
-        self._print_tarsqi_tags(fh)
+        self._print_tags(fh, 'source_tags', self.source.tags.tags)
+        self._print_tags(fh, 'tarsqi_tags', self.tags.tags)
         fh.write("</ttk>\n")
 
     def _print_comments(self, fh):
@@ -114,7 +143,8 @@ class TarsqiDocument:
             for offset in sorted(self.source.comments.keys()):
                 for comment in self.source.comments[offset]:
                     comment = escape(comment.replace("\n", '\\n'))
-                    fh.write("  <comment offset=\"%s\">%s</comment>\n" % (offset, comment))
+                    fh.write("  <comment offset=\"%s\">%s</comment>\n"
+                             % (offset, comment))
             fh.write("</comments>\n")
 
     def _print_metadata(self, fh):
@@ -123,21 +153,11 @@ class TarsqiDocument:
             fh.write("  <%s value=\"%s\"/>\n" % (k, v))
         fh.write("</metadata>\n")
 
-    def _print_source_tags(self, fh):
-        fh.write("<source_tags>\n")
-        for tag in self.source.source_tags.tags:
+    def _print_tags(self, fh, tag_group, tags):
+        fh.write("<%s>\n" % tag_group)
+        for tag in sorted(tags):
             fh.write("  %s\n" % tag.as_ttk_tag())
-        fh.write("</source_tags>\n")
-
-    def _print_tarsqi_tags(self, fh):
-        fh.write("<tarsqi_tags>\n")
-        for e in self.elements:
-            fh.write("  <doc_element type=\"%s\" begin=\"%s\" end=\"%s\">\n"
-                     % (e.__class__.__name__, e.begin, e.end))
-            for tag in sorted(e.tarsqi_tags.tags):
-                fh.write("    %s\n" % tag.as_ttk_tag())
-            fh.write("  </doc_element>\n")
-        fh.write("</tarsqi_tags>\n")
+        fh.write("</%s>\n" % tag_group)
 
     def list_of_sentences(self):
         sentences = []
@@ -154,109 +174,6 @@ class TarsqiDocument:
                 sentences.append(sentence)
             sentence = []
         return sentences
-        
-
-            
-class TarsqiDocElement:
-    """Contains a slice from a TarsqiDocument. The slice is determined by the begin
-    and end instance variables and the content of text is the slice from the
-    source document. The slice includes the tags that are relevant to this
-    element. These tags have offsets that are relative to the entire document,
-    these can be translated into local offsets using self.begin."""
-
-    ELEMENT_ID = 0
-    
-    def __init__(self, tarsqidoc, begin, end):
-        self._assign_identifier()
-        self.doc = tarsqidoc
-        self.begin = begin
-        self.end = end
-        self.source_tags = TagRepository()
-        self.tarsqi_tags = TagRepository()
-
-    def __str__(self):
-        return "<%s #%d %d:%d>\n\n%s\n" % \
-               (self.__class__, self.id, self.begin, self.end, 
-                self.get_text().encode('utf-8').strip())
-            
-    def _assign_identifier(self):
-        self.__class__.ELEMENT_ID += 1
-        self.id = self.__class__.ELEMENT_ID
-
-    def is_paragraph(): return False
-
-    def get_text(self):
-        """Return the text slice in this element."""
-        return self.doc.text(self.begin, self.end)
-    
-    def add_source_tags(self, tag_repository):
-        """Add to the source_tags TagRepository all tags from a TagRepostitory (handed
-        in from the SourceDoc) that fall within the scope of this element. Also
-        includes tags whose begin is before and whose end is after the
-        element. Makes a shallow copy of the Tag from the SourceDoc
-        TagRepository. """
-        self._add_tags(tag_repository, self.source_tags)
-
-    def add_tarsqi_tags(self, tag_repository):
-        """Add to the tarsqi_tags TagRepository all tags from a TagRepostitory
-        (handed in from the SourceDoc) that fall within the scope of this
-        element. Also includes tags whose begin is before and whose end is after
-        the element. Makes a shallow copy of the Tag from the SourceDoc
-        TagRepository."""
-        self._add_tags(tag_repository, self.tarsqi_tags, check=False)
-
-    def _add_tags(self, from_repository, to_repository, check=True):
-        """Add tags from from_repository to to_repository if those tags fall within the
-        scope of this element. Also includes tags whose begin is before and
-        whose end is after the element. The from_repository comes from the
-        SourceDoc, the to_repository is the source_tags or tarsqi_tags
-        repository on the doument element. Makes a shallow copy of the Tag from
-        the SourceDoc TagRepository. Helper method for add_tarsqi_tags and
-        add_source_tags. """
-        for t in from_repository.tags:
-            # skip document elements because they are treated in a special way
-            if t.name == 'doc_element':
-                continue
-            if check:
-                # check offsets if we need to
-                if (t.begin >= self.begin and t.end <= self.end) \
-                        or (t.begin <= self.begin and t.end >= self.end):
-                    to_repository.append(copy(t))
-            else:
-                # or just add the tag
-                to_repository.append(copy(t))
-
-    def add_timex(self, begin, end, attrs):
-        """Add a TIMEX3 tag to the tarsqi_tags tag repository."""
-        self.tarsqi_tags.add_tag('TIMEX3', begin, end, attrs)
-
-    def add_event(self, begin, end, attrs):
-        """Add an EVENT tag to the tarsqi_tags tag repository."""
-        self.tarsqi_tags.add_tag('EVENT', begin, end, attrs)
-
-    def has_event(self, begin, end):
-        """Return True if there is already an event at the given begin and end."""
-        for tag in self.tarsqi_tags.find_tags('EVENT'):
-            if tag.begin == begin and tag.end == end:
-                return True
-        return False
-
-    def pp(self):
-        print "\n", self
-        for tag in self.source_tags.tags:
-            print "  source_tag  %s" % tag
-        for tag in self.tarsqi_tags.tags:
-            print "  tarsqi_tag  %s" % tag
-
-    
-class TarsqiDocParagraph(TarsqiDocElement):
-
-    def __init__(self, begin, end, text):
-        TarsqiDocElement.__init__(self, begin, end, text)
-
-    def is_paragraph():
-        return True
-
 
 
 class SourceDoc:
@@ -280,13 +197,12 @@ class SourceDoc:
         """Initialize a SourceDoc on a filename or a string."""
         self.filename = filename
         self.xmldecl = None
-        # initialize as a list, will be a string later
-        self.text = []
-        self.comments = {}
+        # initialize as a string buffer, will be a string later
+        self.text = StringIO.StringIO()
         self.processing_instructions = {}
-        self.source_tags = TagRepository()
-        self.tarsqi_tags = TagRepository()
+        self.comments = {}
         self.metadata = {}
+        self.tags = TagRepository()
         self.offset = 0
         self.tag_number = 0
 
@@ -294,24 +210,22 @@ class SourceDoc:
         return self.text[i]
 
     def add_opening_tag(self, name, attrs):
-        """Add an opening tag to source_tags. This is used by the StartElementHandler of
-        the Expat parser in SourceParserXML."""
-        #print self.offset
+        """Add an opening tag to source_tags. This is used by the
+        StartElementHandler of the Expat parser in SourceParserXML."""
         self.tag_number += 1
-        self.source_tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
+        self.tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
 
     def add_closing_tag(self, name):
-        """Add a closing tag  to source_tags. This is used by the EndElementHandler of
-        the Expat parser in SourceParserXML."""
-        #print self.offset
+        """Add a closing tag to source_tags. This is used by the
+        EndElementHandler of the Expat parser in SourceParserXML."""
         self.tag_number += 1
-        self.source_tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
+        self.tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
 
     def add_characters(self, string):
-        """Add a character string to the source and increment the current offset. Used
-        by the CharacterDataHandler of the Expat parser in SourceParserXML."""
-        #print 'adding', len(string), 'characters'
-        self.text.append(string) # this is already unicode
+        """Add a character string to the source and increment the current
+        offset. Used by the CharacterDataHandler of the Expat parser in
+        SourceParserXML."""
+        self.text.write(string) # this is already unicode
         self.offset += len(string)
 
     def add_comment(self, string):
@@ -321,109 +235,46 @@ class SourceDoc:
         self.processing_instructions.setdefault(self.offset,[]).append((target, data))
 
     def finish(self):
-        """Transform the source list into a string, merge the begin and end tags, and
-        index the tags on offsets."""
-        # TODO: this is probably different depending on what source parser is used
-        self.text = ''.join(self.text)
-        self.source_tags.merge()
-        self.source_tags.index()
-        self.tarsqi_tags.merge()
-        self.tarsqi_tags.index()
+        """Transform the source text list into a string, merge the begin and end
+        tags, and index the tags on offsets. This should be called by
+        SourceParserXML which uses the Expat parser and looks for individual
+        elements, it is not needed by SourceParserTTK since it uses a DOM
+        object, it is also not needed by SourceParserText since it does not deal
+        with tags."""
+        string_buffer = self.text
+        self.text = string_buffer.getvalue()
+        string_buffer.close()
+        self.tags.merge()
+        self.tags.index()
 
     def pp(self):
         """Print source and tags."""
         print "\n<SourceDoc on '%s'>\n" % self.filename
         print self.text.encode('utf-8').strip()
         print "\nMETADATA:", self.metadata
-        print "\nSOURCE_TAGS:"
-        self.source_tags.pp()
-        print "\nTARSQI_TAGS:"
-        self.tarsqi_tags.pp()
-        print "\nXMLDECL:", self.xmldecl
-        print "COMMENTS:", self.comments
-        print "PROCESSING:", self.processing_instructions
+        print "\nTAGS:"
+        self.tags.pp()
+        print
+        # print "XMLDECL:", self.xmldecl
+        # print "COMMENTS:", self.comments
+        # print "PROCESSING:", self.processing_instructions
 
     def print_source(self, filename):
         """Print the source string to a file, using the utf-8 encoding."""
         fh = open(filename, 'w')
         fh.write(self.text.encode('utf-8'))
 
-    def print_tags(self, filename):
-        """Print all the tags to a file. Each tag is printed on a tab-separated line with
-        opening offset, closing offset, tag name, and attribute value pairs."""
-        fh = open(filename, 'w')
-        for t in self.source_tags.tags:
-            fh.write("%d\t%d\t%s" % (t.begin, t.end, t.name))
-            for (attr, val) in t.attrs.items():
-                fh.write("\t%s=\"%s\"" % (attr, val.replace('"','&quot;')))
-            fh.write("\n")
-
-
-    def print_xml(self, filename):
-
-        """Print self as an inline XML file. This should work on all input that did
-        not generate a warning while parsing. The output file is identical to
-        the input file modulo processing instructions, comments, and the order
-        of attributes in an opening tag and the kind of quotes used. Also, tags
-        that were printed as <SOME_TAG/> will be printed as two tags. There are
-        no provisions for crossing tags. Therefore, the code is also not set up
-        to deal with tags added to the tags repository since those may have
-        introduced crossing tags."""
-
-        # TODO: check what happens when input is not an xml file
-        # TODO: add xmldec, processing instructions and comments
-
-        xml_string = u''  # TODO: use a string buffer
-        offset = 0
-        stack = []
-
-        for char in self.text:
-
-            # any tags on the stack that can be closed?
-            (stack, matching) = self._matching_closing_tags(offset, stack, [])
-            for t in matching:
-                xml_string += "</%s>" % t.name
-
-            # any new opening tags?
-            for t in self.source_tags.opening_tags.get(offset,[]):
-                stack.append(t)
-                xml_string += "<%s%s>" % (t.name, t.attributes_as_string())
-
-            # any of those need to be closed immediately (non-consuming tags)?
-            (stack, matching) = self._matching_closing_tags(offset, stack, [])
-            for t in matching:
-                xml_string += "</%s>" % t.name
-
-            xml_string += escape(char)
-            offset += 1
-
-        fh = open(filename, 'w')
-        fh.write(xml_string.encode('utf-8'))
-
-
-    def _matching_closing_tags(self, offset, stack, matching):
-        """Recursively return the closing tags that match the tail of the stack of opening
-        tags."""
-        if not stack:
-            return (stack, matching)
-        last = stack[-1]
-        if self.source_tags.closing_tags.get(offset,{}).get(last.begin,{}).get(last.name,False):
-            stack.pop()
-            matching.append(last)
-            return self._matching_closing_tags(offset, stack, matching)
-        else:
-            return (stack, matching)
-
-
 
 class TagRepository:
 
-    """Class that provides access to the tags for a document. An instance of this class is
-    used for the DocSource instance, other instances will be used for the elements in a
-    TarsqiDocument. For now, the repository has the following structure:
+    """Class that provides access to the tags for a document. An instance of
+    this class is used for the DocSource instance, other instances will be used
+    for the elements in a TarsqiDocument. For now, the repository has the
+    following structure:
 
     self.tmp
-       A list of OpeningTag and ClosingTag elements, used only to build the tags list.
+       A list of OpeningTag and ClosingTag elements, used only to build the tags
+       list.
 
     self.tags
        A list with Tag instances.
@@ -434,11 +285,12 @@ class TagRepository:
        for tags in the original input).
 
     self.closing_tags
-       A dictionary indexed on end offset and begin offset, the values are dictionary of
-       tagnames. For example, closing_tags[547][543] = {'lex':True, 'NG':True } indicates
-       that there is both a lex tag and an NG tag from 543-547. The opening tags
-       dictionary will have encoded that the opening NG occurs before the opening lex:
-       opening_tags[543] = [<Tag 204 NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
+       A dictionary indexed on end offset and begin offset, the values are
+       dictionary of tagnames. For example, closing_tags[547][543] =
+       {'lex':True, 'NG':True } indicates that there is both a lex tag and an NG
+       tag from 543-547. The opening tags dictionary will have encoded that the
+       opening NG occurs before the opening lex: opening_tags[543] = [<Tag 204
+       NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
 
     """
 
@@ -453,6 +305,8 @@ class TagRepository:
         self.tags = []
         self.opening_tags = {}
         self.closing_tags = {}
+        self.eid2event = {}
+        self.tid2timex = {}
 
     def all_tags(self):
         return self.tags
@@ -496,26 +350,69 @@ class TagRepository:
         self.closing_tags = {}
         for tag in self.tags:
             self.opening_tags.setdefault(tag.begin,[]).append(tag)
-            self.closing_tags.setdefault(tag.end,{}).setdefault(tag.begin,{})[tag.name] = True
+            self.closing_tags.setdefault(tag.end,
+                                         {}).setdefault(tag.begin,
+                                                        {})[tag.name] = True
         for (k,v) in self.opening_tags.items():
             self.opening_tags[k].sort()
 
-    def find_tags(self, name):
-        """Return all tags of this name."""
-        return [t for t in self.tags if t.name == name]
+    def index_events(self):
+        self.eid2event = {}
+        for tag in self.tags:
+            if tag.name == EVENT:
+                self.eid2event[tag.attrs[EIID]] = tag
+
+    def index_timexes(self):
+        # TODO: merge with ei2events and create id2tag, assumes all tags have ids
+        # and they are unique
+        self.tid2timex = {}
+        for tag in self.tags:
+            if tag.name == TIMEX:
+                self.tid2timex[tag.attrs[TID]] = tag
+
+    def find_tags(self, name, begin=None, end=None):
+        """Return all tags of this name. If the optional begin and end are given only
+        return the tags that fall within those boundaries."""
+        tags = sorted([t for t in self.tags if t.name == name])
+        if begin is not None and end is not None:
+            tags = [t for t in tags if begin <= t.begin and t.end <= end]
+        return tags
+
+    def find_linktags_in_range(self, name, o1, o2):
+        tags = []
+        for tag in sorted([t for t in self.tags if t.name == name]):
+            if name == SLINK:
+                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
+                t2 = self.eid2event.get(tag.attrs.get(SUBORDINATED_EVENT_INSTANCE))
+            if name == ALINK:
+                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
+                t2 = self.eid2event.get(tag.attrs.get(RELATED_TO_EVENT_INSTANCE))
+            if name == TLINK:
+                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
+                t2 = self.eid2event.get(tag.attrs.get(RELATED_TO_EVENT_INSTANCE))
+                if t1 is None:
+                    t1 = self.tid2timex.get(tag.attrs.get(TIME_ID))
+                if t2 is None:
+                    t2 = self.tid2timex.get(tag.attrs.get(RELATED_TO_TIME))
+            offsets = [t1.begin, t1.end, t2.begin, t2.end]
+            to1 = min(offsets)
+            to2 = max(offsets)
+            if o1 <= to1 and to2 <= o2:
+                tags.append(tag)
+        return tags
 
     def find_tag(self, name):
-        """Return the first Tag object with name=name, return None if no such tag
-        exists."""
+        """Return the first Tag object with name=name, return None if no such
+        tag exists."""
         for t in self.tags:
             if t.name == name:
                 return t
         return None
 
     def pp(self):
-        self.pp_tags(indent='    ')
-        #print; self.pp_opening_tags()
-        #print; self.pp_closing_tags()
+        self.pp_tags(indent='   ')
+        # print; self.pp_opening_tags()
+        # print; self.pp_closing_tags()
 
     def pp_tags(self, indent=''):
         for tag in self.tags: print "%s%s" % (indent, tag)
@@ -523,12 +420,12 @@ class TagRepository:
     def pp_opening_tags(self):
         print '<TagRepository>.opening_tags'
         for offset, list in sorted(self.opening_tags.items()):
-            print "  %5d " % offset, "\n         ".join([x.__str__() for x in list])
+            print "   %d " % offset, "\n         ".join([x.__str__() for x in list])
 
     def pp_closing_tags(self):
         print '<TagRepository>.closing_tags'
         for offset, dict in sorted(self.closing_tags.items()):
-            print "  %5d " % offset, dict
+            print "   %d " % offset, dict
 
 
 class Tag:
@@ -555,11 +452,11 @@ class Tag:
                (self.name, self.id, self.begin, self.end, attrs)
 
     def __cmp__(self, other):
-        """Order two Tags based on their begin offset and end offsets. Tags with an
-        earlier begin will be ranked before tags with a later begin, with equal
-        begins the tag with the higher end will be ranked first. Tags with no
-        begin (that is, it is set to -1) will be ordered at the end. The order of
-        two tags with the same begin and end is undefined."""
+        """Order two Tags based on their begin offset and end offsets. Tags with
+        an earlier begin will be ranked before tags with a later begin, with
+        equal begins the tag with the higher end will be ranked first. Tags with
+        no begin (that is, it is set to -1) will be ordered at the end. The
+        order of two tags with the same begin and end is undefined."""
         if self.begin == -1: return 1
         if other.begin == -1: return -1
         begin_cmp = cmp(self.begin, other.begin)

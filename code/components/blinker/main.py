@@ -60,11 +60,11 @@ class Blinker (TarsqiComponent):
             signal = rule.get_attribute('signal')[0]
             self.rule2_index[signal] = relation
 
-    def process_element(self, element, dct):
+    def process_element(self, tarsqidoc, element, dct):
         """Apply all Blinker rules to the element. Creates a TarsqiTree instance and
         then applies the Blinker rules. Curently only applies rules of type 2."""
         self.dct = dct
-        self.doctree = create_tarsqi_tree(element)
+        self.doctree = create_tarsqi_tree(tarsqidoc, element)
         self.docelement = element
         # self.pp_doctree(BLINKER)
         self._run_blinker()
@@ -72,16 +72,12 @@ class Blinker (TarsqiComponent):
 
     def _export_links(self):
         """Export the links that we store in self.doctree.tlinks to the
-        TarsqiDocElement."""
+        TarsqiDocument."""
         # TODO: this, and _add_link, are defined in several places, not nice,
         # they are now renamed here, which is an improvement
         for tlink in self.doctree.tlinks:
-            self._export_link(TLINK, tlink.attrs)
-
-    def _export_link(self, tagname, attrs):
-        """Add the link to the TagRepository instance on the TarsqiDocElement."""
-        logger.debug("Adding %s: %s" % (tagname, attrs))
-        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
+            logger.debug("Adding %s: %s" % (TLINK, tlink.attrs))
+            self.tarsqidoc.tags.add_tag(TLINK, -1, -1, tlink.attrs)
 
     def _run_blinker(self):
         """Apply BLinker rules to the sentences in the doctree variable. Currently only
@@ -144,7 +140,7 @@ class Blinker (TarsqiComponent):
         # maybe check first whether it is in the dictionary in case we care
         # about duplications (see https://github.com/tarsqi/ttk/issues/10 and
         # https://github.com/tarsqi/ttk/issues/13)
-        timexes = self.docelement.tarsqi_tags.find_tags(TIMEX)
+        timexes = self.tarsqidoc.tags.find_tags(TIMEX)
         timexes = [t for t in timexes if t.attrs[TYPE] == 'DATE']
         pairs = _timex_pairs(timexes)
         for timex1, timex2 in pairs:
@@ -243,7 +239,7 @@ class Blinker (TarsqiComponent):
                 for rule in current_rules:
                     # if attribute not set in the rule, accept any value
                     for att in ['class', 'tense', 'aspect']:
-                        if not rule.attrs.has_key('arg2.'+att):
+                        if 'arg2.'+att not in rule.attrs:
                             rule.attrs['arg2.'+att] = [event2.attrs[att]]
                     if _DEBUG:
                         rule.pp()
@@ -290,7 +286,7 @@ class Blinker (TarsqiComponent):
                 for rule in current_rules:
                     # if attribute not set in the rule, accept any value
                     for att in ['class', 'tense', 'aspect']:
-                        if not rule.attrs.has_key('arg2.'+att):
+                        if 'arg2.'+att not in rule.attrs:
                             rule.attrs['arg2.'+att] = [event2.attrs[att]]
                     if _DEBUG:
                         print "RULE %s (%s):" % (rule.rule_number,
@@ -367,10 +363,10 @@ class Blinker (TarsqiComponent):
         """Add a TLINK to self.doctree.tlinks."""
         id1_attr = TIME_ID if id1.startswith('t') else EVENT_INSTANCE_ID
         id2_attr = RELATED_TO_TIME if id2.startswith('t') else RELATED_TO_EVENT_INSTANCE
-        attrs = { id1_attr: id1,
-                  id2_attr: id2,
-                  RELTYPE: reltype,
-                  ORIGIN: source }
+        attrs = {id1_attr: id1,
+                 id2_attr: id2,
+                 RELTYPE: reltype,
+                 ORIGIN: source}
         self.doctree.addLink(attrs, TLINK)
 
     def _apply_event_ordering_with_signal_rules(self):
@@ -378,11 +374,9 @@ class Blinker (TarsqiComponent):
         """Some more rules without using any rules, basically a placeholder
         for event ordering rules that use a signal."""
 
-        signal_mapping = {
-            'after': 'AFTER',
-            'before': 'BEFORE',
-            'during': 'DURING'
-            }
+        signal_mapping = {'after': 'AFTER',
+                          'before': 'BEFORE',
+                          'during': 'DURING'}
 
         for si in range(len(self.doctree)):
             sentence = self.doctree[si]

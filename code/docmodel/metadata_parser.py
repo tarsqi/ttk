@@ -12,7 +12,6 @@ Current parsers only deal with the DCT.
 import re, time, os, sqlite3
 
 from docmodel.document import TarsqiDocument
-from docmodel.document import TarsqiDocParagraph
 import utilities.logger as logger
 
 
@@ -43,7 +42,7 @@ class MetadataParser:
         """Return the text content of the first tag with name tagname, return None if
         there is no such tag."""
         try:
-            tag = self.get_source().source_tags.find_tags(tagname)[0]
+            tag = self.get_source().tags.find_tags(tagname)[0]
             content = self.get_source().text[tag.begin:tag.end].strip()
             return content
         except IndexError:
@@ -124,18 +123,19 @@ class MetadataParserTimebank(MetadataParser):
 
 
 class MetadataParserATEE(MetadataParser):
+
     """The parser for ATEE document."""
 
     def get_dct(self):
         """All ATEE documents have a DATE tag with a value attribute, the value
         of that attribute is returned."""
-        date_tag = self.sourcedoc.source_tags.find_tag('DATE')
+        date_tag = self.sourcedoc.tags.find_tag('DATE')
         return date_tag.attrs['value']
 
 
 class MetadataParserRTE3(MetadataParser):
-    """The parser for RTE3 documents, does not differ yet from the default
-    parser."""
+    
+    """The parser for RTE3 documents, no differences with the default parser."""
 
     def get_dct(self):
         return get_today()

@@ -11,9 +11,10 @@ from components.common_modules.utils import get_events, get_words_as_string
 from library.slinket.main import SLINKET_DICTS
 from library.tarsqi_constants import SLINKET
 from library.timeMLspec import VERB, NOUN, ADJECTIVE
-from library.timeMLspec import ALINK, SLINK, EVENT, INSTANCE
+from library.timeMLspec import ALINK, SLINK, EVENT
 from library.timeMLspec import EID, EIID, EVENTID, POS, EPOS, FORM
 from library.timeMLspec import TENSE, ASPECT, POL, MOD, CLASS, STEM
+from library.timeMLspec import ORIGIN
 from utilities import logger
 
 DEBUG = False
@@ -33,7 +34,7 @@ class Slinket (TarsqiComponent):
     Instance variables:
        NAME - a string
        doctree - a TarsqiTree
-       docelement - a TarsqiDocElement
+       docelement - a docelement Tag
 
     """
 
@@ -60,7 +61,7 @@ class Slinket (TarsqiComponent):
         for sentence in self.doctree:
             # print get_words_as_string(sentence)
             self._find_links(self.doctree, sentence)
-        self._add_links_to_docelement()
+        self._add_links_to_document()
 
     def _build_event_dictionary(self):
         """Creates a dictionary with events on the self.doctree variable and adds
@@ -138,16 +139,17 @@ class Slinket (TarsqiComponent):
                 slink_created = evNode.find_reporting_slink(reportingFSAs)
             logger.debug("reporting slink created = %s" % slink_created)
 
-    def _add_links_to_docelement(self):
+    def _add_links_to_document(self):
         for alink in self.doctree.alinks:
             self._add_link(ALINK, alink.attrs)
         for slink in self.doctree.slinks:
             self._add_link(SLINK, slink.attrs)
 
     def _add_link(self, tagname, attrs):
-        """Add the link to the TagRepository instance on the TarsqiDocElement."""
+        """Add the link to the TagRepository instance on the TarsqiDocument."""
+        attrs[ORIGIN] = SLINKET
         logger.debug("Adding %s: %s" % (tagname, attrs))
-        self.docelement.tarsqi_tags.add_tag(tagname, -1, -1, attrs)
+        self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, attrs)
 
 
 class EventExpression:

@@ -18,8 +18,7 @@ class BlinkerWrapper:
 
     def process(self):
         """Hand in all document elements to Blinker for processing. Document elements
-        are instances of docmodel.document.TarsqiDocParagraph (which is a
-        subclass of TarsqiDocElement). Assumes that all document elements are
-        processed the same way."""
-        for element in self.document.elements:
-            Blinker(self.document).process_element(element, self.dct)
+        are instances of Tag with name=docelement. Assumes that all document
+        elements are processed the same way."""
+        for element in self.document.elements():
+            Blinker(self.document).process_element(self.document, element, self.dct)

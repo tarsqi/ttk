@@ -204,11 +204,14 @@ class Tarsqi:
 
     def _write_output(self):
         """Write the TarsqiDocument to the output file."""
-        try:
+        if self.options.trap_errors:
+            try:
+                self.document.print_all(self.output)
+            except:
+                print "ERROR printing output"
+        else:
             self.document.print_all(self.output)
-        except:
-            print "ERROR printing output"
-
+                            
     def pretty_print(self):
         print self
         print '   metadata    ', self.metadata

@@ -58,7 +58,7 @@ class SourceParserText(SourceParser):
         """Parses a text string and returns a SourceDoc.  Simply dumps the full string
         into the text variable of the SourceDoc."""
         sourcedoc = SourceDoc(None)
-        # TODO: do we want/need to ensure the text is unicode?
+        # TODO: do we need to ensure the text is unicode?
         sourcedoc.text = text
         return TarsqiDocument(sourcedoc, {})
 
@@ -70,21 +70,25 @@ class SourceParserTTK(SourceParser):
         self.dom = None
         self.topnodes = {}
         self.sourcedoc = None
+        self.tarsqidoc = None
 
     def parse_file(self, filename):
         """Parse the TTK file and put the contents in the appropriate parts of
         the SourceDoc."""
         self._load_dom(filename)
         self.sourcedoc = SourceDoc(filename)
+        self.tarsqidoc = TarsqiDocument(self.sourcedoc, {})
         self.sourcedoc.text = self.topnodes['text'].firstChild.data
         self._add_source_tags()
         self._add_tarsqi_tags()
         self._add_comments()
         self._add_metadata()
-        # seems not needed here
-        # self.sourcedoc.finish()
-        tarsqidoc = TarsqiDocument(self.sourcedoc, {})
-        return tarsqidoc
+        return self.tarsqidoc
+
+    def parse_string(self, text):
+        # TODO: not used yet, finish when needed
+        dom = minidom.parseString(text)
+        exit()
 
     def _load_dom(self, filename):
         """Loads the DOM object in the file into the dom variable and fills the
@@ -106,11 +110,9 @@ class SourceParserTTK(SourceParser):
     def _add_tarsqi_tags(self):
         """Add the tarsqi_tags in the TTK document to the tarsqi_tags repository
         on the SourceDoc."""
-        for docelement in self.topnodes['tarsqi_tags'].getElementsByTagName('doc_element'):
-            self._add_to_tarsqi_tags(docelement)
-            for node in docelement.childNodes:
-                if node.nodeType == minidom.Node.ELEMENT_NODE:
-                    self._add_to_tarsqi_tags(node)
+        for node in self.topnodes['tarsqi_tags'].childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                self._add_to_tarsqi_tags(node)
 
     def _add_comments(self):
         # unlike the other top-level tags, comments are optional
@@ -128,11 +130,11 @@ class SourceParserTTK(SourceParser):
                 self.sourcedoc.metadata[node.nodeName] = node.getAttribute('value')
 
     def _add_to_source_tags(self, node):
-        tag_repository = self.sourcedoc.source_tags
+        tag_repository = self.sourcedoc.tags
         self._add_to_tag_repository(node, tag_repository)
 
     def _add_to_tarsqi_tags(self, node):
-        tag_repository = self.sourcedoc.tarsqi_tags
+        tag_repository = self.tarsqidoc.tags
         self._add_to_tag_repository(node, tag_repository)
 
     def _add_to_tag_repository(self, node, tag_repository):
@@ -144,15 +146,7 @@ class SourceParserTTK(SourceParser):
         attrs = dict(node.attributes.items())
         attrs = dict([(k, v) for (k, v) in attrs.items() if k not in ('begin', 'end')])
         # print name, o1, o2, attrs
-        opening_tag = OpeningTag(None, name, o1, attrs)
-        closing_tag = ClosingTag(None, name, o2)
-        tag_repository.add_tmp_tag(opening_tag)
-        tag_repository.add_tmp_tag(closing_tag)
-        # tag_repository.add_tag(name, o1, o2, attrs)
-
-    def parse_string(self, text):
-        dom = minidom.parseString(text)
-        exit()
+        tag_repository.add_tag(name, o1, o2, attrs)
 
 
 def print_dom(node, indent=0):
@@ -167,8 +161,7 @@ def print_dom(node, indent=0):
 
 class SourceParserXML(SourceParser):
 
-    """Simple XML parser, using the Expat parser, but defaulting to just getting
-    the contents if the Expat parser fails.
+    """Simple XML parser, using the Expat parser.
 
     Instance variables
        encoding - a string
@@ -176,7 +169,8 @@ class SourceParserXML(SourceParser):
        parser - an Expat parser """
 
     # TODO: may need to add other handlers for completeness, see
-    # http://docs.python.org/library/pyexpat.html
+    # http://docs.python.org/library/pyexpat.html, note however that if we
+    # change our notion of primary data than we may not need to do that.
 
     # TODO. The way this is set up now requires the SourceDoc to know a lot
     # about the internal workings of the Expat parser (for example the notion
@@ -236,9 +230,9 @@ class SourceParserXML(SourceParser):
         self.sourcedoc.add_comment(data)
 
     def _handle_start(self, name, attrs):
-        """Handle opening tags. Takes two arguments: a tag name and a dictionary of
-        attributes. Asks the SourceDoc instance in the sourcedoc variable to add an
-        opening tag."""
+        """Handle opening tags. Takes two arguments: a tag name and a dictionary
+        of attributes. Asks the SourceDoc instance in the sourcedoc variable to
+        add an opening tag."""
         self._debug('start', name, attrs)
         self.sourcedoc.add_opening_tag(name, attrs)
 
@@ -248,17 +242,20 @@ class SourceParserXML(SourceParser):
         self.sourcedoc.add_closing_tag(name)
 
     def _handle_characters(self, string):
-        """Handle character data by asking the SourceDocument to add the data. This will
-        not necesarily add a contiguous string of character data as one data element. This
-        should include ingnorable whtespace, but see the comment in the method below, I
-        apparantly had reason t think otherwise."""
+        """Handle character data by asking the SourceDocument to add the
+        data. This will not necesarily add a contiguous string of character data
+        as one data element. This should include ingnorable whtespace, but see
+        the comment in the method below, I apparantly had reason t think
+        otherwise."""
         self._debug('chars', len(string), string)
         self.sourcedoc.add_characters(string)
 
     def _handle_default(self, string):
-        """Handle default data by asking the SourceDoc to add it as characters. This is
-        here to get the 'ignoreable' whitespace, which I do not want to ignore."""
-        # TODO: maybe ignore that whitespace after all, it does not seem to matter though
+        """Handle default data by asking the SourceDoc to add it as
+        characters. This is here to get the 'ignoreable' whitespace, which I do
+        not want to ignore."""
+        # TODO: maybe ignore that whitespace after all, it does not seem to
+        # matter though
         self._debug('default', len(string), string)
         self.sourcedoc.add_characters(string)
 
@@ -267,19 +264,11 @@ class SourceParserXML(SourceParser):
             p1 = "%s-%s" % (self.parser.CurrentLineNumber,
                             self.parser.CurrentColumnNumber)
             p2 = "%s" % self.parser.CurrentByteIndex
-            print "%-5s  %-4s    %s" % (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest]))
+            print("%-5s  %-4s    %s" %
+                  (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest])))
 
 
 def replace_newline(text):
     """Just used for debugging, make sure to not use this elsewhere because it
     is dangerous since it turns unicode into non-unicode."""
     return str(text).replace("\n", '\\n')
-
-
-if __name__ == '__main__':
-
-    IN = sys.argv[1]
-    OUT = sys.argv[2]
-    doc = SourceParser().parse_file(IN)
-    doc.pp()
-    doc.print_xml(OUT)
