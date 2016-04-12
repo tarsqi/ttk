@@ -2,7 +2,7 @@
 import os
 
 from graph import Graph
-from objects import Node, Edge, Constraint
+from objects import Constraint
 from mappings import invert_timeml_relation
 from mappings import translate_timeml_relation
 from utils import CompositionTable
@@ -16,7 +16,7 @@ DEBUG = True
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
-COMPOSITIONS = os.path.join(TTK_ROOT, 'utilities', 'sputlink',
+COMPOSITIONS = os.path.join(TTK_ROOT, 'components', 'merging', 'sputlink',
                             'rules', 'compositions_short.txt')
 
 

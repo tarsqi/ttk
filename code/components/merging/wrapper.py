@@ -32,8 +32,8 @@ from library.timeMLspec import TIME_ID, EVENT_INSTANCE_ID
 from library.timeMLspec import RELATED_TO_TIME, RELATED_TO_EVENT_INSTANCE
 from docmodel.document import Tag
 from components.common_modules.component import TarsqiComponent
-from utilities.sputlink.main import ConstraintPropagator
-from utilities.sputlink.mappings import translate_interval_relation
+from components.merging.sputlink.main import ConstraintPropagator
+from components.merging.sputlink.mappings import translate_interval_relation
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
