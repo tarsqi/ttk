@@ -6,13 +6,14 @@ RELMAPPING1a = {
     'IDENTITY': '=', 'SIMULTANEOUS': '=', 'DURING': '='
 }
 
+
 def translate_timeml_relation(reltype):
     """Look up a TimeML relation in the table and return it as an interval
     relation."""
-    ## TODO: need to revisit this mapping
+    # TODO: need to revisit this mapping
     return RELMAPPING1a.get(reltype)
 
-    
+
 RELMAPPING1b = {
     # maps TimeML relations to Allen relations
     '<': 'BEFORE', 'm': 'IBEFORE', '>': 'AFTER', 'mi': 'IAFTER',
@@ -21,24 +22,29 @@ RELMAPPING1b = {
     '=': 'IDENTITY|SIMULTANEOUS|DURING'
 }
 
+
 def translate_interval_relation(reltype):
     """Look up a TimeML relation in the table and return it as an interval
     relation."""
-    ## TODO: need to revisit this mapping
+    # TODO: need to revisit this mapping
     return RELMAPPING1b.get(reltype)
 
-    
+
 RELMAPPING2 = {
     # maps TimeML relations to their inverses
-    'BEFORE': 'AFTER', 'IBEFORE': 'IAFTER', 'AFTER': 'BEFORE', 'IAFTER': 'IBEFORE',
+    'BEFORE': 'AFTER', 'IBEFORE': 'IAFTER',
+    'AFTER': 'BEFORE', 'IAFTER': 'IBEFORE',
     'INCLUDES': 'IS_INCLUDED', 'IS_INCLUDED': 'INCLUDES',
-    'BEGINS': 'BEGUN_BY', 'BEGUN_BY': 'BEGINS', 'ENDS': 'ENDED_BY', 'ENDED_BY': 'ENDS',
-    'IDENTITY': 'IDENTITY', 'SIMULTANEOUS': 'SIMULTANEOUS', 'DURING': 'SIMULATANEOUS'
+    'BEGINS': 'BEGUN_BY', 'BEGUN_BY': 'BEGINS',
+    'ENDS': 'ENDED_BY', 'ENDED_BY': 'ENDS',
+    'IDENTITY': 'IDENTITY', 'SIMULTANEOUS': 'SIMULTANEOUS',
+    'DURING': 'SIMULATANEOUS'
 }
+
 
 def invert_timeml_relation(reltype):
     """Look up the TimeML relation in the table and return its inverse."""
-    ## TODO: need to revisit this mapping (on DURING)
+    # TODO: need to revisit this mapping (on DURING)
     return RELMAPPING2.get(reltype)
 
 
@@ -50,6 +56,7 @@ RELMAPPING3 = {
     'o': 'oi', 'oi': 'o',
     '=': '=',
 }
+
 
 def invert_interval_relations(relations):
     """Take a disjunction of interval relations represented as a string,
@@ -63,7 +70,7 @@ def invert_interval_relations(relations):
 
 RELMAPPING4 = {
     # Maps the full name of a convex relation to its abbreviation
-    '<': '<', 
+    '<': '<',
     '< = d di f fi m o oi s si': 'bd',
     '< d m o s': 'sb',
     '< di fi m o': 'ol',
@@ -92,6 +99,7 @@ RELMAPPING4 = {
     's': 's',
     'si': 'si'
 }
+
 
 def abbreviate_convex_relation(rel):
     return RELMAPPING4.get(rel, rel)

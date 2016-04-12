@@ -38,7 +38,6 @@ from components.merging.sputlink.mappings import translate_interval_relation
 TTK_ROOT = os.environ['TTK_ROOT']
 
 
-
 class MergerWrapper:
 
     """Wraps the merging code, which includes Sputlinks temporal closure code."""
@@ -51,8 +50,10 @@ class MergerWrapper:
         """Run the contraint propagator on all TLINKS in the TarsqiDocument and
         add resulting links to the TarsqiDocument."""
         cp = ConstraintPropagator(self.tarsqidoc)
-        cp.add_constraints()
-        #cp.reduce_graph()
+        # TODO: this is where we need to order the tlinks
+        cp.queue_constraints(self.tarsqidoc.tags.find_tags(TLINK))
+        cp.propagate_constraints()
+        # cp.reduce_graph()
         self.update_tarsqidoc(cp)
 
     def update_tarsqidoc(self, cp):

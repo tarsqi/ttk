@@ -4,9 +4,11 @@ from utils import compare_id
 from library.timeMLspec import TID, EIID, TIMEX, EVENT, FORM, VALUE
 
 
-NORMALIZED_RELATIONS = { rel:True for rel in ('<', 'm', 'di', 'si', 'fi', '=') }
-SIMPLE_RELATIONS = { rel:True for rel in ('<', 'm', 'di', 'si', 'fi', '=',
-                                          '>', 'mi', 'd', 's', 'f') }
+SIMPLE_RELS = ('<', 'm', 'di', 'si', 'fi', '=', '>', 'mi', 'd', 's', 'f')
+NORMALIZED_RELS = ('<', 'm', 'di', 'si', 'fi', '=')
+
+NORMALIZED_RELATIONS = {rel: True for rel in NORMALIZED_RELS}
+SIMPLE_RELATIONS = {rel: True for rel in SIMPLE_RELS}
 
 
 class Node:
@@ -34,7 +36,7 @@ class Node:
     relevant?)
 
     """
-    
+
     def __init__(self, timex=None, event=None):
         """Initialize from a timex or from an event-instance pair, using tid
         or eiid. Set edges_in and edges_out to the empty hash."""
@@ -80,7 +82,7 @@ class Edge:
        relset - None or the value of constraint.relset
        constraints - history of Constraints, a list
     """
-    
+
     def __init__(self, n1, n2, graph):
         """Initialize from two node identifiers and the graph."""
         self.id = "%s-%s" % (n1, n2)
@@ -97,7 +99,7 @@ class Edge:
     def get_node1(self):
         """retrun the Node object for node1."""
         return self.graph.nodes[self.node1]
-    
+
     def get_node2(self):
         """retrun the Node object for node2."""
         return self.graph.nodes[self.node2]
@@ -116,12 +118,12 @@ class Edge:
         self.relset = None
         node1 = self.get_node1()
         node2 = self.get_node2()
-        #print self.node1, 'o',  node1.edges_out.keys()
-        #print self.node2, 'i',  node2.edges_out.keys()
+        # print self.node1, 'o',  node1.edges_out.keys()
+        # print self.node2, 'i',  node2.edges_out.keys()
         del node1.edges_out[self.node2]
         del node2.edges_in[self.node1]
 
-        
+
     def is_derivable(self):
 
         """Returns True if the constraint on the edge can be derived from
@@ -129,7 +131,7 @@ class Edge:
 
         if self.constraint.source == 'closure':
             return True
-        
+
         # Get all the nodes k such that Edge(n1,k) and Edge(k,n2)
         n1 = self.get_node1()
         n2 = self.get_node2()
@@ -142,9 +144,9 @@ class Edge:
             print self
             n1.pretty_print()
             n2.pretty_print()
-#            intersection.sort(compare_id)
+            # intersection.sort(compare_id)
             print "\n  Intersection: [%s]\n" % ' '.join(intersection)
-            
+
         # For all nodes k, get the composition of c(n1,k) with c(k,n2)
         aggregate_intersection = None
         for k in intersection:
@@ -159,8 +161,9 @@ class Edge:
                     print "  DERIVABLE FROM ONE COMPOSITION"
                 return True
             else:
-                aggregate_intersection = intersect_relations(aggregate_intersection,
-                                                             composition)
+                aggregate_intersection = \
+                    intersect_relations(aggregate_intersection,
+                                        composition)
                 if debug:
                     print "  aggregate: %s" % aggregate_intersection
                 if aggregate_intersection == self.relset:
@@ -189,7 +192,7 @@ class Constraint:
        graph -
        history -
     """
-    
+
     def __init__(self, id1, rels, id2, cycle=None, source=None, history=None):
         self.node1 = id1
         self.node2 = id2

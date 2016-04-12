@@ -22,16 +22,17 @@ class Graph:
        edges - a hashs of hashes of Edges, indexed on node identifiers
        compositions - a CompositionTable
     """
-    
-    def __init__(self):
+
+    def __init__(self, filename, compositions):
         """Initialize an empty graph, with empty queue, node list and edges
         hash."""
+        self.filename = filename
+        self.compositions = compositions
         self.cycle = 0
         self.queue = []
         self.nodes = {}
         self.edges = {}
-        self.compositions = None
-        
+
     def add_nodes(self, events, timexes):
         """Adds the events/instances and timexes to the nodes table. Also
         initializes the edges table now that all nodes are known."""
@@ -54,15 +55,15 @@ class Graph:
 
         self.cycle += 1
         self.queue.append(constraint)
-        #debug(str="\n%d  %s" % (self.cycle, constraint))
+        # debug(str="\n%d  %s" % (self.cycle, constraint))
 
         while self.queue:
 
             constraint_i_j = self.queue.pop(0)
             constraint_i_j.cycle = self.cycle
-            #debug(2, '')
-            #debug(2, "POP QUEUE (cycle %d): %s" % (self.cycle, constraint_i_j))
-            
+            # debug(2, '')
+            # debug(2, "POP QUEUE (cycle %d): %s" % (self.cycle, constraint_i_j))
+
             # compare new constraint to the one already on the edge
             edge_i_j = self.edges[constraint_i_j.node1][constraint_i_j.node2]
             intersection = self._intersect_constraints(edge_i_j, constraint_i_j)
@@ -75,7 +76,7 @@ class Graph:
             # changed due to the intersection
             constraint_i_j.relset = intersection
             self._add_constraint_to_edge(constraint_i_j, edge_i_j)
-            
+
             # get the nodes from the edge and add the nodes to each
             # others edges_in and edges_out attributes
             node_i = constraint_i_j.get_node1()
@@ -84,12 +85,12 @@ class Graph:
             node_j.edges_in[constraint_i_j.node1] = edge_i_j
 
             # node_k --> node_i --> node_j
-            #debug(2, 'EDGES_IN   (' + ' '.join(node_i.edges_in.keys()) + ')')
+            # debug(2, 'EDGES_IN   (' + ' '.join(node_i.edges_in.keys()) + ')')
             for edge_k_i in node_i.edges_in.values():
                 self._check_k_i_j(edge_k_i, edge_i_j, node_i, node_j)
 
             # node_i --> node_j --> node_k
-            #debug(2, 'EDGES_OUT  (' + ' '.join(node_j.edges_out.keys()) + ')')
+            # debug(2, 'EDGES_OUT  (' + ' '.join(node_j.edges_out.keys()) + ')')
             for edge_j_k in node_j.edges_out.values():
                 self._check_i_j_k(edge_i_j, edge_j_k, node_i, node_j)
 
@@ -101,20 +102,24 @@ class Graph:
         # TODO: this appears to have bugs
         self.remove_node('ei1')
         debug = False
-        filebase = 'data/graphs/' + self.file.rstrip('xml').lstrip('data/')
-        if debug: self.pp("%s" % filebase + '01.html')
+        filebase = 'data/graphs/' + self.filename.rstrip('xml').lstrip('data/')
+        if debug:
+            self.pp("%s" % filebase + '01.html')
         self._remove_disjunctions()
-        if debug: self.pp("%s" % filebase + '02.html')
+        if debug:
+            self.pp("%s" % filebase + '02.html')
         self._remove_derivable_relations()
-        if debug: self.pp("%s" % filebase + '03.html')
+        if debug:
+            self.pp("%s" % filebase + '03.html')
         self._normalize_relations()
-        if debug: self.pp("%s" % filebase + '04.html')
+        if debug:
+            self.pp("%s" % filebase + '04.html')
         self._collapse_equivalence_classes()
 
     def remove_node(self, id):
-        """Remove a node from the graph. Involves removing the node from the nodes hash,
-        removing the node's column and row in the edges array and removing the
-        node from edges_in and edges_out attributes of other nodes."""
+        """Remove a node from the graph. Involves removing the node from the
+        nodes hash, removing the node's column and row in the edges array and
+        removing the node from edges_in and edges_out attributes of other nodes."""
         node = self.nodes[id]
         # remove from other nodes
         for nodeid in node.edges_in.keys():
@@ -141,16 +146,16 @@ class Graph:
         new_relset = constraint.relset
         existing_relset = edge.relset
         intersection = intersect_relations(new_relset, existing_relset)
-        #debug(2, "INTERSECT  %s + %s  -->  {%s}" % \
+        # debug(2, "INTERSECT  %s + %s  -->  {%s}" % \
         #      (constraint, edge.constraint, intersection))
         if intersection == '':
-            #debug(3, "IGNORING   %s (inconsistency)" % constraint)
+            # debug(3, "IGNORING   %s (inconsistency)" % constraint)
             return False
         elif new_relset == existing_relset:
-            #debug(3, "IGNORING   %s (constraint already there)" % constraint)
+            # debug(3, "IGNORING   %s (constraint already there)" % constraint)
             return False
         else:
-            #debug(4, "NEW CONSTRAINT")
+            # debug(4, "NEW CONSTRAINT")
             return intersection
 
     def _check_k_i_j(self, edge_k_i, edge_i_j, node_i, node_j):
@@ -164,10 +169,10 @@ class Graph:
             return
         edge_k_j = self._get_edge(node_k, node_j)
         relset_k_j = self._compose(edge_k_i, edge_i_j.constraint)
-        #debug(3, "COMPOSE    %s * %s --> {%s}  ||  %s " \
+        # debug(3, "COMPOSE    %s * %s --> {%s}  ||  %s " \
         #      % (edge_k_i.constraint, edge_i_j.constraint,
         #         relset_k_j, edge_k_j.constraint))
-        if not relset_k_j == None:
+        if relset_k_j is not None:
             self._combine(edge_k_j, relset_k_j,
                           edge_k_i.constraint, edge_i_j.constraint)
 
@@ -182,10 +187,10 @@ class Graph:
             return
         edge_i_k = self._get_edge(node_i, node_k)
         relset_i_k = self._compose(edge_i_j.constraint, edge_j_k)
-        #debug(3, "COMPOSE    %s * %s --> {%s}  ||  %s " \
+        # debug(3, "COMPOSE    %s * %s --> {%s}  ||  %s " \
         #      % (edge_i_j.constraint, edge_j_k.constraint,
         #         relset_i_k, edge_i_k.constraint))
-        if not relset_i_k == None:
+        if relset_i_k is not None:
             self._combine(edge_i_k, relset_i_k,
                           edge_i_j.constraint, edge_j_k.constraint)
 
@@ -199,22 +204,22 @@ class Graph:
         edge_relset = edge.relset
         intersection = intersect_relations(edge_relset, relset)
         if intersection == '':
-            #debug(4, "WARNING: found an inconsistency where it shouldn't be")
+            # debug(4, "WARNING: found an inconsistency where it shouldn't be")
             pass
-        elif intersection == None:
-            #debug(4, "WARNING: intersection is None, this should not happen")
+        elif intersection is None:
+            # debug(4, "WARNING: intersection is None, this should not happen")
             pass
-        elif edge_relset == None:
+        elif edge_relset is None:
             self._add_constraint_to_queue(edge, intersection, c1, c2)
         elif len(intersection) < len(edge_relset):
             self._add_constraint_to_queue(edge, intersection, c1, c2)
-            
+
     def _add_constraint_to_queue(self, edge, relset, c1, c2):
         new_constraint = Constraint(edge.node1, relset, edge.node2,
                                     cycle=self.cycle, source='closure',
                                     history=(c1, c2))
         self.queue.append(new_constraint)
-        #debug(4, "ADD QUEUE  %s " % new_constraint)
+        # debug(4, "ADD QUEUE  %s " % new_constraint)
         add_inverted = True
         add_inverted = False
         # Adding the inverted constraint should not be needed, except
@@ -225,11 +230,12 @@ class Graph:
         if add_inverted:
             relset = invert_interval_relations(relset)
             new_constraint2 = Constraint(edge.node2, relset, edge.node1,
-                                         cycle=self.cycle, source='closure-inverted',
+                                         cycle=self.cycle,
+                                         source='closure-inverted',
                                          history=(c1, c2))
             self.queue.append(new_constraint2)
-            #debug(4, "ADD QUEUE  %s " % new_constraint2)
-        
+            # debug(4, "ADD QUEUE  %s " % new_constraint2)
+
     def _compose(self, object1, object2):
         """Return the composition of the relation sets on the two objects. One
         object is an edge, the other a Constraint. Once the relations
@@ -238,7 +244,7 @@ class Graph:
         rels1 = object1.relset
         rels2 = object2.relset
         return self.compositions.compose_rels(rels1, rels2)
-    
+
     def _add_constraint_to_edge(self, constraint, edge):
         """This method links a constraints to its edge by retrieving the edge
         from the graph, adding the constraint to this edge, and
@@ -249,7 +255,7 @@ class Graph:
     def _get_edge(self, node1, node2):
         """Return the edge from node1 to node2."""
         return self.edges[node1.id][node2.id]
-    
+
     def get_edges(self):
         """Return all edges that have a constraint on them."""
         edges = []
@@ -259,14 +265,14 @@ class Graph:
                 if n1 != n2 and edge.constraint:
                     edges.append(edge)
         return edges
-        
+
     def _remove_disjunctions(self):
         """Remove all disjunctions from the graph."""
         for edge in self.get_edges():
             if edge.constraint:
                 if edge.constraint.is_disjunction():
                     edge.remove_constraint()
-    
+
     def _normalize_relations(self):
         """Remove all relations that are not in the set of normalized
         relations."""
@@ -317,7 +323,7 @@ class Graph:
             for id2 in nodes:
                 edge = self.edges[id1][id2]
                 rel = edge.relset
-                if rel == None:
+                if rel is None:
                     rel = '&nbsp;'
                 rel = abbreviate_convex_relation(rel)
                 rel = rel.replace('<', '&lt;').replace(' ', '&nbsp;')
@@ -328,7 +334,7 @@ class Graph:
                         classes.append("cycle")
                 if id1 == id2:
                     classes.append("nocell")
-                    #rel = '&nbsp;'
+                    # rel = '&nbsp;'
                 classes = " class=\"%s\"" % ' '.join(classes)
                 fh.write("  <td width=25pt%s>%s\n" % (classes, rel))
         fh.write("</table>\n\n")
@@ -339,4 +345,3 @@ class Graph:
 def debug(indent=0, str=''):
     if DEBUG:
         print '  ' * indent, str
-        
