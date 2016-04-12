@@ -1,14 +1,12 @@
 from utils import intersect_lists
 from utils import intersect_relations
 from utils import compare_id
-#from library.timeml_specs import TID, EIID
-#from library.timeml_specs import TIMEX, EVENT
-from library.timeMLspec import TID, EIID
-from library.timeMLspec import TIMEX, EVENT
+from library.timeMLspec import TID, EIID, TIMEX, EVENT, FORM, VALUE
 
 
-NORMALIZED_RELATIONS = { '<': 1, 'm': 1, 'di': 1, 'si': 1, 'fi': 1, '=': 1 }
-
+NORMALIZED_RELATIONS = { rel:True for rel in ('<', 'm', 'di', 'si', 'fi', '=') }
+SIMPLE_RELATIONS = { rel:True for rel in ('<', 'm', 'di', 'si', 'fi', '=',
+                                          '>', 'mi', 'd', 's', 'f') }
 
 
 class Node:
@@ -18,36 +16,37 @@ class Node:
     Instance variables:
        id - an eiid or tid
        text - string from the document
-       source - a number of XmlDocElements
+       source - a Tag (or something else??)
        source-type - 'timex', 'event', 'set'
        edges_in - a hash indexed on node ids
        edges_out - a hash indexed on node ids
 
-    The source and source-type attributes encode what element or
-    elements the Node was created from. If source-type is TIMEX then
-    source is a single XmlDocElement and if source-type is EVENT then
-    source contains a pair of XmlDocElements, one for the event and
-    one for the instance. But is source-type is 'class', then the Node
-    implements an equivalence set of time expressions and events, that
-    is, a set defined by the = interval relation. The source attribute
-    than is a list of tuples, where each tuple contains (i) an
-    XmlDocElement or a pair of XmldDocElements, (ii) a pair of
-    interval relation and TimeML relation, and (iii) another
-    XmlDocElement or pair of XmldDocElements. The very first Node in
-    the entire list is the class representative."""
+    The source and source-type attributes encode what element or elements the
+    Node was created from. If source-type is TIMEX or EVENT then source is a
+    single tag.
+
+    But if source-type is 'class', then the Node implements an equivalence set
+    of time expressions and events, that is, a set defined by the = interval
+    relation. The source attribute than is a list of tuples, where each tuple
+    contains (i) a Tag, (ii) a pair of interval relation and TimeML relation,
+    and (iii) another XmlDocElement or pair of XmlDocElements. The very first
+    Node in the entire list is the class representative. (TODO: is this still
+    relevant?)
+
+    """
     
-    def __init__(self, timex=None, event=None, instance=None):
+    def __init__(self, timex=None, event=None):
         """Initialize from a timex or from an event-instance pair, using tid
         or eiid. Set edges_in and edges_out to the empty hash."""
         if timex:
             self.id = timex.attrs[TID]
-            self.text = timex.collect_text_content()
+            self.text = timex.attrs[VALUE]
             self.source = timex
             self.source_type = TIMEX
-        elif event and instance:
-            self.id = instance.attrs[EIID]
-            self.text = event.collect_text_content()
-            self.source = (event, instance)
+        elif event:
+            self.id = event.attrs[EIID]
+            self.text = event.attrs[FORM]
+            self.source = event
             self.source_type = EVENT
         self.edges_in = {}
         self.edges_out = {}
@@ -66,8 +65,7 @@ class Node:
     def __str__(self):
         """Return a string in [self.id] format."""
         return "[%s '%s']" % (self.id, self.text)
-        
-        
+
 
 class Edge:
 
@@ -93,6 +91,9 @@ class Edge:
         self.relset = None
         self.constraints = []
 
+    def __str__(self):
+        return "<< %s {%s} %s >>" % (self.node1, str(self.relset), self.node2)
+
     def get_node1(self):
         """retrun the Node object for node1."""
         return self.graph.nodes[self.node1]
@@ -111,8 +112,6 @@ class Edge:
     def remove_constraint(self):
         """Remove the constraint from the edge. Also updates the edges_in and
         edges_out attributes on the source and target node."""
-        #print
-        #print self
         self.constraint = None
         self.relset = None
         node1 = self.get_node1()
@@ -151,7 +150,8 @@ class Edge:
         for k in intersection:
             c_n1_k = self.graph.edges[self.node1][k].constraint
             c_k_n2 = self.graph.edges[k][self.node2].constraint
-            composition = self.graph.compositions.compose_rels(c_n1_k.relset, c_k_n2.relset)
+            composition = self.graph.compositions.compose_rels(c_n1_k.relset,
+                                                               c_k_n2.relset)
             if debug:
                 print "  %s + %s = %s" % (c_n1_k, c_k_n2, composition)
             if composition == self.relset:
@@ -159,7 +159,8 @@ class Edge:
                     print "  DERIVABLE FROM ONE COMPOSITION"
                 return True
             else:
-                aggregate_intersection = intersect_relations(aggregate_intersection, composition)
+                aggregate_intersection = intersect_relations(aggregate_intersection,
+                                                             composition)
                 if debug:
                     print "  aggregate: %s" % aggregate_intersection
                 if aggregate_intersection == self.relset:
@@ -172,11 +173,6 @@ class Edge:
         # then c(n1,n2) is derivable
 
         return False
-
-
-    def __str__(self):
-        return "<< %s {%s} %s >>" % (self.node1, str(self.relset), self.node2)
-
 
 
 class Constraint:
@@ -194,17 +190,22 @@ class Constraint:
        history -
     """
     
-    def __init__(self, id1, rels, id2):
-
+    def __init__(self, id1, rels, id2, cycle=None, source=None, history=None):
         self.node1 = id1
         self.node2 = id2
         self.relset = rels
         self.edge = None
-        self.cycle = None
-        self.source = None
         self.graph = None
-        self.history = None
+        self.cycle = cycle
+        self.source = source
+        self.history = history
 
+    def __str__(self):
+        rels = str(self.relset)
+        mapping = {'user': 'u', 'user-inverted': 'ui',
+                   'closure': 'c', 'closure-inverted': 'ci'}
+        source = mapping.get(self.source, self.source)
+        return "[%s {%s} %s - %s]" % (self.node1, rels, self.node2, source)
 
     def get_node1(self):
         """Retrieve the node1 object from the edge."""
@@ -221,21 +222,12 @@ class Constraint:
             return True
         return False
 
+    def has_simple_relation(self):
+        """Return True if the relation is one of the non-disjunctive ones,
+        return False otherwise."""
+        return SIMPLE_RELATIONS.get(self.relset, False)
+
     def has_normalized_relation(self):
-        """Return True if the relation is on eof the normalized ones, return
+        """Return True if the relation is one of the normalized ones, return
         False otherwise."""
         return NORMALIZED_RELATIONS.get(self.relset, False)
-
-    def __str__(self):
-        rels = str(self.relset)
-        if self.source == 'user':
-            source = 'u'
-        elif self.source == 'user-inverted':
-            source = 'ui'
-        elif self.source == 'closure':
-            source = 'c'
-        elif self.source == 'closure-inverted':
-            source = 'ci'
-        #return "[%s {%s} %s %s]" % (self.node1, rels, self.node2, source)
-        return "[%s %s {%s} %s]" % (self.node1, self.node2, rels, source)
-

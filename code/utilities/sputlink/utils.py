@@ -34,7 +34,6 @@ def intersect_lists(l1, l2):
 
 
 def compare_id(a, b):
-    
     if a.startswith('e') and b.startswith('t'):
         return -1
     if a.startswith('t') and b.startswith('e'):
@@ -46,7 +45,6 @@ def compare_id(a, b):
     else:
         return 1
 
-    
 
 class CompositionTable:
 
@@ -60,7 +58,7 @@ class CompositionTable:
 
         all_rels = {}
         all_compositions = []
-        for line in compositions_file:
+        for line in open(compositions_file):
             (rel1, rel2, rel3) = line.split("\t")
             rels = line.split("\t")
             r1 = rels[0].strip()
@@ -131,3 +129,18 @@ def massage(str):
     str = str.replace('>', '&gt;')
     str = str.replace(' ', '&nbsp;')
     return str
+
+
+def html_graph_prefix(fh):
+    fh.write("<html>\n")
+    fh.write("<head>\n<style type=\"text/css\">\n<!--\n")
+    fh.write("body { font-size: 14pt }\n")
+    fh.write("table { font-size: 14pt; margin-left:20pt; }\n")
+    fh.write(".user { background-color: lightblue; }\n")
+    fh.write(".closure { background-color: pink;  }\n")
+    fh.write(".user-inverted { background-color: lightyellow; }\n")
+    fh.write(".closure-inverted { background-color: lightyellow; }\n")
+    fh.write(".nocell { background-color: lightgrey; }\n")
+    fh.write(".cycle { font-weight: bold; }\n")
+    fh.write("-->\n</style>\n</head>\n")
+    fh.write("<body>\n\n")

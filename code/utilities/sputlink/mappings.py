@@ -10,7 +10,7 @@ def translate_timeml_relation(reltype):
     """Look up a TimeML relation in the table and return it as an interval
     relation."""
     ## TODO: need to revisit this mapping
-    return RELMAPPING1a.get(reltype, None)
+    return RELMAPPING1a.get(reltype)
 
     
 RELMAPPING1b = {
@@ -25,7 +25,7 @@ def translate_interval_relation(reltype):
     """Look up a TimeML relation in the table and return it as an interval
     relation."""
     ## TODO: need to revisit this mapping
-    return RELMAPPING1b.get(reltype, None)
+    return RELMAPPING1b.get(reltype)
 
     
 RELMAPPING2 = {
@@ -39,7 +39,7 @@ RELMAPPING2 = {
 def invert_timeml_relation(reltype):
     """Look up the TimeML relation in the table and return its inverse."""
     ## TODO: need to revisit this mapping (on DURING)
-    return RELMAPPING2.get(reltype, None)
+    return RELMAPPING2.get(reltype)
 
 
 RELMAPPING3 = {
