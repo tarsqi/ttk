@@ -16,28 +16,18 @@ from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
 class TarsqiDocument:
 
     """An instance of TarsqiDocument should contain all information that may be
-    needed by the wrappers to do their work. It will contain minimal document
-    structure in its elements variable, at this point just a list of
-    TarsqiDocElements. Elements will be typed and include the source string and
-    a dictionary of tags.
+    needed by the wrappers to do their work. It includes the source, metadata,
+    processing options, a set of identifier counters and a TagRepository.
 
     Instance Variables:
-       source - instance of DocSource
-       doctree - instance of TarsqiTree
-       elements - list of TarsqiDocElements
+       source - an instance of DocSource
        metadata - a dictionary
        options - the Options instance from the Tasqi instance
+       tags - an instance of TagRepository
        counters - a set of counters used to create unique identifiers
 
-    Note that more variables will be needed. Currently, several wrappers use
-    data from the Tarsqi instance, should check what these data are and get them
-    elsewhere, potentially by adding them here.
-
-    Also note that he processing options are available to the wrappers only
-    through this class by accessing th eoptions variable.
-
-    Also note that we may need a tarsqi_tags variable, to store those tags that
-    are not internal to any of the elements."""
+    Note that he processing options are available to the wrappers only through
+    this class by accessing the options variable."""
 
     def __init__(self, docsource, metadata):
         self.source = docsource
@@ -109,6 +99,10 @@ class TarsqiDocument:
         return "l%d" % (self.counters['ALINK']
                         + self.counters['SLINK']
                         + self.counters['TLINK'])
+
+    def remove_tlinks(self):
+        """Remove all TLINK tags from the tags repository."""
+        self.tags.remove_tags(TLINK)
 
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file
@@ -327,6 +321,12 @@ class TagRepository:
     def append(self, tag):
         """Appends an instance of Tag to the tags list."""
         self.tags.append(tag)
+
+    def remove_tags(self, tagname):
+        """Remove all tags with name=tagname. Rebuilds the indexes after
+        removing the tags."""
+        self.tags = [t for t in self.tags if t.name != tagname]
+        self.index()
 
     def merge(self):
         """Take the OpeningTags and ClosingTags in self.tmp and merge them into

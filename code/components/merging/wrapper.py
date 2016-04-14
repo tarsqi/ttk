@@ -57,6 +57,7 @@ class MergerWrapper:
         self.update_tarsqidoc(cp)
 
     def update_tarsqidoc(self, cp):
+        self.tarsqidoc.remove_tlinks()
         for n1, rest in cp.graph.edges.items():
             for n2, edge in cp.graph.edges[n1].items():
                 if edge.constraint is not None:
@@ -83,8 +84,6 @@ class MergerWrapper:
                 attrs[RELATED_TO_TIME] = id2
             else:
                 attrs[RELATED_TO_EVENT_INSTANCE] = id2
-        # TODO: write this method
-        # self.tarsqidoc.remove_tlinks()
         self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 
