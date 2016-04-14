@@ -23,9 +23,14 @@ COMPOSITIONS = os.path.join(TTK_ROOT, 'components', 'merging', 'sputlink',
 
 class ConstraintPropagator:
 
-    """Main SputLink class. Instance variables are: (1) file, a file object (2)
-    grap, a Graph, (3) pending, a list of links, the first one will be added
-    first and (4) compositions, a CompositionTable."""
+    """Main SputLink class. Instance variables are:
+
+    - filename - a string
+    - graph - a Graph
+    - pending - a queue of links to be added
+    - compositions - a CompositionTable
+
+    """
 
     def __init__(self, tarsqidoc):
         """Read the compositions table and export the compositions to the
@@ -35,9 +40,8 @@ class ConstraintPropagator:
         self.compositions = CompositionTable(COMPOSITIONS)
         self.graph = Graph(self.filename, self.compositions)
         self.pending = []
-        if DEBUG:
-            self._debug_init_cycles_file()
-            self._debug_print_compositions_file()
+        self._debug_init_cycles_file()
+        self._debug_print_compositions_file()
         self.graph.add_nodes(tarsqidoc.tags.find_tags(EVENT),
                              tarsqidoc.tags.find_tags(TIMEX))
 
@@ -69,46 +73,34 @@ class ConstraintPropagator:
         self.pending = []
 
     def propagate_constraints(self, force=False, threshold=0):
-        """Add all constraints on the queue to the graph and propagate them in
-        turn. Currently hands all constraints to the graph. A later version will
-        either use a confidence threshold under which constraints will not be
-        added or some other mechanism to create the pending queue. Also, the
-        force parameter is not yet used."""
+        """Get all constraints from the pending queue and ask the graph to propagate
+        them one by one."""
         while self.pending:
-            self._propagate_constraint()
-
-    def _propagate_constraint(self):
-        """Pop a Constraint from the pending list if it is not empty and ask
-        the graph to propagate it.."""
-        if self.pending:
             constraint = self.pending.pop(0)
             self.graph.propagate(constraint)
-            if DEBUG:
-                fname = "cycle-%02d.html" % self.graph.cycle
-                self.cycles_fh.write("<p>Cycle %s - <b>%s</b></p>\n"
-                                     % (self.graph.cycle, constraint))
-                graph_file = os.path.join(TTK_ROOT, 'data', 'tmp', fname)
-                self.pp_graph(filehandle=self.cycles_fh)
+            self._debug_print_constraint(constraint)
 
     def reduce_graph(self):
         """Ask the graph to reduce itself."""
         self.graph.reduce()
 
-    def pp_graph(self, filename=None, filehandle=None):
-        """Print the graph in an HTML table."""
-        self.graph.pp(filename=filename, filehandle=filehandle)
-
-    def pp_compositions(self, filename):
-        """Print the composition table to an HTML table."""
-        self.compositions.pp(filename)
-
     def _debug_init_cycles_file(self):
-        tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
-        cycles_file = os.path.join(tmp_dir, 'cycles.html')
-        self.cycles_fh = open(cycles_file, 'w')
-        html_graph_prefix(self.cycles_fh)
+        if DEBUG:
+            tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
+            cycles_file = os.path.join(tmp_dir, 'cycles.html')
+            self.cycles_fh = open(cycles_file, 'w')
+            html_graph_prefix(self.cycles_fh)
 
     def _debug_print_compositions_file(self):
-        tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
-        comp_file = os.path.join(tmp_dir, 'compositions.html')
-        self.compositions.pp(comp_file)
+        if DEBUG:
+            tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
+            comp_file = os.path.join(tmp_dir, 'compositions.html')
+            self.compositions.pp(comp_file)
+
+    def _debug_print_constraint(self, constraint):
+        if DEBUG:
+            fname = "cycle-%02d.html" % self.graph.cycle
+            self.cycles_fh.write("<p>Cycle %s - <b>%s</b></p>\n"
+                                 % (self.graph.cycle, constraint))
+            graph_file = os.path.join(TTK_ROOT, 'data', 'tmp', fname)
+            self.graph.pp(filehandle=self.cycles_fh)

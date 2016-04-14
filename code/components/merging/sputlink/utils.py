@@ -24,6 +24,7 @@ def intersect_lists(l1, l2):
     duplicate elements and list order is not preserved."""
     return list(set(l1).intersection(set(l2)))
 
+
 def compare_id(a, b):
     if a.startswith('e') and b.startswith('t'):
         return -1
@@ -106,8 +107,8 @@ def massage(str):
 def html_graph_prefix(fh):
     fh.write("<html>\n")
     fh.write("<head>\n<style type=\"text/css\">\n<!--\n")
-    fh.write("body { font-size: 14pt }\n")
-    fh.write("table { font-size: 14pt; margin-left:20pt; }\n")
+    fh.write("body { font-size: 18pt }\n")
+    fh.write("table { font-size: 18pt; margin-left:20pt; }\n")
     fh.write(".user { background-color: lightblue; }\n")
     fh.write(".closure { background-color: pink;  }\n")
     fh.write(".user-inverted { background-color: lightyellow; }\n")

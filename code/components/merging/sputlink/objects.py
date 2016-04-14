@@ -66,7 +66,7 @@ class Node:
 
     def __str__(self):
         """Return a string in [self.id] format."""
-        return "[%s '%s']" % (self.id, self.text)
+        return "<Node %s '%s'>" % (self.id, self.text)
 
 
 class Edge:
@@ -94,7 +94,7 @@ class Edge:
         self.constraints = []
 
     def __str__(self):
-        return "<< %s {%s} %s >>" % (self.node1, str(self.relset), self.node2)
+        return "<Edge %s {%s} %s>" % (self.node1, str(self.relset), self.node2)
 
     def get_node1(self):
         """retrun the Node object for node1."""
@@ -205,10 +205,7 @@ class Constraint:
 
     def __str__(self):
         rels = str(self.relset)
-        mapping = {'user': 'u', 'user-inverted': 'ui',
-                   'closure': 'c', 'closure-inverted': 'ci'}
-        source = mapping.get(self.source, self.source)
-        return "[%s {%s} %s - %s]" % (self.node1, rels, self.node2, source)
+        return "%s {%s} %s" % (self.node1, rels, self.node2)
 
     def get_node1(self):
         """Retrieve the node1 object from the edge."""
@@ -217,6 +214,11 @@ class Constraint:
     def get_node2(self):
         """Retrieve the node2 object from the edge."""
         return self.edge.get_node2()
+
+    def is_garbage(self):
+        """Return True if the constraint is useless and potentially damaging to the
+        algorithm. We don't like constraints like [e1 < e1]."""
+        return self.node1 == self.node2
 
     def is_disjunction(self):
         """Return True if the relation set is a disjunction, return False

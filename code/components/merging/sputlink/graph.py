@@ -47,52 +47,57 @@ class Graph:
             for n2 in self.nodes.keys():
                 self.edges[n1][n2] = Edge(n1, n2, self)
 
-
     def propagate(self, constraint):
-
         """Propagate the constraint through the graph, using Allen's
         constraint propagation algorithm."""
-
+        # guard against garbage constraints in the pending queue by simply
+        # skipping them
+        if constraint.is_garbage():
+            return
         self.cycle += 1
+        self.added = [] # to keep track of what is added this cycle
         self.queue.append(constraint)
-        # debug(str="\n%d  %s" % (self.cycle, constraint))
-
+        debug(str="\n%d  %s\n" % (self.cycle, constraint))
         while self.queue:
-
             constraint_i_j = self.queue.pop(0)
             constraint_i_j.cycle = self.cycle
-            # debug(2, '')
-            # debug(2, "POP QUEUE (cycle %d): %s" % (self.cycle, constraint_i_j))
-
+            debug(1, "POP QUEUE: %s" % (constraint_i_j))
             # compare new constraint to the one already on the edge
             edge_i_j = self.edges[constraint_i_j.node1][constraint_i_j.node2]
-            intersection = self._intersect_constraints(edge_i_j, constraint_i_j)
-            if not intersection:
-                continue
+            (status, intersection) = self._intersect_constraints(edge_i_j,
+                                                                 constraint_i_j)
+            if status == 'INTERSECTION-IS-MORE-SPECIFIC':
+                self.added.append(constraint_i_j)
+                self.update_constraint(edge_i_j, constraint_i_j, intersection)
 
-            # instantiate the constraint on its edge, note that the
-            # history of the constraint may be a bit screwed up
-            # because we do not keep track of whether constraint_i_j
-            # changed due to the intersection
-            constraint_i_j.relset = intersection
-            self._add_constraint_to_edge(constraint_i_j, edge_i_j)
 
-            # get the nodes from the edge and add the nodes to each
-            # others edges_in and edges_out attributes
-            node_i = constraint_i_j.get_node1()
-            node_j = constraint_i_j.get_node2()
-            node_i.edges_out[constraint_i_j.node2] = edge_i_j
-            node_j.edges_in[constraint_i_j.node1] = edge_i_j
+    def update_constraint(self, edge_i_j, constraint_i_j, intersection):
 
-            # node_k --> node_i --> node_j
-            # debug(2, 'EDGES_IN   (' + ' '.join(node_i.edges_in.keys()) + ')')
-            for edge_k_i in node_i.edges_in.values():
-                self._check_k_i_j(edge_k_i, edge_i_j, node_i, node_j)
+        # instantiate the constraint on its edge, note that the
+        # history of the constraint may be a bit screwed up
+        # because we do not keep track of whether constraint_i_j
+        # changed due to the intersection
+        constraint_i_j.relset = intersection
+        self._add_constraint_to_edge(constraint_i_j, edge_i_j)
 
-            # node_i --> node_j --> node_k
-            # debug(2, 'EDGES_OUT  (' + ' '.join(node_j.edges_out.keys()) + ')')
-            for edge_j_k in node_j.edges_out.values():
-                self._check_i_j_k(edge_i_j, edge_j_k, node_i, node_j)
+        # get the nodes from the edge and add the nodes to each
+        # others edges_in and edges_out attributes
+        node_i = constraint_i_j.get_node1()
+        node_j = constraint_i_j.get_node2()
+        node_i.edges_out[constraint_i_j.node2] = edge_i_j
+        node_j.edges_in[constraint_i_j.node1] = edge_i_j
+
+        # node_k --> node_i --> node_j
+        debug(1, "CHECKING: X --> %s --> %s" % (node_i.id, node_j.id))
+        for edge_k_i in node_i.edges_in.values():
+            debug(2, "%s  *  %s" % (edge_k_i, edge_i_j))
+            self._check_k_i_j(edge_k_i, edge_i_j, node_i, node_j)
+
+        # node_i --> node_j --> node_k
+        debug(1, "CHECKING: %s --> %s --> X" % (node_i.id, node_j.id))
+        for edge_j_k in node_j.edges_out.values():
+            debug(2, "%s  *  %s" % (edge_i_j, edge_j_k))
+            self._check_i_j_k(edge_i_j, edge_j_k, node_i, node_j)
 
 
     def reduce(self):
@@ -134,29 +139,29 @@ class Graph:
         del self.edges[id]
 
     def _intersect_constraints(self, edge, constraint):
-        """Intersect the constraint that was just derived to the one already on the
+        """Intersect the constraint that was just derived with the one already on the
         edge. There are three cases. (1) The new constraint, if it is the one
-        originally handed to the propagate() function, could introduce an
-        inconsistency, this should be reported (***which is not done
-        yet***). (2) The new constraint could be identical to the one already
-        there and can be ignored. (3) The new constraint is more specifc than
+        originally handed to the propagate() function, introduces an
+        inconsistency. (2) The new constraint is identical to the one already
+        there and can be ignored. (3) The new constraint is more specific than
         the already existing constraint. The method returns False in the first
         two cases and the intersection in the last case."""
         edge = self.edges[constraint.node1][constraint.node2]
         new_relset = constraint.relset
         existing_relset = edge.relset
         intersection = intersect_relations(new_relset, existing_relset)
-        # debug(2, "INTERSECT  %s + %s  -->  {%s}" % \
-        #      (constraint, edge.constraint, intersection))
+        debug(2, "INTERSECT NEW {%s} WITH EXISTING {%s} --> {%s}"
+              % (constraint.relset, edge.relset, intersection))
         if intersection == '':
-            # debug(3, "IGNORING   %s (inconsistency)" % constraint)
-            return False
+            status = 'INCONSISTENT'
         elif new_relset == existing_relset:
-            # debug(3, "IGNORING   %s (constraint already there)" % constraint)
-            return False
+            status = 'NEW=EXISTING'
+        elif intersection == existing_relset:
+            status = 'INTERSECTION=EXISTING'
         else:
-            # debug(4, "NEW CONSTRAINT")
-            return intersection
+            status = 'INTERSECTION-IS-MORE-SPECIFIC'
+        debug(2, "STATUS: %s" % status)
+        return (status, intersection)
 
     def _check_k_i_j(self, edge_k_i, edge_i_j, node_i, node_j):
         """Look at the k->i->j subgraph and check whether the new constraint in
@@ -169,9 +174,9 @@ class Graph:
             return
         edge_k_j = self._get_edge(node_k, node_j)
         relset_k_j = self._compose(edge_k_i, edge_i_j.constraint)
-        # debug(3, "COMPOSE    %s * %s --> {%s}  ||  %s " \
-        #      % (edge_k_i.constraint, edge_i_j.constraint,
-        #         relset_k_j, edge_k_j.constraint))
+        debug(3, "{%s} * {%s} --> {%s}  ||  %s "
+              % (edge_k_i.constraint.relset, edge_i_j.constraint.relset,
+                 relset_k_j, edge_k_j.constraint))
         if relset_k_j is not None:
             self._combine(edge_k_j, relset_k_j,
                           edge_k_i.constraint, edge_i_j.constraint)
@@ -187,9 +192,9 @@ class Graph:
             return
         edge_i_k = self._get_edge(node_i, node_k)
         relset_i_k = self._compose(edge_i_j.constraint, edge_j_k)
-        # debug(3, "COMPOSE    %s * %s --> {%s}  ||  %s " \
-        #      % (edge_i_j.constraint, edge_j_k.constraint,
-        #         relset_i_k, edge_i_k.constraint))
+        debug(3, "{%s} * {%s} --> {%s}  ||  %s "
+              % (edge_i_j.constraint.relset, edge_j_k.constraint.relset,
+                 relset_i_k, edge_i_k.constraint))
         if relset_i_k is not None:
             self._combine(edge_i_k, relset_i_k,
                           edge_i_j.constraint, edge_j_k.constraint)
@@ -204,10 +209,10 @@ class Graph:
         edge_relset = edge.relset
         intersection = intersect_relations(edge_relset, relset)
         if intersection == '':
-            # debug(4, "WARNING: found an inconsistency where it shouldn't be")
+            debug(4, "WARNING: found an inconsistency where it shouldn't be")
             pass
         elif intersection is None:
-            # debug(4, "WARNING: intersection is None, this should not happen")
+            debug(4, "WARNING: intersection is None, this should not happen")
             pass
         elif edge_relset is None:
             self._add_constraint_to_queue(edge, intersection, c1, c2)
@@ -219,7 +224,7 @@ class Graph:
                                     cycle=self.cycle, source='closure',
                                     history=(c1, c2))
         self.queue.append(new_constraint)
-        # debug(4, "ADD QUEUE  %s " % new_constraint)
+        debug(3, "ADD QUEUE  %s " % new_constraint)
         add_inverted = True
         add_inverted = False
         # Adding the inverted constraint should not be needed, except
@@ -234,7 +239,7 @@ class Graph:
                                          source='closure-inverted',
                                          history=(c1, c2))
             self.queue.append(new_constraint2)
-            # debug(4, "ADD QUEUE  %s " % new_constraint2)
+            debug(3, "ADD QUEUE  %s " % new_constraint2)
 
     def _compose(self, object1, object2):
         """Return the composition of the relation sets on the two objects. One
@@ -310,7 +315,9 @@ class Graph:
         fh = open(filename, 'w') if filename else filehandle
         if standalone:
             html_graph_prefix(fh)
-        fh.write("<table cellpadding=3 cellspacing=0 border=1>\n")
+        fh.write("<table cellpadding=0 cellspacing=0 border=0>\n")
+        fh.write("<tr><td>\n")
+        fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
         fh.write("\n<tr>\n\n")
         fh.write("  <td>&nbsp;\n\n")
         nodes = self.nodes.keys()
@@ -337,6 +344,25 @@ class Graph:
                     # rel = '&nbsp;'
                 classes = " class=\"%s\"" % ' '.join(classes)
                 fh.write("  <td width=25pt%s>%s\n" % (classes, rel))
+        fh.write("</table></td>\n\n")
+        fh.write("<td valign=top>\n")
+        fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
+        if self.added:
+            fh.write("<tr><td>added<td colspan=2>derived from\n")
+        for c in self.added:
+            fh.write("<tr>\n  <td>%s</td>\n" % c)
+            if isinstance(c.history, tuple):
+                fh.write("  <td>%s\n" % str(c.history[0]))
+                fh.write("  <td>%s\n" % str(c.history[1]))
+            elif c.history.__class__.__name__ == 'Tag':
+                tlink = "TLINK(relType=%s)" % c.history.attrs.get('relType')
+                fh.write("  <td colspan=2>%s\n" % tlink)
+            elif c.history.__class__.__name__ == 'Constraint':
+                fh.write("  <td colspan=2>%s\n" % c.history)
+            else:
+                fh.write("  <td colspan=2>&nbsp;\n")
+        fh.write("</table>\n\n")
+        fh.write("</td></tr>\n\n")
         fh.write("</table>\n\n")
         if standalone:
             fh.write("</body>\n</html>\n\n")
