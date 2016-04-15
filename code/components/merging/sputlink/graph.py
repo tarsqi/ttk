@@ -5,6 +5,7 @@ from utils import html_graph_prefix
 from mappings import invert_interval_relations
 from mappings import abbreviate_convex_relation
 from library.timeMLspec import EID, EVENTID
+from utilities import logger
 
 DEBUG = True
 DEBUG = False
@@ -52,9 +53,9 @@ class Graph:
         constraint propagation algorithm."""
         # guard against garbage constraints in the pending queue by simply
         # skipping them
+        self.cycle += 1
         if constraint.is_garbage():
             return
-        self.cycle += 1
         self.added = [] # to keep track of what is added this cycle
         self.queue.append(constraint)
         debug(str="\n%d  %s\n" % (self.cycle, constraint))
@@ -140,12 +141,14 @@ class Graph:
 
     def _intersect_constraints(self, edge, constraint):
         """Intersect the constraint that was just derived with the one already on the
-        edge. There are three cases. (1) The new constraint, if it is the one
+        edge. There are three cases: (1) the new constraint, if it is the one
         originally handed to the propagate() function, introduces an
-        inconsistency. (2) The new constraint is identical to the one already
-        there and can be ignored. (3) The new constraint is more specific than
-        the already existing constraint. The method returns False in the first
-        two cases and the intersection in the last case."""
+        inconsistency; (2) the new constraint is identical to the one already
+        there and can be ignored; (3) the intersection of the new constraint
+        with the old constraint is the same as the old constraint; and (4) the
+        new constraint is more specific than the already existing
+        constraint. The method returns False in the first two cases and the
+        intersection in the last case."""
         edge = self.edges[constraint.node1][constraint.node2]
         new_relset = constraint.relset
         existing_relset = edge.relset
@@ -154,6 +157,9 @@ class Graph:
               % (constraint.relset, edge.relset, intersection))
         if intersection == '':
             status = 'INCONSISTENT'
+            logger.warn("Inconsistent new contraint: %s" % constraint)
+            logger.warn("Clashes with: [%s] (derived from %s)"
+                        % (edge.constraint, edge.constraint.history_string()))
         elif new_relset == existing_relset:
             status = 'NEW=EXISTING'
         elif intersection == existing_relset:

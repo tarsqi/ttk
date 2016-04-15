@@ -236,3 +236,25 @@ class Constraint:
         """Return True if the relation is one of the normalized ones, return
         False otherwise."""
         return NORMALIZED_RELATIONS.get(self.relset, False)
+
+    def pp_history(self, indent=''):
+        if isinstance(self.history, tuple):
+            print("%s%s" % (indent, str(self.history[0])))
+            print("%s%s" % (indent, str(self.history[1])))
+        elif self.history.__class__.__name__ == 'Tag':
+            tlink = "TLINK(relType=%s)" % self.history.attrs.get('relType')
+            print("%s%s" % (indent, tlink))
+        elif self.history.__class__.__name__ == 'Constraint':
+            print("%s%s" % (indent, self.history))
+        else:
+            print("%sno history" % indent)
+
+    def history_string(self):
+        if isinstance(self.history, tuple):
+            return "[%s] and [%s]" % (str(self.history[0]), str(self.history[1]))
+        elif self.history.__class__.__name__ == 'Tag':
+            return "TLINK(relType=%s)" % self.history.attrs.get('relType')
+        elif self.history.__class__.__name__ == 'Constraint':
+            return "[%s]" % self.history
+        else:
+            return "None"
