@@ -27,65 +27,92 @@ QUOTES = ["``", '"', "'"]
 
 class Blinker (TarsqiComponent):
 
-    """Implements the Blinker component of Tarsqi. Blinker takes the
-    shallow tree implemented in the TarsqiTree object and applies rules
-    that capture regularities between events and times as well as
-    between events.
+    """Implements the Blinker component of Tarsqi. Blinker takes the shallow
+    tree implemented in the TarsqiTree object and applies rules that capture
+    regularities between events and times as well as between events.
 
     Instance variables:
-       NAME - a string
-       rules - a BlinkerRuleDictionary
-       rule2_index - a dictionary, quick access to type 2 rules
-       dct - document creation time: a string of the form YYYYMMDD
-       doctree - a TarsqiTree"""
+       NAME         -  a string
+       dct          -  document creation time: a string of the form YYYYMMDD
+       rules        -  a BlinkerRuleDictionary
+       rule2_index  -  a dictionary, quick access to type 2 rules
+       tarsqidoc    -  a TarsqiDOcument
+       doctree      -  a TarsqiTree"""
 
     def __init__(self, tarsqidoc):
         """Set component name and load rules into a BlinkerRuleDictionary
         object, this object knows where the rules are stored."""
-        # TODO: this loads the rules for every paragraph, get rid of that
         self.NAME = BLINKER
-        self.doctree = None         # instance of TarsqiTree
+        self.dct = tarsqidoc.get_dct()
         self.tarsqidoc = tarsqidoc  # instance of TarsqiDocument
+        self.doctree = None         # instance of TarsqiTree
         self.rules = BlinkerRuleDictionary()
-        self.rule2_index = {}
+        self._index_rules()
         # self.rules.pp_ruletype(3)
-        self._populate_rule2_index()
-        # print self.rule2_index.keys()
 
-    def _populate_rule2_index(self):
-        """Rules of type 2 (timex-signal-event) can be simply put in a
-        hash keyed on the signals."""
+    def _index_rules(self):
+        """Rules of type 2 (timex-signal-event) can be simply put in a hash
+        keyed on the signals."""
+        self.rule2_index = {}
         for rule in self.rules[2]:
             relation = rule.get_attribute('relation')[0]  # vals are now lists
             signal = rule.get_attribute('signal')[0]
             self.rule2_index[signal] = relation
 
-    def process_element(self, tarsqidoc, element, dct):
-        """Apply all Blinker rules to the element. Creates a TarsqiTree instance and
-        then applies the Blinker rules. Curently only applies rules of type 2."""
-        self.dct = dct
-        self.doctree = create_tarsqi_tree(tarsqidoc, element)
+    def run_timex_linking(self):
+        """Apply the rules that govern relations between TIMEX3 tags. Only
+        applies to TIMEX3 tags with type=DATE."""
+        # TODO: add a DCT TIMEX tag if it is not in the tags dictionary, but
+        # maybe check first whether it is in the dictionary in case we care
+        # about duplications (see https://github.com/tarsqi/ttk/issues/10 and
+        # https://github.com/tarsqi/ttk/issues/13)
+        timexes = self.tarsqidoc.tags.find_tags(TIMEX)
+        timexes = [t for t in timexes if t.attrs[TYPE] == 'DATE']
+        pairs = _timex_pairs(timexes)
+        for timex1, timex2 in pairs:
+            if self.tarsqidoc.options.trap_errors:
+                try:
+                    self._create_timex_link(timex1, timex2)
+                except Exception:
+                    logger.error("Error linking:\n%s\n%s" % (timex1, timex2))
+            else:
+                self._create_timex_link(timex1, timex2)
+
+    def _create_timex_link(self, timex1, timex2):
+        """Try to create a TLINK between two timexes."""
+        creation_year = self.dct[0:4]
+        date1 = timex1.attrs.get(VALUE)
+        date2 = timex2.attrs.get(VALUE)
+        if date1 is None or date2 is None:
+            logger.warning("Missing value in %s or %s" % (date1, date2))
+            return
+        date1 = _fix_timex_val(date1)
+        date2 = _fix_timex_val(date2)
+        tid1 = timex1.attrs['tid']
+        tid2 = timex2.attrs['tid']
+        origin = "%s-TimexLinking" % BLINKER
+        if date1 == date2:
+            if date1 not in ('PAST_REF', 'FUTURE_REF'):
+                self._add_tlink('IDENTITY', tid1, tid2, origin)
+        else:
+            rel = compare_date(date1, date2, creation_year)
+            if rel != 'IDENTITY':
+                self._add_tlink(rel, tid1, tid2, origin)
+
+    def process_element(self, element):
+        """Apply the Blinker rules to the element. Creates a TarsqiTree instance
+        and then applies the Blinker rules."""
+        self.doctree = create_tarsqi_tree(self.tarsqidoc, element)
         self.docelement = element
         # self.pp_doctree(BLINKER)
         self._run_blinker()
-        self._export_links()
-
-    def _export_links(self):
-        """Export the links that we store in self.doctree.tlinks to the
-        TarsqiDocument."""
-        # TODO: this, and _add_link, are defined in several places, not nice,
-        # they are now renamed here, which is an improvement
-        for tlink in self.doctree.tlinks:
-            logger.debug("Adding %s: %s" % (TLINK, tlink.attrs))
-            self.tarsqidoc.tags.add_tag(TLINK, -1, -1, tlink.attrs)
 
     def _run_blinker(self):
-        """Apply BLinker rules to the sentences in the doctree variable. Currently only
-        deals with rule type 2, anchoring an event to a timex in those cases
-        where there is a signal (that is, a preposition) available. New Tlinks
-        are added just before the closing tag of the fragment. """
+        """Apply BLinker rules to the sentences in the doctree variable. This
+        currently only deals with rule type 2, anchoring an event to a timex in
+        those cases where there is a signal (that is, a preposition). New
+        Tlinks are added just before the closing tag of the fragment."""
 
-        self._run_timex_linking()
         self._apply_event_ordering_with_signal_rules()
 
         # variables needed for different rule types are prefixed with r<ruleNum>
@@ -133,54 +160,15 @@ class Blinker (TarsqiComponent):
             if not r3_main_event:
                 r3_event1 = None
 
-    def _run_timex_linking(self):
-        """Apply the rules that govern relations between TIMEX3 tags. Only
-        applies to TIMEX3 tags with type=DATE."""
-        # TODO: add a DCT TIMEX tag if it is not in the tags dictionary, but
-        # maybe check first whether it is in the dictionary in case we care
-        # about duplications (see https://github.com/tarsqi/ttk/issues/10 and
-        # https://github.com/tarsqi/ttk/issues/13)
-        timexes = self.tarsqidoc.tags.find_tags(TIMEX)
-        timexes = [t for t in timexes if t.attrs[TYPE] == 'DATE']
-        pairs = _timex_pairs(timexes)
-        for timex1, timex2 in pairs:
-            try:
-                self._create_timex_link(timex1, timex2)
-            except Exception:
-                logger.error("Error linking:\n%s\n%s" % (timex1, timex2))
-
-    def _create_timex_link(self, timex1, timex2):
-        """Try to create a TLINK between two timexes."""
-        creation_year = self.dct[0:4]
-        date1 = timex1.attrs.get(VALUE)
-        date2 = timex2.attrs.get(VALUE)
-        if date1 is None or date2 is None:
-            logger.warning("Missing value in %s or %s" % (date1, date2))
-            return
-        date1 = _fix_timex_val(date1)
-        date2 = _fix_timex_val(date2)
-        tid1 = timex1.attrs['tid']
-        tid2 = timex2.attrs['tid']
-        origin = "BLINKER-TimexLinking"
-        if date1 == date2:
-            if date1 not in ('PAST_REF', 'FUTURE_REF'):
-                self.NEW_add_tlink('IDENTITY', tid1, tid2, origin)
-        else:
-            rel = compare_date(date1, date2, creation_year)
-            if rel != 'IDENTITY':
-                self.NEW_add_tlink(rel, tid1, tid2, origin)
 
     def _apply_type3_rules(self, event1, event2):
         """ Creates a TLINK between two main events """
-
         if _DEBUG:
             _pp_events(event1, event2)
-
         for i in range(len(self.rules[3])):
             rule = self.rules[3][i]
             if _DEBUG:
                 rule.pp()
-
             # see tags.py and library.timeMLspec.py for attribute names
             if event1.attrs['class'] in rule.attrs['arg1.class'] and \
                event2.attrs['class'] in rule.attrs['arg2.class'] and \
@@ -188,10 +176,10 @@ class Blinker (TarsqiComponent):
                event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
                event1.attrs['aspect'] in rule.attrs['arg1.aspect'] and \
                event2.attrs['aspect'] in rule.attrs['arg2.aspect']:
-                self.NEW_add_tlink(rule.attrs['relation'][0],
-                                   event1.attrs[EIID],
-                                   event2.attrs[EIID],
-                                   "%s-RULE-%s" % (BLINKER, rule.id))
+                self._add_tlink(rule.attrs['relation'][0],
+                                event1.attrs[EIID],
+                                event2.attrs[EIID],
+                                "%s-Rule-%s" % (BLINKER, rule.id))
                 if _DEBUG:
                     print "RULE %s fired!" % rule.rule_number
                 return
@@ -209,6 +197,9 @@ class Blinker (TarsqiComponent):
                             if event1.attrs['tense'] in rule.attrs['arg1.tense']]
 
         # reset to opposite when quote is encountered
+        # TODO: this whole business with direct is too verbose, simply use
+        # True/False and "direct = not direct", but first get this stuff to work
+        # and make test cases.
         direct = 'INDIRECT'
 
         # forward
@@ -247,10 +238,10 @@ class Blinker (TarsqiComponent):
                     if event2.attrs['class'] in rule.attrs['arg2.class'] and \
                        event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
                        event2.attrs['aspect'] in rule.attrs['arg2.aspect']:
-                        self.NEW_add_tlink(rule.attrs['relation'][0],
-                                           event1.attrs[EIID],
-                                           event2.attrs[EIID],
-                                           "%s-RULE-%s" % (BLINKER, rule.id))
+                        self._add_tlink(rule.attrs['relation'][0],
+                                        event1.attrs[EIID],
+                                        event2.attrs[EIID],
+                                        "%s-Rule-%s" % (BLINKER, rule.id))
                         if _DEBUG:
                             print "RULE %s fired!" % rule.rule_number
                         # apply the first matching rule
@@ -300,10 +291,11 @@ class Blinker (TarsqiComponent):
                        event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
                        event2.attrs['aspect'] in rule.attrs['arg2.aspect']:
                         rel = rule.attrs['relation'][0]
-                        self.NEW_add_tlink(rel,
-                                           event1.attrs['eiid'],
-                                           event2.attrs['eiid'],
-                                           "Blinker - Type 5 (rule %s)" % rule.rule_number)
+                        origin = "BLINKER-Type5-rule%s" % rule.rule_number
+                        self._add_tlink(rel,
+                                        event1.attrs['eiid'],
+                                        event2.attrs['eiid'],
+                                        origin)
                         if _DEBUG:
                             print "RULE %s fired!" % rule.rule_number
                         # apply the first matching rule
@@ -311,13 +303,12 @@ class Blinker (TarsqiComponent):
 
     def _apply_event_anchoring_rules(self, sentence, timex, i):
 
-        """Anchor events to a given timex that occurs in the sentence
-        at index i. The method proceeds by looking for some simple
-        syntactic patterns with and without prepositions. If a pattern
-        with a preposition occurs, then the preposition is looked up
-        in self.rule2_index. If no signal is found, then the default
-        INCLUDES rule will apply (rule 1), this is not yet
-        implemented."""
+        """Anchor events to a given timex that occurs in the sentence at index
+        i. The method proceeds by looking for some simple syntactic patterns
+        with and without prepositions. If a pattern with a preposition occurs,
+        then the preposition is looked up in self.rule2_index. If no signal is
+        found, then the default INCLUDES rule will apply (rule 1), this is not
+        yet implemented."""
 
         # NOTES:
         # - Need to add some kind of confidence measures
@@ -329,7 +320,7 @@ class Blinker (TarsqiComponent):
         if event:
             eiid = event.attrs[EIID]
             tid = timex.attrs[TID]
-            self.NEW_add_tlink('IS_INCLUDED', eiid, tid, "Blinker - Type 1")
+            self._add_tlink('IS_INCLUDED', eiid, tid, "%s-Type-1" % BLINKER)
             return
 
         # Pattern: [CHUNK-WITH-EVENT] Prep [CHUNK-WITH-TIMEX]
@@ -343,8 +334,7 @@ class Blinker (TarsqiComponent):
                 if _DEBUG:
                     print "FOUND: [%s] %s [%s] --> %s" % \
                         (event.dtrs[0].getText(), signal, timex.getText(), rel)
-                self.NEW_add_tlink(rel, eiid, tid,
-                                   "Blinker - Type 2 (%s)" % signal)
+                self._add_tlink(rel, eiid, tid, "%s-Type-2-%s" % (BLINKER, signal))
                 return
 
         # Pattern: [CHUNK-WITH-VERBAL-EVENT] [CHUNK-WITH_TIMEX]
@@ -356,18 +346,20 @@ class Blinker (TarsqiComponent):
                     # if event.attrs[POL] != 'NEG':
                     eiid = event.attrs[EIID]
                     tid = timex.attrs[TID]
-                    self.NEW_add_tlink('IS_INCLUDED', eiid, tid, "Blinker - Type 1a")
+                    self._add_tlink('IS_INCLUDED', eiid, tid,
+                                    "%s-Type-1a" % BLINKER)
                     return
 
-    def NEW_add_tlink(self, reltype, id1, id2, source):
-        """Add a TLINK to self.doctree.tlinks."""
+
+    def _add_tlink(self, reltype, id1, id2, source):
+        """Add a TLINK to self.tarsqidoc."""
         id1_attr = TIME_ID if id1.startswith('t') else EVENT_INSTANCE_ID
         id2_attr = RELATED_TO_TIME if id2.startswith('t') else RELATED_TO_EVENT_INSTANCE
         attrs = {id1_attr: id1,
                  id2_attr: id2,
                  RELTYPE: reltype,
                  ORIGIN: source}
-        self.doctree.addLink(attrs, TLINK)
+        self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
     def _apply_event_ordering_with_signal_rules(self):
 
@@ -401,8 +393,8 @@ class Blinker (TarsqiComponent):
                             # print 'adding tlink'
                             eiid1 = event1.attrs[EIID]
                             eiid2 = event2.attrs[EIID]
-                            self.NEW_add_tlink(rel, eiid1, eiid2,
-                                               "Blinker - Event:Signal:Event")
+                            self._add_tlink(rel, eiid1, eiid2,
+                                            "%s-Event:Signal:Event" % BLINKER)
                 except:
                     pass
 
