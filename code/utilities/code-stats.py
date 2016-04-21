@@ -51,7 +51,8 @@ STATS = {
     '3rd-party-utils': [],
     'deprecated': [],
     'library': [],
-    'code': [] }
+    'code': []
+}
 
 STATS_FILE = open("stats-%s-%s.html" % (date, commit), 'w')
 
@@ -73,7 +74,7 @@ def get_type(fname):
         return 'library'
     else:
         return 'code'
-    
+
 for root, dirs, files in os.walk("."):
     files = [f for f in files if f.endswith('.py')]
     for name in files:

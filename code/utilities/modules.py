@@ -2,8 +2,8 @@
 
 Nothing but a listing of all Tarsqi Python modules.
 
-Provides a variable named MODULES that contains all Tarsqi modules that are needed as
-input to the analysis and documentation creation scripts.
+Provides a variable named MODULES that contains all Tarsqi modules that are
+needed as input to the analysis and documentation creation scripts.
 
 """
 
@@ -48,23 +48,25 @@ import components.s2t.wrapper
 import components.slinket.main
 import components.slinket.wrapper
 
+import components.merging.wrapper
+import components.merging.sputlink.main
+import components.merging.sputlink.graph
+import components.merging.sputlink.objects
+import components.merging.sputlink.utils
+
 import docmodel.main
 import docmodel.document
-import docmodel.parsers
+import docmodel.docstructure_parser
+import docmodel.metadata_parser
 import docmodel.source_parser
 
 import utilities.binsearch
 import utilities.logger
 import utilities.porterstemmer
 
-#import utilities.sputlink.main
-#import utilities.sputlink.graph
-#import utilities.sputlink.objects
-#import utilities.sputlink.utils
-
 
 MODULES = [
-    
+
     tarsqi,
 
     components.blinker.compare,
@@ -89,10 +91,14 @@ MODULES = [
     components.evita.wrapper,
 
     components.gutime.wrapper,
-    #components.gutime.btime,
+    # components.gutime.btime,
 
     components.merging.wrapper,
-    
+    components.merging.sputlink.main,
+    components.merging.sputlink.graph,
+    components.merging.sputlink.objects,
+    components.merging.sputlink.utils,
+
     components.preprocessing.abbreviation,
     components.preprocessing.tokenizer,
     components.preprocessing.wrapper,
@@ -105,16 +111,12 @@ MODULES = [
 
     docmodel.main,
     docmodel.document,
-    docmodel.parsers,
+    docmodel.docstructure_parser,
+    docmodel.metadata_parser,
     docmodel.source_parser,
 
     utilities.binsearch,
     utilities.logger,
     utilities.porterstemmer,
 
-#    utilities.sputlink.main,
-#    utilities.sputlink.graph,
-#    utilities.sputlink.objects,
-#    utilities.sputlink.utils
-    ]
-
+]

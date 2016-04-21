@@ -1,8 +1,8 @@
 """Simple logging code that write messages to a log file. It uses five
 levels:
 
-   Level 0: no messages 
-   Level 1: errors 
+   Level 0: no messages
+   Level 1: errors
    Level 2: errors and warnings
    Level 3: errors and warnings and info
    Level 4: errors and warnings and info and debugging
@@ -13,7 +13,7 @@ Initialize the logger, typically from the main script, as follows
    logger.initialize_logger(<filename>, <level>)
 
 This will open for writing a file <filename>.html. The <level>
-argument is optional, the default is to print info, errors and warnings 
+argument is optional, the default is to print info, errors and warnings
 (level 3). After initialization, the logger can be used from any
 module by importing it and using its methods:
 
@@ -25,7 +25,7 @@ module by importing it and using its methods:
 
 In addition, there is one method that writes to the log no matter what
 the level:
-    
+
    logger.write(<string>)
 
 Finally, it provides two convenience method that print directly to the
@@ -48,7 +48,7 @@ standard output can be turned on and off with
 # - sometimes the string is created using rather expensive operations,
 #   slowing down the program even if logging is barely used; may want to
 #   send an object with a print operation instead
-   
+
 
 import os
 import sys
@@ -58,11 +58,12 @@ logger = None
 
 STDOUT_PRINTING = True
 
+
 class Logger:
 
     """The Logger class, has no other function than to store the logging
     level and the log file."""
-    
+
     def __init__(self, filename, level=2):
         """Set logging level and the log file."""
         self.level = level
@@ -72,7 +73,8 @@ class Logger:
         self.html_file.write("body, td { font-family:courier,monospace; }\n")
         self.html_file.write("</style>\n</head>\n")
         self.html_file.write("<body>\n\n<table cellpadding=5>\n\n")
-        
+
+
 def initialize_logger(filename, level=2):
     """Initialize the logger on <filename>, default logging level is 2.
     Only initialize if logger has not been initialized yet."""
@@ -80,25 +82,30 @@ def initialize_logger(filename, level=2):
     if not logger:
         logger = Logger(filename, level)
 
+
 def set_level(integer):
     if integer in (0, 1, 2, 3, 4):
         global logger
         logger.level = integer
-    
+
+
 def debug(string):
     """Print a debugging message to the log file."""
     if logger.level > 3:
         _log('DEBUG', string)
+
 
 def info(string):
     """Print an info string to the log file."""
     if logger.level > 2:
         _log('INFO', string)
 
+
 def warn(string):
     """Print a warning to the log file."""
     if logger.level > 1:
         _log('WARNING', string)
+
 
 def error(string):
     """Print an error to the log file, also print it to standard error."""
@@ -106,36 +113,39 @@ def error(string):
         sys.stderr.write('ERROR: ' + string + "\n")
         _log('ERROR', string)
 
+
 def write(string):
     """Print a string to the log file, no matter what the logging
     level. This will be printed as an INFO string"""
     _log('INFO', string)
+
 
 def _log(message_type, log_string):
     """Inspect the stack to find the execution level and the calling
     function, then write the message to the log."""
     stack = inspect.stack()
     depth = len(stack) - 5
-    if depth < 0: depth = 0
+    if depth < 0:
+        depth = 0
     frame = stack[2]
     path = frame[1]
     path_elements = path.split(os.sep)
     file = path_elements[-1]
-    file = file.replace('.py','')
+    file = file.replace('.py', '')
     line = str(frame[2])
     indent_string = '.'
     trace = depth * indent_string + file + '.' + frame[3] + '(' + line + ')'
-    log_string = log_string.replace("<",'&lt;')
-    log_string = log_string.replace(">",'&gt;')
-    log_string = log_string.replace("\n",'<br/>')
-    log_string = log_string.replace("\t",'&nbsp;&nbsp;&nbsp;')
+    log_string = log_string.replace("<", '&lt;')
+    log_string = log_string.replace(">", '&gt;')
+    log_string = log_string.replace("\n", '<br/>')
+    log_string = log_string.replace("\t", '&nbsp;&nbsp;&nbsp;')
     if message_type == 'ERROR':
         message_type = '<font color=red>' + message_type + '</font>'
     elif message_type == 'WARNING':
         message_type = '<font color=orange>' + message_type + '</font>'
     elif message_type == 'INFO':
         message_type = '<font color=blue>' + message_type + '</font>'
-    #if message_type == 'DEBUG':
+    # if message_type == 'DEBUG':
     #    message_type = '<font color=green>' + message_type + '</font>'
     logger.html_file.write("\n<tr>\n")
     logger.html_file.write("  <td valign=top>%s\n" % (message_type))
@@ -150,7 +160,7 @@ def set_stdout_printing(Boolean):
     global STDOUT_PRINTING
     STDOUT_PRINTING = Boolean
 
-    
+
 def out(*args):
     """Method to write to standard output rather than the html
     file. Intended for quick and dirty debugging that should not be
@@ -166,14 +176,15 @@ def out(*args):
     function = frame[3]
     path_elements = path.split(os.sep)
     file = path_elements[-1]
-    file = file.replace('.py','')
-    #line = str(frame[2])
+    file = file.replace('.py', '')
+    # line = str(frame[2])
     prefix = 'LOG (' + str(depth) + ') [' + file + '.' + function + ']'
     print prefix + ' ',
     for arg in args:
         print arg,
     print
-    
+
+
 def outnl():
     if not STDOUT_PRINTING:
         return

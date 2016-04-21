@@ -35,8 +35,7 @@ PRINT_PRIVATE_FUNCTIONS = True
 DOCUMENTATION_DIR = os.path.join('..', '..', 'docs', 'code')
 
 
-javascript_code = \
-"""<script language="JavaScript" type="text/JavaScript">
+javascript_code = """<script language="JavaScript" type="text/JavaScript">
 <!--
 function view_code(id) {
   var newurl = "../functions/" + id + ".html";
@@ -52,10 +51,10 @@ FUNCTION_ID = 0
 
 def print_module_documentation(module):
     print module.__name__
-    filename = os.path.join(DOCUMENTATION_DIR, 'modules', module.__name__+'.html')
-    docfile = open(filename,'w')
+    filename = os.path.join(DOCUMENTATION_DIR, 'modules', module.__name__ + '.html')
+    docfile = open(filename, 'w')
     docfile.write("<html>\n<head>\n")
-    docfile.write('<link href="../css/module.css" rel="stylesheet" type="text/css">'+"\n")
+    docfile.write('<link href="../css/module.css" rel="stylesheet" type="text/css">' + "\n")
     docfile.write(javascript_code)
     docfile.write("</head>\n<body>\n")
     docfile.write('<a href=../index.html>index</a>' + "\n\n")
@@ -64,13 +63,15 @@ def print_module_documentation(module):
     if module_classes:
         docfile.write("<pre>\n")
         for module_class in module_classes:
-            docfile.write("<a href=#%s>%s</a>\n" % (module_class.__name__, module_class.__name__))
+            docfile.write("<a href=#%s>%s</a>\n"
+                          % (module_class.__name__, module_class.__name__))
         docfile.write("</pre>\n\n")
     docstring = get_docstring(module)
     if docstring:
         docfile.write("<pre>\n" + docstring + "</pre>\n\n")
     print_class_documentation(docfile, module_classes)
     print_function_documentation(docfile, get_functions(module))
+
 
 def print_class_documentation(docfile, classes):
     for class_object in classes:
@@ -88,28 +89,30 @@ def print_class_documentation(docfile, classes):
             docfile.write("\n" + docstring)
         docfile.write("</pre>\n\n")
         functions = get_functions(class_object)
-        functions.sort(lambda x, y: cmp(x[0],y[0]))
+        functions.sort(lambda x, y: cmp(x[0], y[0]))
         public_functions = get_public_functions(functions)
         private_functions = get_private_functions(functions)
         if public_functions:
             docfile.write("<blockquote>\n")
             docfile.write("<h3>Public Functions</h3>\n")
-            for (name,fun) in public_functions:
+            for (name, fun) in public_functions:
                 print_function(name, fun, docfile)
             docfile.write("</blockquote>\n")
         if private_functions and PRINT_PRIVATE_FUNCTIONS:
             docfile.write("<blockquote>\n")
             docfile.write("<h3>Private Functions</h3>\n")
-            for (name,fun) in private_functions:
+            for (name, fun) in private_functions:
                 print_function(name, fun, docfile)
             docfile.write("</blockquote>\n")
 
+
 def print_function_documentation(docfile, functions):
     if functions:
-        docfile.write("\n" + '<div class="section">module functions</div>'+"\n")
-    functions.sort(lambda x, y: cmp(x[0],y[0]))
+        docfile.write("\n" + '<div class="section">module functions</div>' + "\n")
+    functions.sort(lambda x, y: cmp(x[0], y[0]))
     for (name, fun) in get_public_functions(functions):
         print_function(name, fun, docfile)
+
 
 def get_classes(module):
     classes = []
@@ -117,29 +120,33 @@ def get_classes(module):
         if type(val) == ClassType:
             if val.__dict__['__module__'] == module.__name__:
                 classes.append(val)
-    classes.sort(lambda x,y: cmp(str(x),str(y)))
+    classes.sort(lambda x, y: cmp(str(x), str(y)))
     return classes
+
 
 def get_functions(class_object):
     functions = []
     for (key, val) in class_object.__dict__.items():
         if type(val) == FunctionType:
-            functions.append([key,val])
+            functions.append([key, val])
     return functions
+
 
 def get_public_functions(functions):
     public_functions = []
     for (name, fun) in functions:
         if name.startswith('__') or not name.startswith('_'):
-            public_functions.append((name,fun))
+            public_functions.append((name, fun))
     return public_functions
+
 
 def get_private_functions(functions):
     private_functions = []
     for (name, fun) in functions:
         if name.startswith('_') and not name.startswith('__'):
-            private_functions.append((name,fun))
+            private_functions.append((name, fun))
     return private_functions
+
 
 def print_function(name, fun, docfile):
     global FUNCTION_ID
@@ -157,7 +164,8 @@ def print_function(name, fun, docfile):
         funname = get_function_name(fun)
         print_function_code(id, funname, fun)
     docfile.write("</pre>\n")
-    
+
+
 def get_function_name(fun):
     try:
         firstline = inspect.getsourcelines(fun)[0][0]
@@ -165,12 +173,14 @@ def get_function_name(fun):
     except IOError:
         # in case the function was imported
         return fun.__name__ + ' (imported)'
-    
+
+
 def print_function_code(id, name, fun):
     filename = os.path.join(DOCUMENTATION_DIR, 'functions', "%s.html" % id)
     funfile = open(filename, "w")
     funfile.write("<html>\n<head>\n")
-    funfile.write('<link href="../css/function.css" rel="stylesheet" type="text/css">'+"\n")
+    funfile.write('<link href="../css/function.css"')
+    funfile.write(' rel="stylesheet" type="text/css">' + "\n")
     funfile.write("</head>\n<body>\n")
     funfile.write('<pre>')
     try:
@@ -183,11 +193,13 @@ def print_function_code(id, name, fun):
     funfile.write(code)
     funfile.write('</pre>')
 
+
 def get_docstring(object):
     docstring = ''
     if object.__doc__:
         docstring = object.__doc__
     return trim(protect(docstring))
+
 
 def print_docstring(object, docfile, prefix=''):
     docstring = get_docstring(object)
@@ -202,12 +214,14 @@ def print_docstring(object, docfile, prefix=''):
         funname = get_function_name(object)
         print_function_code(id, funname, object)
     docfile.write("</pre>\n")
-    
+
+
 def protect(docstring):
     docstring = docstring.replace('<', '&lt;')
     docstring = docstring.replace('>', '&gt;')
     docstring = docstring.strip()
     return docstring
+
 
 def get_module_and_class_name(base_class):
     class_string = str(base_class)
@@ -215,6 +229,7 @@ def get_module_and_class_name(base_class):
     module_name = '.'.join(components[:-1])
     class_name = components[-1]
     return (module_name, class_name)
+
 
 def trim(docstring, linenum=1):
     if not docstring:
@@ -243,11 +258,10 @@ def trim(docstring, linenum=1):
     return '\n'.join(trimmed)
 
 
-
 if __name__ == '__main__':
 
     filename = os.path.join(DOCUMENTATION_DIR, 'index.html')
-    indexfile = open(filename,'w')
+    indexfile = open(filename, 'w')
     indexfile.write("<html>\n<head>\n")
     indexfile.write("<link rel=\"stylesheet\" href=\"css/list.css\"> \n")
     indexfile.write("</head>\n<body>\n")

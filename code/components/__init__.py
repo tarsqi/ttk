@@ -19,4 +19,5 @@ COMPONENTS = {
     S2T: S2tWrapper,
     BLINKER: BlinkerWrapper,
     CLASSIFIER: ClassifierWrapper,
-    LINK_MERGER: MergerWrapper }
+    LINK_MERGER: MergerWrapper
+}

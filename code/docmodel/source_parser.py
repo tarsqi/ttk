@@ -55,8 +55,8 @@ class SourceParserText(SourceParser):
         return TarsqiDocument(sourcedoc, {})
 
     def parse_string(self, text):
-        """Parses a text string and returns a SourceDoc.  Simply dumps the full string
-        into the text variable of the SourceDoc."""
+        """Parses a text string and returns a SourceDoc. Simply dumps the full
+        string into the text variable of the SourceDoc."""
         sourcedoc = SourceDoc(None)
         # TODO: do we need to ensure the text is unicode?
         sourcedoc.text = text
@@ -144,7 +144,8 @@ class SourceParserTTK(SourceParser):
         o1 = int(o1) if o1 else -1
         o2 = int(o2) if o2 else -1
         attrs = dict(node.attributes.items())
-        attrs = dict([(k, v) for (k, v) in attrs.items() if k not in ('begin', 'end')])
+        attrs = dict([(k, v) for (k, v) in attrs.items()
+                      if k not in ('begin', 'end')])
         # print name, o1, o2, attrs
         tag_repository.add_tag(name, o1, o2, attrs)
 
@@ -185,7 +186,8 @@ class SourceParserXML(SourceParser):
         self.parser = xml.parsers.expat.ParserCreate(encoding=encoding)
         self.parser.buffer_text = 1
         self.parser.XmlDeclHandler = self._handle_xmldecl
-        self.parser.ProcessingInstructionHandler = self._handle_processing_instruction
+        self.parser.ProcessingInstructionHandler = \
+            self._handle_processing_instruction
         self.parser.CommentHandler = self._handle_comment
         self.parser.StartElementHandler = self._handle_start
         self.parser.EndElementHandler = self._handle_end
@@ -193,9 +195,9 @@ class SourceParserXML(SourceParser):
         self.parser.DefaultHandler = self._handle_default
 
     def parse_file(self, filename):
-        """Parses filename and returns a SourceDoc. Uses the ParseFile routine of the
-        expat parser, where all the handlers are set up to fill in the text and
-        tags in SourceDoc."""
+        """Parses filename and returns a SourceDoc. Uses the ParseFile routine
+        of the expat parser, where all the handlers are set up to fill in the
+        text and tags in SourceDoc."""
         self.sourcedoc = SourceDoc(filename)
         # TODO: should this be codecs.open() for non-ascii?
         self.parser.ParseFile(open(filename))

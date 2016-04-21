@@ -31,4 +31,3 @@ LINK_MERGER = 'LINK_MERGER'
 TRAP_ERRORS = 'trap_errors'
 EXTENSION = 'extension'
 PIPELINE = 'pipeline'
-

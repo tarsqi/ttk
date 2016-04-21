@@ -12,8 +12,10 @@ and metadata_parser.py.
 
 import os
 
-from docmodel.source_parser import SourceParserXML, SourceParserText, SourceParserTTK
-from docmodel.metadata_parser import MetadataParser, MetadataParserTTK, MetadataParserText
+from docmodel.source_parser import SourceParserXML, SourceParserText
+from docmodel.source_parser import SourceParserTTK
+from docmodel.metadata_parser import MetadataParser, MetadataParserTTK
+from docmodel.metadata_parser import MetadataParserText
 from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserVA
 from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
 from docmodel.docstructure_parser import DocumentStructureParser
@@ -32,8 +34,8 @@ PARSERS = {
 }
 
 
-DEFAULT_PIPELINE = [ PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T,
-                     BLINKER, CLASSIFIER, LINK_MERGER ]
+DEFAULT_PIPELINE = [PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T,
+                    BLINKER, CLASSIFIER, LINK_MERGER]
 
 DEFAULT_SOURCE_PARSER = SourceParserXML
 DEFAULT_METADATA_PARSER = MetadataParser
@@ -61,5 +63,6 @@ def create_docstructure_parser():
 
 
 def get_default_pipeline(options):
-    """Now always returns the same but can be used for genre-specific pipelines."""
+    """Now always returns the same but can be used for genre-specific
+    pipelines."""
     return DEFAULT_PIPELINE

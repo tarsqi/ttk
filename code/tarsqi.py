@@ -78,7 +78,8 @@ SETTINGS = 'settings.txt'
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
-logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'), level=3)
+logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'),
+                         level=3)
 
 
 class Tarsqi:
@@ -100,7 +101,8 @@ class Tarsqi:
        DIR_TMP_DATA         -  path for temporary files
 
     The first nine instance variables are initialized using the arguments
-    provided by the user, document is initialized and changed during processing."""
+    provided by the user, document is initialized and changed during
+    processing."""
 
     def __init__(self, opts, infile, outfile):
         """Initialize Tarsqi object conform the data source identifier and the
@@ -109,8 +111,8 @@ class Tarsqi:
         commanid line options and the infile and outfile arguments are typically
         absolute paths, but they can be None when we are processing strings."""
 
-        # Make sure we're in the right directory. If the toolkit crashed on a previous
-        # file it may end up being in a different directory.
+        # Make sure we're in the right directory. If the toolkit crashed on a
+        # previous file it may end up being in a different directory.
         os.chdir(TTK_ROOT)
 
         self.input = infile
@@ -172,8 +174,8 @@ class Tarsqi:
         """Remove all fragments from the temporary data directory."""
         for file in os.listdir(self.DIR_TMP_DATA):
             if os.path.isfile(self.DIR_TMP_DATA + os.sep + file):
-                # sometimes, on linux, weird files show up here, do not delete them
-                # should trap these here with an OSError
+                # sometimes, on linux, weird files show up here, do not delete
+                # them should trap these here with an OSError
                 if not file.startswith('.'):
                     os.remove(self.DIR_TMP_DATA + os.sep + file)
 
@@ -211,7 +213,7 @@ class Tarsqi:
                 print "ERROR printing output"
         else:
             self.document.print_all(self.output)
-                            
+
     def pretty_print(self):
         print self
         print '   metadata    ', self.metadata
@@ -225,10 +227,10 @@ class Options:
     dictionary, but are also accessable directly through instance variables."""
 
     def __init__(self, options):
-        """Initialize options from the settings file and the opts parameter. Loop through
-        the options dictionary and replace some of the strings with other objects: replace
-        'True' with True, 'False' with False, and strings indicating an integer with that
-        integer."""
+        """Initialize options from the settings file and the opts parameter.
+        Loop through the options dictionary and replace some of the strings with
+        other objects: replace 'True' with True, 'False' with False, and strings
+        indicating an integer with that integer."""
         self._options = read_settings(SETTINGS)
         for (option, value) in options:
             self._options[option[2:]] = value
@@ -266,10 +268,11 @@ class TarsqiError(Exception):
 
 
 def _read_arguments(args):
-    """ Read the list of arguments given to the tarsqi.py script.  Return a tuple with
-    three elements: processing options dictionary, input path and output path."""
-    options = ['genre=', 'source=', 'pipeline=', 'trap-errors=', 'content_tag=', 'perl=',
-               'loglevel=', 'ignore=', 'platform=', 'treetagger=']
+    """ Read the list of arguments given to the tarsqi.py script.  Return a
+    tuple with three elements: processing options dictionary, input path and
+    output path."""
+    options = ['genre=', 'source=', 'pipeline=', 'trap-errors=', 'content_tag=',
+               'perl=', 'loglevel=', 'ignore=', 'platform=', 'treetagger=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
         return (opts, args)
@@ -299,9 +302,11 @@ def run_tarsqi(args):
     value."""
     (opts, args) = _read_arguments(args)
     if len(args) < 2:
-        raise TarsqiError("missing input or output arguments\n%s" % _usage_string())
-    # Use os.path.abspath here because some components change the working directory
-    # and when some component fails the cwd may not be reset to the root directory
+        raise TarsqiError("missing input or output arguments\n%s"
+                          % _usage_string())
+    # Use os.path.abspath here because some components change the working
+    # directory and when some component fails the cwd may not be reset to the
+    # root directory
     inpath = os.path.abspath(args[0])
     outpath = os.path.abspath(args[1])
     t0 = time.time()

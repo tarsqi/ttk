@@ -66,8 +66,8 @@ def split_paragraphs(text):
     if seeking_space and p2 > par_begin:
         paragraphs.append((par_begin, par_end))
 
-    # this deals with the boundary case where there are no empty lines, should really have
-    # a more elegant solution
+    # this deals with the boundary case where there are no empty lines, should
+    # really have a more elegant solution
     if not paragraphs:
         paragraphs = [(0, text_end)]
 
@@ -75,8 +75,8 @@ def split_paragraphs(text):
 
 
 def slurp(text, offset, test):
-    """Starting at offset in text, find a substring where all characters pass test. Return
-    the begin and end position and the substring."""
+    """Starting at offset in text, find a substring where all characters pass
+    test. Return the begin and end position and the substring."""
     begin = offset
     end = offset
     length = len(text)

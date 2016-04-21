@@ -32,12 +32,12 @@ POS_PREP = 'IN'
 # ===================
 
 # Classes declared in Chunk.py and used by ppParser.py, eventParser.py:
-ConstituentClassNames = ['Constituent', 'Chunk', 'NounChunk', 'VerbChunk', 'Token', 'AdjectiveToken']
+ConstituentClassNames = ['Constituent', 'Chunk', 'NounChunk', 'VerbChunk',
+                         'Token', 'AdjectiveToken']
 ChunkClassNames = ['Chunk', 'NounChunk', 'VerbChunk']
-EventConstituentClassNames = ChunkClassNames + ['AdjectiveToken'] 
+EventConstituentClassNames = ChunkClassNames + ['AdjectiveToken']
 
 FORM = 'form'
-
 
 
 # TimeML spec
@@ -58,7 +58,7 @@ EIID = 'eiid'
 EVENTID = 'eventID'
 CLASS = 'class'
 STEM = 'stem'
-EPOS = 'epos' #NF_MORPH = 'nf_morph'
+EPOS = 'epos'  # NF_MORPH = 'nf_morph'
 TENSE = 'tense'
 ASPECT = 'aspect'
 MOD = 'modality'

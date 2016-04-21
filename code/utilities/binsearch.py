@@ -3,16 +3,17 @@
 import os
 from stat import ST_SIZE
 
-def binarySearchFile(fh, key, sep=' ',  cache={}, cacheDepth=-1):
+
+def binarySearchFile(fh, key, sep=' ', cache={}, cacheDepth=-1):
     key = key + sep
     keylen = len(key)
     start, end = 0, os.stat(fh.name)[ST_SIZE]
     currentDepth = 0
-    #count = 0
+    # count = 0
     while start < end:
-        #print start, end
-        #count = count + 1
-        #if count > 20:
+        # print start, end
+        # count = count + 1
+        # if count > 20:
         #    raise "infinite loop"
         lastState = start, end
         middle = (start + end) / 2
@@ -25,11 +26,11 @@ def binarySearchFile(fh, key, sep=' ',  cache={}, cacheDepth=-1):
             offset, line = fh.tell(), fh.readline()
             if currentDepth < cacheDepth:
                 cache[middle] = (offset, line)
-        #print start, middle, end, offset, line,
+        # print start, middle, end, offset, line,
         if offset > end:
             assert end != middle - 1, "infinite loop"
             end = middle - 1
-        elif line[:keylen] == key:# and line[keylen + 1] == ' ':
+        elif line[:keylen] == key:  # and line[keylen + 1] == ' ':
             return line
         elif line > key:
             assert end != middle - 1, "infinite loop"

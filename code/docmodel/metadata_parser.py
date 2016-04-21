@@ -26,8 +26,8 @@ class MetadataParser:
         self.options = options
 
     def parse(self, tarsqidoc):
-        """Adds metadata to the TarsqiDocument. The only thing it adds to the metadata
-        dictionary is the DCT, which is set to today."""
+        """Adds metadata to the TarsqiDocument. The only thing it adds to the
+        metadata dictionary is the DCT, which is set to today."""
         tarsqidoc.metadata['dct'] = self.get_dct()
 
     def get_dct(self):
@@ -35,12 +35,13 @@ class MetadataParser:
         return get_today()
 
     def get_source(self):
-        """A convenience method to lift the SourceDoc out of the tarsqi instance."""
+        """A convenience method to lift the SourceDoc out of the tarsqi
+        instance."""
         return self.tarsqi.document.source
 
     def _get_tag_content(self, tagname):
-        """Return the text content of the first tag with name tagname, return None if
-        there is no such tag."""
+        """Return the text content of the first tag with name tagname, return
+        None if there is no such tag."""
         try:
             tag = self.get_source().tags.find_tags(tagname)[0]
             content = self.get_source().text[tag.begin:tag.end].strip()
@@ -55,8 +56,9 @@ class MetadataParserTTK(MetadataParser):
     """The metadata parser for the ttk format, simply copies the meta data."""
 
     def parse(self, tarsqidoc):
-        """Adds metadata to the TarsqiDocument. The only thing it adds to the metadata
-        dictionary is the DCT, which is copied from the metadata in the SourceDoc."""
+        """Adds metadata to the TarsqiDocument. The only thing it adds to the
+        metadata dictionary is the DCT, which is copied from the metadata in the
+        SourceDoc."""
         tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.source)
 
     def get_dct(self, sourcedoc):
@@ -69,22 +71,24 @@ class MetadataParserText(MetadataParser):
 
 
 class MetadataParserTimebank(MetadataParser):
-    """The parser for Timebank documents. All it does is overwriting the get_dct()
-    method."""
+    """The parser for Timebank documents. All it does is overwriting the
+    get_dct() method."""
 
     def get_dct(self):
-        """Extracts the document creation time, and returns it as a string of the form
-        YYYYMMDD. Depending on the source, the DCT can be found in one of the
-        following tags: DOCNO, DATE_TIME, PUBDATE or FILEID."""
+        """Extracts the document creation time, and returns it as a string of
+        the form YYYYMMDD. Depending on the source, the DCT can be found in one
+        of the following tags: DOCNO, DATE_TIME, PUBDATE or FILEID."""
         result = self._get_doc_source()
         if result is None:
-            # dct defaults to today if we cannot find the DOCNO tag in the document
+            # dct defaults to today if we cannot find the DOCNO tag in the
+            # document
             return get_today()
         source_identifier, content = result
         if source_identifier in ('ABC', 'CNN', 'PRI', 'VOA'):
             return content[3:11]
         elif source_identifier == 'AP':
-            dct = self._parse_tag_content("(?:AP-NR-)?(\d+)-(\d+)-(\d+)", 'FILEID')
+            dct = self._parse_tag_content("(?:AP-NR-)?(\d+)-(\d+)-(\d+)",
+                                          'FILEID')
             # the DCT format is YYYYMMDD or YYMMDD
             return dct if len(dct) == 8 else '19' + dct
         elif source_identifier in ('APW', 'NYT'):
@@ -134,7 +138,7 @@ class MetadataParserATEE(MetadataParser):
 
 
 class MetadataParserRTE3(MetadataParser):
-    
+
     """The parser for RTE3 documents, no differences with the default parser."""
 
     def get_dct(self):

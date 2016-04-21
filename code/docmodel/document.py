@@ -9,7 +9,8 @@ from copy import copy
 from xml.sax.saxutils import escape, quoteattr
 
 from library.timeMLspec import TIMEX, EVENT, TID, EIID, ALINK, SLINK, TLINK
-from library.timeMLspec import EVENT_INSTANCE_ID, TIME_ID, SUBORDINATED_EVENT_INSTANCE
+from library.timeMLspec import EVENT_INSTANCE_ID, TIME_ID
+from library.timeMLspec import SUBORDINATED_EVENT_INSTANCE
 from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
 
 
@@ -34,7 +35,7 @@ class TarsqiDocument:
         self.metadata = metadata
         self.tags = TagRepository()
         self.options = {}
-        self.counters = { TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0 }
+        self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
 
     def __str__(self):
         return "<TarsqiDocument on '%s'>" % (self.source.filename)
@@ -96,9 +97,9 @@ class TarsqiDocument:
          using the link counters in the document. Breaks down if there are
          already links added without using those counters."""
         self.counters[link_type] += 1
-        return "l%d" % (self.counters['ALINK']
-                        + self.counters['SLINK']
-                        + self.counters['TLINK'])
+        return "l%d" % (self.counters['ALINK'] +
+                        self.counters['SLINK'] +
+                        self.counters['TLINK'])
 
     def remove_tlinks(self):
         """Remove all TLINK tags from the tags repository."""
@@ -113,7 +114,7 @@ class TarsqiDocument:
         """Write to file (or stadard output if no filename was given) a Python
         variable assignment where the content of the variable the list of
         sentences as a list of lists of token strings."""
-        fh = sys.stdout if fname == None else codecs.open(fname, mode='w',
+        fh = sys.stdout if fname is None else codecs.open(fname, mode='w',
                                                           encoding='UTF-8')
         fh.write("sentences = ")
         fh.write(str(self.list_of_sentences()))
@@ -143,7 +144,7 @@ class TarsqiDocument:
 
     def _print_metadata(self, fh):
         fh.write("<metadata>\n")
-        for k,v in self.metadata.items():
+        for k, v in self.metadata.items():
             fh.write("  <%s value=\"%s\"/>\n" % (k, v))
         fh.write("</metadata>\n")
 
@@ -207,26 +208,29 @@ class SourceDoc:
         """Add an opening tag to source_tags. This is used by the
         StartElementHandler of the Expat parser in SourceParserXML."""
         self.tag_number += 1
-        self.tags.add_tmp_tag( OpeningTag(self.tag_number, name, self.offset, attrs) )
+        opening_tag = OpeningTag(self.tag_number, name, self.offset, attrs)
+        self.tags.add_tmp_tag(opening_tag)
 
     def add_closing_tag(self, name):
         """Add a closing tag to source_tags. This is used by the
         EndElementHandler of the Expat parser in SourceParserXML."""
         self.tag_number += 1
-        self.tags.add_tmp_tag( ClosingTag(self.tag_number, name, self.offset) )
+        closing_tag = ClosingTag(self.tag_number, name, self.offset)
+        self.tags.add_tmp_tag(closing_tag)
 
     def add_characters(self, string):
         """Add a character string to the source and increment the current
         offset. Used by the CharacterDataHandler of the Expat parser in
         SourceParserXML."""
-        self.text.write(string) # this is already unicode
+        self.text.write(string)     # this is already unicode
         self.offset += len(string)
 
     def add_comment(self, string):
-        self.comments.setdefault(self.offset,[]).append(string)
+        self.comments.setdefault(self.offset, []).append(string)
 
     def add_processing_instruction(self, target, data):
-        self.processing_instructions.setdefault(self.offset,[]).append((target, data))
+        td = (target, data)
+        self.processing_instructions.setdefault(self.offset, []).append(td)
 
     def finish(self):
         """Transform the source text list into a string, merge the begin and end
@@ -315,8 +319,8 @@ class TagRepository:
         dictionaries."""
         tag = Tag(None, name, begin, end, attrs)
         self.tags.append(tag)
-        self.opening_tags.setdefault(begin,[]).append(tag)
-        self.closing_tags.setdefault(end,{}).setdefault(begin,{})[tag.name] = True
+        self.opening_tags.setdefault(begin, []).append(tag)
+        self.closing_tags.setdefault(end, {}).setdefault(begin, {})[tag.name] = True
 
     def append(self, tag):
         """Appends an instance of Tag to the tags list."""
@@ -337,7 +341,8 @@ class TagRepository:
                 stack.append(t)
             elif t.name == stack[-1].name:
                 t1 = stack.pop()
-                self.tags.append(Tag( t1.id, t1.name, t1.begin, t.end, t1.attrs ))
+                tag = Tag(t1.id, t1.name, t1.begin, t.end, t1.attrs)
+                self.tags.append(tag)
             else:
                 raise TarsqiInputError("non-matching tag %s" % t)
         if stack:
@@ -349,11 +354,11 @@ class TagRepository:
         self.opening_tags = {}
         self.closing_tags = {}
         for tag in self.tags:
-            self.opening_tags.setdefault(tag.begin,[]).append(tag)
+            self.opening_tags.setdefault(tag.begin, []).append(tag)
             self.closing_tags.setdefault(tag.end,
                                          {}).setdefault(tag.begin,
                                                         {})[tag.name] = True
-        for (k,v) in self.opening_tags.items():
+        for (k, v) in self.opening_tags.items():
             self.opening_tags[k].sort()
 
     def index_events(self):
@@ -363,16 +368,16 @@ class TagRepository:
                 self.eid2event[tag.attrs[EIID]] = tag
 
     def index_timexes(self):
-        # TODO: merge with ei2events and create id2tag, assumes all tags have ids
-        # and they are unique
+        # TODO: merge with ei2events and create id2tag, assumes all tags have
+        # ids and they are unique
         self.tid2timex = {}
         for tag in self.tags:
             if tag.name == TIMEX:
                 self.tid2timex[tag.attrs[TID]] = tag
 
     def find_tags(self, name, begin=None, end=None):
-        """Return all tags of this name. If the optional begin and end are given only
-        return the tags that fall within those boundaries."""
+        """Return all tags of this name. If the optional begin and end are given
+        only return the tags that fall within those boundaries."""
         tags = sorted([t for t in self.tags if t.name == name])
         if begin is not None and end is not None:
             tags = [t for t in tags if begin <= t.begin and t.end <= end]
@@ -415,12 +420,14 @@ class TagRepository:
         # print; self.pp_closing_tags()
 
     def pp_tags(self, indent=''):
-        for tag in self.tags: print "%s%s" % (indent, tag)
+        for tag in self.tags:
+            print "%s%s" % (indent, tag)
 
     def pp_opening_tags(self):
         print '<TagRepository>.opening_tags'
         for offset, list in sorted(self.opening_tags.items()):
-            print "   %d " % offset, "\n         ".join([x.__str__() for x in list])
+            print("   %d "
+                  % offset, "\n         ".join([x.__str__() for x in list]))
 
     def pp_closing_tags(self):
         print '<TagRepository>.closing_tags'
@@ -447,7 +454,7 @@ class Tag:
         self.attrs = attrs
 
     def __str__(self):
-        attrs = ''.join([" %s='%s'" % (k,v) for k,v in self.attrs.items()])
+        attrs = ''.join([" %s='%s'" % (k, v) for k, v in self.attrs.items()])
         return "<Tag %s id=%s %s:%s {%s }>" % \
                (self.name, self.id, self.begin, self.end, attrs)
 
@@ -457,15 +464,19 @@ class Tag:
         equal begins the tag with the higher end will be ranked first. Tags with
         no begin (that is, it is set to -1) will be ordered at the end. The
         order of two tags with the same begin and end is undefined."""
-        if self.begin == -1: return 1
-        if other.begin == -1: return -1
+        if self.begin == -1:
+            return 1
+        if other.begin == -1:
+            return -1
         begin_cmp = cmp(self.begin, other.begin)
-        end_cmp =  cmp(other.end, self.end)
+        end_cmp = cmp(other.end, self.end)
         return end_cmp if begin_cmp == 0 else begin_cmp
 
-    def is_opening_tag(self): return False
+    def is_opening_tag(self):
+        return False
 
-    def is_closing_tag(self): return False
+    def is_closing_tag(self):
+        return False
 
     def as_ttk_tag(self):
         """Return the tag as a tag in the Tarsqi output format."""
@@ -486,7 +497,7 @@ class Tag:
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
-        attrs = ["%s=%s" % (k,quoteattr(v)) for (k,v) in self.attrs.items()]
+        attrs = ["%s=%s" % (k, quoteattr(v)) for (k, v) in self.attrs.items()]
         return '' if not attrs else ' ' + ' '.join(sorted(attrs))
 
 
@@ -522,4 +533,3 @@ class ClosingTag(Tag):
 
 class TarsqiInputError(Exception):
     pass
-

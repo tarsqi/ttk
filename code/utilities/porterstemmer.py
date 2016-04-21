@@ -5,7 +5,7 @@ from binsearch import binarySearchFile
 
 
 class Stemmer:
-    
+
     def __init__(self):
         self.exceptionsFile = open(STEM_EXCEPTIONS_FILE, 'r')
         self.porter = PorterStemmer()
@@ -18,7 +18,7 @@ class Stemmer:
             (form, stem, porterstem) = line.split()
             return stem
         else:
-            return self.porter.stem(key, 0, len(key)-1)
+            return self.porter.stem(key, 0, len(key) - 1)
 
 
 class PorterStemmer:
@@ -69,7 +69,8 @@ class PorterStemmer:
 
     def cons(self, i):
         """cons(i) is TRUE <=> b[i] is a consonant."""
-        if self.b[i] == 'a' or self.b[i] == 'e' or self.b[i] == 'i' or self.b[i] == 'o' or self.b[i] == 'u':
+        if self.b[i] == 'a' or self.b[i] == 'e' or self.b[i] == 'i' \
+                or self.b[i] == 'o' or self.b[i] == 'u':
             return 0
         if self.b[i] == 'y':
             if i == self.k0:
@@ -126,7 +127,7 @@ class PorterStemmer:
         """doublec(j) is TRUE <=> j,(j-1) contain a double consonant."""
         if j < (self.k0 + 1):
             return 0
-        if (self.b[j] != self.b[j-1]):
+        if (self.b[j] != self.b[j - 1]):
             return 0
         return self.cons(j)
 
@@ -138,7 +139,8 @@ class PorterStemmer:
            cav(e), lov(e), hop(e), crim(e), but
            snow, box, tray.
         """
-        if i < (self.k0 + 2) or not self.cons(i) or self.cons(i-1) or not self.cons(i-2):
+        if i < (self.k0 + 2) or not self.cons(i) or self.cons(i - 1) \
+                or not self.cons(i - 2):
             return 0
         ch = self.b[i]
         if ch == 'w' or ch == 'x' or ch == 'y':
@@ -148,19 +150,20 @@ class PorterStemmer:
     def ends(self, s):
         """ends(s) is TRUE <=> k0,...k ends with the string s."""
         length = len(s)
-        if s[length - 1] != self.b[self.k]: # tiny speed-up
+        if s[length - 1] != self.b[self.k]:  # tiny speed-up
             return 0
         if length > (self.k - self.k0 + 1):
             return 0
-        if self.b[self.k-length+1:self.k+1] != s:
+        if self.b[self.k - length + 1:self.k + 1] != s:
             return 0
         self.j = self.k - length
         return 1
 
     def setto(self, s):
-        """setto(s) sets (j+1),...k to the characters in the string s, readjusting k."""
+        """setto(s) sets (j+1),...k to the characters in the string s,
+        readjusting k."""
         length = len(s)
-        self.b = self.b[:self.j+1] + s + self.b[self.j+length+1:]
+        self.b = self.b[:self.j + 1] + s + self.b[self.j + length + 1:]
         self.k = self.j + length
 
     def r(self, s):
@@ -199,17 +202,17 @@ class PorterStemmer:
         self.k = j
         self.k0 = i
         if self.k <= self.k0 + 1:
-            return self.b # --DEPARTURE--
+            return self.b   # --DEPARTURE--
         # With this line, strings of length 1 or 2 don't go through the
         # stemming process, although no mention is made of this in the
         # published algorithm. Remove the line to match the published
         # algorithm.
 
         self.step1ab()
-        return self.b[self.k0:self.k+1]
+        return self.b[self.k0:self.k + 1]
 
 
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #    p = PorterStemmer()
 #    if len(sys.argv) > 1:
 #        for f in sys.argv[1:]:
