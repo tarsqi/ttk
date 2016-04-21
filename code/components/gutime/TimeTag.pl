@@ -6,6 +6,9 @@
 # Copyright 2001  The MITRE Corporation
 
 
+# Suppress warnings because I want nothing to do with debugging GUTime
+local $SIG{__WARN__} = sub{};
+
 ## Expecting POS tags of the form <lex pos="NN">dog</lex>
 ## Change this if you use a different name
 SetLexTagName("lex");
