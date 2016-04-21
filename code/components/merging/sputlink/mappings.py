@@ -58,7 +58,7 @@ RELMAPPING3 = {
 }
 
 
-def invert_interval_relations(relations):
+def invert_interval_relation(relations):
     """Take a disjunction of interval relations represented as a string,
     replace each disjunct with its inverse and return the result."""
     result = []

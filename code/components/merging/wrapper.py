@@ -53,18 +53,18 @@ class MergerWrapper:
         # TODO: this is where we need to order the tlinks
         cp.queue_constraints(self.tarsqidoc.tags.find_tags(TLINK))
         cp.propagate_constraints()
-        # cp.reduce_graph()
-        self.update_tarsqidoc(cp)
+        cp.reduce_graph()
+        self._update_tarsqidoc(cp)
 
-    def update_tarsqidoc(self, cp):
+    def _update_tarsqidoc(self, cp):
         self.tarsqidoc.remove_tlinks()
         for n1, rest in cp.graph.edges.items():
             for n2, edge in cp.graph.edges[n1].items():
                 if edge.constraint is not None:
                     if edge.constraint.has_simple_relation():
-                        self.add_edge(edge)
+                        self._add_edge(edge)
 
-    def add_edge(self, edge):
+    def _add_edge(self, edge):
         id1 = edge.node1
         id2 = edge.node2
         origin = edge.constraint.source

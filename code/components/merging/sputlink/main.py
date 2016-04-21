@@ -3,8 +3,7 @@ import os
 
 from graph import Graph
 from objects import Constraint
-from mappings import invert_timeml_relation
-from mappings import translate_timeml_relation
+from mappings import translate_timeml_relation, invert_interval_relation
 from utils import CompositionTable
 from utils import html_graph_prefix
 from library.timeMLspec import TLINK, EVENT, TIMEX, TID, EIID
@@ -23,12 +22,12 @@ COMPOSITIONS = os.path.join(TTK_ROOT, 'components', 'merging', 'sputlink',
 
 class ConstraintPropagator:
 
-    """Main SputLink class. Instance variables are:
+    """Main SputLink class. Instance variables:
 
-    - filename - a string
-    - graph - a Graph
-    - pending - a queue of links to be added
-    - compositions - a CompositionTable
+    filename      -  a string
+    graph         -  a Graph
+    pending       -  a queue of links to be added
+    compositions  -  a CompositionTable
 
     """
 
@@ -49,7 +48,6 @@ class ConstraintPropagator:
         """Take a list of tlinks, encoded as Tag elements, and add them to the
         pending queue as instances of Constraint."""
         for tlink in tlinks:
-            # if not tlink.attrs.has_key(RELTYPE):
             if RELTYPE not in tlink.attrs:
                 continue
             id1 = tlink.attrs.get(EVENT_INSTANCE_ID) \
@@ -57,9 +55,8 @@ class ConstraintPropagator:
             id2 = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE) \
                 or tlink.attrs[RELATED_TO_TIME]
             rel = translate_timeml_relation(tlink.attrs[RELTYPE])
-            rel_i = invert_timeml_relation(tlink.attrs[RELTYPE])
-            rel_i = translate_timeml_relation(rel_i)
-            # add the user constraint and its inverse, without the latter, even
+            rel_i = invert_interval_relation(rel)
+            # add the user constraint and its inverse; without the latter, even
             # when all user links are on one side of the graphs, we do not find
             # all new constraints (TODO: find out why)
             c1 = Constraint(id1, rel, id2, source='user', history=tlink)
@@ -78,11 +75,12 @@ class ConstraintPropagator:
         while self.pending:
             constraint = self.pending.pop(0)
             self.graph.propagate(constraint)
-            self._debug_print_constraint(constraint)
+            self._debug_print_cycle(constraint)
 
     def reduce_graph(self):
         """Ask the graph to reduce itself."""
         self.graph.reduce()
+        self._debug_print_cycle("Graph reduction")
 
     def _debug_init_cycles_file(self):
         if DEBUG:
@@ -91,16 +89,16 @@ class ConstraintPropagator:
             self.cycles_fh = open(cycles_file, 'w')
             html_graph_prefix(self.cycles_fh)
 
-    def _debug_print_compositions_file(self):
-        if DEBUG:
-            tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
-            comp_file = os.path.join(tmp_dir, 'compositions.html')
-            self.compositions.pp(comp_file)
-
-    def _debug_print_constraint(self, constraint):
+    def _debug_print_cycle(self, constraint=None):
         if DEBUG:
             fname = "cycle-%02d.html" % self.graph.cycle
             self.cycles_fh.write("<p>Cycle %s - <b>%s</b></p>\n"
                                  % (self.graph.cycle, constraint))
             graph_file = os.path.join(TTK_ROOT, 'data', 'tmp', fname)
-            self.graph.pp(filehandle=self.cycles_fh)
+            self.graph.pp_html(filehandle=self.cycles_fh)
+
+    def _debug_print_compositions_file(self):
+        if DEBUG:
+            tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
+            comp_file = os.path.join(tmp_dir, 'compositions.html')
+            self.compositions.pp(comp_file)

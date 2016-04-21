@@ -53,9 +53,13 @@ class Node:
         self.edges_in = {}
         self.edges_out = {}
 
+    def __str__(self):
+        """Returns string in "<Node id text>" format."""
+        return "<Node %s '%s'>" % (self.id, self.text)
+
     def pretty_print(self):
-        """Print the node with its edges_in and edges_out attributes to
-        standard output."""
+        """Print the node with its edges_in and edges_out attributes to standard
+        output."""
         print "\n", self
         e_in = self.edges_in.keys()
         e_out = self.edges_out.keys()
@@ -63,10 +67,6 @@ class Node:
         e_out.sort(compare_id)
         print "  i [%s]" % (' '.join(e_in))
         print "  o [%s]" % (' '.join(e_out))
-
-    def __str__(self):
-        """Return a string in [self.id] format."""
-        return "<Node %s '%s'>" % (self.id, self.text)
 
 
 class Edge:
@@ -123,59 +123,9 @@ class Edge:
         del node1.edges_out[self.node2]
         del node2.edges_in[self.node1]
 
-
-    def is_derivable(self):
-
-        """Returns True if the constraint on the edge can be derived from
-        other constraints, returns False otherwise."""
-
-        if self.constraint.source == 'closure':
-            return True
-
-        # Get all the nodes k such that Edge(n1,k) and Edge(k,n2)
-        n1 = self.get_node1()
-        n2 = self.get_node2()
-        intersection = intersect_lists(n1.edges_out.keys(), n2.edges_in.keys())
-
-        debug = True
-        debug = False
-        if debug:
-            print
-            print self
-            n1.pretty_print()
-            n2.pretty_print()
-            # intersection.sort(compare_id)
-            print "\n  Intersection: [%s]\n" % ' '.join(intersection)
-
-        # For all nodes k, get the composition of c(n1,k) with c(k,n2)
-        aggregate_intersection = None
-        for k in intersection:
-            c_n1_k = self.graph.edges[self.node1][k].constraint
-            c_k_n2 = self.graph.edges[k][self.node2].constraint
-            composition = self.graph.compositions.compose_rels(c_n1_k.relset,
-                                                               c_k_n2.relset)
-            if debug:
-                print "  %s + %s = %s" % (c_n1_k, c_k_n2, composition)
-            if composition == self.relset:
-                if debug:
-                    print "  DERIVABLE FROM ONE COMPOSITION"
-                return True
-            else:
-                aggregate_intersection = \
-                    intersect_relations(aggregate_intersection,
-                                        composition)
-                if debug:
-                    print "  aggregate: %s" % aggregate_intersection
-                if aggregate_intersection == self.relset:
-                    if debug:
-                        print "  DERIVABLE FROM AGGREGATE COMPOSITION"
-                    return True
-            # Get the intersection of all compositions
-
-        # If this intersection is equal to the constraint c(n1,n2),
-        # then c(n1,n2) is derivable
-
-        return False
+    def is_derived(self):
+        """Returns True if the constraint on the edge was derived by closure."""
+        return self.constraint.source not in ('user', 'user-inverted')
 
 
 class Constraint:

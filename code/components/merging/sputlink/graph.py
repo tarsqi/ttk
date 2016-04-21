@@ -1,8 +1,20 @@
+"""
+
+Implements the Graph object which is used by the ConstraintPropagator.
+
+It is here where Allen's constraint propagation algorithm is implemented.
+
+"""
+
+# TODO: I am not convinced that the history mechanism is very good, yet it seems
+# to be sufficient for our current purposes.
+
+
 from objects import Node, Edge, Constraint
 from utils import intersect_relations
 from utils import compare_id
 from utils import html_graph_prefix
-from mappings import invert_interval_relations
+from mappings import invert_interval_relation
 from mappings import abbreviate_convex_relation
 from library.timeMLspec import EID, EVENTID
 from utilities import logger
@@ -15,18 +27,18 @@ class Graph:
 
     """Implements the graph object used in the constraint propagation algorithm.
 
-    Instance variable:
-       file - the name of the source file
-       cycle - an integer
-       queue - a list of Constraints
-       nodes - a hash of Nodes, indexed on node identifiers
-       edges - a hashs of hashes of Edges, indexed on node identifiers
-       compositions - a CompositionTable
+    Instance variables:
+       filename      -  the name of the source file
+       cycle         -  an integer
+       queue         -  a list of Constraints
+       nodes         -  a hash of Nodes, indexed on node identifiers
+       edges         -  a hash of hashes of Edges, indexed on node identifiers
+       compositions  -  a CompositionTable
     """
 
     def __init__(self, filename, compositions):
-        """Initialize an empty graph, with empty queue, node list and edges
-        hash."""
+        """Initialize an empty graph, with empty queue, nodes dictionary and
+        edges dictionary."""
         self.filename = filename
         self.compositions = compositions
         self.cycle = 0
@@ -51,12 +63,12 @@ class Graph:
     def propagate(self, constraint):
         """Propagate the constraint through the graph, using Allen's
         constraint propagation algorithm."""
-        # guard against garbage constraints in the pending queue by simply
-        # skipping them
         self.cycle += 1
         if constraint.is_garbage():
+            # guard against garbage constraints in the pending queue by simply
+            # skipping them
             return
-        self.added = [] # to keep track of what is added this cycle
+        self.added = []  # to keep track of what is added this cycle
         self.queue.append(constraint)
         debug(str="\n%d  %s\n" % (self.cycle, constraint))
         while self.queue:
@@ -69,105 +81,63 @@ class Graph:
                                                                  constraint_i_j)
             if status == 'INTERSECTION-IS-MORE-SPECIFIC':
                 self.added.append(constraint_i_j)
-                self.update_constraint(edge_i_j, constraint_i_j, intersection)
+                self._update_constraint(edge_i_j, constraint_i_j, intersection)
 
+    def reduce(self):
+        """Reduce the grap to one that does not contain any relations derived by
+        closure. This does not get you a graph with the original annotations
+        because some might have been removed due to inconsistencies."""
+        # TODO: we may consider removing inverse relations and relations that
+        # could be derived from other relations
+        self.cycle += 1
+        self.added = []
+        self._remove_derived_relations()
 
-    def update_constraint(self, edge_i_j, constraint_i_j, intersection):
+    def remove_node(self, node_id):
+        """Remove a node from the graph. Involves removing the node from the
+        nodes hash, removing the node's column and row in the edges array and
+        removing the node from edges_in and edges_out attributes of other
+        nodes. This is not being used right now."""
+        node = self.nodes[node_id]
+        # remove from other nodes
+        for node_in_id in node.edges_in.keys():
+            del self.nodes[node_in_id].edges_out[node_id]
+        for node_out_id in node.edges_out.keys():
+            del self.nodes[node_out_id].edges_in[node_id]
+        # remove from nodes hash
+        del self.nodes[node_id]
+        # remove from edges hash
+        del self.edges[node_id]
+        for other_node_id in self.edges.keys():
+            del self.edges[other_node_id][node_id]
 
-        # instantiate the constraint on its edge, note that the
-        # history of the constraint may be a bit screwed up
-        # because we do not keep track of whether constraint_i_j
-        # changed due to the intersection
+    def _update_constraint(self, edge_i_j, constraint_i_j, intersection):
+        """Update a constraint by setting its relation set to the intersection
+        and then add it to the edge. Once you have done that you need to check
+        whether this constraint then puts further constraints on incoming edges
+        to node i and outgoing edges from node j."""
         constraint_i_j.relset = intersection
         self._add_constraint_to_edge(constraint_i_j, edge_i_j)
-
-        # get the nodes from the edge and add the nodes to each
-        # others edges_in and edges_out attributes
         node_i = constraint_i_j.get_node1()
         node_j = constraint_i_j.get_node2()
         node_i.edges_out[constraint_i_j.node2] = edge_i_j
         node_j.edges_in[constraint_i_j.node1] = edge_i_j
+        self._check_all_k_i_j(node_i, node_j, edge_i_j)
+        self._check_all_i_j_k(node_i, node_j, edge_i_j)
 
-        # node_k --> node_i --> node_j
+    def _check_all_k_i_j(self, node_i, node_j, edge_i_j):
+        """Check the constraints on [node_k --> node_i --> node_j]."""
         debug(1, "CHECKING: X --> %s --> %s" % (node_i.id, node_j.id))
         for edge_k_i in node_i.edges_in.values():
             debug(2, "%s  *  %s" % (edge_k_i, edge_i_j))
             self._check_k_i_j(edge_k_i, edge_i_j, node_i, node_j)
 
-        # node_i --> node_j --> node_k
+    def _check_all_i_j_k(self, node_i, node_j, edge_i_j):
+        """Check the constriants on [node_i --> node_j --> node_k]."""
         debug(1, "CHECKING: %s --> %s --> X" % (node_i.id, node_j.id))
         for edge_j_k in node_j.edges_out.values():
             debug(2, "%s  *  %s" % (edge_i_j, edge_j_k))
             self._check_i_j_k(edge_i_j, edge_j_k, node_i, node_j)
-
-
-    def reduce(self):
-        """Create a minimal graph, removing disjunctions, normalizing
-        relations, removing all constraints that can be derived, and
-        collapsing equivalence classes."""
-        # TODO: this appears to have bugs
-        self.remove_node('ei1')
-        debug = False
-        filebase = 'data/graphs/' + self.filename.rstrip('xml').lstrip('data/')
-        if debug:
-            self.pp("%s" % filebase + '01.html')
-        self._remove_disjunctions()
-        if debug:
-            self.pp("%s" % filebase + '02.html')
-        self._remove_derivable_relations()
-        if debug:
-            self.pp("%s" % filebase + '03.html')
-        self._normalize_relations()
-        if debug:
-            self.pp("%s" % filebase + '04.html')
-        self._collapse_equivalence_classes()
-
-    def remove_node(self, id):
-        """Remove a node from the graph. Involves removing the node from the
-        nodes hash, removing the node's column and row in the edges array and
-        removing the node from edges_in and edges_out attributes of other nodes."""
-        node = self.nodes[id]
-        # remove from other nodes
-        for nodeid in node.edges_in.keys():
-            del self.nodes[nodeid].edges_out[id]
-        for nodeid in node.edges_out.keys():
-            del self.nodes[nodeid].edges_in[id]
-        # remove from nodes hash
-        del self.nodes[id]
-        # remove from edges hash
-        for nodeid in self.edges.keys():
-            del self.edges[nodeid][id]
-        del self.edges[id]
-
-    def _intersect_constraints(self, edge, constraint):
-        """Intersect the constraint that was just derived with the one already on the
-        edge. There are three cases: (1) the new constraint, if it is the one
-        originally handed to the propagate() function, introduces an
-        inconsistency; (2) the new constraint is identical to the one already
-        there and can be ignored; (3) the intersection of the new constraint
-        with the old constraint is the same as the old constraint; and (4) the
-        new constraint is more specific than the already existing
-        constraint. The method returns False in the first two cases and the
-        intersection in the last case."""
-        edge = self.edges[constraint.node1][constraint.node2]
-        new_relset = constraint.relset
-        existing_relset = edge.relset
-        intersection = intersect_relations(new_relset, existing_relset)
-        debug(2, "INTERSECT NEW {%s} WITH EXISTING {%s} --> {%s}"
-              % (constraint.relset, edge.relset, intersection))
-        if intersection == '':
-            status = 'INCONSISTENT'
-            logger.warn("Inconsistent new contraint: %s" % constraint)
-            logger.warn("Clashes with: [%s] (derived from %s)"
-                        % (edge.constraint, edge.constraint.history_string()))
-        elif new_relset == existing_relset:
-            status = 'NEW=EXISTING'
-        elif intersection == existing_relset:
-            status = 'INTERSECTION=EXISTING'
-        else:
-            status = 'INTERSECTION-IS-MORE-SPECIFIC'
-        debug(2, "STATUS: %s" % status)
-        return (status, intersection)
 
     def _check_k_i_j(self, edge_k_i, edge_i_j, node_i, node_j):
         """Look at the k->i->j subgraph and check whether the new constraint in
@@ -231,21 +201,49 @@ class Graph:
                                     history=(c1, c2))
         self.queue.append(new_constraint)
         debug(3, "ADD QUEUE  %s " % new_constraint)
-        add_inverted = True
         add_inverted = False
-        # Adding the inverted constraint should not be needed, except
-        # perhaps as a potential minor speed increase. As far I can
-        # see however, the method is actually slower when adding the
-        # inverse (about 20%), which is surprising. But the results
-        # are the same.
+        # Adding the inverted constraint should not be needed, except perhaps as
+        # a potential minor speed increase. As far I can see however, the method
+        # is actually slower when adding the inverse (about 20%), which is
+        # surprising. But the results are the same.
         if add_inverted:
-            relset = invert_interval_relations(relset)
+            relset = invert_interval_relation(relset)
             new_constraint2 = Constraint(edge.node2, relset, edge.node1,
                                          cycle=self.cycle,
                                          source='closure-inverted',
                                          history=(c1, c2))
             self.queue.append(new_constraint2)
             debug(3, "ADD QUEUE  %s " % new_constraint2)
+
+    def _intersect_constraints(self, edge, constraint):
+        """Intersect the constraint that was just derived with the one already
+        on the edge. There are three cases: (1) the new constraint, if it is the
+        one originally handed to the propagate() function, introduces an
+        inconsistency; (2) the new constraint is identical to the one already
+        there and can be ignored; (3) the intersection of the new constraint
+        with the old constraint is the same as the old constraint; and (4) the
+        new constraint is more specific than the already existing
+        constraint. The method returns False in the first two cases and the
+        intersection in the last case."""
+        edge = self.edges[constraint.node1][constraint.node2]
+        new_relset = constraint.relset
+        existing_relset = edge.relset
+        intersection = intersect_relations(new_relset, existing_relset)
+        debug(2, "INTERSECT NEW {%s} WITH EXISTING {%s} --> {%s}"
+              % (constraint.relset, edge.relset, intersection))
+        if intersection == '':
+            status = 'INCONSISTENT'
+            logger.warn("Inconsistent new contraint: %s" % constraint)
+            logger.warn("Clashes with: [%s] (derived from %s)"
+                        % (edge.constraint, edge.constraint.history_string()))
+        elif new_relset == existing_relset:
+            status = 'NEW=EXISTING'
+        elif intersection == existing_relset:
+            status = 'INTERSECTION=EXISTING'
+        else:
+            status = 'INTERSECTION-IS-MORE-SPECIFIC'
+        debug(2, "STATUS: %s" % status)
+        return (status, intersection)
 
     def _compose(self, object1, object2):
         """Return the composition of the relation sets on the two objects. One
@@ -258,8 +256,8 @@ class Graph:
 
     def _add_constraint_to_edge(self, constraint, edge):
         """This method links a constraints to its edge by retrieving the edge
-        from the graph, adding the constraint to this edge, and
-        setting the edge attribute on the constraint."""
+        from the graph, adding the constraint to this edge, and setting the edge
+        attribute on the constraint."""
         edge.add_constraint(constraint)
         constraint.edge = edge
 
@@ -278,35 +276,26 @@ class Graph:
         return edges
 
     def _remove_disjunctions(self):
-        """Remove all disjunctions from the graph."""
+        """Remove all disjunctions from the graph, not used now but may come in
+        handy later."""
         for edge in self.get_edges():
             if edge.constraint:
                 if edge.constraint.is_disjunction():
                     edge.remove_constraint()
 
+    def _remove_derived_relations(self):
+        """Remove all derived relations from the graph."""
+        for edge in self.get_edges():
+            if edge.is_derived():
+                edge.remove_constraint()
+
     def _normalize_relations(self):
-        """Remove all relations that are not in the set of normalized
-        relations."""
+        """Remove all relations that are not in the set of normalized relations,
+        not used now but may come in handy later."""
         for edge in self.get_edges():
             if edge.constraint:
                 if not edge.constraint.has_normalized_relation():
                     edge.remove_constraint()
-
-    def _remove_derivable_relations(self):
-        """First mark and then remove all constraints that can be derived."""
-        for edge in self.get_edges():
-            edge.remove = False
-            if edge.is_derivable():
-                edge.remove = True
-        for edge in self.get_edges():
-            if edge.remove:
-                edge.remove_constraint()
-
-    def _collapse_equivalence_classes(self):
-        equal_edges = []
-        for edge in self.get_edges():
-            if edge.relset == '=':
-                equal_edges.append(edge)
 
     def pp_nodes(self):
         """Print all nodes with their edges_in and edges_out attributes to
@@ -316,18 +305,28 @@ class Graph:
         for id in ids:
             self.nodes[id].pretty_print()
 
-    def pp(self, filename=None, filehandle=None, standalone=False):
+    def pp_html(self, filename=None, filehandle=None, standalone=False):
         """Print the graph to an HTML table in filename."""
         fh = open(filename, 'w') if filename else filehandle
         if standalone:
             html_graph_prefix(fh)
         fh.write("<table cellpadding=0 cellspacing=0 border=0>\n")
         fh.write("<tr><td>\n")
+        nodes = self.nodes.keys()
+        nodes.sort(compare_id)
+        self._html_nodes_table(fh, nodes)
+        fh.write("</td>\n\n")
+        fh.write("<td valign=top>\n")
+        self._html_added_table(fh)
+        fh.write("</td></tr>\n\n")
+        fh.write("</table>\n\n")
+        if standalone:
+            fh.write("</body>\n</html>\n\n")
+
+    def _html_nodes_table(self, fh, nodes):
         fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
         fh.write("\n<tr>\n\n")
         fh.write("  <td>&nbsp;\n\n")
-        nodes = self.nodes.keys()
-        nodes.sort(compare_id)
         for identifier in nodes:
             fh.write("  <td>%s\n" % identifier)
         for id1 in nodes:
@@ -350,8 +349,9 @@ class Graph:
                     # rel = '&nbsp;'
                 classes = " class=\"%s\"" % ' '.join(classes)
                 fh.write("  <td width=25pt%s>%s\n" % (classes, rel))
-        fh.write("</table></td>\n\n")
-        fh.write("<td valign=top>\n")
+        fh.write("</table>\n\n")
+
+    def _html_added_table(self, fh):
         fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
         if self.added:
             fh.write("<tr><td>added<td colspan=2>derived from\n")
@@ -368,10 +368,6 @@ class Graph:
             else:
                 fh.write("  <td colspan=2>&nbsp;\n")
         fh.write("</table>\n\n")
-        fh.write("</td></tr>\n\n")
-        fh.write("</table>\n\n")
-        if standalone:
-            fh.write("</body>\n</html>\n\n")
 
 
 def debug(indent=0, str=''):
