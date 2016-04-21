@@ -25,13 +25,17 @@ on temporal functions in postTempEx.pl.
 
 """
 
-import os, sys, subprocess, codecs
-from xml.dom.minidom import parse
+import os, sys, subprocess, codecs, StringIO
+from xml.dom.minidom import parse, parseString
 
 from library.tarsqi_constants import GUTIME
 from utilities import logger
 
 TTK_ROOT = os.environ['TTK_ROOT']
+
+# This variable determines whether GUTime is called using temporary files (the
+# old way) or using an input string.
+USE_TMP_FILES = False
 
 
 class GUTimeWrapper:
@@ -45,21 +49,42 @@ class GUTimeWrapper:
         self.DIR_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
 
     def process(self):
+        if USE_TMP_FILES:
+            self.process_using_files()
+        else:
+            self.process_using_string()
+
+    def process_using_files(self):
         """Create the input required by TimeTag.pl, call the Perl script and
         collect the TIMEX3 tags."""
         os.chdir(self.DIR_GUTIME)
         fin = os.path.join(self.DIR_DATA, "gut.in.xml")
         fout = os.path.join(self.DIR_DATA, "gut.out.xml")
         _create_gutime_input(self.document, fin)
-        _run_gutime(fin, fout)
-        _export_timex_tags(self.document, fout)
+        _run_gutime_on_file(fin, fout)
+        dom = parse(fout)
+        _export_timex_tags(self.document, dom)
+
+    def process_using_string(self):
+        """Create the input required by TimeTag.pl, call the Perl script and
+        collect the TIMEX3 tags."""
+        os.chdir(self.DIR_GUTIME)
+        string_buffer = _create_gutime_input(self.document)
+        result = _run_gutime_on_string(string_buffer.getvalue())
+        dom = parseString(result)
+        _export_timex_tags(self.document, dom)
 
 
-def _create_gutime_input(tarsqidoc, fname):
+def _create_gutime_input(tarsqidoc, fname=None):
     """Create input needed by GUTime (TimeTag.pl plus Tempex.pm). This method
     simply takes all sentences from the TarsqiDocument and relies on the
-    existence of s tags and lex tags."""
-    fh = codecs.open(fname, 'w', encoding='utf8')
+    existence of s tags and lex tags. If a file name is given than it will write
+    the GUTime input to the file, if not, it will use a string buffer, write to
+    it and then return it."""
+    if fname is not None:
+        fh = codecs.open(fname, 'w', encoding='utf8')
+    else:
+        fh = StringIO.StringIO()
     closing_s_needed = False
     fh.write("<DOC>\n")
     fh.write("<DATE>%s</DATE>\n" % tarsqidoc.metadata.get('dct'))
@@ -77,10 +102,23 @@ def _create_gutime_input(tarsqidoc, fname):
     if closing_s_needed:
         fh.write("</s>\n")
     fh.write("</DOC>\n")
+    return fh
 
 
-def _run_gutime(fin, fout):
-    """Run the GUTIME Perl script."""
+def _run_gutime_on_string(input_string):
+    """Run the GUTIME Perl script. This takes a string and returns a string."""
+    command = ["perl", "TimeTag.pl"]
+    pipe = subprocess.PIPE
+    p = subprocess.Popen(command, stdin=pipe, stdout=pipe, stderr=pipe)
+    (result, error) = p.communicate(input_string)
+    if error:
+        logger.error(error)
+    return result
+
+
+def _run_gutime_on_file(fin, fout):
+    """Run the GUTIME Perl script. Runs GUTime on an input file and creates an
+    output file."""
     command = "perl TimeTag.pl %s > %s" % (fin, fout)
     pipe = subprocess.PIPE
     close_fds = False if sys.platform == 'win32' else True
@@ -92,10 +130,9 @@ def _run_gutime(fin, fout):
         logger.warn(line)
 
 
-def _export_timex_tags(tarsqidoc, fname):
+def _export_timex_tags(tarsqidoc, dom):
     """Take the TIMEX3 tags from the GUTime output and add them to the tarsqi
-    tags dictionary."""
-    dom = parse(fname)
+    tags dictionary. The GUTime output is given as a DOM obect."""
     timexes = dom.getElementsByTagName('TIMEX3')
     for timex in timexes:
         lexes = timex.getElementsByTagName('lex')
