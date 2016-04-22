@@ -9,18 +9,11 @@ TODO:
 
 - Decide what we want to take from the output. We now take all non-disjunctive
   links. We could add the disjunctive links as well. Or we could not take
-  inverse relations. or we could reduce the graph to a minimal graph.
+  inverse relations. Or we could reduce the graph to a minimal graph.
 
 - We now give all links, but they are not ordered. For the merging routine to be
   fully effective we should rank the TLINKs in terms of how likely they are to
   be correct.
-
-- We now get link duplication because existing links are added again. Need to
-  remove all existing links from the TarsqiDocument before we add the new batch,
-  this is also needed because some of the original links may have deemed to be
-  inconsistent.
-
-- Write logger warnings when a link was not added due to inconsistencies.
 
 """
 
@@ -40,7 +33,7 @@ TTK_ROOT = os.environ['TTK_ROOT']
 
 class MergerWrapper:
 
-    """Wraps the merging code, which includes Sputlinks temporal closure code."""
+    """Wraps the merging code, including Sputlink's temporal closure code."""
 
     def __init__(self, document):
         self.component_name = LINK_MERGER
@@ -57,14 +50,17 @@ class MergerWrapper:
         self._update_tarsqidoc(cp)
 
     def _update_tarsqidoc(self, cp):
+        """Remove existing TLINKs from the TarsqiDocument and add new ones given
+        the final constraints in the graph used by the constraint propagator."""
         self.tarsqidoc.remove_tlinks()
         for n1, rest in cp.graph.edges.items():
             for n2, edge in cp.graph.edges[n1].items():
                 if edge.constraint is not None:
                     if edge.constraint.has_simple_relation():
-                        self._add_edge(edge)
+                        self._add_constraint_to_tarsqidoc(edge)
 
-    def _add_edge(self, edge):
+    def _add_constraint_to_tarsqidoc(self, edge):
+        """Add the constraint as a TLINK to the TarsqiDocument."""
         id1 = edge.node1
         id2 = edge.node2
         origin = edge.constraint.source
@@ -76,21 +72,23 @@ class MergerWrapper:
         else:
             attrs[RELTYPE] = translate_interval_relation(edge.constraint.relset)
             attrs[ORIGIN] = LINK_MERGER
-            if id1.startswith('t'):
-                attrs[TIME_ID] = id1
-            else:
-                attrs[EVENT_INSTANCE_ID] = id1
-            if id2.startswith('t'):
-                attrs[RELATED_TO_TIME] = id2
-            else:
-                attrs[RELATED_TO_EVENT_INSTANCE] = id2
+            attrs[tlink_arg1_attr(id1)] = id1
+            attrs[tlink_arg2_attr(id2)] = id2
         self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 
-def _get_graphfile_name(infile, identifier):
-    """Return a name for a graph file in the temporary data directory, based on the
-    infile name and an identifier string."""
-    filename = os.path.split(infile)[-1]
-    filename = "graph-%s" % os.path.splitext(filename)[-2]
-    return os.path.join(TTK_ROOT, 'data', 'tmp',
-                        "%s-%s.html" % (filename, identifier))
+def tlink_arg1_attr(identifier):
+    """Return the TLINK attribute for the element linked given the
+    identifier."""
+    return _arg_attr(identifier, TIME_ID, EVENT_INSTANCE_ID)
+
+
+def tlink_arg2_attr(identifier):
+    """Return the TLINK attribute for the element linked to given the
+    identifier."""
+    return _arg_attr(identifier, RELATED_TO_TIME, RELATED_TO_EVENT_INSTANCE)
+
+
+def _arg_attr(identifier, attr1, attr2):
+    """Helper method for tlink_arg{1,2}_attr that checks the identifier."""
+    return attr1 if identifier.startswith('t') else attr2

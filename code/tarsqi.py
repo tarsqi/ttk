@@ -2,9 +2,9 @@
 
 """Main script that drives all tarsqi toolkit processing.
 
-Low-level and source-specific processing is delegated to the docmodel package,
-which has access to an XML Parser and metadata processors. This script calls on
-preprocessing and tarsqi modules to do the real work.
+Source-specific processing is delegated to the docmodel package, which has
+access to source parsers and metadata parsers. This script also calls on
+various tarsqi modules to do the rest of the real work.
 
 USAGE
 

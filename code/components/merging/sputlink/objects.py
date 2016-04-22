@@ -16,12 +16,12 @@ class Node:
     """Implements the node objects of the graph.
 
     Instance variables:
-       id - an eiid or tid
-       text - string from the document
-       source - a Tag (or something else??)
-       source-type - 'timex', 'event', 'set'
-       edges_in - a hash indexed on node ids
-       edges_out - a hash indexed on node ids
+       id           -  an eiid, tid or other identifier
+       text         -  string from the document or empty string
+       source       -  a Tag or an identifier
+       source-type  -  'TIMEX3', 'EVENT', or 'IDENTIFIER'
+       edges_in     -  a hash indexed on node ids
+       edges_out    -  a hash indexed on node ids
 
     The source and source-type attributes encode what element or elements the
     Node was created from. If source-type is TIMEX or EVENT then source is a
@@ -37,19 +37,14 @@ class Node:
 
     """
 
-    def __init__(self, timex=None, event=None):
-        """Initialize from a timex or from an event-instance pair, using tid
-        or eiid. Set edges_in and edges_out to the empty hash."""
-        if timex:
-            self.id = timex.attrs[TID]
-            self.text = timex.attrs[VALUE]
-            self.source = timex
-            self.source_type = TIMEX
-        elif event:
-            self.id = event.attrs[EIID]
-            self.text = event.attrs[FORM]
-            self.source = event
-            self.source_type = EVENT
+    def __init__(self, source, identifier, source_type, text):
+        """Initialize from a timex, an event or simply an identifier, using tid,
+        eiid or the identifier for the node identifier. Set edges_in and
+        edges_out to the empty hash."""
+        self.source = source
+        self.source_type = source_type
+        self.id = identifier
+        self.text = text
         self.edges_in = {}
         self.edges_out = {}
 
@@ -74,13 +69,13 @@ class Edge:
     """Implements the edges of the graph.
 
     Instance variables:
-       id - concatenation of node ids
-       node1 - an eiid or tid
-       node2 - an eiid or tid
-       graph - the Graph the edge is in
-       constraint - None or the current Constraint on the edge
-       relset - None or the value of constraint.relset
-       constraints - history of Constraints, a list
+       id           -  the node identifier
+       node1        -  an eiid, tid or other identifier
+       node2        -  an eiid, tid or other identifier
+       graph        -  the Graph the edge is in
+       constraint   -  None or the current Constraint on the edge
+       relset       -  None or the value of constraint.relset
+       constraints  -  history of Constraints, a list
     """
 
     def __init__(self, n1, n2, graph):

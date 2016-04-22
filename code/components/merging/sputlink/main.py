@@ -31,18 +31,21 @@ class ConstraintPropagator:
 
     """
 
-    def __init__(self, tarsqidoc):
-        """Read the compositions table and export the compositions to the
-        graph. Read the TimeML file and send the events and timexes to the
-        graph, then use the tlinks to build the pending queue."""
-        self.filename = tarsqidoc.source.filename
+    def __init__(self, tarsqidoc=None, constraints=None):
+        """Read the compositions table, export the compositions to the graph,
+        and add nodes to the graph. Either tarsqidoc or constraints has to be
+        not None."""
         self.compositions = CompositionTable(COMPOSITIONS)
-        self.graph = Graph(self.filename, self.compositions)
+        self.graph = Graph(self.compositions)
         self.pending = []
         self._debug_init_cycles_file()
         self._debug_print_compositions_file()
-        self.graph.add_nodes(tarsqidoc.tags.find_tags(EVENT),
-                             tarsqidoc.tags.find_tags(TIMEX))
+        if tarsqidoc is not None:
+            self.graph.add_nodes(tarsqidoc.tags.find_tags(EVENT), EVENT)
+            self.graph.add_nodes(tarsqidoc.tags.find_tags(TIMEX), TIMEX)
+        else:
+            nodes = [c[0] for c in constraints] + [c[2] for c in constraints]
+            self.graph.add_nodes(set(nodes), 'IDENTIFIER')
 
     def queue_constraints(self, tlinks):
         """Take a list of tlinks, encoded as Tag elements, and add them to the
@@ -63,13 +66,22 @@ class ConstraintPropagator:
             c2 = Constraint(id2, rel_i, id1, source='user-inverted', history=c1)
             self.pending.extend([c1, c2])
 
+    def queue_test_constraints(self, constraints):
+        """Take a list of test constrains, encoded as tuples, and add them to
+        the pending queue as instances of Constraint. Same as above, but now
+        used for testing."""
+        for (n1, rel, n2) in constraints:
+            rel_i = invert_interval_relation(rel)
+            c1 = Constraint(n1, rel, n2, source='user')
+            c2 = Constraint(n2, rel_i, n1, source='user-inverted')
+            self.pending.extend([c1, c2])
+
     def reset(self):
-        """Reset the file, graph and pending instance variables."""
-        self.filename = None
+        """Reset the graph and pending instance variables."""
         self.graph = Graph()
         self.pending = []
 
-    def propagate_constraints(self, force=False, threshold=0):
+    def propagate_constraints(self):
         """Get all constraints from the pending queue and ask the graph to propagate
         them one by one."""
         while self.pending:
@@ -77,12 +89,24 @@ class ConstraintPropagator:
             self.graph.propagate(constraint)
             self._debug_print_cycle(constraint)
 
+    def collect_edges(self):
+        return self.graph.get_edges()
+
     def reduce_graph(self):
         """Ask the graph to reduce itself."""
         self.graph.reduce()
         self._debug_print_cycle("Graph reduction")
 
+    def close_cycle_debug_file(self):
+        """This is useful if you run the tests while debugging is on. Without it
+        the cycles file may contain partially overwritten older cycles."""
+        # TODO: I am not sure why this happens though since I open a file in w
+        # mode at the beginning of each test.
+        if self.cycles_fh is not None:
+            self.cycles_fh.close()
+
     def _debug_init_cycles_file(self):
+        self.cycles_fh = None
         if DEBUG:
             tmp_dir = os.path.join(TTK_ROOT, 'data', 'tmp')
             cycles_file = os.path.join(tmp_dir, 'cycles.html')

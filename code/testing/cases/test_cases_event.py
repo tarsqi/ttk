@@ -36,9 +36,9 @@ EVENT_TESTS = [
     ('COMPLEX-would-have-to-move', "All Arabs would have to move behind Iraq.", 16, 20, None),
 
     # some tests to see if chunking was okay
-    ('VBG-also-coming-home', "They are also coming home.", 14, 20), 
-    ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 9, 15), 
-    ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 16, 25, None), 
+    ('VBG-also-coming-home', "They are also coming home.", 14, 20),
+    ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 9, 15),
+    ('VBG-expect-punishing-strikes', "They can expect punishing air strikes.", 16, 25, None),
 
     # need case for MODAL
 
@@ -67,7 +67,7 @@ EVENT_TESTS = [
     ('CONTINUE-ADJ-1', "The earnings continued to be excellent.", 13, 22),
 
     ('CONTINUE-ADJ-2', "The economic embargo on materials continued unabated.",
-     34, 43,('class', 'ASPECTUAL'), ('tense', 'PAST'), ('aspect', 'NONE')),
+     34, 43, ('class', 'ASPECTUAL'), ('tense', 'PAST'), ('aspect', 'NONE')),
 
     ('CONTINUE-ADJ-3', "The economic embargo on materials continued unabated.",
      44, 52, ('class', 'STATE'), ('tense', 'NONE'), ('aspect', 'NONE')),
@@ -81,17 +81,18 @@ EVENT_TESTS = [
 
     ('GOING-TO-1', "We are going to maintain our forces in the region.", 7, 12, None),
 
-    ('GOING-TO-2', "We are going to maintain our forces in the region.", 16, 24), # FUTURE
+    ('GOING-TO-2', "We are going to maintain our forces in the region.", 16, 24),  # FUTURE
 
     ('HAVE-1-1', "All Arabs would have to move behind Iraq.", 16, 20, None),
 
-    ('HAVE-1-2', "All Arabs would have to move behind Iraq.", 24, 28, ('modality', 'would have to')),
+    ('HAVE-1-2', "All Arabs would have to move behind Iraq.",
+     24, 28, ('modality', 'would have to')),
 
     ('HAVE-2-1', "The Iraqi leadership did not have a rational approach.", 29, 33),
 
-    ('KEEP-1', "The stocks they keep on hand to sell investors.", 16, 20), # ASPECTUAL
+    ('KEEP-1', "The stocks they keep on hand to sell investors.", 16, 20),  # ASPECTUAL
 
-    ('KEEP-2', "They intend to keep interest rates unchanged.", 15, 19), # ASPECTUAL
+    ('KEEP-2', "They intend to keep interest rates unchanged.", 15, 19),  # ASPECTUAL
 
-    ('KEEP-3', "They intend to keep interest rates unchanged.", 35, 44), # STATE
+    ('KEEP-3', "They intend to keep interest rates unchanged.", 35, 44),  # STATE
 ]

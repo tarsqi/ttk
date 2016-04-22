@@ -16,7 +16,8 @@ from utils import compare_id
 from utils import html_graph_prefix
 from mappings import invert_interval_relation
 from mappings import abbreviate_convex_relation
-from library.timeMLspec import EID, EVENTID
+from library.timeMLspec import EVENT, TIMEX
+from library.timeMLspec import EID, EIID, TID, EVENTID, VALUE, FORM
 from utilities import logger
 
 DEBUG = True
@@ -36,10 +37,9 @@ class Graph:
        compositions  -  a CompositionTable
     """
 
-    def __init__(self, filename, compositions):
+    def __init__(self, compositions):
         """Initialize an empty graph, with empty queue, nodes dictionary and
         edges dictionary."""
-        self.filename = filename
         self.compositions = compositions
         self.cycle = 0
         self.queue = []
@@ -54,6 +54,27 @@ class Graph:
             self.nodes[node.id] = node
         for event in events:
             node = Node(event=event)
+            self.nodes[node.id] = node
+        for n1 in self.nodes.keys():
+            self.edges[n1] = {}
+            for n2 in self.nodes.keys():
+                self.edges[n1][n2] = Edge(n1, n2, self)
+
+    def add_nodes(self, sources, source_type):
+        """Creates Nodes for each source and add them to the nodes table. Also
+        initializes the edges table now that all nodes are known. A source is
+        either an event or timex tag or simply an identifier."""
+        for source in sources:
+            if source_type == 'IDENTIFIER':
+                identifier = source
+                text = ''
+            elif source_type == TIMEX:
+                identifier = source.attrs[TID]
+                text = source.attrs[VALUE]
+            elif source_type == EVENT:
+                identifier = source.attrs[EIID]
+                text = source.attrs[FORM]
+            node = Node(source, identifier, source_type, text)
             self.nodes[node.id] = node
         for n1 in self.nodes.keys():
             self.edges[n1] = {}
