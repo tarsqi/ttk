@@ -18,6 +18,7 @@ import components.blinker.main
 import components.blinker.wrapper
 
 import components.classifier.wrapper
+import components.classifier.vectors
 
 import components.common_modules.chunks
 import components.common_modules.component
@@ -74,6 +75,7 @@ MODULES = [
     components.blinker.wrapper,
 
     components.classifier.wrapper,
+    components.classifier.vectors,
 
     components.common_modules.chunks,
     components.common_modules.component,

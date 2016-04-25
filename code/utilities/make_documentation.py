@@ -6,11 +6,16 @@ using the modules listed in modules.py.
 This code was written because pydoc breaks on some of the tarsqi modules, most
 notably those that import the treetagger.
 
-NOTES:
+TODO:
 
-    - code creates potentially undesired documentation for the module
-      components.preprocessing.wrapper, adding a couple of module-level functions that are
-      not in the code, but are imported functions.
+- the code does not deal with class methods, see for example TagId in
+  components.preprocessing.wrapper.
+
+- At some point the code created potentially undesired documentation for the
+  module components.preprocessing.wrapper, adding a couple of module-level
+  functions that are not in the code, but are imported functions. This has
+  seized to be the case for that module, but this did not happen through an
+  intentional change on my end.
 
 """
 
@@ -18,7 +23,7 @@ NOTES:
 import os
 import sys
 import inspect
-from types import ClassType, FunctionType, MethodType
+from types import ClassType, FunctionType, MethodType, TypeType
 
 from modules import MODULES
 
@@ -39,7 +44,8 @@ javascript_code = """<script language="JavaScript" type="text/JavaScript">
 <!--
 function view_code(id) {
   var newurl = "../functions/" + id + ".html";
-  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
   w.xopener = window;
 }
 //-->
@@ -51,14 +57,17 @@ FUNCTION_ID = 0
 
 def print_module_documentation(module):
     print module.__name__
-    filename = os.path.join(DOCUMENTATION_DIR, 'modules', module.__name__ + '.html')
+    filename = os.path.join(DOCUMENTATION_DIR, 'modules',
+                            module.__name__ + '.html')
     docfile = open(filename, 'w')
     docfile.write("<html>\n<head>\n")
-    docfile.write('<link href="../css/module.css" rel="stylesheet" type="text/css">' + "\n")
+    docfile.write('<link href="../css/module.css"' +
+                  ' rel="stylesheet" type="text/css">' + "\n")
     docfile.write(javascript_code)
     docfile.write("</head>\n<body>\n")
     docfile.write('<a href=../index.html>index</a>' + "\n\n")
-    docfile.write('<div class="title">module ' + module.__name__ + "</div>\n\n")
+    docfile.write('<div class="title">module ' +
+                  module.__name__ + "</div>\n\n")
     module_classes = get_classes(module)
     if module_classes:
         docfile.write("<pre>\n")
@@ -83,8 +92,11 @@ def print_class_documentation(docfile, classes):
         for base_class in class_object.__bases__:
             (module_name, class_name) = get_module_and_class_name(base_class)
             ref = module_name + '.html#' + class_name
-            docfile.write("<strong>Inherits from: <a href=%s>%s</a></strong>\n" %
-                          (ref, str(base_class)))
+            if module_name == '__builtin__':
+                href = class_name
+            else:
+                href = "<a href=%s>%s</a></strong>" % (ref, class_name)
+            docfile.write("<strong>Inherits from: %s</strong>\n" % href)
         if docstring:
             docfile.write("\n" + docstring)
         docfile.write("</pre>\n\n")
@@ -117,8 +129,11 @@ def print_function_documentation(docfile, functions):
 def get_classes(module):
     classes = []
     for (key, val) in module.__dict__.items():
-        if type(val) == ClassType:
-            if val.__dict__['__module__'] == module.__name__:
+        if type(val) in (ClassType, TypeType):
+            # ignore those that do not have the right module mentioned in their
+            # dictionary, this also gets rid of things like ListType, which do
+            # not have a value for __module__
+            if val.__dict__.get('__module__') == module.__name__:
                 classes.append(val)
     classes.sort(lambda x, y: cmp(str(x), str(y)))
     return classes
@@ -224,11 +239,7 @@ def protect(docstring):
 
 
 def get_module_and_class_name(base_class):
-    class_string = str(base_class)
-    components = class_string.split('.')
-    module_name = '.'.join(components[:-1])
-    class_name = components[-1]
-    return (module_name, class_name)
+    return (base_class.__module__, base_class.__name__)
 
 
 def trim(docstring, linenum=1):
