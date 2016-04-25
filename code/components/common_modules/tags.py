@@ -6,8 +6,9 @@ Contains classes for TimeML tags.
 
 
 from library.timeMLspec import EVENT, TIMEX, ALINK, SLINK, TLINK
-from library.timeMLspec import EID, EIID, EVENTID
-from library.timeMLspec import CLASS, TENSE, ASPECT, EPOS, MOD, POL, FORM, STEM, POS
+from library.timeMLspec import TID, EID, EIID, EVENTID
+from library.timeMLspec import CLASS, TENSE, ASPECT
+from library.timeMLspec import EPOS, MOD, POL, FORM, STEM, POS
 from components.common_modules.constituent import Constituent
 from utilities import logger
 
@@ -17,16 +18,16 @@ class Tag(Constituent):
     """Abstract class for all TimeML non-link tags."""
 
     def createEvent(self):
-        """Do nothing when an EventTag or TimexTag is asked to create an event. Without
-        this method the method with the same name on Constituent would log a warning."""
+        """Do nothing when an EventTag or TimexTag is asked to create an
+        event. Without this method the method with the same name on Constituent
+        would log a warning."""
         pass
-
 
 
 class EventTag(Tag):
 
     """Class for TimeML EVENT tags."""
-    
+
     def __init__(self, attrs):
         Constituent.__init__(self)
         self.name = EVENT
@@ -37,7 +38,7 @@ class EventTag(Tag):
         self.token = None
 
     def __str__(self):
-        return "<EventTag name=%s eid=%s>" % (self.name, self.eid)
+        return "<EventTag %d:%d eid=%s>" % (self.begin, self.end, self.eid)
 
     def feature_value(self, name):
         # TODO: can probably use the local attrs dictionary for many of these
@@ -59,7 +60,7 @@ class EventTag(Tag):
             except:
                 # I don't remember whether POS has a particular use here
                 # or is a left over from prior times
-                logger.warn("Returning 'epos' instead of 'pos' value")  
+                logger.warn("Returning 'epos' instead of 'pos' value")
                 return self.tree.events[self.eid][EPOS]
         else:
             raise AttributeError, name
@@ -74,9 +75,11 @@ class EventTag(Tag):
         return True
 
     def pretty_print(self, indent=0):
-        (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'), self.attrs.get('class'))
+        (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'),
+                           self.attrs.get('class'))
         print "%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
-            (indent * ' ', self.name, self.position, self.begin, self.end, eid, eiid, cl)
+            (indent * ' ', self.name, self.position, self.begin, self.end,
+             eid, eiid, cl)
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
@@ -88,6 +91,9 @@ class TimexTag(Tag):
         self.name = TIMEX
         self.attrs = attrs
         self.checkedEvents = False
+
+    def __str__(self):
+        return "<TimexTag %d:%d tid=%s>" % (self.begin, self.end, self.attrs[TID])
 
     def feature_value(self, name):
         if name == 'eventStatus':
@@ -106,16 +112,17 @@ class TimexTag(Tag):
     def pretty_print(self, indent=0):
         print "%s<%s tid=%s type=%s value=%s>" % \
             (indent * ' ', self.name, self.attrs.get('tid'),
-             self.attrs.get('type'), self.attrs.get('value') )
+             self.attrs.get('type'), self.attrs.get('value'))
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
 
 class LinkTag():
 
-    """Abstract class for all TimeML link tags. LinkTags are not constituents since
-    they are never inserted in the hierarchical structure of a TarsqiTree, but they
-    are added to lists of links in alink_list, slink_list and tlink_list.
+    """Abstract class for all TimeML link tags. LinkTags are not constituents
+    since they are never inserted in the hierarchical structure of a TarsqiTree,
+    but they are added to lists of links in alink_list, slink_list and
+    tlink_list.
 
     Instance variables
        name  - a string ('ALINK', 'SLINK' or 'TLINK')
@@ -127,7 +134,8 @@ class LinkTag():
         self.attrs = attrs
 
     def __str__(self):
-        return "<%s %s %s %s>" % (self.name, self.rel(), self.eiid1(), self.eiid2())
+        return "<%s %s %s %s>" % (self.name, self.rel(),
+                                  self.eiid1(), self.eiid2())
 
     def rel(self):
         return self.attrs.get('relType')

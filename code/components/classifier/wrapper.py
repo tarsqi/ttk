@@ -40,24 +40,23 @@ class ClassifierWrapper:
         os.chdir(self.DIR_CLASSIFIER)
         ee_model = os.path.join('data', 'op.e-e.model')
         et_model = os.path.join('data', 'op.e-t.model')
-        for (i, element) in enumerate(self.document.elements):
-            ee_vectors = os.path.join(self.DIR_DATA, "frag%03d.cla.EE" % i)
-            et_vectors = os.path.join(self.DIR_DATA, "frag%03d.cla.ET" % i)
-            ee_results = ee_vectors + '.REL'
-            et_results = et_vectors + '.REL'
-            vectors.create_vectors(element, ee_vectors, et_vectors)
-            commands = [
-                "./%s -input %s -model %s -output %s > class.log" %
-                (self.executable, ee_vectors, ee_model, ee_results),
-                "./%s -input %s -model %s -output %s > class.log" %
-                (self.executable, et_vectors, et_model, et_results) ]
-            for command in commands:
-                os.system(command)
-            self._add_links(element,
-                            ee_vectors, et_vectors,
-                            ee_results, et_results)
+        ee_vectors = os.path.join(self.DIR_DATA, "vectors.EE")
+        et_vectors = os.path.join(self.DIR_DATA, "vectors.ET")
+        ee_results = ee_vectors + '.REL'
+        et_results = et_vectors + '.REL'
+        vectors.create_tarsqidoc_vectors(self.document, ee_vectors, et_vectors)
+        commands = [
+            "./%s -input %s -model %s -output %s > class.log" %
+            (self.executable, ee_vectors, ee_model, ee_results),
+            "./%s -input %s -model %s -output %s > class.log" %
+            (self.executable, et_vectors, et_model, et_results)]
+        exit()
+        for command in commands:
+            os.system(command)
+        self._add_links(ee_vectors, et_vectors,
+                        ee_results, et_results)
 
-    def _add_links(self, element, ee_vectors, et_vectors, ee_results, et_results):
+    def _add_links(self, ee_vectors, et_vectors, ee_results, et_results):
         """Insert new tlinks into the element using the vectors and the results
         from the classifier."""
         for (f1, f2) in ((ee_vectors, ee_results), (et_vectors, et_results)):
@@ -72,12 +71,11 @@ class ClassifierWrapper:
                 origin = CLASSIFIER + '-' + confidence
                 id1_attr = TIME_ID if id1.startswith('t') else EVENT_INSTANCE_ID
                 id2_attr = RELATED_TO_TIME if id2.startswith('t') else RELATED_TO_EVENT_INSTANCE
-                attrs = {
-                     RELTYPE: rel,
-                     id1_attr: id1,
-                     id2_attr: id2,
-                     ORIGIN: origin }
-                element.tarsqi_tags.add_tag(TLINK, -1, -1, attrs)
+                attrs = {RELTYPE: rel,
+                         id1_attr: id1,
+                         id2_attr: id2,
+                         ORIGIN: origin}
+                self.document.tags.add_tag(TLINK, -1, -1, attrs)
 
     def _parse_vector_string(self, line):
         """Return the attribute dictionaries from the vector string. """

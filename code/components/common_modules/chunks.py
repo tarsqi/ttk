@@ -117,8 +117,8 @@ class Chunk(Constituent):
         return self.dtrs[self.head]
 
     def _conditionallyAddEvent(self, gramChunk=None):
-        """Perform a few little checks on the head and check whether there is an
-        event class, then add the event to the tree. When this is called on
+        """Perform a few little checks on the head and check whether there is
+        an event class, then add the event to the tree. When this is called on
         a NounChunk, then there is no GramChunk handed in and it will be
         retrieved from the gramchunk instance variable, when it is called from
         VerbChunk, then the GramChunk will be handed in."""
@@ -126,13 +126,13 @@ class Chunk(Constituent):
         text = gchunk.head.getText()
         # the second and third tests seem relevant for verbs only, but we keep
         # them anyway for all chunks
-        if (gchunk.evClass
-                and text not in forms.be
-                and text not in forms.spuriousVerb):
+        if (gchunk.evClass and text not in forms.be and
+            text not in forms.spuriousVerb):
             self.tree.addEvent(Event(gchunk))
 
     def _getHeadText(self):
-        """Get the text string of the head of the chunk. Used by matchConstituent."""
+        """Get the text string of the head of the chunk. Used by
+        matchConstituent."""
         headText = self.getText().split()[-1]
         return headText.strip()
 
@@ -172,10 +172,10 @@ class NounChunk(Chunk):
             # sometimes the daughter is not a token but a timex, skip it
             if not token.isToken():
                 continue
-            if (token.pos == forms.possessiveEndingTag
-                or token.pos == forms.possessivePronounTag
-                or (token.pos in forms.determinerTags
-                    and token.getText() in forms.definiteDeterminers)):
+            if (token.pos == forms.possessiveEndingTag or
+                token.pos == forms.possessivePronounTag or
+                (token.pos in forms.determinerTags and
+                 token.getText() in forms.definiteDeterminers)):
                 return True
         return False
 
@@ -213,8 +213,8 @@ class NounChunk(Chunk):
         head which cannot be a timex and the head has to be a common noun."""
         # using the regular expression is a bit faster then lookup in the short
         # list of common noun parts of speech (forms.nounsCommon)
-        return (not self.gramchunk.head.isTimex()
-                and forms.RE_nounsCommon.match(self.gramchunk.head.pos))
+        return (not self.gramchunk.head.isTimex() and
+                forms.RE_nounsCommon.match(self.gramchunk.head.pos))
 
     def isEventCandidate_Sem(self):
         """Return True if the nominal can be an event semantically. Depending
@@ -302,7 +302,7 @@ class VerbChunk(Chunk):
     def _createEventOnRightmostVerb(self, GramVCh):
         if GramVCh.nodeIsNotEventCandidate():
             return
-        next_node = self.nextNode()
+        next_node = self.next_node()
         if GramVCh.nodeIsModal(next_node):
             self._createEventOnModal()
         elif GramVCh.nodeIsBe(next_node):
@@ -347,7 +347,8 @@ class VerbChunk(Chunk):
             logger.debug("Checking for BE + ADJ Predicative Complement...")
             substring = self._lookForMultiChunk(patterns.BE_A_FSAs, 'chunked')
             if substring:
-                matched = self.getText() + ' ' + ' '.join([s.getText() for s in substring])
+                matched_texts = [s.getText() for s in substring]
+                matched = self.getText() + ' ' + ' '.join(matched_texts)
                 self.dribble("BE-ADJ", matched)
                 self._processEventInMultiAChunk(GramVCh, substring)
             else:
@@ -422,8 +423,8 @@ class VerbChunk(Chunk):
             self._conditionallyAddEvent(GramVCh)
 
     def _createEventOnKeep(self, GramVCh):
-        # Looking for KEEP + ADJ Predicative Complement e.g., The announcement kept
-        # everybody Adj.
+        # Looking for KEEP + ADJ Predicative Complement e.g., The announcement
+        # kept everybody Adj.
         logger.debug("Checking for KEEP + [NChunk] + ADJ...")
         substring = self._lookForMultiChunk(patterns.KEEP_A_FSAs, 'chunked')
         if substring:
@@ -439,18 +440,20 @@ class VerbChunk(Chunk):
         self._conditionallyAddEvent(GramVCh)
 
     def _lookForMultiChunk(self, FSA_set, structure_type='flat'):
-        """Returns the prefix of the rest of the sentence is it matches one of the FSAs
-        in FSA_set. The structure_type argument specifies the structural format
-        of the rest of the sentence: either a flat, token-level representation
-        or a chunked one. This method is used for finding specific right
-        contexts of verb chunks."""
+        """Returns the prefix of the rest of the sentence is it matches one of
+        the FSAs in FSA_set. The structure_type argument specifies the
+        structural format of the rest of the sentence: either a flat,
+        token-level representation or a chunked one. This method is used for
+        finding specific right contexts of verb chunks."""
         logger.debug("Entering _lookForMultiChunk for '%s' with %d FSAs"
                      % (self.getText().strip(), len(FSA_set)))
         logger.debug("\tstructure_type = %s" % structure_type)
         restSentence = self._getRestSent(structure_type)
-        logger.debug("\trest = %s" % ' '.join([t.__class__.__name__ for t in restSentence]))
-        logger.debug("\trest = %s" % ' '.join(["%s/%s" % (t.getText(), t.pos)
-                                               for t in utils.get_tokens(restSentence)]))
+        logger.debug("\trest = %s"
+                     % ' '.join([t.__class__.__name__ for t in restSentence]))
+        logger.debug("\trest = %s"
+                     % ' '.join(["%s/%s" % (t.getText(), t.pos)
+                                 for t in utils.get_tokens(restSentence)]))
         lenSubstring, fsaNum = self._identify_substring(restSentence, FSA_set)
         if lenSubstring:
             logger.debug("\tACCEPTED by FSA %d, LENGTH=%d" % (fsaNum, lenSubstring))

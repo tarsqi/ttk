@@ -40,9 +40,12 @@ def create_tarsqi_tree(tarsqidoc, element, links=False):
     # recursively import all nodes into the doc, but skip the topnode itself
     top_node.add_to_tree(tree)
     if links:
-        tree.initialize_alinks(tarsqidoc.tags.find_tags(ALINK))
-        tree.initialize_slinks(tarsqidoc.tags.find_linktags_in_range(SLINK, o1, o2))
-        tree.initialize_tlinks(tarsqidoc.tags.find_tags(TLINK))
+        tree.initialize_alinks(
+            tarsqidoc.tags.find_tags(ALINK))
+        tree.initialize_slinks(
+            tarsqidoc.tags.find_linktags_in_range(SLINK, o1, o2))
+        tree.initialize_tlinks(
+            tarsqidoc.tags.find_tags(TLINK))
     return tree
 
 
@@ -73,7 +76,8 @@ class Node(object):
     # Having a higher order means that a tag x will be including tag y if x and
     # y have the same extent. Stipulates that events and times are always lower
     # in the tree than chunks.
-    order = { SENTENCE: 4, NOUNCHUNK: 3, VERBCHUNK: 3, EVENT: 2, TIMEX: 2, LEX: 1 }
+    order = { SENTENCE: 4, NOUNCHUNK: 3, VERBCHUNK: 3,
+              EVENT: 2, TIMEX: 2, LEX: 1 }
 
     # TODO: that stipulation is actually wrong for times and we are missing some
     # imports from GUTime because of that
@@ -129,13 +133,14 @@ class Node(object):
                         self._replace_span_with_tag(tag, span)
                     else:
                         # print warning if the tag cannot be inserted
-                        print "WARNING: cannot insert tag because it overlaps with other tags."
+                        print "WARNING: cannot insert tag because " \
+                            + "it overlaps with other tags."
 
     def _insert_tag_into_dtr(self, tag, idx):
-        """Insert the tag into the dtr at self.dtrs[idx]. But take care of the situation
-        where the dtr and the tag have the same extent, in which case we need to
-        check the specified order and perhaps replace the dtr with the tag and
-        insert the dtr into the tag."""
+        """Insert the tag into the dtr at self.dtrs[idx]. But take care of the
+        situation where the dtr and the tag have the same extent, in which case
+        we need to check the specified order and perhaps replace the dtr with
+        the tag and insert the dtr into the tag."""
         dtr = self.dtrs[idx]
         if dtr.begin == tag.begin and dtr.end == tag.end:
             if Node.order.get(dtr.name) > Node.order.get(tag.name):
@@ -149,7 +154,8 @@ class Node(object):
             dtr.insert(tag)
 
     def _replace_span_with_tag(self, tag, span):
-        """Replace the span of dtrs with the tag and add the span as dtrs to the tag."""
+        """Replace the span of dtrs with the tag and add the span as dtrs to the
+        tag."""
         span_elements = [self.dtrs[i] for i in span]
         new_node = Node(tag, self, self.tree)
         new_node.dtrs = span_elements
@@ -239,8 +245,9 @@ class Node(object):
             dtr.add_to_tree(tree_element_dtr)
 
     def as_tree_element(self):
-        """Create from the node an instance of Sentence, NounChunk, VerbChunk, EventTag,
-        TimexTag, Token or AdjectiveToken. Copy information from the Node as needed."""
+        """Create from the node an instance of Sentence, NounChunk, VerbChunk,
+        EventTag, TimexTag, Token or AdjectiveToken. Copy information from the
+        Node as needed."""
         if self.name == SENTENCE:
             tree_element = Sentence()
         elif self.name == NOUNCHUNK:
@@ -280,6 +287,7 @@ class TarsqiTree:
     Instance variables
         tarsqidoc   -  the TarsqiDocument instance that the tree is part of
         docelement  -  the Tag with name=docelement that the tree was made for
+        dtrs        -  a list with daughters
         events      -  a dictionary with events found by Evita
         alinks      -  a list of AlinkTags, filled in by Slinket
         slinks      -  a list of SlinkTags, filled in by Slinket
@@ -289,7 +297,8 @@ class TarsqiTree:
     indexed on event eids."""
 
     def __init__(self, tarsqidoc, docelement_tag):
-        """Initialize all dictionaries, list and counters and set the file name."""
+        """Initialize all dictionaries, list and counters and set the file
+        name."""
         self.tarsqidoc = tarsqidoc
         self.docelement = docelement_tag
         self.dtrs = []
@@ -319,9 +328,9 @@ class TarsqiTree:
             self.tlinks.append(TlinkTag(tlink.attrs))
 
     def hasEventWithAttribute(self, eid, att):
-        """Returns the attribute value if the events dictionary has an event with the given
-        id that has a value for the given attribute, returns False otherwise
-        Arguments
+        """Returns the attribute value if the events dictionary has an event
+        with the given id that has a value for the given attribute, returns
+        False otherwise. Arguments:
            eid - a string indicating the eid of the event
            att - a string indicating the attribute"""
         return self.events.get(eid, {}).get(att, False)
@@ -343,9 +352,9 @@ class TarsqiTree:
             self.events[eid][att] = val
 
     def addEvent(self, event):
-        """Takes an instance of evita.event.Event and adds it to the TagRepository on
-        the TarsqiDocument. Does not add it if there is already an event at
-        the same location."""
+        """Takes an instance of evita.event.Event and adds it to the
+        TagRepository on the TarsqiDocument. Does not add it if there is already
+        an event at the same location."""
         # NOTE: we now always have one token on this list, if there are more in
         # a future implementation we takes the last, but what probably should
         # happen is that we take the begin offset from the first and the end

@@ -15,7 +15,7 @@ class Constituent:
 
     Instance variables:
        tree     - the TarsqiTree instance that the consituent is an element of
-       parent   - the parent, typically an instance of Sentence
+       parent   - the parent, could be any non-token constituent
        position - index in the parent's daughters list
        dtrs     - a list of Tokens, EventTags and TimexTags
        begin    - beginning offset in the SourceDoc
@@ -52,12 +52,18 @@ class Constituent:
     def __nonzero__(self):
         return True
 
+    def __cmp__(self, other):
+        return cmp(self.begin, other.begin)
+
     def __len__(self):
         """Returns the lenght of the dtrs variable."""
         # NOTE. When you have this method you want __nonzero__ as well because
         # without it a constituent with an empty dtrs list will be False and
         # this will cause errors
         return len(self.dtrs)
+
+    def __str__(self):
+        return "<%s %d:%d>" % (self.__class__.__name__, self.begin, self.end)
 
     def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used
@@ -95,6 +101,40 @@ class Constituent:
     def isPreposition(self):
         return False
 
+    def all_nodes(self, result=None):
+        """Returns all nodes through a pre-order tree search."""
+        if result is None:
+            result = []
+        result.append(self)
+        for dtr in self.dtrs:
+            dtr.all_nodes(result)
+        return result
+
+    def leaf_nodes(self, result=None):
+        """Returns the leaf nodes of the constituent."""
+        if result is None:
+            result = []
+        if not self.dtrs:
+            result.append(self)
+        for dtr in self.dtrs:
+            dtr.leaf_nodes(result)
+        return result
+
+    def events(self):
+        """Return all events in the constituent."""
+        return [n for n in self.all_nodes() if n.isEvent()]
+
+    def timexes(self):
+        """Return all timexes in the constituent."""
+        return [n for n in self.all_nodes() if n.isTimex()]
+
+    def first_leaf_node(self):
+        """Return the first leaf node in the constituent."""
+        if self.dtrs:
+            return self.dtrs[0].first_leaf_node()
+        else:
+            return self
+
     def setCheckedEvents(self):
         if self.parent.__class__.__name__ == 'Sentence':
             self.checkedEvents = True
@@ -107,15 +147,18 @@ class Constituent:
             string += ' ' + dtr.getText()
         return string
 
-    def nextNode(self):
-        """Return the right sibling in the tree or None if there is none. Works nicely
-        when called on Sentence elements. If called on the last token in a
-        chunk, then it returns None even if there is another chunk following."""
-        # TODO: make this work for tokens as well, maybe by adding this method to Token
-        try:
-            return self.parent[self.position + 1]
-        except IndexError:
-            return None
+    def next_node(self):
+        """Return the next sibling in the tree or None if there is none. If this
+        is called on the last dtr in a constituent, then it returns the next
+        sibling of the parent. Returns None if self is a rightmost
+        constituent."""
+        node = self
+        while node is not None:
+            if self.position + 1 < len(self.parent.dtrs):
+                return self.parent[self.position + 1]
+            else:
+                node = node.parent
+        return None
 
     def createEvent(self):
         """Does nothing except for logging a warning. If this happens something
@@ -209,14 +252,14 @@ class Constituent:
         return self._find_alink(alinkedEventContext, fsa_lists, reltypes_list)
 
     def find_backward_alink(self, fsa_reltype_groups):
-        """Search for an alink to the left of the event. Return True is event was found,
-        False otherwise. Note that the context includes the event itself and the token to
-        its immediate right. It is not quite clear why but it has tro do with how the
-        patterns are defined.
+        """Search for an alink to the left of the event. Return True is event
+        was found, False otherwise. Note that the context includes the event
+        itself and the token to its immediate right. It is not quite clear why
+        but it has tro do with how the patterns are defined.
 
-        Backward Alinks also check for the adequacy (e.g., in terms of TENSE or ASPECT) of
-        the Subordinating Event. For cases such as 'the <EVENT>transaction</EVENT> has
-        been <EVENT>completed</EVENT>'"""
+        Backward Alinks also check for the adequacy (e.g., in terms of TENSE or
+        ASPECT) of the Subordinating Event. For cases such as 'the
+        <EVENT>transaction</EVENT> has been <EVENT>completed</EVENT>'"""
 
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
@@ -226,8 +269,8 @@ class Constituent:
 
     def _find_alink(self, event_context, fsa_lists, reltype_list):
         """Try to create an alink using the context and patterns from the
-        dictionary. Alinks are created as a side effect. Returns True if an alink was
-        created, False otherwise."""
+        dictionary. Alinks are created as a side effect. Returns True if an
+        alink was created, False otherwise."""
 
         for i in range(len(fsa_lists)):
 
@@ -272,10 +315,10 @@ class Constituent:
         return self._find_slink(event_context, fsa_lists, reltypes_list)
 
     def find_backward_slink(self, fsa_reltype_groups):
-        """Tries to create backward Slinks, using a group of FSAs.  Backward Slinks should
-        check for the adequacy (e.g., in terms of TENSE or ASPECT) of the Subordinating
-        Event. For cases such as 'the <EVENT>transaction</EVENT> has been
-        <EVENT>approved</EVENT>'
+        """Tries to create backward Slinks, using a group of FSAs.  Backward
+        Slinks should check for the adequacy (e.g., in terms of TENSE or ASPECT)
+        of the Subordinating Event. For cases such as 'the
+        <EVENT>transaction</EVENT> has been <EVENT>approved</EVENT>'
 
         Arguments:
            fsa_reltype_groups - see createForwardSlinks """
@@ -287,15 +330,16 @@ class Constituent:
         return self._find_slink(event_context, fsa_lists, reltypes_list)
 
     def find_reporting_slink(self, fsa_reltype_groups):
-        """Reporting Slinks are applied to reporting predicates ('say', 'told', etc) that
-        link an event in a preceeding quoted sentence which is separated from the clause
-        of the reporting event by a comma; e.g.,
+        """Reporting Slinks are applied to reporting predicates ('say', 'told',
+        etc) that link an event in a preceeding quoted sentence which is
+        separated from the clause of the reporting event by a comma; e.g.,
 
             ``I <EVENT>want</EVENT> a referendum,'' Howard
             <EVENT class='REPORTING'>said</EVENT>.
 
         Slinket assumes that these quoted clauses always initiate the main
-        sentence. Therefore, the first item in the sentence are quotation marks."""
+        sentence. Therefore, the first item in the sentence are quotation
+        marks."""
 
         fsa_lists = fsa_reltype_groups[0]
         reltypes_list = fsa_reltype_groups[1]
@@ -309,8 +353,9 @@ class Constituent:
         return False
 
     def _find_slink(self, event_context, fsa_lists, reltype_list):
-        """Try to find an slink in the given event_context using lists of FSAs. If the
-        context matches an FSA, then create an slink and insert it in the tree."""
+        """Try to find an slink in the given event_context using lists of
+        FSAs. If the context matches an FSA, then create an slink and insert it
+        in the tree."""
 
         for i in range(len(fsa_lists)):
 
@@ -323,14 +368,12 @@ class Constituent:
                 #           % (fsa.fsaname, length_of_match, reltype))
                 reltype = get_reltype(reltype_list, i)
                 eiid = event_context[length_of_match - 1].eiid
-                # print self, self.eiid
                 slinkAttrs = {
                     EVENT_INSTANCE_ID: self.eiid,
                     SUBORDINATED_EVENT_INSTANCE: eiid,
                     RELTYPE: reltype,
                     SYNTAX: fsa.fsaname }
                 self.tree.addLink(slinkAttrs, SLINK)
-                # for l in self.tree.slink_list: print '  ', l
                 logger.debug("SLINK CREATED")
                 return True
             else:
@@ -339,9 +382,9 @@ class Constituent:
         return False
 
     def _look_for_link(self, sentence_slice, fsa_list):
-        """Given a slice of a sentence and a list of FSAs, return a tuple of the size of
-        the matching slize and the number of the FSA that featured in the match. Return
-        False if there is no match."""
+        """Given a slice of a sentence and a list of FSAs, return a tuple of the
+        size of the matching slize and the number of the FSA that featured in
+        the match. Return False if there is no match."""
         lenSubstring, fsaNum = self._identify_substring(sentence_slice, fsa_list)
         if lenSubstring:
             return (lenSubstring, fsaNum)
@@ -349,10 +392,10 @@ class Constituent:
             return False
 
     def _identify_substring(self, sentence_slice, fsa_list):
-        """Checks whether sentence_slice, a sequence of chunks and tokens, matches one
-        of the FSAs in fsa_list. Returns a tuple of the sub sequence length that
-        matched the pattern (where a zero length indicates no match) and the
-        index of the FSA that returned the match."""
+        """Checks whether sentence_slice, a sequence of chunks and tokens,
+        matches one of the FSAs in fsa_list. Returns a tuple of the sub sequence
+        length that matched the pattern (where a zero length indicates no match)
+        and the index of the FSA that returned the match."""
         fsaCounter = -1
         for fsa in fsa_list:
             logger.debug("Applying FSA %s" % fsa.fsaname)

@@ -52,6 +52,14 @@ class TarsqiDocument:
     def elements(self):
         return self.tags.find_tags('docelement')
 
+    def events(self):
+        """Convenience method for easy access to events."""
+        return self.tags.find_tags(EVENT)
+
+    def timexes(self):
+        """Convenience method for easy access to timexes."""
+        return self.tags.find_tags(TIMEX)
+
     def has_event(self, begin, end):
         """Return True if there is already an event at the given begin and
         end."""
