@@ -79,7 +79,7 @@ def print_module_documentation(module):
     if docstring:
         docfile.write("<pre>\n" + docstring + "</pre>\n\n")
     print_class_documentation(docfile, module_classes)
-    print_function_documentation(docfile, get_functions(module))
+    print_function_documentation(docfile, get_module_functions(module))
 
 
 def print_class_documentation(docfile, classes):
@@ -100,7 +100,7 @@ def print_class_documentation(docfile, classes):
         if docstring:
             docfile.write("\n" + docstring)
         docfile.write("</pre>\n\n")
-        functions = get_functions(class_object)
+        functions = get_class_functions(class_object)
         functions.sort(lambda x, y: cmp(x[0], y[0]))
         public_functions = get_public_functions(functions)
         private_functions = get_private_functions(functions)
@@ -120,7 +120,7 @@ def print_class_documentation(docfile, classes):
 
 def print_function_documentation(docfile, functions):
     if functions:
-        docfile.write("\n" + '<div class="section">module functions</div>' + "\n")
+        docfile.write("\n%s\n" % '<div class="section">module functions</div>')
     functions.sort(lambda x, y: cmp(x[0], y[0]))
     for (name, fun) in get_public_functions(functions):
         print_function(name, fun, docfile)
@@ -139,7 +139,16 @@ def get_classes(module):
     return classes
 
 
-def get_functions(class_object):
+def get_module_functions(module):
+    functions = []
+    for (key, val) in module.__dict__.items():
+        if type(val) == FunctionType:
+            if inspect.getmodule(val) is module:
+                functions.append([key, val])
+    return functions
+
+
+def get_class_functions(class_object):
     functions = []
     for (key, val) in class_object.__dict__.items():
         if type(val) == FunctionType:
@@ -171,13 +180,14 @@ def print_function(name, fun, docfile):
     docfile.write("<div class=function>%s</div>\n" % funname)
     docfile.write(docstring)
     FUNCTION_ID += 1
-    id = "%04d" % FUNCTION_ID
+    identifier = "%04d" % FUNCTION_ID
     if WRITE_FUNCTION_SOURCES:
         if docstring:
             docfile.write("\n\n")
-        docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>" % id)
+        docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>"
+                      % identifier)
         funname = get_function_name(fun)
-        print_function_code(id, funname, fun)
+        print_function_code(identifier, funname, fun)
     docfile.write("</pre>\n")
 
 
@@ -190,8 +200,9 @@ def get_function_name(fun):
         return fun.__name__ + ' (imported)'
 
 
-def print_function_code(id, name, fun):
-    filename = os.path.join(DOCUMENTATION_DIR, 'functions', "%s.html" % id)
+def print_function_code(identifier, name, fun):
+    filename = os.path.join(DOCUMENTATION_DIR,
+                            'functions', "%s.html" % identifier)
     funfile = open(filename, "w")
     funfile.write("<html>\n<head>\n")
     funfile.write('<link href="../css/function.css"')
@@ -222,12 +233,13 @@ def print_docstring(object, docfile, prefix=''):
     if type(object) == FunctionType:
         global FUNCTION_ID
         FUNCTION_ID += 1
-        id = "%04d" % FUNCTION_ID
+        identifier = "%04d" % FUNCTION_ID
         if docstring:
             docfile.write("\n\n")
-        docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>" % id)
+        docfile.write("<a href=javascript:view_code(\"%s\")>view source</a>"
+                      % identifier)
         funname = get_function_name(object)
-        print_function_code(id, funname, object)
+        print_function_code(identifier, funname, object)
     docfile.write("</pre>\n")
 
 
@@ -280,6 +292,7 @@ if __name__ == '__main__':
     indexfile.write("<ul>\n")
     for module in MODULES:
         name = module.__name__
+        # if not name.startswith('lib'): continue
         indexfile.write("<li><a href=modules/%s.html>%s</a>\n" % (name, name))
         print_module_documentation(module)
     indexfile.write("</ul>\n</body>\n</html>\n")
