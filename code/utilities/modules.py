@@ -7,10 +7,7 @@ needed as input to the analysis and documentation creation scripts.
 
 """
 
-import sys
-
-sys.path.insert(0, '..')
-
+import path
 import tarsqi
 
 import components.blinker.compare
@@ -60,6 +57,8 @@ import docmodel.document
 import docmodel.docstructure_parser
 import docmodel.metadata_parser
 import docmodel.source_parser
+
+import library.classifier.create_vectors
 
 import utilities.binsearch
 import utilities.logger
@@ -116,6 +115,8 @@ MODULES = [
     docmodel.docstructure_parser,
     docmodel.metadata_parser,
     docmodel.source_parser,
+
+    library.classifier.create_vectors,
 
     utilities.binsearch,
     utilities.logger,

@@ -74,7 +74,7 @@ from utilities import logger
 from utilities.file import read_settings
 
 TTK_ROOT = os.environ['TTK_ROOT']
-SETTINGS = 'settings.txt'
+SETTINGS = os.path.join(TTK_ROOT, 'settings.txt')
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
@@ -94,7 +94,7 @@ class Tarsqi:
        options              -  an instance of Options with processing options
        source_parser        -  a source-specific parser for the source
        metadata_parser      -  a source-specific metadata parser
-       docstructure_parser  -  a source-specific document structure parser
+       docstructure_parser  -  a document structure parser
        pipeline             -  list of name-wrapper pairs
        components           -  dictionary of components
        document             -  instance of TarsqiDocument
@@ -110,23 +110,19 @@ class Tarsqi:
         document model and the meta data. The opts argument has a list of
         commanid line options and the infile and outfile arguments are typically
         absolute paths, but they can be None when we are processing strings."""
-
         # Make sure we're in the right directory. If the toolkit crashed on a
         # previous file it may end up being in a different directory.
         os.chdir(TTK_ROOT)
-
         self.input = infile
         self.output = outfile
         self.basename = _basename(infile) if infile else None
         self.options = Options(opts)
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
-
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
-
         self.components = COMPONENTS
         self.source_parser = create_source_parser(self.options)
-        self.metadata_parser = create_metadata_parser(self, self.options)
+        self.metadata_parser = create_metadata_parser(self.options)
         self.docstructure_parser = create_docstructure_parser()
         self.pipeline = self._create_pipeline()
 
@@ -198,7 +194,8 @@ class Tarsqi:
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
 
     def _create_pipeline(self):
-        """Return the pipeline as a list of pairs with the component name and wrapper."""
+        """Return the pipeline as a list of pairs with the component name and
+        wrapper."""
         component_names = get_default_pipeline(self.options)
         if self.options.pipeline:
             component_names = self.options.pipeline.split(',')

@@ -24,11 +24,13 @@ class MetadataParser:
         """At the moment, initialization does not use any of the options,
         but this could change."""
         self.options = options
+        self.tarsqidoc = None  # added in by the parse() method
 
     def parse(self, tarsqidoc):
         """Adds metadata to the TarsqiDocument. The only thing it adds to the
         metadata dictionary is the DCT, which is set to today."""
-        tarsqidoc.metadata['dct'] = self.get_dct()
+        self.tarsqidoc = tarsqidoc
+        self.tarsqidoc.metadata['dct'] = self.get_dct()
 
     def get_dct(self):
         """Return today's date in YYYYMMDD format."""
@@ -37,7 +39,7 @@ class MetadataParser:
     def get_source(self):
         """A convenience method to lift the SourceDoc out of the tarsqi
         instance."""
-        return self.tarsqi.document.source
+        return self.tarsqidoc.source
 
     def _get_tag_content(self, tagname):
         """Return the text content of the first tag with name tagname, return
@@ -59,7 +61,8 @@ class MetadataParserTTK(MetadataParser):
         """Adds metadata to the TarsqiDocument. The only thing it adds to the
         metadata dictionary is the DCT, which is copied from the metadata in the
         SourceDoc."""
-        tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.source)
+        self.tarsqidoc = tarsqidoc
+        self.tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.source)
 
     def get_dct(self, sourcedoc):
         return sourcedoc.metadata.get('dct')

@@ -1,3 +1,4 @@
+
 """TarsqiDocument and friends.
 
 This module contains TarsqiDocument and some of the classes used by it.
@@ -421,6 +422,13 @@ class TagRepository:
             if t.name == name:
                 return t
         return None
+
+    def import_tags(self, tag_repository, tagname):
+        """Import all tags with name=tagname from tag_repository into self. This
+        is moslty used when we want to take tags from the SourceDoc and add them
+        to the tags on the TarsqiDocument."""
+        for tag in tag_repository.find_tags(tagname):
+            self.add_tag(tagname, tag.begin, tag.end, tag.attrs)
 
     def pp(self):
         self.pp_tags(indent='   ')

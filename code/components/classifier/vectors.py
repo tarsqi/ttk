@@ -23,11 +23,15 @@ from components.common_modules.tree import create_tarsqi_tree
 
 from library.timeMLspec import EVENT, EID, EIID, CLASS, STEM, EPOS
 from library.timeMLspec import TENSE, ASPECT, MODALITY, POLARITY
-
 from library.timeMLspec import TIMEX, TID, TYPE, VALUE
 
-EVENT_FEATURES = [CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]
-TIMEX_FEATURES = [TYPE, VALUE]
+# Determines what attributes to use for the vector, the TID and EIID attributes
+# are used so we can go back from the vector to an actual tlink. It is assumed
+# that having these attributes in the vector has o impact on classification
+# results. TOOO: if this assumption is wrong then the model building code should
+# filter on these attributes.
+EVENT_FEATURES = [EIID, CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]
+TIMEX_FEATURES = [TID, TYPE, VALUE]
 
 TAG = 'tag'
 FUNINDOC = 'funInDoc'
@@ -40,16 +44,6 @@ SIGNAL = 'signal'
 
 DEBUG = False
 #DEBUG = True
-
-
-def create_gold_vectors(corpus, ee_file, et_file):
-    """Collect gold standard vectors and write them to files."""
-    (ee_vectors, et_vectors) = collect_gold_vectors(corpus)
-    write_vectors(ee_file, ee_vectors, et_file, et_vectors)
-
-
-def collect_gold_vectors(corpus):
-    return ([], [])
 
 
 def create_tarsqidoc_vectors(tarsqidoc, ee_file, et_file):
