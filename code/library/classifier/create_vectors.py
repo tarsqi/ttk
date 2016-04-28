@@ -1,12 +1,13 @@
-"""
+"""Module to create vectors that can be used to train a mallet model.
 
-Module to create vectors that can be used to train a mallet model.
 
-Preliminaries.
+PRELIMARIES
 
-To do this you need a gold standard that meets the following requisites:
+To run this script you need a gold standard that meets the following
+requirements:
 
-- It contains EVENT, TIMEX3 and TLINK tags.
+- It contains EVENT, TIMEX3 and TLINK tags. The EVENT tags need to have pos,
+  tense and aspect attributes
 
 - It contains preprocessor tags s, lex, ng and vg. The lex tags should have pos,
   text and lemma attributes.
@@ -15,7 +16,35 @@ To do this you need a gold standard that meets the following requisites:
 
 - It should be in the TTK format.
 
-One way to get this gold standard is to take the TimeBank 1.2 corpus as released
+Here is a minimal example of what an input file should look like:
+
+   <ttk>
+   <text>Fido slept on Tuesday.
+   </text>
+   <metadata>
+     <dct value="20160428"/>
+   </metadata>
+   <source_tags>
+     <TEXT id="1" begin="0" end="22" />
+   </source_tags>
+   <tarsqi_tags>
+     <docelement begin="0" end="23" type="paragraph" />
+     <s id="s1" begin="0" end="22" />
+     <lex id="l1" begin="0" end="4" lemma="Fido" pos="NNP" text="Fido" />
+     <ng id="c1" begin="0" end="4" />
+     <lex id="l2" begin="5" end="10" lemma="sleep" pos="VBD" text="slept" />
+     <vg id="c2" begin="5" end="10" />
+     <EVENT begin="5" end="10" aspect="NONE" class="OCCURRENCE" eid="e1" eiid="ei1" pos="VERB" tense="PAST" />
+     <lex id="l3" begin="11" end="13" lemma="on" pos="IN" text="on" />
+     <lex id="l4" begin="14" end="21" lemma="Tuesday" pos="NNP" text="Tuesday" />
+     <ng id="c3" begin="14" end="21" />
+     <TIMEX3 begin="14" end="21" origin="GUTIME" tid="t1" type="DATE" value="20160426" />
+     <lex id="l5" begin="21" end="22" lemma="." pos="." text="." />
+     <TLINK eventInstanceID="ei1" relType="IS_INCLUDED" relatedToTime="t1" />
+   </tarsqi_tags>
+   </ttk>
+
+One way to get gold standard data is to take the TimeBank 1.2 corpus as released
 by the LDC. This corpus is not in the TTK formta and it contains MAKEINSTANCE
 tags, but it can be converted by using the utilities/convert.py script.
 
@@ -24,26 +53,39 @@ information added:
 
    $ python tarsqi.py --source=ttk --pipeline=PREPROCESSOR <CONVERTED_TB> <OUT_DIR>
 
-Once this is done, you can move the files in <OUT_DIR> to data/gold and run this
-script:
+
+USAGE
+
+To create the vectors, run this script in one of two ways:
 
    $ python create_vectors.py
+   $ python create_vectors.py --gold <OUT_DIR>
 
-This will create two files in the current directory:
+In the first invocation, the files in data/gold are used as input. Both
+invocations will create two files in the current directory:
 
    vectors.ee
    vectors.et
 
-If you do not want to move files to data/gold you can use the --gold command
-line option:
+Here are two example vectors, one from vectors.ee and one from vectors.et (each
+vector is just one line, but below they are spread out over multiple lines for
+readability):
 
-   $ python create_vectors.py --gold <OUT_DIR>
+   AFTER e1-aspect=NONE e1-class=REPORTING e1-eiid=ei2225 e1-epos=None
+   e1-modality=NONE e1-polarity=POS e1-stem=None e1-string=said e1-tag=EVENT
+   e1-tense=PAST e2-aspect=PERFECTIVE e2-class=OCCURRENCE e2-eiid=ei2226
+   e2-epos=None e2-modality=NONE e2-polarity=POS e2-stem=None
+   e2-string=identified e2-tag=EVENT e2-tense=PAST shiftAspect=1 shiftTense=0
 
-Results will again be written to vectors.ee and vectors.et.
+   IS_INCLUDED e-aspect=NONE e-class=OCCURRENCE e-eiid=ei2264 e-epos=None
+   e-modality=NONE e-polarity=POS e-stem=None e-string=created e-tag=EVENT
+   e-tense=PAST t-string=Tuesday t-tag=TIMEX3 t-tid=t61 t-type=DATE
+   t-value=1998-03-31 order=et signal=XXXX
 
 When you run create_vectors.py on TimeBank you will notice a lot of warnings
-that tags cannot be inserted. This is a known issue which does come at the
-expense of missing some training instances.
+that tags cannot be inserted. This is a known issue with GUTIME and the
+pre-processor which does come at the expense of missing some training instances
+for long time expressions.
 
 In any case, as of late April 2016 running this script resulted in 1516 vectors
 in vectors.ee and 1049 vectors in vectors.et. These vectors were used to build
