@@ -17,7 +17,7 @@ If input is create for model building then it looks like
 
 """
 
-import textwrap
+import os, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree
 
@@ -84,15 +84,15 @@ def _create_vectors_for_sentence(tarsqidoc, element, s,
         v2 = tag_vectors[i+1]
         _debug("\n  %d %d %s %s\n" % (i, i + 1, v1.source, v2.source))
         if v1.is_event_vector() and v2.is_event_vector():
-            ee_vector = EEVector(v1, v2)
+            ee_vector = EEVector(tarsqidoc, v1, v2)
             _debug_wrapped("EE %s" % ee_vector, '  ')
             ee_vectors.append(ee_vector)
         elif v1.is_event_vector() and v2.is_timex_vector():
-            et_vector = ETVector(v1, v2)
+            et_vector = ETVector(tarsqidoc, v1, v2)
             _debug_wrapped("ET %s" % et_vector, '  ')
             et_vectors.append(et_vector)
         elif v1.is_timex_vector() and v2.is_event_vector():
-            et_vector = ETVector(v2, v1)
+            et_vector = ETVector(tarsqidoc, v2, v1)
             _debug_wrapped("TE %s" % et_vector, '  ')
             et_vectors.append(et_vector)
 
@@ -210,7 +210,8 @@ class PairVector(Vector):
             self.features["%s-%s" % (prefix2, att)] = val
 
     def __str__(self):
-        return "%s %s" % (self.relType,  super(PairVector, self).__str__())
+        return "%s %s %s" % (self.identifier, self.relType,
+                             super(PairVector, self).__str__())
 
 
 class EEVector(PairVector):
@@ -228,12 +229,15 @@ class EEVector(PairVector):
     # (more or less than three/five), surrounding tokens and tags, path to top,
     # conjunctions inbetween.
 
-    def __init__(self, event_vector1, event_vector2):
+    def __init__(self, tarsqidoc, event_vector1, event_vector2):
         super(EEVector, self).__init__('e1', event_vector1, 'e2', event_vector2)
         tenses = [v.features.get(TENSE) for v in (self.v1, self.v2)]
         aspects = [v.features.get(ASPECT) for v in (self.v1, self.v2)]
         self.features[SHIFT_TENSE] = 0 if tenses[0] == tenses[1] else 1
         self.features[SHIFT_ASPECT] = 0 if aspects[0] == aspects[1] else 1
+        self.identifier = "%s-%s-%s" % (os.path.basename(tarsqidoc.source.filename),
+                                        self.v1.features.get(EIID),
+                                        self.v2.features.get(EIID))
 
 
 class ETVector(PairVector):
@@ -252,12 +256,15 @@ class ETVector(PairVector):
     # closeness binary (more or less than three/five), surrounding tokens and
     # tags, path to top.
 
-    def __init__(self, event_vector, timex_vector):
+    def __init__(self, tarsqidoc, event_vector, timex_vector):
         super(ETVector, self).__init__('e', event_vector, 't', timex_vector)
         v1_begin = event_vector.source.begin
         v2_begin = timex_vector.source.begin
         self.features[ORDER] = 'et' if v1_begin < v2_begin else 'te'
         self.features[SIGNAL] = 'XXXX'
+        self.identifier = "%s-%s-%s" % (os.path.basename(tarsqidoc.source.filename),
+                                        self.v1.features.get(EIID),
+                                        self.v2.features.get(TID))
 
 
 def _debug(text):
