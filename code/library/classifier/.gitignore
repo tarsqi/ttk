@@ -1,2 +1,10 @@
 vectors.ee
 vectors.et
+tb-vectors.ee
+tb-vectors.et
+data
+*trial?
+*stderr.txt
+*stdout.txt
+*vect
+*model

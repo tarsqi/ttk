@@ -83,9 +83,9 @@ readability):
    t-value=1998-03-31 order=et signal=XXXX
 
 When you run create_vectors.py on TimeBank you will notice a lot of warnings
-that tags cannot be inserted. This is a known issue with GUTIME and the
-pre-processor which does come at the expense of missing some training instances
-for long time expressions.
+that tags cannot be inserted. This is a known issue with integrating GUTIME tags
+and pre-processor tags which does come at the expense of missing some training
+instances for long time expressions.
 
 In any case, as of late April 2016 running this script resulted in 1516 vectors
 in vectors.ee and 1049 vectors in vectors.et. These vectors were used to build
