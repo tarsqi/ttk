@@ -71,16 +71,16 @@ Here are two example vectors, one from vectors.ee and one from vectors.et (each
 vector is just one line, but below they are spread out over multiple lines for
 readability):
 
-   AFTER e1-aspect=NONE e1-class=REPORTING e1-eiid=ei2225 e1-epos=None
-   e1-modality=NONE e1-polarity=POS e1-stem=None e1-string=said e1-tag=EVENT
-   e1-tense=PAST e2-aspect=PERFECTIVE e2-class=OCCURRENCE e2-eiid=ei2226
-   e2-epos=None e2-modality=NONE e2-polarity=POS e2-stem=None
-   e2-string=identified e2-tag=EVENT e2-tense=PAST shiftAspect=1 shiftTense=0
+   wsj_0006.tml-ei80-ei81 BEFORE e1-asp=NONE e1-cls=ASPECTUAL e1-epos=None
+   e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete e1-tag=EVENT
+   e1-ten=PRESENT e2-asp=NONE e2-cls=OCCURRENCE e2-epos=None e2-mod=NONE
+   e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT e2-ten=NONE shAsp=0
+   shTen=1
 
-   IS_INCLUDED e-aspect=NONE e-class=OCCURRENCE e-eiid=ei2264 e-epos=None
-   e-modality=NONE e-polarity=POS e-stem=None e-string=created e-tag=EVENT
-   e-tense=PAST t-string=Tuesday t-tag=TIMEX3 t-tid=t61 t-type=DATE
-   t-value=1998-03-31 order=et signal=XXXX
+   NYT19980402.0453.tml-ei2264-t61 IS_INCLUDED e-asp=NONE e-cls=OCCURRENCE
+   e-epos=None e-mod=NONE e-pol=POS e-stem=None e-str=created e-tag=EVENT
+   e-ten=PAST t-str=Tuesday t-tag=TIMEX3 t-type=DATE t-value=1998-03-31 order=et
+   sig=on
 
 When you run create_vectors.py on TimeBank you will notice a lot of warnings
 that tags cannot be inserted. This is a known issue with integrating GUTIME tags
@@ -158,14 +158,14 @@ def process_file(gold_dir, fname):
 
 def add_reltype_to_vectors(tlinks, ee_vectors, et_vectors):
     for v in ee_vectors:
-        eiid1 = v.features["e1-eiid"]
-        eiid2 = v.features["e2-eiid"]
+        eiid1 = v.v1.identifier
+        eiid2 = v.v2.identifier
         rel = tlinks.get("%s-%s" % (eiid1, eiid2))
         if rel is not None:
             v.relType = rel
     for v in et_vectors:
-        eiid = v.features["e-eiid"]
-        tid = v.features["t-tid"]
+        eiid = v.v1.identifier
+        tid = v.v2.identifier
         rel = tlinks.get("%s-%s" % (eiid, tid))
         if rel is not None:
             v.relType = rel

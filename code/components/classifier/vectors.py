@@ -1,19 +1,23 @@
-"""
-
-This module is responsible for creating the vectors in text format that are
+"""This module is responsible for creating the vectors in text format that are
 input to the mallet trainer and classifier.
 
 If input is created for the classifier then it looks like
 
-   UNKNOWN e-aspect=NONE e-class=OCCURRENCE e-epos=VERB e-modality=NONE
-   e-polarity=POS e-stem=None e-string=put e-tag=EVENT e-tense=PASTPART
-   t-string=2013 t-tag=TIMEX3 t-type=DATE t-value=2013 order=et signal=before
+   wsj_0006.tml-ei80-ei81 UNKNOWN e1-asp=NONE e1-class=ASPECTUAL e1-epos=None
+   e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete e1-tag=EVENT
+   e1-ten=PRESENT e2-asp=NONE e2-class=OCCURRENCE e2-epos=None e2-mod=NONE
+   e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT e2-ten=NONE shAsp=0
+   shTen=1
 
 If input is create for model building then it looks like
 
-   BEFORE e-aspect=NONE e-class=OCCURRENCE e-epos=VERB e-modality=NONE
-   e-polarity=POS e-stem=None e-string=put e-tag=EVENT e-tense=PASTPART
-   t-string=2013 t-tag=TIMEX3 t-type=DATE t-value=2013 order=et signal=before
+   wsj_0006.tml-ei80-ei81 ENDS e1-asp=NONE e1-class=ASPECTUAL e1-epos=None
+   e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete e1-tag=EVENT
+   e1-ten=PRESENT e2-asp=NONE e2-class=OCCURRENCE e2-epos=None e2-mod=NONE
+   e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT e2-ten=NONE shAsp=0
+   shTen=1
+
+The only difference is in the second column.
 
 """
 
@@ -25,13 +29,9 @@ from library.timeMLspec import EVENT, EID, EIID, CLASS, STEM, EPOS
 from library.timeMLspec import TENSE, ASPECT, MODALITY, POLARITY
 from library.timeMLspec import TIMEX, TID, TYPE, VALUE
 
-# Determines what attributes to use for the vector, the TID and EIID attributes
-# are used so we can go back from the vector to an actual tlink. It is assumed
-# that having these attributes in the vector has o impact on classification
-# results. TOOO: if this assumption is wrong then the model building code should
-# filter on these attributes.
-EVENT_FEATURES = [EIID, CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]
-TIMEX_FEATURES = [TID, TYPE, VALUE]
+# Determines what attributes to use for the object vectors
+EVENT_FEATURES = [CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]
+TIMEX_FEATURES = [TYPE, VALUE]
 
 TAG = 'tag'
 FUNINDOC = 'funInDoc'
@@ -41,6 +41,11 @@ SHIFT_TENSE = 'shiftTense'
 SHIFT_ASPECT = 'shiftAspect'
 ORDER = 'order'
 SIGNAL = 'signal'
+
+# use abbreviations in features for efficiency
+ABBREVIATIONS = {'aspect': 'asp', 'tense': 'ten', 'class': 'cls',
+                 'modality': 'mod', 'polarity': 'pol', 'string': 'str',
+                 'shiftTense': 'shTen', 'shiftAspect': 'shAsp', 'signal': 'sig'}
 
 DEBUG = False
 #DEBUG = True
@@ -74,9 +79,9 @@ def write_vectors(ee_file, ee_vectors, et_file, et_vectors):
         et_fh.write("%s\n" % et_vector)
 
 
-def _create_vectors_for_sentence(tarsqidoc, element, s,
-                                 ee_vectors, et_vectors):
-    """Adds ee and et vectors in the sentence to ee_vectors and et_vectors."""
+def _create_vectors_for_sentence(
+        tarsqidoc, element, s, ee_vectors, et_vectors):
+    """Adds vectors in the sentence to ee_vectors and et_vectors."""
     _debug_leafnodes(element, s)
     tag_vectors = _get_tag_vectors_for_sentence(tarsqidoc, s)
     for i in range(0, len(tag_vectors) - 1):
@@ -134,6 +139,17 @@ def compare_features(f1, f2):
     return cmp(f1, f2) if prefix_comparison == 0 else prefix_comparison
 
 
+def abbreviate(attr):
+    """Abbreviate the feature name, but abbreviate only the part without the
+    prefix (which can be e-, t-, e1- or e2-)."""
+    if attr[:2] in ('e-', 't'):
+        return attr[:2] + ABBREVIATIONS.get(attr[2:], attr[2:])
+    if attr[:3] in ('e1-', 'e2-'):
+        return attr[:3] + ABBREVIATIONS.get(attr[3:], attr[3:])
+    else:
+        return ABBREVIATIONS.get(attr, attr)
+
+
 class Vector(object):
 
     def __init__(self, tarsqidoc, source, source_tag, features):
@@ -162,6 +178,9 @@ class Vector(object):
     def sorted_features(self):
         return sorted(self.features.keys(), compare_features)
 
+    def add_feature(self, feat, val):
+        self.features[abbreviate(feat)] = val
+
 
 class EventVector(Vector):
 
@@ -169,6 +188,7 @@ class EventVector(Vector):
 
     def __init__(self, tarsqidoc, event):
         super(EventVector, self).__init__(tarsqidoc, event, EVENT, EVENT_FEATURES)
+        self.identifier = self.get_value(EIID)
 
     def is_event_vector(self):
         return True
@@ -188,6 +208,7 @@ class TimexVector(Vector):
 
     def __init__(self, tarsqidoc, timex):
         super(TimexVector, self).__init__(tarsqidoc, timex, TIMEX, TIMEX_FEATURES)
+        self.identifier = self.get_value(TID)
 
     def is_timex_vector(self):
         return True
@@ -198,16 +219,22 @@ class TimexVector(Vector):
 
 class PairVector(Vector):
 
-    def __init__(self, prefix1, vector1, prefix2, vector2):
+    def __init__(self, tarsqidoc, prefix1, vector1, prefix2, vector2):
+        self.tarsqidoc = tarsqidoc
         self.source = (vector1.source, vector2.source)
         self.relType = 'UNKNOWN'
         self.features = {}
         self.v1 = vector1
         self.v2 = vector2
         for att, val in vector1.features.items():
-            self.features["%s-%s" % (prefix1, att)] = val
+            #self.features["%s-%s" % (prefix1, abbreviate(att))] = val
+            self.add_feature("%s-%s" % (prefix1, att), val)
         for att, val in vector2.features.items():
-            self.features["%s-%s" % (prefix2, att)] = val
+            #self.features["%s-%s" % (prefix2, abbreviate(att))] = val
+            self.add_feature("%s-%s" % (prefix2, att), val)
+        self.identifier = "%s-%s-%s" \
+                          % (os.path.basename(tarsqidoc.source.filename),
+                             self.v1.identifier, self.v2.identifier)
 
     def __str__(self):
         return "%s %s %s" % (self.identifier, self.relType,
@@ -219,25 +246,27 @@ class EEVector(PairVector):
     """Class responsible for creating the vector between two events. Uses the
     vector of each event and adds extra features. The result looks like:
 
-       UNKNOWN e1-aspect=NONE e1-class=OCCURRENCE e1-epos=VERB e1-modality=NONE
-       e1-polarity=POS e1-stem=None e1-string=stay e1-tag=EVENT
-       e1-tense=INFINITIVE e2-aspect=NONE e2-class=OCCURRENCE e2-epos=VERB
-       e2-modality=NONE e2-polarity=POS e2-stem=None e2-string=put e2-tag=EVENT
-       e2-tense=PASTPART shiftAspect=0 shiftTense=1 """
+       wsj_0006.tml-ei80-ei81 UNKNOWN e1-asp=NONE e1-cls=ASPECTUAL
+       e1-epos=None e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete
+       e1-tag=EVENT e1-ten=PRESENT e2-asp=NONE e2-cls=OCCURRENCE e2-epos=None
+       e2-mod=NONE e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT
+       e2-ten=NONE shAsp=0 shTen=1
+
+    """
 
     # TODO: features to add: distance (number or some kind of closeness binary
     # (more or less than three/five), surrounding tokens and tags, path to top,
     # conjunctions inbetween.
 
     def __init__(self, tarsqidoc, event_vector1, event_vector2):
-        super(EEVector, self).__init__('e1', event_vector1, 'e2', event_vector2)
+        super(EEVector, self).__init__(tarsqidoc,
+                                       'e1', event_vector1, 'e2', event_vector2)
         tenses = [v.features.get(TENSE) for v in (self.v1, self.v2)]
         aspects = [v.features.get(ASPECT) for v in (self.v1, self.v2)]
-        self.features[SHIFT_TENSE] = 0 if tenses[0] == tenses[1] else 1
-        self.features[SHIFT_ASPECT] = 0 if aspects[0] == aspects[1] else 1
-        self.identifier = "%s-%s-%s" % (os.path.basename(tarsqidoc.source.filename),
-                                        self.v1.features.get(EIID),
-                                        self.v2.features.get(EIID))
+        shiftTense = 0 if tenses[0] == tenses[1] else 1
+        shiftAspect = 0 if aspects[0] == aspects[1] else 1
+        self.add_feature(SHIFT_TENSE, shiftTense)
+        self.add_feature(SHIFT_ASPECT, shiftAspect)
 
 
 class ETVector(PairVector):
@@ -246,25 +275,26 @@ class ETVector(PairVector):
     time. Uses the event and time vectors and adds extra features. The result
     looks like:
 
-       UNKNOWN e-aspect=NONE e-class=OCCURRENCE e-epos=VERB e-modality=NONE
-       e-polarity=POS e-stem=None e-string=put e-tag=EVENT e-tense=PASTPART
-       t-string=2013 t-tag=TIMEX3 t-type=DATE t-value=2013 order=et
-       signal=before """
+       NYT19980402.0453.tml-ei2264-t61 IS_INCLUDED e-asp=NONE e-cls=OCCURRENCE
+       e-epos=None e-mod=NONE e-pol=POS e-stem=None e-str=created e-tag=EVENT
+       e-ten=PAST t-str=Tuesday t-tag=TIMEX3 t-type=DATE t-value=1998-03-31
+       order=et sig=on
+
+    """
 
     # TODO: fix the signal, this method now does the same as its predecessor,
     # which is nothing. Other features to add: distance (number or some kind of
-    # closeness binary (more or less than three/five), surrounding tokens and
+    # closeness binary (eg more or less than three/five), surrounding tokens and
     # tags, path to top.
 
     def __init__(self, tarsqidoc, event_vector, timex_vector):
-        super(ETVector, self).__init__('e', event_vector, 't', timex_vector)
+        super(ETVector, self).__init__(tarsqidoc,
+                                       'e', event_vector, 't', timex_vector)
         v1_begin = event_vector.source.begin
         v2_begin = timex_vector.source.begin
-        self.features[ORDER] = 'et' if v1_begin < v2_begin else 'te'
-        self.features[SIGNAL] = 'XXXX'
-        self.identifier = "%s-%s-%s" % (os.path.basename(tarsqidoc.source.filename),
-                                        self.v1.features.get(EIID),
-                                        self.v2.features.get(TID))
+        order = 'et' if v1_begin < v2_begin else 'te'
+        self.add_feature(ORDER, order)
+        self.add_feature(SIGNAL, 'XXXX')
 
 
 def _debug(text):

@@ -1,29 +1,29 @@
-## This file contains configuration options. Option can be changed here or on the command
-## line when calling the tarsqy.py script.
+# This file contains configuration options. Option can be changed here or on
+# the command line when calling the tarsqy.py script. Options specified here
+# will be overwritten by command line options.
 
 
-## The platform, possible values are 'linux2' and 'darwin'. This is the value of the python
-## sys.platform variable
+# The platform, possible values are 'linux2' and 'darwin'. This is the value of
+# the python sys.platform variable
 
 platform = linux2
 platform = darwin
 
-## Location of the IMS TreeTagger
 
-#treetagger = /Users/marc/Documents/tools/treetagger
-treetagger = /Users/marc/Desktop/tarsqi/code/TTK/git/ttk/code/components/preprocessing/treetagger
+# Location of the IMS TreeTagger
+
 treetagger = /Applications/ADDED/nlp/treetagger
 
-## Location of the Stanford Parser
 
-stanford-parser = 
+# Location of Mallet, this should be the directory that contains the bin
+# directory
 
-## Errors are trapped by default
+mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.7
 
+
+# Several other options can be set here. Refer to tarsqi.py for descriptions.
+
+source = xml
+loglevel = 3
 trap-errors = True
 
-## Location of Perl, in case we need to override local perl with the ActiveState Perl,
-## which is the case for perl on OS 10.4
-
-perl = perl
-#perl = /usr/local/ActivePerl-5.8/bin/perl

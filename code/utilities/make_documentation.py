@@ -192,12 +192,14 @@ def print_function(name, fun, docfile):
 
 
 def get_function_name(fun):
-    try:
-        firstline = inspect.getsourcelines(fun)[0][0]
-        return firstline.strip()[4:-1]
-    except IOError:
-        # in case the function was imported
-        return fun.__name__ + ' (imported)'
+    done = False
+    lines = inspect.getsourcelines(fun)[0]
+    name = []
+    while not done:
+        name.append(lines.pop(0).strip())
+        if name[-1].endswith('):'):
+            done = True
+    return ' '.join(name)[4:-1]
 
 
 def print_function_code(identifier, name, fun):

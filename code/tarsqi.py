@@ -47,9 +47,6 @@ USAGE
              more messages will be written to the log, see utilities.logger for
              more details
 
-      --ignore=REGEXP
-             determines wat files in a directory are skipped
-
       All these options can also be set in the settings.txt file. See the manual
       in docs/manual/ for more details on the parameters.
 
@@ -111,7 +108,7 @@ class Tarsqi:
         commanid line options and the infile and outfile arguments are typically
         absolute paths, but they can be None when we are processing strings."""
         # Make sure we're in the right directory. If the toolkit crashed on a
-        # previous file it may end up being in a different directory.
+        # previous file we may be in a different directory.
         os.chdir(TTK_ROOT)
         self.input = infile
         self.output = outfile
@@ -234,15 +231,16 @@ class Options:
         for (attr, value) in self._options.items():
             if value in ('True', 'False') or value.isdigit():
                 self._options[attr] = eval(value)
-        self.genre = self.getopt('genre', None)
-        self.source = self.getopt('source', None)
-        self.platform = self.getopt('platform', None)
-        self.pipeline = self.getopt('pipeline', None)
-        self.loglevel = self.getopt('loglevel', None)
+        self.genre = self.getopt('genre')
+        self.source = self.getopt('source')
+        self.platform = self.getopt('platform')
+        self.pipeline = self.getopt('pipeline')
+        self.loglevel = self.getopt('loglevel')
         self.trap_errors = self.getopt('trap-errors', True)
         self.extension = self.getopt('extension', '')
         self.perl = self.getopt('perl', 'perl')
-        self.treetagger = self.getopt('genre', None)
+        self.mallet = self.getopt('mallet')
+        self.treetagger = self.getopt('treetagger')
 
     def __str__(self):
         return str(self._options)
@@ -268,8 +266,8 @@ def _read_arguments(args):
     """ Read the list of arguments given to the tarsqi.py script.  Return a
     tuple with three elements: processing options dictionary, input path and
     output path."""
-    options = ['genre=', 'source=', 'pipeline=', 'trap-errors=', 'content_tag=',
-               'perl=', 'loglevel=', 'ignore=', 'platform=', 'treetagger=']
+    options = ['genre=', 'source=', 'pipeline=', 'trap-errors=',
+               'perl=', 'loglevel=', 'platform=', 'treetagger=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
         return (opts, args)

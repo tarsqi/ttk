@@ -58,8 +58,10 @@ import docmodel.docstructure_parser
 import docmodel.metadata_parser
 import docmodel.source_parser
 
+import library.classifier.create_model
 import library.classifier.create_vectors
 
+import utilities.mallet
 import utilities.binsearch
 import utilities.logger
 import utilities.porterstemmer
@@ -73,8 +75,8 @@ MODULES = [
     components.blinker.main,
     components.blinker.wrapper,
 
-    components.classifier.wrapper,
     components.classifier.vectors,
+    components.classifier.wrapper,
 
     components.common_modules.chunks,
     components.common_modules.component,
@@ -94,11 +96,11 @@ MODULES = [
     components.gutime.wrapper,
     # components.gutime.btime,
 
-    components.merging.wrapper,
     components.merging.sputlink.main,
     components.merging.sputlink.graph,
     components.merging.sputlink.objects,
     components.merging.sputlink.utils,
+    components.merging.wrapper,
 
     components.preprocessing.abbreviation,
     components.preprocessing.tokenizer,
@@ -110,16 +112,17 @@ MODULES = [
     components.slinket.main,
     components.slinket.wrapper,
 
-    docmodel.main,
     docmodel.document,
     docmodel.docstructure_parser,
+    docmodel.main,
     docmodel.metadata_parser,
     docmodel.source_parser,
 
+    library.classifier.create_model,
     library.classifier.create_vectors,
 
     utilities.binsearch,
     utilities.logger,
+    utilities.mallet,
     utilities.porterstemmer,
-
 ]
