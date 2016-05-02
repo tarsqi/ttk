@@ -109,7 +109,8 @@ class MalletClassifier(object):
 
     def _make_pipe(self, classifier):
         """Open a pipe into the classifier command."""
-        return Popen(self._command(classifier), shell=True, close_fds=True,
+        close_fds = False if sys.platform == 'win32' else True
+        return Popen(self._command(classifier), shell=True, close_fds=close_fds,
                      stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     def _command(self, classifier):

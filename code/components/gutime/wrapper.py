@@ -109,7 +109,9 @@ def _run_gutime_on_string(input_string):
     """Run the GUTIME Perl script. This takes a string and returns a string."""
     command = ["perl", "TimeTag.pl"]
     pipe = subprocess.PIPE
-    p = subprocess.Popen(command, stdin=pipe, stdout=pipe, stderr=pipe)
+    close_fds = False if sys.platform == 'win32' else True
+    p = subprocess.Popen(command, stdin=pipe, stdout=pipe, stderr=pipe,
+                         close_fds=close_fds)
     (result, error) = p.communicate(input_string)
     if error:
         logger.error(error)
