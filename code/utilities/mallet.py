@@ -1,12 +1,13 @@
-"""
+"""Interface module to Mallet.
 
-Module to provide an interface to Mallet.
-
-Defines a couple of methods that create Mallet commands.
+Defines a couple of methods that create Mallet commands and a class that
+provides an alternative interface.
 
 """
 
 import os
+from subprocess import Popen, PIPE
+
 
 def cvs2vectors_command(mallet, vectors, output=False):
     """The command for creating a binary vector."""
@@ -34,8 +35,8 @@ def train_model_command(mallet, vectors, trainer='MaxEnt',
     # report = "--report test:accuracy test:confusion train:raw"
     # report = "--report test:f1:AFTER test:confusion"
     report = "--report test:accuracy test:confusion"
-    stdout = "%s.stdout.txt" % vectors
-    stderr = "%s.stderr.txt" % vectors
+    stdout = "%s.out" % vectors
+    stderr = "%s.err" % vectors
     command = "sh %s train-classifier %s %s %s%s %s > %s 2> %s" \
               % (os.path.join(mallet, 'bin', 'mallet'),
                  vects_in, train, model, crossval, report, stdout, stderr)
@@ -44,6 +45,9 @@ def train_model_command(mallet, vectors, trainer='MaxEnt',
 
 def classify_command(mallet, vectors, model):
     """The command for running the classifier over a vector file."""
+    # TODO: it is not clear whether the --line-regexp, --name and --data options
+    # are needed, in fact, limited testing showed they are not; test this a
+    # little bit more and then delete these options.
     regexp = "--line-regex \"^(\S*)[\s,]*(\S*)[\s]*(.*)$\""
     name_and_data = "--name 1 --data 3"
     vectors_in = "--input %s" % vectors
@@ -57,19 +61,58 @@ def classify_command(mallet, vectors, model):
     return command
 
 
-# TODO. Currently we take the command and then run a simple os.system. It
-# doesn't really matter for model building, but for classification we should at
-# some point use subprocess to do this so we can write to and read from an open
-# pipe. There should be some code to support that in this script.
+class MalletClassifier(object):
 
-# Here are some snippets:
-#
-# def GetNer(ner_model):
-#   command = 'java -Xmx256m -cp %s/mallet-2.0.6/lib/mallet-deps.jar:%s/mallet-2.0.6/class
-#       cc.mallet.fst.SimpleTaggerStdin --weights sparse --model-file %s/models/ner/%s'
-#       % (BASE_DIR, BASE_DIR, BASE_DIR, ner_model)
-#   return subprocess.Popen(command, shell=True, close_fds=True,
-#       stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-#
-# ner.stdin.write(("\t".join(seq_features) + "\n").encode('utf8'))
-# ner.stdout.readline().rstrip('\n').strip(' ')
+    """Currently we take the command and then run a simple os.system(). It
+    doesn't really matter for model building, but for classification we should
+    at some point use subprocess to do this so we can write to and read from an
+    open pipe. This class has the code to do that, but it is not used yet. """
+
+    def __init__(self, mallet, name='--name 1', data='--data 3',
+                 regexp="--line-regex \"^(\S*)[\s,]*(\S*)[\s]*(.*)$\""):
+        """Initialize a classifier by setting its options. All options are
+        optional except for mallet which is the directory where Mallet lives."""
+        self.mallet = os.path.join(mallet, 'bin', 'mallet')
+        # the following are not used when the command is assembled, but some
+        # testing is required to see if they are needed after all
+        self.name = name
+        self.data = data
+        self.regexp = regexp
+        # a dictionary of classifier models
+        self.classifiers = {}
+
+    def __str__(self):
+        return "<MalletClassifier %s>" % self.mallet
+
+    def pp(self):
+        """Pretty priniter for the MalletClassifier."""
+        print "<MalletClassifier>"
+        print "   directory  -  %s" % self.mallet
+        for classifier in self.classifiers.keys():
+            print "   model      -  %s" % classifier
+
+    def add_classifier(self, classifier_path):
+        self.classifiers[classifier_path] = self._make_pipe(classifier_path)
+        self.classifiers[classifier_path].stdin.write("\n")
+
+    def classify_file(self):
+        """Classify a file and write results to a file. This assumes that input
+        vectors are given as a filename and that output goes to a file (that is,
+        both vectors and output are not None). This would run a command where
+        the command would be very similar to what classify_command() does."""
+        pass
+
+    def classify_line(self, classifier, line):
+        self.classifiers[classifier].stdin.write(line)
+        result = self.classifiers[classifier].stdout.readline()
+        return result
+
+    def _make_pipe(self, classifier):
+        """Open a pipe into the classifier command."""
+        return Popen(self._command(classifier), shell=True, close_fds=True,
+                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+    def _command(self, classifier):
+        """Assemble the classifier command."""
+        return "sh %s classify-file --input - --output - --classifier %s" \
+            % (self.mallet, classifier)

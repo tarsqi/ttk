@@ -155,6 +155,7 @@ class Vector(object):
     def __init__(self, tarsqidoc, source, source_tag, features):
         self.source = source
         string = tarsqidoc.source.text[source.begin:source.end]
+        string = '_'.join(string.split())
         self.features = {TAG: source_tag,
                          STRING: string}
         for feat in features:

@@ -23,11 +23,12 @@ USAGE
              medial etcetera, but it is not yet used
 
       --source=SOURCE_NAME
-             the source of the file, None by default; this reflects the source
-             of the document and allows later components, especially the source
-             parser, metadata parser and document structure parser, to be
-             sensitive to idiosyncratic properties of the text (for example,
-             location of the DCT and the format of the text)
+             the source of the file; this reflects the source type of the
+             document and allows components, especially the source parser,
+             metadata parser and document structure parser, to be sensitive to
+             idiosyncratic properties of the text (for example, location of the
+             DCT and the format of the text); xml by default, other source types
+             are text and ttk
 
       --pipeline=LIST
              comma-separated list of Tarsqi components, defaults to the full
@@ -38,6 +39,23 @@ USAGE
 
       --treetagger=PATH
              path to the TreeTagger
+
+      --mallet
+             Location of Mallet, this should be the directory that contains the
+             bin directory
+
+      --classifier
+             The classifier used by the Mallet classifier, the default is MaxEnt
+
+      --ee-model
+             The model used for classifying event-event tlinks, this is a model
+             file in components/classifier/models, the default is set to
+             tb-vectors.ee.model
+
+      --et-model
+             The model used for classifying event-timex tlinks, this is a model
+             file in components/classifier/models, the default is set to
+             tb-vectors.et.model
 
       --trap-errors=BOOLEAN
              set error trapping, errors are trapped by default
@@ -184,8 +202,8 @@ class Tarsqi:
             try:
                 wrapper(tarsqidocument).process()
             except:
-                print "%s error:\n\t%s\n\t%s\n" \
-                    % (name, sys.exc_type, sys.exc_value)
+                logger.error("%s error:\n\t%s\n\t%s\n"
+                             % (name, sys.exc_type, sys.exc_value))
         else:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
@@ -241,6 +259,9 @@ class Options:
         self.perl = self.getopt('perl', 'perl')
         self.mallet = self.getopt('mallet')
         self.treetagger = self.getopt('treetagger')
+        self.classifier = self.getopt('classifier')
+        self.ee_model = self.getopt('ee-model')
+        self.et_model = self.getopt('et-model')
 
     def __str__(self):
         return str(self._options)
@@ -267,7 +288,8 @@ def _read_arguments(args):
     tuple with three elements: processing options dictionary, input path and
     output path."""
     options = ['genre=', 'source=', 'pipeline=', 'trap-errors=',
-               'perl=', 'loglevel=', 'platform=', 'treetagger=']
+               'perl=', 'loglevel=', 'platform=', 'treetagger=',
+               'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
         return (opts, args)

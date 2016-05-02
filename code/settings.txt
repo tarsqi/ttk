@@ -19,6 +19,15 @@ treetagger = /Applications/ADDED/nlp/treetagger
 # directory
 
 mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.7
+mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.8RC3
+
+
+# Other options used for the classifier, ee-model and et-model should refer to a
+# model in components/classifier/models
+
+classifier = MaxEnt
+ee-model = tb-vectors.ee.model
+et-model = tb-vectors.et.model
 
 
 # Several other options can be set here. Refer to tarsqi.py for descriptions.
@@ -26,4 +35,3 @@ mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.7
 source = xml
 loglevel = 3
 trap-errors = True
-

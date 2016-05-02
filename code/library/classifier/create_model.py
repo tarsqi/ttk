@@ -8,7 +8,8 @@ Options:
 
    --mallet-dir DIR
 
-      Directory where Mallet lives, it should contain the bin subdirectory.
+      Directory where Mallet lives, it should contain the bin subdirectory. The
+      default is set by the MALLET variable below.
 
    --cross-validation N
 
@@ -22,14 +23,14 @@ Options:
       cs.mallet.classify package. The default is MaxEnt.
 
 The vectors file is the text file created by create_vectors.py. By default, this
-will use the MaxEnt classifier and perfrom no cross validation. Edit the TRAINER
+will use the MaxEnt classifier and perform no cross validation. Edit the TRAINER
 and CROSS_VALIDATION variables to change this behaviour.
 
 The script creates the following files:
 
    <VECTORS_FILE>.model
-   <VECTORS_FILE>.stderr.out
-   <VECTORS_FILE>.stdout.txt
+   <VECTORS_FILE>.err
+   <VECTORS_FILE>.out
    <VECTORS_FILE>.vect
 
 The first one is the one needed for running the classifier. Note that if cross
