@@ -87,8 +87,8 @@ that tags cannot be inserted. This is a known issue with integrating GUTIME tags
 and pre-processor tags which does come at the expense of missing some training
 instances for long time expressions.
 
-In any case, as of late April 2016 running this script resulted in 1516 vectors
-in vectors.ee and 1049 vectors in vectors.et. These vectors were used to build
+In any case, as of late April 2016 running this script resulted in 1515 vectors
+in vectors.ee and 1029 vectors in vectors.et. These vectors were used to build
 the model that ships with the Tarsqi Toolkit.
 
 """
@@ -132,6 +132,7 @@ INVERSE = {
     AFTER: BEFORE
 }
 
+# needed for the source parser
 options = Options([('--source', 'ttk')])
 
 
@@ -184,12 +185,12 @@ def collect_tlinks(tarsqidoc):
 
 
 def write_vectors(ee_vectors, et_vectors):
-    """Write those vectors that have a relType that is not UNKNOWN."""
+    """Write those vectors that have a relType that is not None."""
     for v in ee_vectors:
-        if v.relType != 'UNKNOWN':
+        if v.relType is not None:
             ee_fh.write("%s\n" % v)
     for v in et_vectors:
-        if v.relType != 'UNKNOWN':
+        if v.relType is not None:
             et_fh.write("%s\n" % v)
 
 

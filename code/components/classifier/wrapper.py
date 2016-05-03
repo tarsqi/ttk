@@ -55,19 +55,15 @@ class ClassifierWrapper:
         pipes each line to the classifier, not using any temporary files. It has
         one weird problem, which is that when we process the very first line the
         identifier is missing from the output."""
+        # TODO: when this is tested enough let it replace process()
         (ee_vectors, et_vectors) \
             = vectors.collect_tarsqidoc_vectors(self.document)
         mc = mallet.MalletClassifier(self.mallet)
-        mc.add_classifier(self.ee_model)
-        mc.add_classifier(self.et_model)
-        ee_results = []
-        et_results = []
-        for v in ee_vectors:
-            result = mc.classify_line(self.ee_model, "%s\n" % v)
-            ee_results.append(_fix_missing_id(v, result))
-        for v in et_vectors:
-            result = mc.classify_line(self.et_model, "%s\n" % v)
-            et_results.append(_fix_missing_id(v, result))
+        mc.add_classifiers(self.ee_model, self.et_model)
+        ee_in = [str(v) for v in ee_vectors]
+        et_in = [str(v) for v in et_vectors]
+        ee_results = mc.classify_vectors(self.ee_model, ee_in)
+        et_results = mc.classify_vectors(self.et_model, et_in)
         self._add_links_future(ee_results, et_results)
 
     def _add_links(self, ee_vectors, et_vectors, ee_results, et_results):
@@ -77,9 +73,9 @@ class ClassifierWrapper:
             vector_file = open(f1)
             classifier_file = open(f2)
             for line in vector_file:
-                vector_id = self._parse_vector_identifier(line)
+                vector_id = _get_vector_identifier(line)
                 classifier_line = classifier_file.readline()
-                result_id, scores = self._parse_classifier_line(classifier_line)
+                result_id, scores = mallet.parse_classifier_line(classifier_line)
                 if vector_id != result_id:
                     print 'WARNING: vector and classification do not match'
                     continue
@@ -94,33 +90,22 @@ class ClassifierWrapper:
     def _add_links_future(self, ee_results, et_results):
         """Insert new tlinks into the document using the results from the
         classifier."""
+        # TODO: when this is tested enough let it replace process()
         for classifier_results in (ee_results, et_results):
             for line in classifier_results:
-                result_id, scores = self._parse_classifier_line(line)
+                result_id, scores = mallet.parse_classifier_line(line)
                 id1 = result_id.split('-')[-2]
                 id2 = result_id.split('-')[-1]
-                attrs = { RELTYPE: scores[0][1],
-                          ORIGIN: "%s-%.4f" % (CLASSIFIER, scores[0][0]),
-                          _arg1_attr(id1): id1,
-                          _arg2_attr(id2): id2 }
+                reltype = scores[0][1]
+                origin = "%s-%.4f" % (CLASSIFIER, scores[0][0])
+                attrs = { RELTYPE: reltype, ORIGIN: origin,
+                          _arg1_attr(id1): id1, _arg2_attr(id2): id2 }
                 self.document.tags.add_tag(TLINK, -1, -1, attrs)
 
-    def _parse_vector_identifier(self, line):
-        """Return the identifier from the vector string. """
-        return line.split()[0]
 
-    def _parse_classifier_line(self, line):
-        """Extract relType, confidence correct/incorrect and correct relation
-        from the classifier result line."""
-        fields = line.strip().split()
-        identifier = fields.pop(0)
-        scores = []
-        while fields:
-            rel = fields.pop(0)
-            score = float(fields.pop(0))
-            scores.append((score, rel))
-        scores = reversed(sorted(scores))
-        return (identifier, list(scores))
+def _get_vector_identifier(line):
+    """Return the identifier from the vector string. """
+    return line.split()[0]
 
 
 def _arg1_attr(identifier):
@@ -133,13 +118,3 @@ def _arg2_attr(identifier):
     """Determine the attribute name for the second argument."""
     return RELATED_TO_TIME if identifier.startswith('t') \
         else RELATED_TO_EVENT_INSTANCE
-
-
-def _fix_missing_id(vector, result):
-    """This is to fix a weird problem with the MalletClassifier where when
-    reading the first line from the output the identifier is missing. Use the
-    vector's identifier to add it back on."""
-    if result.startswith("\t"):
-        return "%s%s" % (vector.identifier, result)
-    else:
-        return result

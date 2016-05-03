@@ -1,15 +1,15 @@
-"""This module is responsible for creating the vectors in text format that are
-input to the mallet trainer and classifier.
+"""This module is responsible for creating the vectors that are input to the
+mallet trainer and classifier.
 
 If input is created for the classifier then it looks like
 
-   wsj_0006.tml-ei80-ei81 UNKNOWN e1-asp=NONE e1-class=ASPECTUAL e1-epos=None
+   wsj_0006.tml-ei80-ei81 None e1-asp=NONE e1-class=ASPECTUAL e1-epos=None
    e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete e1-tag=EVENT
    e1-ten=PRESENT e2-asp=NONE e2-class=OCCURRENCE e2-epos=None e2-mod=NONE
    e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT e2-ten=NONE shAsp=0
    shTen=1
 
-If input is create for model building then it looks like
+If input is created for model building then it looks like
 
    wsj_0006.tml-ei80-ei81 ENDS e1-asp=NONE e1-class=ASPECTUAL e1-epos=None
    e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete e1-tag=EVENT
@@ -17,7 +17,7 @@ If input is create for model building then it looks like
    e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT e2-ten=NONE shAsp=0
    shTen=1
 
-The only difference is in the second column.
+The only difference is in the second column (no relation versus a relation).
 
 """
 
@@ -45,7 +45,8 @@ SIGNAL = 'signal'
 # use abbreviations in features for efficiency
 ABBREVIATIONS = {'aspect': 'asp', 'tense': 'ten', 'class': 'cls',
                  'modality': 'mod', 'polarity': 'pol', 'string': 'str',
-                 'shiftTense': 'shTen', 'shiftAspect': 'shAsp', 'signal': 'sig'}
+                 'shiftTense': 'shTen', 'shiftAspect': 'shAsp',
+                 'signal': 'sig'}
 
 DEBUG = False
 #DEBUG = True
@@ -223,7 +224,7 @@ class PairVector(Vector):
     def __init__(self, tarsqidoc, prefix1, vector1, prefix2, vector2):
         self.tarsqidoc = tarsqidoc
         self.source = (vector1.source, vector2.source)
-        self.relType = 'UNKNOWN'
+        self.relType = None
         self.features = {}
         self.v1 = vector1
         self.v2 = vector2

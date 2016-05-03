@@ -4,7 +4,7 @@ tb-vectors.ee
 tb-vectors.et
 data
 *trial?
-*stderr.txt
-*stdout.txt
+*.err
+*.out
 *vect
 *model

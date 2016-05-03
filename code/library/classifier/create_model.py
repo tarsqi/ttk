@@ -79,7 +79,6 @@ if __name__ == '__main__':
 
     options = ["mallet-dir=", "cross-validation=", "trainer="]
     opts, args = getopt.getopt(sys.argv[1:], '', options)
-    print opts, args
     for opt, val in opts:
         if opt == '--mallet-dir':
             MALLET = val

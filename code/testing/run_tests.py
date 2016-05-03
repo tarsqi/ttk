@@ -106,8 +106,8 @@ class TarsqiEntityTest(TarsqiTest):
                 self.attributes.append(specification_element)
 
     def run(self, pipeline):
-        """Run the entity test using the pipeline as handed in from the same method on
-        subclasses. Results are written to the standard output."""
+        """Run the entity test using the pipeline as handed in from the same
+        method on subclasses. Results are written to the standard output."""
         try:
             td = run_pipeline(pipeline, self.sentence)
             tag = get_tag(td, self.tag, self.o1, self.o2)

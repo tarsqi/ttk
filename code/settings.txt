@@ -16,7 +16,7 @@ treetagger = /Applications/ADDED/nlp/treetagger
 
 
 # Location of Mallet, this should be the directory that contains the bin
-# directory
+# directory. The version 2.0.8 release candidate is somewhat faster.
 
 mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.7
 mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.8RC3
