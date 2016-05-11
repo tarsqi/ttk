@@ -86,8 +86,8 @@ def classify_command(mallet, vectors, model):
     stdout = "%s.out" % vectors
     stderr = "%s.err" % vectors
     command = "sh %s classify-file %s %s %s %s %s > %s 2> %s" \
-        % (os.path.join(mallet, 'bin', mallet_script), regexp, name_and_data,
-            vectors_in, classifier, output, stdout, stderr)
+              % (os.path.join(mallet, 'bin', mallet_script), regexp, name_and_data,
+                 vectors_in, classifier, output, stdout, stderr)
     command = command[3:] if sys.platform == 'win32' else command
     return command
 
