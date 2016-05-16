@@ -27,6 +27,8 @@ import logger
 
 DEBUG = False
 
+mallet_script = 'mallet.bat' if sys.platform == 'win32' else 'mallet'
+
 
 def cvs2vectors_command(mallet, vectors, output=False):
     """The command for creating a binary vector file from a text vector
@@ -64,7 +66,7 @@ def train_model_command(mallet, vectors, trainer='MaxEnt',
     stdout = "%s.out" % vectors
     stderr = "%s.err" % vectors
     command = "sh %s train-classifier %s %s %s%s %s > %s 2> %s" \
-              % (os.path.join(mallet, 'bin', 'mallet'),
+              % (os.path.join(mallet, 'bin', mallet_script),
                  vects_in, train, model, crossval, report, stdout, stderr)
     return command
 
@@ -84,8 +86,9 @@ def classify_command(mallet, vectors, model):
     stdout = "%s.out" % vectors
     stderr = "%s.err" % vectors
     command = "sh %s classify-file %s %s %s %s %s > %s 2> %s" \
-              % (os.path.join(mallet, 'bin', 'mallet'), regexp, name_and_data,
+              % (os.path.join(mallet, 'bin', mallet_script), regexp, name_and_data,
                  vectors_in, classifier, output, stdout, stderr)
+    command = command[3:] if sys.platform == 'win32' else command
     return command
 
 
@@ -115,7 +118,7 @@ class MalletClassifier(object):
                  regexp="--line-regex \"^(\S*)[\s,]*(\S*)[\s]*(.*)$\""):
         """Initialize a classifier by setting its options. All options are
         optional except for mallet which is the directory where Mallet lives."""
-        self.mallet = os.path.join(mallet, 'bin', 'mallet')
+        self.mallet = os.path.join(mallet, 'bin', mallet_script)
         # the following are not used when the command is assembled, but some
         # testing is required to see if they are needed after all, my hunch is
         # that they aren't (see below)
