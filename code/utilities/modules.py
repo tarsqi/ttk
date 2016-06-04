@@ -37,6 +37,7 @@ import components.gutime.wrapper
 import components.merging.wrapper
 
 import components.preprocessing.abbreviation
+import components.preprocessing.chunker
 import components.preprocessing.tokenizer
 import components.preprocessing.wrapper
 
@@ -103,6 +104,7 @@ MODULES = [
     components.merging.wrapper,
 
     components.preprocessing.abbreviation,
+    components.preprocessing.chunker,
     components.preprocessing.tokenizer,
     components.preprocessing.wrapper,
 
