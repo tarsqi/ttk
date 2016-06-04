@@ -42,8 +42,8 @@ abbrev_pattern = re.compile(r'^([A-Z]\.)+$')
 
 punctuation_pattern = re.compile(r'[.,!?\'\`\";:\]\[\(\){}\<\>]')
 
-# may want to use an exaustive list instead (see contractions.txt), but note that this
-# pattern also covers possessives
+# may want to use an exaustive list instead (see contractions.txt), but note
+# that this pattern also covers possessives
 contraction_pattern1 = re.compile(r"(\w+)(n't)$", re.IGNORECASE)
 contraction_pattern2 = re.compile(r"(\w+)'(t|d|s|m|re|ll|ve|s)$", re.IGNORECASE)
 
@@ -51,27 +51,31 @@ contraction_pattern2 = re.compile(r"(\w+)'(t|d|s|m|re|ll|ve|s)$", re.IGNORECASE)
 def test_space(char):
     return char.isspace()
 
+
 def test_nonspace(char):
     return not char.isspace()
 
+
 def token_is_abbreviation(token):
-    """Return True if token is an abbreviation or acronym. Note that this overgeneralizes
-    since it catches all initials, including 'So would I. This is...'. Decided that it was
-    better to miss some sentence boundaries than adding wrong boundaries."""
+    """Return True if token is an abbreviation or acronym. Note that this
+    overgeneralizes since it catches all initials, including 'So would I. This
+    is...'. Decided that it was better to miss some sentence boundaries than
+    adding wrong boundaries."""
     return token in dict_abbrevs or abbrev_pattern.search(token)
 
-    
+
 class Tokenizer:
 
-    """Class to create lex tags and s tags given a text string that is not modified. The
-    lexes and sentences are gathered in the variables with the same name. The token
-    variable contains intermediate data, basically starting with a list of non-whitespace
-    character sequences, splitting and merging these sequences as processing continues.
+    """Class to create lex tags and s tags given a text string that is not
+    modified. The lexes and sentences are gathered in the variables with the
+    same name. The token variable contains intermediate data, basically starting
+    with a list of non-whitespace character sequences, splitting and merging
+    these sequences as processing continues.
 
-    One thing that should be added is functionality that forces sentence boundaries, so
-    that document structure level processing or prior tags can help correctly tokenize
-    headers and such."""
-    
+    One thing that should be added is functionality that forces sentence
+    boundaries, so that document structure level processing or prior tags can
+    help correctly tokenize headers and such."""
+
     def __init__(self, text):
         self.text = text
         self.length = len(text)
@@ -119,7 +123,7 @@ class Tokenizer:
             else:
                 return (begin, end, self.text[begin:end])
         return (begin, end, self.text[begin:end])
-    
+
     def _set_lexes(self, ):
         """Set lexes list by flattening self.tokens. Sometimes empty core tokens are
         created, filter those out at this step."""
@@ -129,7 +133,7 @@ class Tokenizer:
                 if tok[0] != tok[1]:
                     self.lexes.append(tok)
             self.lexes += p2
-            
+
     def _set_sentences(self):
 
         def is_sentence_final_abbrev(tok, puncts2):
@@ -141,7 +145,7 @@ class Tokenizer:
         def has_eos(puncts):
             token_has_eos = (lambda token: token[2] in ('.', '?', '!'))
             return filter( token_has_eos, puncts)
-            
+
         if self.tokens:
             first = self._first_token_start()
             for (puncts1, tok, puncts2) in self.tokens:
@@ -151,13 +155,13 @@ class Tokenizer:
                     last = tok[1]
                     if puncts2:
                         last = puncts2[-1][1]
-                    self.sentences.append( [first, last])
+                    self.sentences.append([first, last])
                     first = None
 
-                    
+
     def _first_token_start(self):
-        """Return the begin position of the first token. This could be of the core token
-        or of a punctuation marker that was split off."""
+        """Return the begin position of the first token. This could be of the
+        core token or of a punctuation marker that was split off."""
         first = self.tokens[0]
         tok = first[1]
         if first[0]:
@@ -165,18 +169,17 @@ class Tokenizer:
         return tok[0]
 
     def _split_word(self, word):
-        """Split a word into it's constitutent parts. A word is a tuple of begin offset, end
-        offset and a sequence of non-whitespace characters."""
+        """Split a word into it's constitutent parts. A word is a tuple of begin
+        offset, end offset and a sequence of non-whitespace characters."""
         (opening_puncts, core_token, closing_puncts) = self._split_punctuation(word)
         if closing_puncts and closing_puncts[0][2] == '.':
             (core_token, closing_puncts) = \
                 self._restore_abbreviation(core_token, closing_puncts)
         return (opening_puncts, core_token, closing_puncts)
 
-
     def _restore_abbreviation(self, core_token, closing_puncts):
-        """Glue the period back onto the core token if the first closing punctuation is a period
-        and the core token is a known abbreviation."""
+        """Glue the period back onto the core token if the first closing punctuation
+        is a period and the core token is a known abbreviation."""
         last = closing_puncts[-1][1]
         (space, next_token) = self.slurp_token(last)
         restored = core_token[2] + '.'
@@ -199,9 +202,10 @@ class Tokenizer:
         core_token = word
 
         (off1, off2, tok) = word
-    
+
         while True:
-            if not tok: break
+            if not tok:
+                break
             found_punc = punctuation_pattern.search(tok[0])
             if found_punc:
                 opening_puncts.append((off1, off1 + 1, tok[0]))
@@ -212,7 +216,8 @@ class Tokenizer:
                 break
     
         while True:
-            if not tok: break
+            if not tok:
+                break
             found_punc = punctuation_pattern.search(tok[-1])
             if found_punc:
                 closing_puncts.append((off2 - 1, off2, tok[-1]))
@@ -231,14 +236,14 @@ class Tokenizer:
     def _split_contractions(self):
         new_tokens = []
         for (puncts1, tok, puncts2) in self.tokens:
-            new_tokens.append( self._split_contraction(puncts1, tok, puncts2) )
+            new_tokens.append(self._split_contraction(puncts1, tok, puncts2))
         self.tokens = new_tokens
 
     def _split_contraction(self, puncts1, tok, puncts2):
         def split(tok, i):
             return [(tok[0], tok[0]+i, tok[2][:i]), (tok[0]+i, tok[1], tok[2][i:])]
-        if not "'" in tok[2]:
-            return (puncts1, [tok], puncts2) 
+        if "'" not in tok[2]:
+            return (puncts1, [tok], puncts2)
         found_neg = contraction_pattern1.search(tok[2])
         if found_neg:
             idx = found_neg.start(2)
@@ -247,7 +252,7 @@ class Tokenizer:
         if found_pos:
             idx = found_pos.start(2) - 1
             return (puncts1, split(tok, idx), puncts2)
-        return (puncts1, [tok], puncts2) 
+        return (puncts1, [tok], puncts2)
 
     def get_tokenized_as_xml(self):
         """Return the tokenized text as an XML string. Crappy way of printing
@@ -255,41 +260,41 @@ class Tokenizer:
         on TarsqiDocument (now there is a method on DocSource that probably
         needs to be moved."""
         lex_open_function = lambda lex: u"<lex begin='%s' end='%s'>" % (lex[0], lex[1])
-        return self.get_tokenized( xml = True,
-                                   s_open = u"<s>\n",
-                                   s_close = u"</s>\n",
-                                   lex_open = lex_open_function,
-                                   lex_close = u"</lex>\n",
-                                   lexindent = u"  ")
+        return self.get_tokenized(xml=True,
+                                  s_open=u"<s>\n",
+                                  s_close=u"</s>\n",
+                                  lex_open=lex_open_function,
+                                  lex_close=u"</lex>\n",
+                                  lexindent=u"  ")
     
     def get_tokenized_as_string(self):
         """Return the tokenized text as a string where sentences are on one line
         and tokens are separated by spaces. Not that each sentence ends with a
         space because each token is followed by a space."""
         lex_open_function = (lambda lex: u'')
-        return self.get_tokenized( xml = False,
-                                   s_open = u'',
-                                   s_close = u"\n",
-                                   lex_open = lex_open_function,
-                                   lex_close = u' ',
-                                   lexindent = u'')
+        return self.get_tokenized(xml=False,
+                                  s_open=u'',
+                                  s_close=u"\n",
+                                  lex_open=lex_open_function,
+                                  lex_close=u' ',
+                                  lexindent=u'')
 
-    
+
     def get_tokenized(self, xml, s_open, s_close, lex_open, lex_close, lexindent):
         
         """Return the tokenized text as a string."""
 
         self._set_tag_indexes()
-        
+
         fh = StringIO()
-        
+
         if xml:
             fh.write(u"<TOKENS>\n")
-        
+
         (in_lex, in_sent, off) = (False, False, 0)
 
         for off in range(len(self.text) + 1):
-            
+
             char = self.text[off] if off < len(self.text) else None
             closing_lex = self.closing_lexes.get(off)
             opening_lex = self.opening_lexes.get(off)
@@ -308,21 +313,23 @@ class Tokenizer:
                 in_sent = True
             if opening_lex:
                 indent = ''
-                if in_sent: indent = lexindent
+                if in_sent:
+                    indent = lexindent
                 fh.write(indent + lex_open(opening_lex))
                 in_lex = True
-                
+
             if in_lex and char is not None:
                 write_char = char
-                if xml: write_char = escape(char)
+                if xml:
+                    write_char = escape(char)
                 fh.write(write_char)
-                
+
         if xml:
             fh.write(u"</TOKENS>\n")
 
         return fh.getvalue()
 
-    
+
     def _set_tag_indexes(self):
         """Populate dictionaries that stire tags on first and last offsets."""
         self.opening_lexes = {}
@@ -339,75 +346,65 @@ class Tokenizer:
 
 class TokenizedText:
 
-    """This class takes a list of sentences of the form (begin_offset, end_offset) and a
-    list of tokens of the form (begin_offset, end_offset, text), and creates a list of
-    elements. Each element can either be a TokenizedSentence or a TokenizedLex (the latter
-    for a token outside a sentence tag)."""
-    
+    """This class takes a list of sentences of the form (begin_offset, end_offset)
+    and a list of tokens of the form (begin_offset, end_offset, text), and
+    creates a list of elements. Each element can either be a TokenizedSentence
+    or a TokenizedLex (the latter for a token outside a sentence tag)."""
+
     def __init__(self, sentences, tokenizer_lexes):
-
         self.sentences = []
-
         lexes = tokenizer_lexes[:]
-        
         for s in sentences:
-
             (first, last) = s[0:2]
-
-            # slurp in lexes that occur before the first sentence boundary, will typically
-            # only occur for the very first sentence
+            # slurp in lexes that occur before the first sentence boundary, will
+            # typically only occur for the very first sentence
             while lexes:
                 lex = lexes[0]
                 if lex[0] < first:
-                    self.sentences.append( TokenizedLex(lex[0], lex[1], lex[2]) )
+                    self.sentences.append(TokenizedLex(lex[0], lex[1], lex[2]))
                     lexes.pop(0)
                 else:
                     break
-                
-            self.sentences.append( TokenizedSentence(first, last) )
-
+            self.sentences.append(TokenizedSentence(first, last))
             while lexes:
                 lex = lexes[0]
                 if lex[0] >= first and lex[1] <= last:
-                    self.sentences[-1].append( TokenizedLex(lex[0], lex[1], lex[2]) )
+                    self.sentences[-1].append(TokenizedLex(lex[0], lex[1], lex[2]))
                     lexes.pop(0)
                 else:
                     break
-
-        # put all remaining lexes into one sentence, only does something when there are no
-        # sentences
+        # put all remaining lexes into one sentence, only does something when
+        # there are no sentences
         if lexes:
             (first, last) = (lexes[0][0], lexes[-1][1])
-            self.sentences.append( TokenizedSentence(first, last) )
+            self.sentences.append(TokenizedSentence(first, last))
             while lexes:
-                #lex = lexes_copy[0]
                 lex = lexes[0]
-                self.sentences[-1].append( TokenizedLex(lex[0], lex[1], lex[2]) )
+                self.sentences[-1].append(TokenizedLex(lex[0], lex[1], lex[2]))
                 lexes.pop(0)
-
 
     def as_string(self):
         str = u''
         for s in self.sentences:
             str += s.as_string()
         return str
-    
+
     def as_vertical_string(self):
         str = ''
         for s in self.sentences:
             str += "<s>\n" + s.as_vertical_string()
         return str
-    
+
     def as_pairs(self):
-        """Return self as a list of pairs, where usually each pair contains a string and a
-        TokenizedLex instance. Also inserts a ('<s>', None) for the beginning of each
-        sentence.  This is intended to take tokenized text and prepare it for the
-        TreeTagger (which does not recognize </s> tags."""
+        """Return self as a list of pairs, where usually each pair contains a
+        string and a TokenizedLex instance. Also inserts a ('<s>', None) for the
+        beginning of each sentence.  This is intended to take tokenized text and
+        prepare it for the TreeTagger (which does not recognize </s> tags."""
         objects = []
         for s in self.sentences:
             objects += [("<s>", None)] + s.as_pairs()
         return objects
-    
+
     def print_as_string(self):
         for s in self.sentences:
             s.print_as_string()
@@ -417,7 +414,6 @@ class TokenizedText:
         for s in self.sentences:
             s.print_as_xmlstring()
         print "</TOKENS>"
-
 
 
 class TokenizedSentence:
@@ -448,10 +444,10 @@ class TokenizedSentence:
             t.print_as_xmlstring(indent='  ')
         print '</s>'
 
-            
+
 class TokenizedLex:
 
-    def __init__(self, b, e , text):
+    def __init__(self, b, e, text):
         self.begin = b
         self.end = e
         self.text = text
@@ -476,7 +472,6 @@ class TokenizedLex:
               (indent, self.begin, self.end, escape(self.text))
 
 
-
 if __name__ == '__main__':
 
     import sys, codecs
@@ -484,11 +479,11 @@ if __name__ == '__main__':
 
     in_file = sys.argv[1]
     t1 = time()
-    tk = Tokenizer( codecs.open(in_file, encoding="utf-8").read() )
+    tk = Tokenizer(codecs.open(in_file, encoding="utf-8").read())
     for i in range(1):
         text = tk.tokenize_text()
-    #print tk.sentences
-    #print tk.lexes
+    # print tk.sentences
+    # print tk.lexes
     print tk.get_tokenized_as_xml()
     print tk.get_tokenized_as_string()
     print "\nDONE, processing time was %.3f seconds\n" % (time() - t1)

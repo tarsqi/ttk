@@ -142,7 +142,7 @@ class MalletClassifier(object):
         for path in classifier_paths:
             self.classifiers[path] = self._make_pipe(path)
             # this was needed when we fed in the lines one by one, keeping it
-            # for guture reference
+            # for future reference
             # self.classifiers[path].stdin.write("\n")
 
     def classify_file(self):
