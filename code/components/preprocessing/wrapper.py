@@ -4,8 +4,9 @@ Contains the wrapper for all preprocessing components.
 
 """
 
-import os, sys, threading, subprocess
+import os, sys, threading
 from time import time
+from subprocess import PIPE, Popen
 from types import StringType, TupleType
 from xml.sax.saxutils import escape, quoteattr
 
@@ -16,13 +17,17 @@ from library.tarsqi_constants import PREPROCESSOR
 from components.preprocessing.tokenizer import Tokenizer
 from components.preprocessing.chunker import chunk_sentences
 
-# Some globals for the TreeTagger
-STARTOFTEXT = "<start-of-text-marker>"
-ENDOFTEXT = "<end-of-text-marker>"
+# TreeTagger executables and parameter file
 MAC_EXECUTABLE = "tree-tagger"
 LINUX_EXECUTABLE = "tree-tagger"
 WINDOWS_EXECUTABLE = "tree-tagger.exe"
 PARAMETER_FILE = "english-utf8.par"
+
+# Markers for begin and end of text for TreeTagger. There is no potential
+# conflict with substrangs in the text that mtch these since the tokenizer will
+# split off the brackets.
+START_TEXT = "<start-text>"
+END_TEXT = "<end-text>"
 
 treetagger = None
 
@@ -45,7 +50,6 @@ class TagId():
 def initialize_treetagger(treetagger_dir):
     global treetagger
     if treetagger is None:
-        print "INIT TreeTagger"
         treetagger = TreeTagger(treetagger_dir)
     return treetagger
 
@@ -174,17 +178,12 @@ class PreprocessorWrapper:
 
 def export(text, tarsqidoc):
     """Export preprocessing information to the tag repository. Updates the
-    TagRepository with the text that is the result of preprocessing."""
-
+    TagRepository using the preprocessing result."""
     ctag = None
-
     for sentence in text:
-
         stag = Tag(TagId.next('s'), 's', None, None, {'origin': PREPROCESSOR})
-
         for token in sentence:
-
-            if is_tag(token):
+            if _is_tag(token):
                 if not token.startswith('</'):
                     ctag = Tag(TagId.next('c'), token[1:-1], None, None,
                                {'origin': PREPROCESSOR})
@@ -192,11 +191,8 @@ def export(text, tarsqidoc):
                     ctag.end = last_ltag.end
                     tarsqidoc.tags.append(ctag)
                     ctag = None
-
             elif type(token) == TupleType:
-                ltag = Tag(TagId.next('l'), 'lex', token[3], token[4],
-                           { 'lemma': token[2], 'pos': token[1], 'text': token[0],
-                             'origin': PREPROCESSOR })
+                ltag = _make_ltag(token)
                 tarsqidoc.tags.append(ltag)
                 if stag.begin is None:
                     stag.begin = token[3]
@@ -204,22 +200,26 @@ def export(text, tarsqidoc):
                     ctag.begin = ltag.begin
                 last_end_offset = token[4]
                 last_ltag = ltag
-
             else:
                 logger.warn('Unexpected token type')
-
         stag.end = last_ltag.end
         tarsqidoc.tags.append(stag)
-
     # this indexing is needed because we bypassed the add_tag method on
     # TagRepository and instead directly appended to the tags list
     tarsqidoc.tags.index()
 
 
-def is_tag(token):
+def _is_tag(token):
     return type(token) == StringType \
         and token.startswith('<') \
         and token.endswith('>')
+
+
+def _make_ltag(token):
+    """Return an instance of Tag for the token."""
+    return Tag(TagId.next('l'), 'lex', token[3], token[4],
+               { 'lemma': token[2], 'pos': token[1], 'text': token[0],
+                 'origin': PREPROCESSOR })
 
 
 class TreeTagger(object):
@@ -234,12 +234,10 @@ class TreeTagger(object):
         executable = self._get_executable()
         parfile = os.path.join(self.libdir, PARAMETER_FILE)
         tagcmd = "%s -token -lemma -sgml %s" % (executable, parfile)
-        pipe = subprocess.PIPE
         # when using subprocess, need to use a different close_fds for windows
         close_fds = False if sys.platform == 'win32' else True
-        self.process = subprocess.Popen(tagcmd, shell=True,
-                                        close_fds=close_fds,
-                                        stdin=pipe, stdout=pipe)
+        self.process = Popen(tagcmd, shell=True,
+                             stdin=PIPE, stdout=PIPE, close_fds=close_fds)
 
     def _get_executable(self):
         """Get the TreeTagger executable for the platform."""
@@ -250,9 +248,9 @@ class TreeTagger(object):
         elif sys.platform == "darwin":
             executable = os.path.join(self.bindir, MAC_EXECUTABLE)
         else:
-            print "ERROR: no binary for %s platform %s" % sys.platform
+            logger.error("No binary for platform %s" % sys.platform)
         if not os.path.isfile(executable):
-            print "ERROR: TreeTagger binary invalid: %s", executable
+            logger.error("TreeTagger binary invalid: %s" % executable)
         return executable
 
     def __del__(self):
@@ -262,16 +260,16 @@ class TreeTagger(object):
 
     def tag_text(self, text):
         """Open a thread to the TreeTagger and get results."""
-        thread = threading.Thread(target=_write_to_stdin,
-                                  args=(self.process.stdin, text))
+        args = (self.process.stdin, text)
+        thread = threading.Thread(target=_write_to_stdin, args=args)
         thread.start()
         result = []
         collect = False
         while True:
             line = self.process.stdout.readline().strip()
-            if line == STARTOFTEXT:
+            if line == START_TEXT:
                 collect = True
-            elif line == ENDOFTEXT:
+            elif line == END_TEXT:
                 break
             elif line and collect:
                 result.append(line)
@@ -280,8 +278,9 @@ class TreeTagger(object):
 
 
 def _write_to_stdin(pipe, text):
-    pipe.write("%s\n" % STARTOFTEXT)
+    pipe.write("%s\n" % START_TEXT)
     if text:
         pipe.write("%s\n" % text)
-        pipe.write("%s\n.\ndummy\n.\n" % ENDOFTEXT)
+        # without this the tagger will hang
+        pipe.write("%s\n.\ndummy\n.\n" % END_TEXT)
         pipe.flush()
