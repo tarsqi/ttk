@@ -78,8 +78,8 @@ class EventTag(Tag):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'),
                            self.attrs.get('class'))
         print "%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
-            (indent * ' ', self.name, self.position, self.begin, self.end,
-             eid, eiid, cl)
+            (indent * ' ', self.__class__.__name__, self.position,
+             self.begin, self.end, eid, eiid, cl)
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
@@ -111,7 +111,7 @@ class TimexTag(Tag):
 
     def pretty_print(self, indent=0):
         print "%s<%s tid=%s type=%s value=%s>" % \
-            (indent * ' ', self.name, self.attrs.get('tid'),
+            (indent * ' ', self.__class__.__name__, self.attrs.get('tid'),
              self.attrs.get('type'), self.attrs.get('value'))
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)

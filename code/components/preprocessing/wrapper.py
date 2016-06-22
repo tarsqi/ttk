@@ -102,10 +102,10 @@ class PreprocessorWrapper:
         self.chunk_time = 0
 
     def process(self):
-        """Retrieve the element tags from the TarsqiDocument and hand the text for the
-        elements as strings to the preprocessing chain. The result is a shallow
-        tree with sentences and tokens. These are inserted into the
-        TarsqiDocument's tags TagRepositories."""
+        """Retrieve the element tags from the TarsqiDocument and hand the text
+        for the elements as strings to the preprocessing chain. The result is a
+        shallow tree with sentences and tokens. These are inserted into the
+        TarsqiDocument's tags TagRepositories. """
         TagId.reset()
         for element in self.document.elements():
             text = self.document.source.text[element.begin:element.end]

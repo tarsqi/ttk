@@ -287,6 +287,7 @@ class TarsqiTree:
     Instance variables
         tarsqidoc   -  the TarsqiDocument instance that the tree is part of
         docelement  -  the Tag with name=docelement that the tree was made for
+        parent      -  the parent of the tree, which is always None
         dtrs        -  a list with daughters
         events      -  a dictionary with events found by Evita
         alinks      -  a list of AlinkTags, filled in by Slinket
@@ -301,6 +302,7 @@ class TarsqiTree:
         name."""
         self.tarsqidoc = tarsqidoc
         self.docelement = docelement_tag
+        self.parent = None
         self.dtrs = []
         self.events = {}
         self.alinks = []

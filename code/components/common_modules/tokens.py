@@ -25,6 +25,7 @@ class Token(Constituent):
         """Initialize with the word and a part-of-speech, use defaults for all
         the other variables."""
         Constituent.__init__(self)
+        self.name = 'lex'
         self.text = word
         self.pos = pos
         self.event = None

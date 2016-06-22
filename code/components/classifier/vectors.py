@@ -41,12 +41,13 @@ SHIFT_TENSE = 'shiftTense'
 SHIFT_ASPECT = 'shiftAspect'
 ORDER = 'order'
 SIGNAL = 'signal'
+SYNTAX = 'syntax'
 
-# use abbreviations in features for efficiency
-ABBREVIATIONS = {'aspect': 'asp', 'tense': 'ten', 'class': 'cls',
-                 'modality': 'mod', 'polarity': 'pol', 'string': 'str',
-                 'shiftTense': 'shTen', 'shiftAspect': 'shAsp',
-                 'signal': 'sig'}
+# use abbreviations in features for space efficiency
+ABBREVIATIONS = {ASPECT: 'asp', TENSE: 'ten', CLASS: 'cls', VALUE: 'val',
+                 MODALITY: 'mod', POLARITY: 'pol', STRING: 'str',
+                 SHIFT_TENSE: 'shTen', SHIFT_ASPECT: 'shAsp',
+                 SIGNAL: 'sig', SYNTAX: 'syn'}
 
 DEBUG = False
 #DEBUG = True
@@ -108,19 +109,19 @@ def _get_tag_vectors_for_sentence(tarsqidoc, s):
     vectors = []
     for tag in sorted(s.events() + s.timexes()):
         identifier = tag.attrs.get(EIID, tag.attrs.get(TID))
-        vector = make_vector(tarsqidoc, tag)
+        vector = make_vector(tarsqidoc, s, tag)
         vectors.append(vector)
     for v in vectors:
         _debug("  %s" % v.source)
     return vectors
 
 
-def make_vector(tarsqidoc, tag):
+def make_vector(tarsqidoc, s, tag):
     """Factory nethod to create a vector for an event tag or timex tag."""
     if tag.name == EVENT:
-        return EventVector(tarsqidoc, tag)
+        return EventVector(tarsqidoc, s, tag)
     elif tag.name == TIMEX:
-        return TimexVector(tarsqidoc, tag)
+        return TimexVector(tarsqidoc, s, tag)
     else:
         return None
 
@@ -143,7 +144,7 @@ def compare_features(f1, f2):
 def abbreviate(attr):
     """Abbreviate the feature name, but abbreviate only the part without the
     prefix (which can be e-, t-, e1- or e2-)."""
-    if attr[:2] in ('e-', 't'):
+    if attr[:2] in ('e-', 't-'):
         return attr[:2] + ABBREVIATIONS.get(attr[2:], attr[2:])
     if attr[:3] in ('e1-', 'e2-'):
         return attr[:3] + ABBREVIATIONS.get(attr[3:], attr[3:])
@@ -153,12 +154,14 @@ def abbreviate(attr):
 
 class Vector(object):
 
-    def __init__(self, tarsqidoc, source, source_tag, features):
+    def __init__(self, tarsqidoc, sentence, source, source_tag, features):
         self.source = source
+        self.sentence = sentence
         string = tarsqidoc.source.text[source.begin:source.end]
         string = '_'.join(string.split())
         self.features = {TAG: source_tag,
-                         STRING: string}
+                         STRING: string,
+                         SYNTAX: self.source.syntax()}
         for feat in features:
             val = self.get_value(feat)
             # TODO: add "if val is not None:"?
@@ -188,8 +191,9 @@ class EventVector(Vector):
 
     """Implements a vector with internal features of the event tag."""
 
-    def __init__(self, tarsqidoc, event):
-        super(EventVector, self).__init__(tarsqidoc, event, EVENT, EVENT_FEATURES)
+    def __init__(self, tarsqidoc, sentence, event):
+        super(EventVector, self).__init__(tarsqidoc, sentence, event,
+                                          EVENT, EVENT_FEATURES)
         self.identifier = self.get_value(EIID)
 
     def is_event_vector(self):
@@ -208,8 +212,9 @@ class TimexVector(Vector):
 
     """Implements a vector with internal features of the timex tag."""
 
-    def __init__(self, tarsqidoc, timex):
-        super(TimexVector, self).__init__(tarsqidoc, timex, TIMEX, TIMEX_FEATURES)
+    def __init__(self, tarsqidoc, sentence, timex):
+        super(TimexVector, self).__init__(tarsqidoc, sentence, timex,
+                                          TIMEX, TIMEX_FEATURES)
         self.identifier = self.get_value(TID)
 
     def is_timex_vector(self):
@@ -222,25 +227,34 @@ class TimexVector(Vector):
 class PairVector(Vector):
 
     def __init__(self, tarsqidoc, prefix1, vector1, prefix2, vector2):
+        """Initialize a pair vector from two object vectors by setting an
+        identifier and by adding the features of th eobject vectors."""
         self.tarsqidoc = tarsqidoc
         self.source = (vector1.source, vector2.source)
         self.relType = None
-        self.features = {}
+        self.prefix1 = prefix1
+        self.prefix2 = prefix2
         self.v1 = vector1
         self.v2 = vector2
-        for att, val in vector1.features.items():
-            #self.features["%s-%s" % (prefix1, abbreviate(att))] = val
-            self.add_feature("%s-%s" % (prefix1, att), val)
-        for att, val in vector2.features.items():
-            #self.features["%s-%s" % (prefix2, abbreviate(att))] = val
-            self.add_feature("%s-%s" % (prefix2, att), val)
-        self.identifier = "%s-%s-%s" \
-                          % (os.path.basename(tarsqidoc.source.filename),
-                             self.v1.identifier, self.v2.identifier)
+        self.features = {}
+        self._set_identifier()
+        self._inherit_object_features()
 
     def __str__(self):
         return "%s %s %s" % (self.identifier, self.relType,
                              super(PairVector, self).__str__())
+
+    def _set_identifier(self):
+        self.identifier = "%s-%s-%s" \
+            % (os.path.basename(self.tarsqidoc.source.filename),
+               self.v1.identifier, self.v2.identifier)
+
+    def _inherit_object_features(self):
+        """Copy the features from the object vectors."""
+        for att, val in self.v1.features.items():
+            self.add_feature("%s-%s" % (self.prefix1, att), val)
+        for att, val in self.v2.features.items():
+            self.add_feature("%s-%s" % (self.prefix2, att), val)
 
 
 class EEVector(PairVector):
@@ -284,19 +298,75 @@ class ETVector(PairVector):
 
     """
 
-    # TODO: fix the signal, this method now does the same as its predecessor,
-    # which is nothing. Other features to add: distance (number or some kind of
-    # closeness binary (eg more or less than three/five), surrounding tokens and
-    # tags, path to top.
-
     def __init__(self, tarsqidoc, event_vector, timex_vector):
         super(ETVector, self).__init__(tarsqidoc,
                                        'e', event_vector, 't', timex_vector)
-        v1_begin = event_vector.source.begin
-        v2_begin = timex_vector.source.begin
-        order = 'et' if v1_begin < v2_begin else 'te'
-        self.add_feature(ORDER, order)
-        self.add_feature(SIGNAL, 'XXXX')
+        cfeats = ContextFeaturesET(tarsqidoc, event_vector, timex_vector)
+        for feat, val in cfeats.items():
+            self.add_feature(feat, val)
+
+
+class ContextFeatures(object):
+
+    """Implements the code to retrieve the context features of two vectors in
+    the same sentence."""
+
+    def __init__(self, tarsqidoc, v1, v2):
+        self.tarsqidoc = tarsqidoc
+        self.v1 = v1
+        self.v2 = v2
+        self.v1_begin = v1.source.begin
+        self.v2_begin = v2.source.begin
+        self.v1_end = v1.source.end
+        self.v2_end = v2.source.end
+        self.sentence = v1.sentence
+        self.tokens = self.sentence.leaf_nodes()
+        self._setup_auxiliary_data()
+        self.features = {}
+
+    def _setup_auxiliary_data(self):
+        """Extracts the position in the tokens list of the two objects."""
+        self.v1_idx = None
+        self.v2_idx = None
+        for i, token in enumerate(self.tokens):
+            if token.begin == self.v1_begin:
+                self.v1_idx = i
+            if token.begin == self.v2_begin:
+                self.v2_idx = i
+
+    def items(self):
+        return self.features.items()
+
+    def get(self, feature):
+        return self.features.get(feature)
+
+
+class ContextFeaturesET(ContextFeatures):
+
+    """Implements the code to retrieve the context features of two vectors in
+    the same sentence."""
+
+    # TODO: Other features to add: distance (number or some kind of closeness
+    # binary (eg more or less than three/five), surrounding tokens and tags.
+
+    def __init__(self, tarsqidoc, v1, v2):
+        super(ContextFeaturesET, self).__init__(tarsqidoc, v1, v2)
+        self._set_feature_ORDER()
+        self._set_feature_SIGNAL()
+
+    def _set_feature_ORDER(self):
+        """Binary feature depending on the order of the event and timex."""
+        self.features[ORDER] = 'et' if self.v1_begin < self.v2_begin else 'te'
+
+    def _set_feature_SIGNAL(self):
+        """The intervening preposition."""
+        signal = None
+        p1 = min(self.v1_idx, self.v2_idx)
+        p2 = max(self.v1_idx, self.v2_idx)
+        for i in range(p1 + 1, p2):
+            if self.tokens[i].pos == 'IN':
+                signal = self.tokens[i].text
+        self.features[SIGNAL] = signal
 
 
 def _debug(text):
@@ -308,6 +378,7 @@ def _debug_wrapped(text, indent=''):
     if DEBUG:
         for line in textwrap.wrap(text, 100):
             print "%s%s" % (indent, line)
+
 
 def _debug_leafnodes(element, s):
     if DEBUG:

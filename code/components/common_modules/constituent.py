@@ -127,6 +127,28 @@ class Constituent:
             dtr.leaf_nodes(result)
         return result
 
+    def first_leaf_node(self):
+        """Return the first leaf node in the constituent."""
+        if self.dtrs:
+            return self.dtrs[0].first_leaf_node()
+        else:
+            return self
+
+    def path_to_top(self):
+        """Return the path to the top, but do not include the top and the node
+        itself."""
+        path = []
+        node = self
+        while node is not None:
+            path.append(node)
+            node = node.parent
+        return path[1:-1]
+
+    def syntax(self):
+        """Return a string that contains the category names of all intermediate
+        elements from the constituent to the top."""
+        return '-'.join([c.name for c in self.path_to_top()])
+
     def events(self):
         """Return all events in the constituent."""
         return [n for n in self.all_nodes() if n.isEvent()]
@@ -134,13 +156,6 @@ class Constituent:
     def timexes(self):
         """Return all timexes in the constituent."""
         return [n for n in self.all_nodes() if n.isTimex()]
-
-    def first_leaf_node(self):
-        """Return the first leaf node in the constituent."""
-        if self.dtrs:
-            return self.dtrs[0].first_leaf_node()
-        else:
-            return self
 
     def setCheckedEvents(self):
         if self.parent.__class__.__name__ == 'Sentence':
@@ -161,8 +176,8 @@ class Constituent:
         constituent."""
         node = self
         while node is not None:
-            if self.position + 1 < len(self.parent.dtrs):
-                return self.parent[self.position + 1]
+            if node.position + 1 < len(node.parent.dtrs):
+                return node.parent[node.position + 1]
             else:
                 node = node.parent
         return None

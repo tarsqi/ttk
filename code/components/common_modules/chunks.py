@@ -75,6 +75,7 @@ class Chunk(Constituent):
     def __init__(self, phraseType):
         Constituent.__init__(self)
         self.phraseType = phraseType
+        self.name = phraseType
         self.head = -1
         self.gramchunk = None
         self.gramchunks = []

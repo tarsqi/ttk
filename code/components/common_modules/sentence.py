@@ -23,6 +23,7 @@ class Sentence(Constituent):
 
     def __init__(self):
         """Initialize all instance variables to 0, None or the empty list."""
+        self.name = 's'
         self.parent = None
         self.dtrs = []
         self.eventList = [] 
