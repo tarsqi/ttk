@@ -513,7 +513,9 @@ class Tag:
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
-        attrs = ["%s=%s" % (k, quoteattr(v)) for (k, v) in self.attrs.items()]
+        # NOTE: in rare cases the attribute can be None, which breaks quoteattr,
+        # so coerce the attribute into a string
+        attrs = ["%s=%s" % (k, quoteattr(str(v))) for (k, v) in self.attrs.items()]
         return '' if not attrs else ' ' + ' '.join(sorted(attrs))
 
 

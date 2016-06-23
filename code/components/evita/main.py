@@ -36,5 +36,7 @@ class Evita (TarsqiComponent):
             # print get_words_as_string(sentence)
             logger.debug("SENTENCE: %s" % get_words_as_string(sentence))
             for node in sentence:
+                if node.isEvent():
+                    continue
                 if not node.checkedEvents:
                     node.createEvent()

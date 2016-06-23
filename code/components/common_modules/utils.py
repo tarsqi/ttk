@@ -66,7 +66,7 @@ def get_tokens_from_sequence(sequence):
         elif item.isChunk():
             tokens += get_tokens(item)
         elif item.isEvent():
-            tokens.append(item)
+            tokens += get_tokens(item)
         elif item.isTimex():
             tokens += get_tokens(item)
         else:

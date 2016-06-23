@@ -69,6 +69,11 @@ class GramChunk:
         self.polarity = "POS"
         self.add_verb_features(gramvchunk)
 
+    def __str__(self):
+        return "<GramNChunk %s %s %s %s %s %s %s>" \
+            % (self.nf_morph, self.evClass, self.tense, self.aspect,
+               self.modality, self.polarity, self.head)
+
     def add_verb_features(self, gramvchunk):
         """Set some features (tense, aspect, modality and polarity) to the values of
         those features on the governing verb."""

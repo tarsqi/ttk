@@ -197,9 +197,12 @@ class NounChunk(Chunk):
         else:
             self.gramchunk = GramNChunk(self, gramvchunk)
             logger.debug(self.gramchunk.as_verbose_string())
+            # don't bother if the head already is an event
+            if self.gramchunk.head.isEvent():
+                logger.debug("Nominal already contains an event")
             # Even if preceded by a BE or a HAVE form, only tagging NounChunks
             # headed by an eventive noun, so "was an intern" will NOT be tagged
-            if self.isEventCandidate():
+            elif self.isEventCandidate():
                 logger.debug("Nominal is an event candidate")
                 self._conditionallyAddEvent()
 

@@ -11,6 +11,7 @@ from library.timeMLspec import CLASS, TENSE, ASPECT
 from library.timeMLspec import EPOS, MOD, POL, FORM, STEM, POS
 from components.common_modules.constituent import Constituent
 from utilities import logger
+from utils import get_tokens
 
 
 class Tag(Constituent):
@@ -53,7 +54,11 @@ class EventTag(Tag):
         elif name == POL:
             return self._get_attribute(name, 'POS')
         elif name in ('text', FORM):
-            return self.tree.events[self.eid][FORM]
+            if self.tree.events.has_key(self.eid):
+                return self.tree.events[self.eid][FORM]
+            else:
+                logger.warn("Event %s is not store in the events on the TarsqiTree" % self)
+                return ' '.join([t.text for t in get_tokens(self)])
         elif name == POS:
             try:
                 return self.tree.events[self.eid][POS]

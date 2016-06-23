@@ -70,13 +70,13 @@ class Blinker (TarsqiComponent):
         timexes = [t for t in timexes if t.attrs[TYPE] == 'DATE']
         pairs = _timex_pairs(timexes)
         for timex1, timex2 in pairs:
-            if self.tarsqidoc.options.trap_errors:
-                try:
-                    self._create_timex_link(timex1, timex2)
-                except Exception:
-                    logger.error("Error linking:\n%s\n%s" % (timex1, timex2))
-            else:
+            try:
                 self._create_timex_link(timex1, timex2)
+            except Exception:
+                # TODO: these are very common caused usually because one of the
+                # timexes does not have a value, should look into this and
+                # confirm this is always a GUTime issue.
+                logger.warn("Error linking:\n%s\n%s" % (timex1, timex2))
 
     def _create_timex_link(self, timex1, timex2):
         """Try to create a TLINK between two timexes."""
