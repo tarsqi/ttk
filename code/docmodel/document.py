@@ -392,7 +392,9 @@ class TagRepository:
             tags = [t for t in tags if begin <= t.begin and t.end <= end]
         return tags
 
-    def find_linktags_in_range(self, name, o1, o2):
+    def find_linktags(self, name, o1, o2):
+        """Return all the link tages with type name. Only include the ones that
+        fall between offsets o1 and o2."""
         tags = []
         for tag in sorted([t for t in self.tags if t.name == name]):
             if name == SLINK:

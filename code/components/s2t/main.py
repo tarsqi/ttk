@@ -1,9 +1,9 @@
 """
 Main module for the S2T component.
 
-Responsible for the top-level processing of S2T. It contains
-Slink2Tlink, which inherits from TarsqiComponent as well as Slink, a
-class that takes care of applying s2t-rules to each SLINK.
+Responsible for the top-level processing of S2T. It contains Slink2Tlink, which
+inherits from TarsqiComponent as well as Slink, a class that takes care of
+applying s2t-rules to each SLINK.
 
 """
 
@@ -20,14 +20,8 @@ from library.timeMLspec import ORIGIN
 
 class Slink2Tlink (TarsqiComponent):
 
-    """Implements the S2T component of Tarsqi. S2T takes the output of the Slinket
-    component and applies rules to the Slinks to create new Tlinks.
-
-    Instance variables:
-       NAME - a string
-       rules - a list of S2TRules
-    
-    """
+    """Implements the S2T component of Tarsqi. S2T takes the output of Slinket
+    and applies rules to the Slinks to create new Tlinks."""
 
     def __init__(self):
         """Set component name and load rules into an S2TRuleDictionary object."""
@@ -39,6 +33,9 @@ class Slink2Tlink (TarsqiComponent):
     def process_doctree(self, doctree):
         """Apply all S2T rules to doctree."""
         self.doctree = doctree
+        # For sanity we clean out the tlinks since we are adding new tlinks to
+        # the document.
+        self.doctree.tlinks = []
         self.docelement = self.doctree.docelement
         events = self.doctree.tarsqidoc.tags.find_tags('EVENT')
         eventsIdx = dict([(e.attrs['eiid'], e) for e in events])
@@ -62,10 +59,9 @@ class Slink2Tlink (TarsqiComponent):
 
 class Slink:
 
-    """Implements the Slink object. An Slink object consists of the
-    attributes of the SLINK (relType, eventInstanceID, and
-    subordinatedEventInstance) and the attributes of the specific
-    event instances involved in the link.
+    """Implements the Slink object. An Slink object consists of the attributes
+    of the SLINK (relType, eventInstanceID, and subordinatedEventInstance) and
+    the attributes of the specific event instances involved in the link.
 
     Instance variables:
        doctree - a TarsqiTree
@@ -74,14 +70,17 @@ class Slink:
        subEventInstance - an InstanceTag"""
 
     def __init__(self, doctree, instances, slinkTag):
-        """Initialize an Slink using an XMLDocument, a dictionary of
-        instances and the slink element from xmldoc."""
+        """Initialize an Slink using an XMLDocument, a dictionary of instances
+        and the slink element from xmldoc."""
         self.doctree = doctree
         self.attrs = slinkTag.attrs
         eiid1 = self.attrs[EVENT_INSTANCE_ID]
         eiid2 = self.attrs[SUBORDINATED_EVENT_INSTANCE]
         self.eventInstance = instances[eiid1]
         self.subEventInstance = instances[eiid2]
+
+    def __str__(self):
+        return "<Slink %s>" % self.attrs
 
     def match_rules(self, rules):
         """Match all the rules in the rules argument to the SLINK. If a rule
@@ -116,9 +115,9 @@ class Slink:
         return rule
 
     def create_tlink(self, rule):
-        """Takes an S2T rule object and calls the add_tlink method from xmldoc to create
-        a new TLINK using the appropriate SLINK event instance IDs and the
-        relation attribute of the S2T rule. """
+        """Takes an S2T rule object and calls the add_tlink method from xmldoc
+        to create a new TLINK using the appropriate SLINK event instance IDs and
+        the relation attribute of the S2T rule."""
         tlinkAttrs = {
             EVENT_INSTANCE_ID: self.attrs[EVENT_INSTANCE_ID],
             RELATED_TO_EVENT_INSTANCE: self.attrs[SUBORDINATED_EVENT_INSTANCE],

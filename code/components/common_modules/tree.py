@@ -40,12 +40,9 @@ def create_tarsqi_tree(tarsqidoc, element, links=False):
     # recursively import all nodes into the doc, but skip the topnode itself
     top_node.add_to_tree(tree)
     if links:
-        tree.initialize_alinks(
-            tarsqidoc.tags.find_tags(ALINK))
-        tree.initialize_slinks(
-            tarsqidoc.tags.find_linktags_in_range(SLINK, o1, o2))
-        tree.initialize_tlinks(
-            tarsqidoc.tags.find_tags(TLINK))
+        tree.initialize_alinks(tarsqidoc.tags.find_linktags(ALINK, o1, o2))
+        tree.initialize_slinks(tarsqidoc.tags.find_linktags(SLINK, o1, o2))
+        tree.initialize_tlinks(tarsqidoc.tags.find_linktags(TLINK, o1, o2))
     return tree
 
 
