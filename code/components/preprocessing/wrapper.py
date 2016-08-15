@@ -281,6 +281,7 @@ def _write_to_stdin(pipe, text):
     pipe.write("%s\n" % START_TEXT)
     if text:
         pipe.write("%s\n" % text)
-        # without this the tagger will hang
-        pipe.write("%s\n.\ndummy\n.\n" % END_TEXT)
+        # NOTE. Without this the tagger will hang. Do not try to make this
+        # shorter, I think it may need at least a space, but I have no idea why.
+        pipe.write("%s\n.\ndummy sentence\n.\n" % END_TEXT)
         pipe.flush()
