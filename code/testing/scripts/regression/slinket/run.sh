@@ -21,7 +21,9 @@ function run_test () {
     if [ -f "$outfile" ]; then
 	rm $outfile
     fi
-    python tarsqi.py --pipeline=$pipeline $infile $outfile &> /dev/null 
+    #echo "python tarsqi.py --pipeline=$pipeline $infile $outfile &> /dev/null"
+    python tarsqi.py --pipeline=$pipeline $infile $outfile &> /dev/null
+    #echo "python $script_dir/compare.py $basefile $outfile"
     python $script_dir/compare.py $basefile $outfile
 
 }

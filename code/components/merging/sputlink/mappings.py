@@ -2,6 +2,7 @@ RELMAPPING1a = {
     # maps TimeML relations to Allen relations
     'BEFORE': '<', 'IBEFORE': 'm', 'AFTER': '>', 'IAFTER': 'mi',
     'INCLUDES': 'di', 'IS_INCLUDED': 'd',
+    'DURING_INV': 'di',
     'BEGINS': 's', 'BEGUN_BY': 'si', 'ENDS': 'f', 'ENDED_BY': 'fi',
     'IDENTITY': '=', 'SIMULTANEOUS': '=', 'DURING': '='
 }

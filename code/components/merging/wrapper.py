@@ -20,9 +20,10 @@ TODO:
 import os
 
 from library.tarsqi_constants import LINK_MERGER
-from library.timeMLspec import TLINK, ORIGIN, RELTYPE
-from library.timeMLspec import TIME_ID, EVENT_INSTANCE_ID
-from library.timeMLspec import RELATED_TO_TIME, RELATED_TO_EVENT_INSTANCE
+#from library import timeml
+#from library.timeMLspec import TLINK, ORIGIN, RELTYPE
+#from library.timeMLspec import TIME_ID, EVENT_INSTANCE_ID
+#from library.timeMLspec import RELATED_TO_TIME, RELATED_TO_EVENT_INSTANCE
 from docmodel.document import Tag
 from components.common_modules.component import TarsqiComponent
 from components.merging.sputlink.main import ConstraintPropagator
@@ -38,13 +39,14 @@ class MergerWrapper:
     def __init__(self, document):
         self.component_name = LINK_MERGER
         self.tarsqidoc = document
+        self.library = document.library
 
     def process(self):
         """Run the contraint propagator on all TLINKS in the TarsqiDocument and
         add resulting links to the TarsqiDocument."""
         cp = ConstraintPropagator(self.tarsqidoc)
         # TODO: this is where we need to order the tlinks
-        cp.queue_constraints(self.tarsqidoc.tags.find_tags(TLINK))
+        cp.queue_constraints(self.tarsqidoc.tags.find_tags(self.library.timeml.TLINK))
         cp.propagate_constraints()
         cp.reduce_graph()
         self._update_tarsqidoc(cp)
@@ -70,23 +72,25 @@ class MergerWrapper:
             tag = edge.constraint.history
             attrs = tag.attrs
         else:
-            attrs[RELTYPE] = translate_interval_relation(edge.constraint.relset)
-            attrs[ORIGIN] = LINK_MERGER
-            attrs[tlink_arg1_attr(id1)] = id1
-            attrs[tlink_arg2_attr(id2)] = id2
-        self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
+            attrs[self.library.timeml.RELTYPE] = translate_interval_relation(edge.constraint.relset)
+            attrs[self.library.timeml.ORIGIN] = LINK_MERGER
+            attrs[tlink_arg1_attr(self.library, id1)] = id1
+            attrs[tlink_arg2_attr(self.library, id2)] = id2
+        self.tarsqidoc.tags.add_tag(self.library.timeml.TLINK, -1, -1, attrs)
 
 
-def tlink_arg1_attr(identifier):
-    """Return the TLINK attribute for the element linked given the
-    identifier."""
-    return _arg_attr(identifier, TIME_ID, EVENT_INSTANCE_ID)
+def tlink_arg1_attr(library, identifier):
+    """Return the TLINK attribute for the element linked given the identifier."""
+    return _arg_attr(identifier,
+                     library.timeml.TIME_ID,
+                     library.timeml.EVENT_INSTANCE_ID)
 
 
-def tlink_arg2_attr(identifier):
-    """Return the TLINK attribute for the element linked to given the
-    identifier."""
-    return _arg_attr(identifier, RELATED_TO_TIME, RELATED_TO_EVENT_INSTANCE)
+def tlink_arg2_attr(library, identifier):
+    """Return the TLINK attribute for the element linked given the identifier."""
+    return _arg_attr(identifier,
+                     library.timeml.RELATED_TO_TIME,
+                     library.timeml.RELATED_TO_EVENT_INSTANCE)
 
 
 def _arg_attr(identifier, attr1, attr2):

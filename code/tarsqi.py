@@ -85,6 +85,7 @@ from docmodel.main import get_default_pipeline
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
+from library.main import TarsqiLibrary
 from utilities import logger
 from utilities.file import read_settings
 
@@ -132,6 +133,7 @@ class Tarsqi:
         self.output = outfile
         self.basename = _basename(infile) if infile else None
         self.options = Options(opts)
+        self.library = TarsqiLibrary(self)
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
@@ -151,6 +153,7 @@ class Tarsqi:
             self._cleanup_directories()
             logger.info(self.input)
             self.document = self.source_parser.parse_file(self.input)
+            self.document.library = self.library
             self._process_document()
             self._write_output()
 

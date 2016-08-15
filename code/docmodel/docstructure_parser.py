@@ -21,7 +21,7 @@ from docmodel.document import TarsqiDocument
 
 class DocumentStructureParser:
 
-    """Simple document structure parser used as a default if no sturcture tags are
+    """Simple document structure parser used as a default if no structure tags are
     found in the tag repository of the TarsqiDocument."""
 
     def parse(self, tarsqidoc):

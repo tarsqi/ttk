@@ -1,4 +1,4 @@
-import re
+#import re
 
 """==============================================
 
@@ -68,7 +68,7 @@ POLARITY = 'polarity'
 NO_FINITE = ['PRESPART', 'PASTPART', 'INFINITIVE']
 FINITE = ['PRESENT', 'PAST', 'FUTURE']
 
-LINK = re.compile('(S|T|A)LINK')
+#LINK = re.compile('(S|T|A)LINK')
 TLINK = 'TLINK'
 SLINK = 'SLINK'
 ALINK = 'ALINK'
