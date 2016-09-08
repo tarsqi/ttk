@@ -26,8 +26,10 @@ SourceParserText
 
 SourceParserTTK
 
-   This parser deals with the ttk format.
-
+   This parser deals with the ttk format. In the TTK format there are two main
+   sources for tags: source_tags and tarsqi_tags. The first are added to the
+   tags repository on the SourceDoc (which is considered read-only after that),
+   the second are added to the tags repository on the TarsqiDocument.
 
 """
 
@@ -101,15 +103,15 @@ class SourceParserTTK(SourceParser):
                 self.topnodes[node.tagName] = node
 
     def _add_source_tags(self):
-        """Add the source_tags in the TTK document to the source_tags repository
+        """Add the source_tags in the TTK document to the tags repository
         on the SourceDoc."""
         for node in self.topnodes['source_tags'].childNodes:
             if node.nodeType == minidom.Node.ELEMENT_NODE:
                 self._add_to_source_tags(node)
 
     def _add_tarsqi_tags(self):
-        """Add the tarsqi_tags in the TTK document to the tarsqi_tags repository
-        on the SourceDoc."""
+        """Add the tarsqi_tags in the TTK document to the tags repository
+        on the TarsqiDocument."""
         for node in self.topnodes['tarsqi_tags'].childNodes:
             if node.nodeType == minidom.Node.ELEMENT_NODE:
                 self._add_to_tarsqi_tags(node)

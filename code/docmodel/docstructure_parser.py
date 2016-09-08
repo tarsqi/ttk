@@ -5,9 +5,10 @@ temporary default and will be replaced by more sophisticated parsers and these
 parsers will act more like the other tarsqi components.
 
 The main goal of the parser is to add docelement tags to the tag repository on
-the TarsqiDocument.  With a virgin document, there will be no such elements. In
-that case, the parser calls a simple method to recognize paragraphs and creates
-a docelement Tag for each of them.
+the TarsqiDocument. Sometimes docelement tags already exist in the tag
+repository (for example when reading a ttk file), in which case the parser does
+nothing. Otherwise, the parser calls a simple method to recognize paragraphs and
+creates a docelement Tag for each of them.
 
 The docelements are used by Tarsqi components by looping over them and
 processing the elements one by one.
@@ -26,16 +27,17 @@ class DocumentStructureParser:
 
     def parse(self, tarsqidoc):
         """Apply a default document structure parser to the TarsqiDocument if
-        there are no docelement tags in the tags repository. The parser uses a
+        there are no docelement tags in the tags repository. The parser uses
         white lines to separate the paragraphs."""
-        self.tarsqidoc = tarsqidoc
-        self.sourcedoc = tarsqidoc.source
-        doc_elements = self.tarsqidoc.tags.find_tags('docelement')
+        doc_elements = tarsqidoc.tags.find_tags('docelement')
         if not doc_elements:
-            element_offsets = split_paragraphs(self.sourcedoc.text)
+            element_offsets = split_paragraphs(tarsqidoc.source.text)
+            count = 0
             for (p1, p2) in element_offsets:
-                features = {'type': 'paragraph', 'origin': DOCSTRUCTURE}
-                self.tarsqidoc.tags.add_tag('docelement', p1, p2, features)
+                count += 1
+                pid = "d%s" % count
+                feats = {'id': pid, 'type': 'paragraph', 'origin': DOCSTRUCTURE}
+                tarsqidoc.tags.add_tag('docelement', p1, p2, feats)
 
 
 def split_paragraphs(text):

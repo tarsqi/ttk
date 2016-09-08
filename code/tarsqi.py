@@ -144,18 +144,22 @@ class Tarsqi:
         self.pipeline = self._create_pipeline()
 
     def process(self):
+        """Default to processing a document."""
+        self.process_document()
+
+    def process_document(self):
         """Parse the source with the source parser, the metadata parser and the
         document structure parser, apply all components and write the results to
         a file. The actual processing itself is driven using the processing
         options set at initialization. Components are given the TarsqiDocument
         and update it."""
-        if not self._skip_file():
-            self._cleanup_directories()
-            logger.info(self.input)
-            self.document = self.source_parser.parse_file(self.input)
-            self.document.library = self.library
-            self._process_document()
-            self._write_output()
+        if self._skip_file():
+            return
+        self._cleanup_directories()
+        logger.info(self.input)
+        self.document = self.source_parser.parse_file(self.input)
+        self._process_aux()
+        self._write_output()
 
     def process_string(self, input_string):
         """Similar to process(), except that it runs on an input string and not
@@ -163,12 +167,14 @@ class Tarsqi:
         TarsqiDocument."""
         logger.info(input_string)
         self.document = self.source_parser.parse_string(input_string)
-        self._process_document()
+        self._process_aux()
         return self.document
 
-    def _process_document(self):
-        """Process the document by running the metadata parser, the document
-        structure parser and the pipeline components."""
+    def _process_aux(self):
+        """Method for shared functionality of both process_document() and
+        process_string(). Process the document by running the metadata parser,
+        the document structure parser and the pipeline components."""
+        self.document.library = self.library
         self.metadata_parser.parse(self.document)
         self.docstructure_parser.parse(self.document)
         self.document.add_options(self.options)

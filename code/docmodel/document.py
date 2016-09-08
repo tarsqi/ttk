@@ -25,6 +25,7 @@ class TarsqiDocument:
        source - an instance of DocSource
        metadata - a dictionary
        options - the Options instance from the Tasqi instance
+       library - an instance of library.main.TarsqiLibrary
        tags - an instance of TagRepository
        counters - a set of counters used to create unique identifiers
 
@@ -34,8 +35,9 @@ class TarsqiDocument:
     def __init__(self, docsource, metadata):
         self.source = docsource
         self.metadata = metadata
-        self.tags = TagRepository()
+        self.library = None
         self.options = {}
+        self.tags = TagRepository()
         self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
 
     def __str__(self):
@@ -77,7 +79,7 @@ class TarsqiDocument:
         """Add an EVENT tag to the tarsqi_tags tag repository."""
         self.tags.add_tag('EVENT', begin, end, attrs)
 
-    def pp(self, text=True, source_tags=True, tarsqi_tags=True):
+    def pp(self, source_tags=True, tarsqi_tags=True, tags=True):
         print "\n", self, "\n"
         for key, value in self.metadata.items():
             print "   metadata.%-14s  -->  %s" % (key, value)
@@ -89,7 +91,10 @@ class TarsqiDocument:
         if tarsqi_tags:
             print "\nTARSQI_TAGS:"
             self.tags.pp()
-            print
+        if tags:
+            print "\nTAGS:"
+            self.tags.pp()
+        print
 
     def next_event_id(self):
         self.counters['EVENT'] += 1
