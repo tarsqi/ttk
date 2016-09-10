@@ -31,14 +31,14 @@
 <h2>Evita and the TarsqiTree class</h2>
 
 <p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
-TarsqiDocElements in it, creating an Evita instance for all of them and then
+docelement Tags in it, creating an Evita instance for all of them and then
 procesing the element. The Evita instance has slots for the TarsqiDocument, the
-TarsqiDocElement and a TarsqiTree instance which contains a document tree for
-the TarsqiDocElement that is being processed. The TarsqiTree instance itself
-knows what TarsqiDocument it belongs to and what TarsqiDocElement it was created
-for since these were handed in from the Evita instance. The TarsqiTree instance
-also has a list of daughters as well as some other attributes that are ignored
-here because they are not used by Evita.</p>
+docelement tag and a TarsqiTree instance which contains a document tree for the
+part of the TarsqiDocument that is being processed. The TarsqiTree instance
+itself knows what TarsqiDocument it belongs to and what docelement Tag it was
+created for since these were handed in from the Evita instance. The TarsqiTree
+instance also has a list of daughters as well as some other attributes that are
+ignored here because they are not used by Evita.</p>
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -50,8 +50,8 @@ here because they are not used by Evita.</p>
 </tr>
 <tr>
   <td class="attribute">docelement</td>
-  <td>an instance of docmodel.document.TarsqiDocElement or subclass thereof, the
-  element of the TarsqiDocument that is being processed by Evita</td>
+  <td>an instance of docmodel.document.Tag with name=docelement, the element of
+  the TarsqiDocument that is being processed by Evita</td>
 </tr>
 <tr>
   <td class="attribute">doctree</td>
@@ -66,7 +66,8 @@ here because they are not used by Evita.</p>
       </tr>
       <tr>
 	<td class="attribute">docelement</td>
-	<td>the TarsqDocElement that the document tree is created for</td>
+	<td>an instance of docmodel.document.Tag, the element that the document
+	tree is created for</td>
       </tr>
       <tr>
 	<td class="attribute">dtrs</td>
@@ -95,13 +96,13 @@ the TarsqiTree for "The dog barked yesterday.".</p>
 </pre>
 
 <p>A TarsqiTree contains sentences, chunks, tokens and event and time
-constituents. It is created from a TarsqiDocElement as a first processing step
-by using the create_tarsqi_tree() method in components.common_modules.tree. This
-method uses the intermediary Node object to create a tree hierarchy and then
-replaces all Node objects with instances of Sentence, NounChunk, VerbChunk,
-Token, AdjectiveToken, EventTag and TimexTag (all defined in submodules of
-components.common_modules). These tree elements are all subclasses of
-Constituent and have the following instance variables:</p>
+constituents. It is created from a TarsqiDocument and a Tag as a first
+processing step by using the create_tarsqi_tree() method in
+components.common_modules.tree. This method uses the intermediary Node object to
+create a tree hierarchy and then replaces all Node objects with instances of
+Sentence, NounChunk, VerbChunk, Token, AdjectiveToken, EventTag and TimexTag
+(all defined in submodules of components.common_modules). These tree elements
+are all subclasses of Constituent and have the following instance variables:</p>
 
 <table class="pythonclass indent spacy">
   <tr>
@@ -110,8 +111,7 @@ Constituent and have the following instance variables:</p>
   <tr>
     <td>tree</td>
     <td>contains the TarsqiTree instance at the top of the tree, through this
-    tree a constituent also has access to the TarsqiDocument and the
-    TarsqiDocElement</td>
+    tree a constituent also has access to the TarsqiDocument and the Tag</td>
   </tr>
   <tr>
     <td>parent</td>
@@ -143,20 +143,20 @@ this tree and major parts of the Evita and Slinket code are expressed as methods
 on constituents. Components may update elements of the tree, but it is important
 to note that those changes are incidental and will not be handed over to a next
 component in the pipeline. Instead, results from processing have to be exported
-to the TagRepository on the TarsqiDocElement, as in the following figure.</p>
+to the TagRepository on the TarsqiDocument, as in the following figure.</p>
 
 <img src="images/component.png" width="550"/>
 
-<p>Components import he TarsqiDocument and the TagRepository in the
-TarsqiDocElement and create a TarsqiTree from them, they then use this tree as
-input to processing and export the resulting tags back into the
-TagRepository. The next component in the pipeline will start afresh with a new
-TarsqiTree which will be created from the updated TagRepository.</p>
+<p>Components import he TarsqiDocument and the Tag and create a TarsqiTree from
+them, they then use this tree as input to processing and export the resulting
+tags back into the TagRepository. The next component in the pipeline will start
+afresh with a new TarsqiTree which will be created from the updated
+TagRepository.</p>
 
 <p>Getting back to Evita...</p>
 
 <p>The EvitaWrapper takes the TarsqiDocument on initialization and its process()
-method loops over all TarsqiDocElements, creating an Evita instance for each of
+method loops over all document elements, creating an Evita instance for each of
 them and then running the process_element() method. The process_elements()
 method loops through all Sentence instances in the TarsqiTree in Evita's doctree
 variable, and then loops through all daughters of the Sentence. For each
@@ -172,7 +172,7 @@ fragments shown in this document.</p>
 <i>components.evita.main.Evita</i>
 
 process_element():
-   self.doctree = create_tarsqi_tree(self.docelement)
+   self.doctree = create_tarsqi_tree(self.tarsqidoc, self.docelement)
    for sentence in self.doctree:
       for node in sentence:
          if not node.checkedEvents:
@@ -408,7 +408,7 @@ extension in the same directory.
 
 <p>Back to the Evita nominal event logic. If the isEventCandidate() method
 returns true then the _conditionallyAddEvent() method will perform a few last
-checks and then add an event to the TarsqiDocElement by asking the TarsqiTree to
+checks and then add an event to the TarsqiDocument by asking the TarsqiTree to
 do the honours:</p>
 
 <pre class="example indent">
@@ -438,14 +438,14 @@ verb chunks).</p>
      event_attrs['eid'] = eid
      event_attrs['eiid'] = eiid
      token = event.tokens[-1]
-     self.docelement.add_event(token.begin, token.end, event_attrs)
+     self.tarsqidoc.add_event(token.begin, token.end, event_attrs)
 </pre>
 
 <p>The TarsqiTree instance is handed most event features (tense and aspect and
 so on), but it is responsible for generating unique identifiers for the event
-(which it gets from the TarsqiDocument). Finally, it asks the TarsqiDocElement
-to add the tag to the tarsqi_tags TagRepository, thereby exporting the component
-results as shown in the picture earlier in this section.</p>
+(which it gets from the TarsqiDocument). Finally, it asks the TarsqiDocument to
+add the tag to the tags TagRepository, thereby exporting the component results
+as shown in the picture earlier in this section.</p>
 
 <!--
 TODO: add the new condition on there not already being an event

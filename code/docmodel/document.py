@@ -475,6 +475,11 @@ class Tag:
         self.begin = o1
         self.end = o2
         self.attrs = attrs
+        # TODO: should investigate tag initialization since I there is an
+        # impression that it is not consistent
+        if self.id is None and attrs.has_key('id'):
+            self.id = attrs.get('id')
+            del(self.attrs['id'])
 
     def __str__(self):
         attrs = ''.join([" %s='%s'" % (k, v) for k, v in self.attrs.items()])

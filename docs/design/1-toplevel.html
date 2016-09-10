@@ -433,15 +433,15 @@ components.__init__.py. Every wrapper is required to have the following two
 methods:</p>
 
 <ol class="tight">
-<li>an initialization method that takes the TarsqiDocument as its sole argument</li>
+<li>an initialization method that takes the TarsqiDocument as its sole argument,
+the TarsqiDocument will be saved on an instance variable on the wrapper</li>
 <li>a process() method which has the side effect of changing the TarsqiDocument
 instance.</li>
 </ol>
 
-<p>Components update the TarsqiDocument by updating the TagRepository instances
-inside the TarsqiDocElement instances in the elements list. In some cases,
-another data structure is updated first and then the results are exported to the
-TarsqiDocElements.</p>
+<p>Components update the TarsqiDocument by updating its TagRepository. In some
+cases, another data structure is updated first and then the results are exported
+to the TarsqiDocument.</p>
 
 
 <a name="output"/>

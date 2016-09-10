@@ -19,10 +19,10 @@
 
 <h1>TARSQI Toolkit - GUTime</h1>
 
-<p>The GUTimeWrapper takes the content of all TarsqiDocElements in the
-TarsqiDocument and creates the input needed by components/gutime/TimeTag.pl,
-which is the wrapper around TempEx.pm in the same directory. The input required
-by TimeTag.pl is a file with content as follows:</p>
+<p>The GUTimeWrapper grabs sentences and lexical items from the TarsqiDocument
+and creates the input needed by components/gutime/TimeTag.pl, which is the
+wrapper around TempEx.pm in the same directory. The input required by TimeTag.pl
+is a file with content as follows:</p>
 
 <pre class="example indent">
 &lt;DOC>
@@ -41,11 +41,9 @@ by TimeTag.pl is a file with content as follows:</p>
 DCT is handed to GUTime. Otherwise, only s and lex tags are allowed. GUTime does
 not require the lex tags to have the begin and end attributes, but it is okay
 for them to be there. Any kind of spacing between the tags is allowed. The
-wrapper creates the above file in a temporary data directory data/tmp (which is
-emptied at the beginning of each tarsqi.py invocation) and then uses the Python
-subprocess module to run the Perl script. The output is put in the same
-temporary directory and is exactly like the input except that TIMEX3 tags are
-added:</p>
+wrapper creates the above text and then uses the Python subprocess module to run
+the Perl script, piping in the text. The output is exactly like the input except
+that TIMEX3 tags are added:</p>
 
 <pre class="example indent">
 &lt;DOC>
@@ -61,10 +59,10 @@ added:</p>
 </pre>
 
 <p>Similar to what happened with the preprocessor results, the new TIMEX3 tags
-are exported to the tarsqi_tags TagRepository on the TarsqiDocElement. One
-difference is that the GUTimeWrapper adds tags using the add_tag method on
-TagRepository, which also adds the tag to the opening_tags and closing tags
-dictionaries, so a separate use of index() is not needed.</p>
+are exported to the tags TagRepository on the TarsqiDocu	ment. One difference is
+that the GUTimeWrapper adds tags using the add_tag method on TagRepository,
+which also adds the tag to the opening_tags and closing tags dictionaries, so a
+separate use of index() is not needed.</p>
 
 
 </body>

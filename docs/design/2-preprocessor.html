@@ -19,18 +19,20 @@
 
 <h2>TARSQI Toolkit - The Preprocessor</h2>
 
-<p>The PreprocessorWrapper loops through the TarsiDocElements. For each element,
-it extracts the source text, runs the tokenizer, tagger and chunker on that text
-and then exports the results back to the TarsqiDocElements.</p>
+<p>The PreprocessorWrapper loops through the document elements by using the
+TarsqiDocument.elements() method, which returns a list of Tags of type
+"docelement" where each tag has pointers to the begin and end offset in the
+text. For each element, the wrapper extracts the source text, runs the
+tokenizer, tagger and chunker on that text and then exports the results back to
+the TarsqiDocElements.</p>
 
 <img src="images/preprocessing.png" height="250"/>
 
-<p>The tokenizer copies the text from the TarsqiDocParagraph (which actually
-does not hold the text itself but it has the character offsets in the SourceDoc
-and a reference to the SourceDoc) and it returns a list of pairs, where each
-pair is either ('&lt;s>', None) for sentence boundaries or a pair of a string
-and a TokenizedLex instance, which has instance variables begin, end and
-text:</p>
+<p>The tokenizer gets a copy of a slice of the text from the TarsqiDocument
+(stored in the SourceDoc in the source instance variable) and it returns a list
+of pairs, where each pair is either ('&lt;s>', None) for sentence boundaries or
+a pair of a string and a TokenizedLex instance, which has instance variables
+begin, end and text:</p>
 
 <pre class="example indent">
 [('&lt;s>', None),
@@ -39,7 +41,7 @@ text:</p>
  (u'.', &lt;components.preprocessing.tokenizer.TokenizedLex instance at 0x110844b48>)]
 </pre>
 
-<p>Since the tokenizer runs in isolation on the text of an element, assigns
+<p>Since the tokenizer runs in isolation on the text of an element, it assigns
 offsets starting at 0. The PreprocessorWrapper adjusts these so that the offsets
 point into the correct spot in the full text source of the document.</p>
 
@@ -85,13 +87,13 @@ vg tags to the sublists.</p>
 </pre>
 
 <p>Finally, the information in this data structure is exported to the
-tarsqi_tags TagRepository on the TarsqiDocElement. Before the first component in
-the pipeline applies, this TagRepository is empty, but with the above input the
-preprocessor will append s, ng, vg and lex tags to the tags list and eventually
-set it to:</p>
+TagRepository in the tags instance variable on the TarsqiDocument and with the
+above input the preprocessor will append s, ng, vg and lex tags to the tags list
+and eventually set it to:</p>
 
 <pre class="example indent">
-[ &lt;Tag lex id=l1 1:5 {'lemma': 'Fido', 'pos': 'NNP'}>,
+[ &lt;Tag docelement id=d1 0:13 {'type': paragraph'}>,
+  &lt;Tag lex id=l1 1:5 {'lemma': 'Fido', 'pos': 'NNP'}>,
   &lt;Tag ng id=c1 1:5 {}>,
   &lt;Tag lex id=l2 6:11 {'lemma': 'bark', 'pos': 'VBZ'}>,
   &lt;Tag vg id=c2 6:11 {}>,
@@ -106,7 +108,8 @@ index() method on the TagRepository to create the opening_tags and closing_tags
 dictionaries, which will look as follows:</p>
 
 <pre class="example indent">
-{ 1: [ &lt;Tag s id=s1 1:12 {}>,
+{ 0: [ &lt;Tag docelement id=d1 0:13 {'type': paragraph'}>,
+  1: [ &lt;Tag s id=s1 1:12 {}>,
        &lt;Tag lex id=l1 1:5 {'lemma': 'Fido', 'pos': 'NNP'}>,
        &lt;Tag ng id=c1 1:5 {}> ],
   6: [ &lt;Tag lex id=l2 6:11 {'lemma': 'bark', 'pos': 'VBZ'}>,
@@ -118,7 +121,8 @@ dictionaries, which will look as follows:</p>
 {  5: { 1: {'lex': True, 'ng': True}}
   11: { 6: {'lex': True, 'vg': True}},
   12: { 1: {'s': True},
-       11: {'lex': True}} }
+       11: {'lex': True}},
+  13: { 0: {'docelement': True}}}
 </pre>
 
 
