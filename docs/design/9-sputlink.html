@@ -57,7 +57,7 @@ Li => SPUTLINK => Lj
 <p>Here Li and Lj are sets of links. Note that we let Li stand for the links and
 the nodes they link.</p>
 
-<p>Now you can play with the input without touch SputLink it self at all, for
+<p>Now you can play with the input without touching SputLink it self at all, for
 example by ordering the set of incoming links:</p>
 
 <pre class="example indent">
@@ -84,25 +84,25 @@ Li => COLLAPSE_NODES => Lj => SPUTLINK => Lk
 </pre>
 
 <p>you can remove Node_j and replace Node_j in all links that have it with
-Node_j.</p>
+Node_i.</p>
 
 <p>For example, if we have</p>
 
 <pre class="example indent">
-[Node_i] ]Node_j] ]Node_k]
+[Node_i] [Node_j] [Node_k]
 [Node_i equal Node_j]
-[Node_i before Node_k]
+[Node_j before Node_k]
 </pre>
 
 <p>you end up with</p>
 
 <pre class="example indent">
-[Node_j] [Node_k]
-[Node_j before Node_k]
+[Node_i] [Node_k]
+[Node_i before Node_k]
 </pre>
 
 <p>This is what is being fed into SputLink. Of course, you need to do some
-bookkeeping and remember that there Node_j is actually a composite of Node_i and
+bookkeeping and remember that there Node_i is actually a composite of Node_i and
 Node_j (event coreference!).</p>
 
 <p>Finally, we can also use reference intervals by splitting your set of links
@@ -118,12 +118,12 @@ Li => SPLIT_NODES |=> Li1 => SPUTLINK => Lj1 |=> ASSEMBLE => Lj
 
 <p>So in essence you split the graph into many smaller graphs and feed them each
 into SputLink, then assemble the results. Note that graphs may overlap in that
-not each node has to occur in one graph only. This could use a illustrative
+not each node has to occur in one graph only. This could use an illustrative
 picture. Assume we have the following TimeML annotation:</p>
 
 <img src="images/reference-intervals.png" width="600">
 
-<p>That is, we have three events e1, e2 and e3, with e1&lt;e2 nd e2&lt;e3. In
+<p>That is, we have three events e1, e2 and e3, with e1&lt;e2 and e2&lt;e3. In
 addition, each event includes a couple of other events (depicted by those events
 being included in the box. The events that include the other events are said to
 be reference intervals for the included events. The included events may have

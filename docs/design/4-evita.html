@@ -147,13 +147,13 @@ to the TagRepository on the TarsqiDocument, as in the following figure.</p>
 
 <img src="images/component.png" width="550"/>
 
-<p>Components import he TarsqiDocument and the Tag and create a TarsqiTree from
-them, they then use this tree as input to processing and export the resulting
-tags back into the TagRepository. The next component in the pipeline will start
-afresh with a new TarsqiTree which will be created from the updated
-TagRepository.</p>
+<p>Components import the TarsqiDocument and for each Tag create a TarsqiTree
+using the TarsqiDocumengt's data. They then use this sequence of trees one by
+one as input to processing and export the resulting tags back into the
+TagRepository. The next component in the pipeline will start afresh with a new
+set of TarsqiTrees which will be created from the updated TarsqiDocument.</p>
 
-<p>Getting back to Evita...</p>
+<p>Back to Evita...</p>
 
 <p>The EvitaWrapper takes the TarsqiDocument on initialization and its process()
 method loops over all document elements, creating an Evita instance for each of
@@ -414,13 +414,13 @@ do the honours:</p>
 <pre class="example indent">
 <i>components.common_modules.chunks.Chunk</i>
 
-def _conditionallyAddEvent(self, gramChunk=None):
-     gchunk = self.gramchunk if gramChunk is None else gramChunk
-     if (gchunk.head
-         and gchunk.head.getText() not in forms.be
-         and gchunk.head.getText() not in forms.spuriousVerb
-         and gchunk.evClass):
-         self.tree.addEvent(Event(gchunk))
+_conditionallyAddEvent(self, gramChunk=None):
+    gchunk = self.gramchunk if gramChunk is None else gramChunk
+    if (gchunk.head
+        and gchunk.head.getText() not in forms.be
+        and gchunk.head.getText() not in forms.spuriousVerb
+        and gchunk.evClass):
+        self.tree.addEvent(Event(gchunk))
 </pre>
 
 <p>This method is defined on Chunk and is used by VerbChunks as well. The core
@@ -431,14 +431,14 @@ verb chunks).</p>
 <pre class="example indent">
 <i>components.common_modules.tree.TarsqiTree</i>
 
- def addEvent(self, event):
-     event_attrs = dict(event.attrs)
-     eid = self.tarsqidoc.next_event_id()
-     eiid = "ei%s" % eid[1:]
-     event_attrs['eid'] = eid
-     event_attrs['eiid'] = eiid
-     token = event.tokens[-1]
-     self.tarsqidoc.add_event(token.begin, token.end, event_attrs)
+addEvent(self, event):
+    event_attrs = dict(event.attrs)
+    eid = self.tarsqidoc.next_event_id()
+    eiid = "ei%s" % eid[1:]
+    event_attrs['eid'] = eid
+    event_attrs['eiid'] = eiid
+    token = event.tokens[-1]
+    self.tarsqidoc.add_event(token.begin, token.end, event_attrs)
 </pre>
 
 <p>The TarsqiTree instance is handed most event features (tense and aspect and
