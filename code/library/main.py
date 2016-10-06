@@ -1,12 +1,12 @@
 """Initial experiments on loading the libraries.
 
-Libraries are now all Python code and are use through imports. The idea is to
-have libraries defined independently from the implementation, defining a syntax
-for all libraries (simple settings, rules, etcetera) and then read in the
-libraries (maybe in a lazy fashion).
+Most libraries are now all Python code and are used through imports. The idea is
+to have libraries defined independently from the implementation, defining a
+syntax for all libraries (simple settings, rules, etcetera) and then read in the
+libraries (which allows you to read only those libraries that are required).
 
-The TarsqiLibrary class is added to the Tarsqi instance and handed over to the
-TarsqiDocument instance.
+The LIBRARY variable allows other modules a single import from which all
+settings can be accessed.
 
 """
 
@@ -19,14 +19,13 @@ TIMEML_SPECS = os.path.join(TTK_ROOT, 'library', 'timeml.txt')
 
 class TarsqiLibrary(object):
 
-    def __init__(self, tarsqi_instance):
-        # the timeml instance variable is replacing the timeMLspec module
-        self.timeml = TimeMLSpecs(tarsqi_instance)
+    def __init__(self):
+        self.timeml = TimeMLSpecs()
 
 
 class TimeMLSpecs(object):
 
-    def __init__(self, tarsqi_instance):
+    def __init__(self):
         for line in open(TIMEML_SPECS):
             line = line.strip()
             comment_start = line.find('#')
@@ -45,3 +44,6 @@ def parse_line(line):
     if value[0] == '[':
         value = [v.strip() for v in value.strip('[]').split(',')]
     return var, value
+
+
+LIBRARY = TarsqiLibrary()

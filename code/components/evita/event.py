@@ -5,9 +5,8 @@ Chunk._processEventInChunk() or AdjectiveToken._processEventInToken().
 
 """
 
+from library.main import LIBRARY
 from library.tarsqi_constants import EVITA
-from library.timeMLspec import EID, EIID, CLASS
-from library.timeMLspec import TENSE, ASPECT, POS, MODALITY, POLARITY, ORIGIN
 
 
 class Event:
@@ -34,13 +33,13 @@ class Event:
         multi-token events. Modality and polarity are not added if they have the
         default values."""
         self.tokens = [gramCh.head]
-        self.attrs = { EID: None, EIID: None }
-        self.attrs[ORIGIN] = EVITA
-        self.attrs[CLASS] = gramCh.evClass
-        self.attrs[TENSE] = gramCh.tense
-        self.attrs[ASPECT] = gramCh.aspect
-        self.attrs[POS] = gramCh.nf_morph
+        self.attrs = { LIBRARY.timeml.EID: None, LIBRARY.timeml.EIID: None }
+        self.attrs[LIBRARY.timeml.ORIGIN] = EVITA
+        self.attrs[LIBRARY.timeml.CLASS] = gramCh.evClass
+        self.attrs[LIBRARY.timeml.TENSE] = gramCh.tense
+        self.attrs[LIBRARY.timeml.ASPECT] = gramCh.aspect
+        self.attrs[LIBRARY.timeml.POS] = gramCh.nf_morph
         if gramCh.modality != 'NONE':
-            self.attrs[MODALITY] = gramCh.modality
+            self.attrs[LIBRARY.timeml.MODALITY] = gramCh.modality
         if gramCh.polarity != 'POS':
-            self.attrs[POLARITY] = "NEG"
+            self.attrs[LIBRARY.timeml.POLARITY] = "NEG"

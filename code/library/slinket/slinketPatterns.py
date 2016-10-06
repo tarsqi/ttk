@@ -13,18 +13,15 @@ dictionaries.
 
 from library import forms
 
-from library.timeMLspec import *
+#from library.timeMLspec import *
 from utilities.FSA import compileOP
 
 print "Loading and compiling patterns"
 
-                     
-# Note: Patterns must be sorted from shortest to longest,
-#       and from most to less specific.
-#
-#       Some combinations are 'more possible' than others. But that's not
-#       a problems, since the list aims at a recognition task, not a
-#       generation one.
+
+# Note: Patterns must be sorted from shortest to longest, and from most to less
+# specific. Some combinations are 'more possible' than others. But that's not a
+# problem, since the list aims at a recognition task, not a generation one.
 
 
 
@@ -32,82 +29,182 @@ print "Loading and compiling patterns"
 # OBJECTS:
 # =======
 
-chunk_EVENT_finite = {'nodeType': EventConstituentClassNames, TENSE: ['PAST', 'PRESENT', 'FUTURE']}
-chunk_EVENT_finite_NOT_report = {'nodeType': EventConstituentClassNames, TENSE: ['PAST', 'PRESENT', 'FUTURE'], CLASS: ('^', 'REPORTING')}
-chunk_EVENT_modal = {'nodeType': EventConstituentClassNames, MOD: forms.wholeMod+['have to'] }
-chunk_EVENT_modal_NOT_report = {'nodeType': EventConstituentClassNames, MOD: forms.wholeMod+['have to'], CLASS: ('^', 'REPORTING') }
+chunk_EVENT_finite = {
+    'nodeType': EventConstituentClassNames,
+    TENSE: ['PAST', 'PRESENT', 'FUTURE']}
+
+chunk_EVENT_finite_NOT_report = {
+    'nodeType': EventConstituentClassNames,
+    TENSE: ['PAST', 'PRESENT', 'FUTURE'],
+    CLASS: ('^', 'REPORTING')}
+
+chunk_EVENT_modal = {
+    'nodeType': EventConstituentClassNames,
+    MOD: forms.wholeMod+['have to'] }
+
+chunk_EVENT_modal_NOT_report = {
+    'nodeType': EventConstituentClassNames,
+    MOD: forms.wholeMod+['have to'],
+    CLASS: ('^', 'REPORTING') }
+
 chunk_EVENT_infinite = {'nodeType': 'VerbChunk', TENSE: 'INFINITIVE' } 
+
 chunk_EVENT_verbal = {'nodeType': 'VerbChunk', 'eventStatus': '1'}
+
 chunk_EVENT_nominal = {'nodeType': 'NounChunk', 'eventStatus': '1'}
+
 chunk_EVENT_adj = {'nodeType': 'AdjectiveToken', 'eventStatus': '1'}
+
 chunk_EVENT_pastPart = {'nodeType': 'VerbChunk', 'eventStatus': '1', 'pos': 'VBN'}
+
 chunk_EVENT_presPart = {'nodeType': 'VerbChunk', 'eventStatus': '1', 'pos': 'VBG'}
+
 chunk_EVENT_participial = {'nodeType': 'VerbChunk', 'eventStatus': '1', 'pos': ['VBG', 'VBN']}
+
 #chunk_EVENT_base = {'nodeType': 'VerbChunk', 'eventStatus': '1', 'pos': 'VB'}
+
 chunk_EVENT_nonfinite = {'nodeType': 'VerbChunk', 'eventStatus': '1', TENSE: 'INFINITIVE', 'pos': 'VB'}
+
 chunk_EVENT_perfective = {'eventStatus': '1', ASPECT: 'PERFECTIVE'} 
+
 chunk_EVENT_perfective_infinitive = {'eventStatus': '1', ASPECT: 'PERFECTIVE', TENSE: 'INFINITIVE'} 
+
 chunk_EVENT_perfective_neg = {'eventStatus': '1', ASPECT: 'PERFECTIVE', POL: 'NEG'} 
+
 chunk_EVENT_past = {'eventStatus': '1', TENSE: 'PAST'} 
+
 chunk_EVENT_present = {'eventStatus': '1', TENSE: 'PRESENT'} 
+
 chunk_EVENT_future = {'eventStatus': '1', TENSE: 'FUTURE'} 
 
 chunk_Participle = {'nodeType': 'VerbChunk', 'pos' : ['VGB', 'VBN']}
+
 chunk_NounChunk = {'nodeType': 'NounChunk'}#, 'eventStatus': ('^', '1')}
+
 chunk_VerbChunk = {'nodeType': 'VerbChunk', 'eventStatus': ('^', '1')}
+
 chunk_VerbChunk_BE = {'nodeType': 'VerbChunk', 'text': forms.be }
 
 
 token_PARTICIPLE = {'pos' : ['VGB', 'VBN']}
+
 token_PRON = {'nodeType': 'Token', 'pos': ['PP', 'PP$', 'PRP$', 'PRP']} 
+
 token_PREDET = {'nodeType': 'Token', 'pos': 'PDT'}
+
 token_DEMONSTRATIVE = {'nodeType': 'Token', 'text': ['this', 'that', 'these', 'those']}
+
 token_DETERMINER = {'nodeType': 'Token', 'pos': 'DT'}
+
 token_NUMBER = {'nodeType': 'Token', 'pos': 'CD'}
+
 token_ADJECTIVE = {'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS']}
+
 token_ADJ_or_ADV = {'nodeType': 'Token', 'pos': ['JJ', 'RB']}
+
 token_NOUNCHUNK_PARTICLES= {'nodeType': 'Token', 'pos': ['JJ', 'JJR', 'JJS', 'DT', 'PDT', 'POS', 'CD', 'SYM']}
+
 token_POSSESSIVE = {'nodeType': 'Token', 'pos': 'POS'}
+
 token_PREPOSITION = {'nodeType': 'Token', 'pos': 'IN'}
+
 token_AT = {'nodeType': 'Token', 'text':'at'}
+
 token_ABOUT = {'nodeType': 'Token', 'text':'about'}
+
 token_AGAINST = {'text':'against'}
+
 token_FOR = {'text':'for'}
+
 token_FROM = {'text':'from'}
+
 token_IN = {'text':'in'}
+
 token_OF = {'text':'of'}
+
 token_ON = {'text':'on'}
+
 token_OUT = {'text':'out'}
+
 token_OVER = {'text':'over'}
+
 token_TO = {'text':'to', 'pos': 'TO'}
+
 token_WITH = {'text':'with'}
+
 token_WITHOUT = {'text':'without'}
+
 token_ADV_or_similar = {'pos' : ['RB', 'RBR', 'RBS', 'RP', 'JJR']}
+
 token_COMPLEMENTIZER = {'nodeType':'Token', 'text':['that', 'if', 'whether'], 'pos': 'IN'}
+
 token_IF_WHETHER = {'nodeType':'Token', 'text':['if', 'whether']}
+
 token_WH = {'nodeType':'Token', 'text':['who', 'what', 'when', 'which', 'how', 'where', 'why']}
+
 token_WHICH = {'nodeType':'Token', 'text':'which'}
+
 token_THAT = {'nodeType':'Token', 'text':'that'}
+
 token_RelPron = {'nodeType':'Token', 'pos': ['WP', 'WDT', 'WRB']}
+
 token_COORDCONJ = {'nodeType': 'Token', 'pos': 'CC', 'text':['and', 'or']}
+
 token_PUNCT =  {'text': [';', '.', '!', '?', '...']}
+
 token_NOT_CONJ = {'pos': ('^', 'CC')}
+
 token_NOT_PUNCT  = {'text': ('^', [';', '.', '!', '?', '...', '"', '``'])}
-token_NOT_PUNCT_or_RelPron = {'text': ('^', [';', '.', '!', '?', '...', '"', '``']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``"])}
-token_NOT_PUNCT_or_RelPron_or_VerbChunk = {'text': ('^', [';', '.', '!', '?', '...', '"', '``']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``", 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'])}
-token_NOT_PUNCT_or_RelPron_or_THAT = {'text': ('^', [';', '.', '!', '?', '...', '"', '``', 'that']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``"])}
-token_NOT_PUNCT_or_RelPron_or_ReportV = {'text': ('^', [';', '.', '!', '?', '...', '"', '``']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``"]), TENSE: ['PAST', 'PRESENT', 'FUTURE'], CLASS: ('^', 'REPORTING')}
+
+token_NOT_PUNCT_or_RelPron = {
+    'text': ('^', [';', '.', '!', '?', '...', '"', '``']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``"])}
+
+token_NOT_PUNCT_or_RelPron_or_VerbChunk = {
+    'text': ('^', [';', '.', '!', '?', '...', '"', '``']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``", 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'])}
+
+token_NOT_PUNCT_or_RelPron_or_THAT = {
+    'text': ('^', [';', '.', '!', '?', '...', '"', '``', 'that']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``"])}
+
+token_NOT_PUNCT_or_RelPron_or_ReportV = {
+    'text': ('^', [';', '.', '!', '?', '...', '"', '``']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''", "``"]),
+    TENSE: ['PAST', 'PRESENT', 'FUTURE'],
+    CLASS: ('^', 'REPORTING')}
+
 #PUNCT2 does not include opening quotes: ``
+
 token_NOT_PUNCT2  = {'text': ('^', [';', '.', '!', '?', '...', '"'])}
-token_NOT_PUNCT2_or_RelPron = {'text': ('^', [';', '.', '!', '?', '...', '"']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''"])}
-token_NOT_PUNCT2_or_RelPron_or_VerbChunk = {'text': ('^', [';', '.', '!', '?', '...', '"']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''",'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'])}
-token_NOT_PUNCT2_or_RelPron_or_THAT = {'text': ('^', [';', '.', '!', '?', '...', '"', 'that']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''"])}
-token_NOT_PUNCT2_or_RelPron_or_ReportV = {'text': ('^', [';', '.', '!', '?', '...', '"']), 'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''"]), TENSE: ['PAST', 'PRESENT', 'FUTURE'], CLASS: ('^', 'REPORTING')}
+
+token_NOT_PUNCT2_or_RelPron = {
+    'text': ('^', [';', '.', '!', '?', '...', '"']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''"])}
+
+token_NOT_PUNCT2_or_RelPron_or_VerbChunk = {
+    'text': ('^', [';', '.', '!', '?', '...', '"']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''",'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'])}
+
+token_NOT_PUNCT2_or_RelPron_or_THAT = {
+    'text': ('^', [';', '.', '!', '?', '...', '"', 'that']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''"])}
+
+token_NOT_PUNCT2_or_RelPron_or_ReportV = {
+    'text': ('^', [';', '.', '!', '?', '...', '"']),
+    'pos': ('^', ['WP', 'WDT', 'WRB', '"', "''"]),
+    TENSE: ['PAST', 'PRESENT', 'FUTURE'], CLASS: ('^', 'REPORTING')}
+
 token_COMMA = {'text': ','} 
+
 token_COLON = {'text': ':'} 
+
 token_NOT_COMMA = {'text':('^', [','])} 
+
 token_QUOTES = {'text': ['"', '``', "''"]}
+
 token_SYM = {'pos': 'SYM'}
+
 token_UH = {'pos': 'UH'}
 
 

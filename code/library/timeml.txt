@@ -2,7 +2,7 @@
 # =================================================
 
 # SYNTAX. All variables are defined on one line, the values are strings or lists
-# of strings, enclosed in square branckets. Comments start with a '#' and are
+# of strings, enclosed in square brackets. Comments start with a '#' and are
 # ignored when this file is read.
 
 
@@ -99,8 +99,6 @@ NOUN = NOUN
 ADJECTIVE = ADJECTIVE
 VERB = VERB
 NONE = NONE
-
-EMPTY_TAGS = [MAKEINSTANCE, TLINK, SLINK, ALINK]
 
 COUNTER_FACTIVE = COUNTER_FACTIVE
 FACTIVE = FACTIVE

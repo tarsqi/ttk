@@ -1,8 +1,10 @@
-"""
+"""Some conversion utilities.
 
-Some conversion utilities.
+Currently just a utility to convert LDC TimeBank into a modern TImeBank in the
+TTK format.
 
-The following can be run from the command line:
+The following command can be run from the command line from the directory this
+file is in:
 
    $ convert.py --convert-timebank -i INDIR -o OUTDIR
 
@@ -15,13 +17,25 @@ import os, sys, getopt
 
 import path
 import tarsqi
-
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
+from docmodel.document import TarsqiDocument
+from library.main import TarsqiLibrary
 
-from library.timeMLspec import TIMEX, EVENT, EID, EIID, EVENTID
-from library.timeMLspec import SIGNAL, ALINK, SLINK, TLINK
+
+LIBRARY = TarsqiLibrary()
+
+TIMEX = LIBRARY.timeml.TIMEX
+EVENT = LIBRARY.timeml.EVENT
+SIGNAL = LIBRARY.timeml.SIGNAL
+ALINK = LIBRARY.timeml.ALINK
+SLINK = LIBRARY.timeml.SLINK
+TLINK = LIBRARY.timeml.TLINK
+
+EID = LIBRARY.timeml.EID
+EIID = LIBRARY.timeml.EIID
+EVENTID = LIBRARY.timeml.EVENTID
 
 MAKEINSTANCE = 'MAKEINSTANCE'
 
@@ -33,7 +47,8 @@ def load(infile):
     source_parser = create_source_parser(options)
     metadata_parser = create_metadata_parser(options)
     docstructure_parser = create_docstructure_parser()
-    tarsqidoc = source_parser.parse_file(infile)
+    tarsqidoc = TarsqiDocument(LIBRARY)
+    source_parser.parse_file(infile, tarsqidoc)
     metadata_parser.parse(tarsqidoc)
     docstructure_parser.parse(tarsqidoc)
     tarsqidoc.add_options(options)
@@ -45,10 +60,11 @@ def load(infile):
 
 def convert_timebank(timebank_dir, out_dir):
     for fname in os.listdir(timebank_dir):
-        print fname
-        infile = os.path.join(timebank_dir, fname)
-        outfile = os.path.join(out_dir, fname)
-        convert_timebank_file(infile, outfile)
+        if fname.endswith('.tml'):
+            print fname
+            infile = os.path.join(timebank_dir, fname)
+            outfile = os.path.join(out_dir, fname)
+            convert_timebank_file(infile, outfile)
 
 
 def convert_timebank_file(infile, outfile):
@@ -69,6 +85,5 @@ if __name__ == '__main__':
     long_options = ['convert-timebank']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
-
     if '--convert-timebank' in opts:
         convert_timebank(opts['-i'], opts['-o'])

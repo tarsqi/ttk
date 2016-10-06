@@ -11,11 +11,7 @@ from utilities import logger
 from components.common_modules.component import TarsqiComponent
 from library.tarsqi_constants import S2T
 from library.s2t import s2t_rule_loader
-from library.timeMLspec import RELTYPE, SYNTAX, TLINK
-from library.timeMLspec import EVENT_INSTANCE_ID
-from library.timeMLspec import RELATED_TO_EVENT_INSTANCE
-from library.timeMLspec import SUBORDINATED_EVENT_INSTANCE
-from library.timeMLspec import ORIGIN
+from library.main import LIBRARY
 
 
 class Slink2Tlink (TarsqiComponent):
@@ -37,10 +33,11 @@ class Slink2Tlink (TarsqiComponent):
         # the document.
         self.doctree.tlinks = []
         self.docelement = self.doctree.docelement
-        events = self.doctree.tarsqidoc.tags.find_tags('EVENT')
+        events = self.doctree.tarsqidoc.tags.find_tags(LIBRARY.timeml.EVENT)
         eventsIdx = dict([(e.attrs['eiid'], e) for e in events])
         for slinktag in self.doctree.slinks:
             slink = Slink(self.doctree, eventsIdx, slinktag)
+            slink.match_rules(self.rules)
             try:
                 slink.match_rules(self.rules)
             except:
@@ -49,7 +46,7 @@ class Slink2Tlink (TarsqiComponent):
 
     def _add_links_to_docelement(self):
         for tlink in self.doctree.tlinks:
-            self._add_link(TLINK, tlink.attrs)
+            self._add_link(LIBRARY.timeml.TLINK, tlink.attrs)
 
     def _add_link(self, tagname, attrs):
         """Add the link to the TagRepository instance on the TarsqiDocument."""
@@ -74,8 +71,8 @@ class Slink:
         and the slink element from xmldoc."""
         self.doctree = doctree
         self.attrs = slinkTag.attrs
-        eiid1 = self.attrs[EVENT_INSTANCE_ID]
-        eiid2 = self.attrs[SUBORDINATED_EVENT_INSTANCE]
+        eiid1 = self.attrs[LIBRARY.timeml.EVENT_INSTANCE_ID]
+        eiid2 = self.attrs[LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE]
         self.eventInstance = instances[eiid1]
         self.subEventInstance = instances[eiid2]
 
@@ -118,13 +115,16 @@ class Slink:
         """Takes an S2T rule object and calls the add_tlink method from xmldoc
         to create a new TLINK using the appropriate SLINK event instance IDs and
         the relation attribute of the S2T rule."""
+        EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+        RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+        SUBORDINATED_EVENT_INSTANCE= LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
         tlinkAttrs = {
             EVENT_INSTANCE_ID: self.attrs[EVENT_INSTANCE_ID],
             RELATED_TO_EVENT_INSTANCE: self.attrs[SUBORDINATED_EVENT_INSTANCE],
-            RELTYPE: rule.attrs['relation'],
-            ORIGIN: S2T,
-            SYNTAX: "RULE-%s" % rule.id }
-        self.doctree.addLink(tlinkAttrs, TLINK)
+            LIBRARY.timeml.RELTYPE: rule.attrs['relation'],
+            LIBRARY.timeml.ORIGIN: S2T,
+            LIBRARY.timeml.SYNTAX: "RULE-%s" % rule.id }
+        self.doctree.addLink(tlinkAttrs, LIBRARY.timeml.TLINK)
 
 
 class Alink:

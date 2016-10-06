@@ -1,8 +1,8 @@
 """create_dicts.py
 
-Taking dictionaries slinkPredicates and alinkPredicates and the asscoiated
-compiled patterns in slinketPatterns and converting them into pickle objects
-that are saved in the current directory.
+Takes dictionaries in slinkPredicates and alinkPredicates and the asscoiated
+compiled patterns in slinketPatterns and converts them into pickle objects that
+are saved in the current directory.
 
 The pickle files should be moved to the dictionaries directory.
 
@@ -17,7 +17,8 @@ sys.path.append('../..')
 # variable is not used so we hand in a dummy value
 os.environ['TTK_ROOT'] = 'DUMMY'
 
-import slinkPredicates, alinkPredicates
+import slinkPredicates
+import alinkPredicates
 
 
 print "Pickling dictionaries..."
@@ -32,6 +33,3 @@ for (dictionary, name) in slink_dictionaries:
     pickleFile = open(fname, 'w')
     print "Writing %s to %s" % (name, fname)
     cPickle.dump(dictionary, pickleFile)
-    
-
-

@@ -10,11 +10,24 @@ from components.common_modules.chunks import NounChunk, VerbChunk
 from components.common_modules.tokens import Token, AdjectiveToken
 from components.common_modules.tags import EventTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
-from library.timeMLspec import EID, EIID, EVENTID
-from library.timeMLspec import SENTENCE, NOUNCHUNK, VERBCHUNK, LEX
-from library.timeMLspec import EVENT, TIMEX, ALINK, SLINK, TLINK
-from library.timeMLspec import POS, POS_ADJ
+from library.main import LIBRARY
 from utilities import logger
+
+
+EVENT = LIBRARY.timeml.EVENT
+TIMEX = LIBRARY.timeml.TIMEX
+ALINK = LIBRARY.timeml.ALINK
+SLINK = LIBRARY.timeml.SLINK
+TLINK = LIBRARY.timeml.TLINK
+EID = LIBRARY.timeml.EID
+EIID = LIBRARY.timeml.EIID
+EVENTID = LIBRARY.timeml.EVENTID
+SENTENCE = LIBRARY.timeml.SENTENCE
+NOUNCHUNK = LIBRARY.timeml.NOUNCHUNK
+VERBCHUNK = LIBRARY.timeml.VERBCHUNK
+LEX = LIBRARY.timeml.LEX
+POS = LIBRARY.timeml.POS
+POS_ADJ = LIBRARY.timeml.POS_ADJ
 
 
 def create_tarsqi_tree(tarsqidoc, element, links=False):

@@ -10,11 +10,7 @@ from components.common_modules.component import TarsqiComponent
 from components.common_modules.utils import get_events, get_words_as_string
 from library.slinket.main import SLINKET_DICTS
 from library.tarsqi_constants import SLINKET
-from library.timeMLspec import VERB, NOUN, ADJECTIVE
-from library.timeMLspec import ALINK, SLINK, EVENT
-from library.timeMLspec import EID, EIID, EVENTID, POS, EPOS, FORM
-from library.timeMLspec import TENSE, ASPECT, POL, MOD, CLASS, STEM
-from library.timeMLspec import ORIGIN
+from library.main import LIBRARY
 from utilities import logger
 
 DEBUG = False
@@ -69,14 +65,14 @@ class Slinket (TarsqiComponent):
         all sentences in self.doctree."""
         self.doctree.events = {}
         for event in get_events(self.doctree):
-            eid = event.attrs[EID]
+            eid = event.attrs[LIBRARY.timeml.EID]
             self.doctree.events[eid] = event.attrs
             pos = event.dtrs[0].pos
-            epos = self.doctree.events[eid][POS]
+            epos = self.doctree.events[eid][LIBRARY.timeml.POS]
             form = event.dtrs[0].getText()
-            self.doctree.events[eid][FORM] = form
-            self.doctree.events[eid][EPOS] = epos
-            self.doctree.events[eid][POS] = pos
+            self.doctree.events[eid][LIBRARY.timeml.FORM] = form
+            self.doctree.events[eid][LIBRARY.timeml.EPOS] = epos
+            self.doctree.events[eid][LIBRARY.timeml.POS] = pos
         for sentence in self.doctree:
             sentence.set_event_list()
 
@@ -141,13 +137,13 @@ class Slinket (TarsqiComponent):
 
     def _add_links_to_document(self):
         for alink in self.doctree.alinks:
-            self._add_link(ALINK, alink.attrs)
+            self._add_link(LIBRARY.timeml.ALINK, alink.attrs)
         for slink in self.doctree.slinks:
-            self._add_link(SLINK, slink.attrs)
+            self._add_link(LIBRARY.timeml.SLINK, slink.attrs)
 
     def _add_link(self, tagname, attrs):
         """Add the link to the TagRepository instance on the TarsqiDocument."""
-        attrs[ORIGIN] = SLINKET
+        attrs[LIBRARY.timeml.ORIGIN] = SLINKET
         logger.debug("Adding %s: %s" % (tagname, attrs))
         self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, attrs)
 
@@ -183,15 +179,15 @@ class EventExpression:
         self.eventNum = eventNum
         self.dict = event_attributes
         self.eid = eid
-        self.eiid = self.get_event_attribute(EIID)
-        self.tense = self.get_event_attribute(TENSE)
-        self.aspect = self.get_event_attribute(ASPECT)
-        self.nf_morph = self.get_event_attribute(EPOS)
-        self.polarity = self.get_event_attribute(POL, optional=True)
-        self.modality = self.get_event_attribute(MOD, optional=True)
-        self.evClass = self.get_event_attribute(CLASS)
-        self.pos = self.get_event_attribute(POS)
-        self.form = self.get_event_attribute(FORM)
+        self.eiid = self.get_event_attribute(LIBRARY.timeml.EIID)
+        self.tense = self.get_event_attribute(LIBRARY.timeml.TENSE)
+        self.aspect = self.get_event_attribute(LIBRARY.timeml.ASPECT)
+        self.nf_morph = self.get_event_attribute(LIBRARY.timeml.EPOS)
+        self.polarity = self.get_event_attribute(LIBRARY.timeml.POL, optional=True)
+        self.modality = self.get_event_attribute(LIBRARY.timeml.MOD, optional=True)
+        self.evClass = self.get_event_attribute(LIBRARY.timeml.CLASS)
+        self.pos = self.get_event_attribute(LIBRARY.timeml.POS)
+        self.form = self.get_event_attribute(LIBRARY.timeml.FORM)
 
     def as_verbose_string(self):
         return \
@@ -210,7 +206,7 @@ class EventExpression:
         val = self.dict.get(attr)
         if val is None and not optional:
             logger.error("No %s attribute for current event" % attr)
-        if val is None and attr == POL:
+        if val is None and attr == LIBRARY.timeml.POL:
             val = 'POS'
         return val
 
@@ -224,9 +220,9 @@ class EventExpression:
         """Returns True if the EventExpression instance can introduce an Alink, False
         otherwise. This ability is determined by dictionary lookup."""
         form = self.form.lower()
-        if self.nf_morph == VERB:
+        if self.nf_morph == LIBRARY.timeml.VERB:
             return form in SLINKET_DICTS.alinkVerbsDict
-        if self.nf_morph == NOUN:
+        if self.nf_morph == LIBRARY.timeml.NOUN:
             return form in SLINKET_DICTS.alinkNounsDict
         return False
 
@@ -234,20 +230,20 @@ class EventExpression:
         """Returns True if the EventExpression instance can introduce an Slink, False
         otherwise. This ability is determined by dictionary lookup."""
         form = self.form.lower()
-        if self.nf_morph == VERB:
+        if self.nf_morph == LIBRARY.timeml.VERB:
             return form in SLINKET_DICTS.slinkVerbsDict
-        if self.nf_morph == NOUN:
+        if self.nf_morph == LIBRARY.timeml.NOUN:
             return form in SLINKET_DICTS.slinkNounsDict
-        if self.nf_morph == ADJECTIVE:
+        if self.nf_morph == LIBRARY.timeml.ADJECTIVE:
             return form in SLINKET_DICTS.slinkAdjsDict
         return False
 
     def alinkingContexts(self, key):
         """Returns the list of alink patterns from the dictionary."""
         form = self.form.lower()
-        if self.nf_morph == VERB:
+        if self.nf_morph == LIBRARY.timeml.VERB:
             pattern_dictionary = SLINKET_DICTS.alinkVerbsDict
-        elif self.nf_morph == NOUN:
+        elif self.nf_morph == LIBRARY.timeml.NOUN:
             pattern_dictionary = SLINKET_DICTS.alinkNounsDict
         else:
             logger.warn("SLINKS of type " + str(key) + " for EVENT form " +
@@ -258,11 +254,11 @@ class EventExpression:
     def slinkingContexts(self, key):
         """Returns the list of slink patterns from the dictionary."""
         form = self.form.lower()
-        if self.nf_morph == VERB:
+        if self.nf_morph == LIBRARY.timeml.VERB:
             pattern_dictionary = SLINKET_DICTS.slinkVerbsDict
-        elif self.nf_morph == NOUN:
+        elif self.nf_morph == LIBRARY.timeml.NOUN:
             pattern_dictionary = SLINKET_DICTS.slinkNounsDict
-        elif self.nf_morph == ADJECTIVE:
+        elif self.nf_morph == LIBRARY.timeml.ADJECTIVE:
             pattern_dictionary = SLINKET_DICTS.slinkAdjsDict
         else:
             logger.warn("SLINKS of type " + str(key) + " for EVENT form " +

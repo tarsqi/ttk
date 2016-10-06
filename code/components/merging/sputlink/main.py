@@ -6,10 +6,7 @@ from objects import Constraint
 from mappings import translate_timeml_relation, invert_interval_relation
 from utils import CompositionTable
 from utils import html_graph_prefix
-from library.timeMLspec import TLINK, EVENT, TIMEX, TID, EIID
-from library.timeMLspec import CONFIDENCE, ORIGIN
-from library.timeMLspec import RELTYPE, EVENT_INSTANCE_ID, TIME_ID
-from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
+from library.main import LIBRARY
 
 DEBUG = False
 DEBUG = True
@@ -18,6 +15,21 @@ TTK_ROOT = os.environ['TTK_ROOT']
 
 COMPOSITIONS = os.path.join(TTK_ROOT, 'components', 'merging', 'sputlink',
                             'rules', 'compositions_short.txt')
+
+TLINK = LIBRARY.timeml.TLINK
+RELTYPE = LIBRARY.timeml.RELTYPE
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+TIME_ID = LIBRARY.timeml.TIME_ID
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
+CONFIDENCE = LIBRARY.timeml.CONFIDENCE
+ORIGIN = LIBRARY.timeml.ORIGIN
+
+EVENT = LIBRARY.timeml.EVENT
+EIID = LIBRARY.timeml.EIID
+
+TIMEX = LIBRARY.timeml.TIMEX
+TID = LIBRARY.timeml.TID
 
 
 class ConstraintPropagator:

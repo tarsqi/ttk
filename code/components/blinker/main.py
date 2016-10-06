@@ -8,14 +8,26 @@ import re
 
 from utilities import logger
 from library.tarsqi_constants import BLINKER
-from library.timeMLspec import TIMEX, TYPE, VALUE, EIID, TID, POL
-from library.timeMLspec import TLINK, RELTYPE, ORIGIN
-from library.timeMLspec import EVENT_INSTANCE_ID, RELATED_TO_EVENT_INSTANCE
-from library.timeMLspec import TIME_ID, RELATED_TO_TIME
+from library.main import LIBRARY
 from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.tree import create_tarsqi_tree
 from components.blinker.compare import compare_date
+
+
+TIMEX = LIBRARY.timeml.TIMEX
+TYPE = LIBRARY.timeml.TYPE
+VALUE = LIBRARY.timeml.VALUE
+EIID = LIBRARY.timeml.EIID
+TID = LIBRARY.timeml.TID
+POL = LIBRARY.timeml.POL
+TLINK = LIBRARY.timeml.TLINK
+RELTYPE = LIBRARY.timeml.RELTYPE
+ORIGIN = LIBRARY.timeml.ORIGIN
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+TIME_ID = LIBRARY.timeml.TIME_ID
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
 _DEBUG = False
@@ -169,7 +181,6 @@ class Blinker (TarsqiComponent):
             rule = self.rules[3][i]
             if _DEBUG:
                 rule.pp()
-            # see tags.py and library.timeMLspec.py for attribute names
             if event1.attrs['class'] in rule.attrs['arg1.class'] and \
                event2.attrs['class'] in rule.attrs['arg2.class'] and \
                event1.attrs['tense'] in rule.attrs['arg1.tense'] and \

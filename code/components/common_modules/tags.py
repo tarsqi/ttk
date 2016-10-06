@@ -5,13 +5,30 @@ Contains classes for TimeML tags.
 """
 
 
-from library.timeMLspec import EVENT, TIMEX, ALINK, SLINK, TLINK
-from library.timeMLspec import TID, EID, EIID, EVENTID
-from library.timeMLspec import CLASS, TENSE, ASPECT
-from library.timeMLspec import EPOS, MOD, POL, FORM, STEM, POS
+from library.main import LIBRARY
 from components.common_modules.constituent import Constituent
 from utilities import logger
 from utils import get_tokens
+
+
+EVENT = LIBRARY.timeml.EVENT
+TIMEX = LIBRARY.timeml.TIMEX
+ALINK = LIBRARY.timeml.ALINK
+SLINK = LIBRARY.timeml.SLINK
+TLINK = LIBRARY.timeml.TLINK
+TID = LIBRARY.timeml.TID
+EID = LIBRARY.timeml.EID
+EIID = LIBRARY.timeml.EIID
+EVENTID = LIBRARY.timeml.EVENTID
+CLASS = LIBRARY.timeml.CLASS
+TENSE = LIBRARY.timeml.TENSE
+ASPECT = LIBRARY.timeml.ASPECT
+EPOS = LIBRARY.timeml.EPOS
+MOD = LIBRARY.timeml.MOD
+POL = LIBRARY.timeml.POL
+FORM = LIBRARY.timeml.FORM
+STEM = LIBRARY.timeml.STEM
+POS = LIBRARY.timeml.POS
 
 
 class Tag(Constituent):

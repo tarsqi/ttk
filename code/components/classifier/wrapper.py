@@ -7,13 +7,21 @@ Python wrapper around the Mallet Classifier
 import os
 
 from library.tarsqi_constants import CLASSIFIER
-from library.timeMLspec import TLINK, EIID, TID
-from library.timeMLspec import RELTYPE, ORIGIN, EVENT_INSTANCE_ID, TIME_ID
-from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
+from library.main import LIBRARY
 from utilities import logger, mallet
 from components.classifier import vectors
 
 TTK_ROOT = os.environ['TTK_ROOT']
+
+TLINK = LIBRARY.timeml.TLINK
+EIID = LIBRARY.timeml.EIID
+TID = LIBRARY.timeml.TID
+RELTYPE = LIBRARY.timeml.RELTYPE
+ORIGIN = LIBRARY.timeml.ORIGIN
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+TIME_ID = LIBRARY.timeml.TIME_ID
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
 class ClassifierWrapper:

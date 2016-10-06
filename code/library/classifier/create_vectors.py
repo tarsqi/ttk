@@ -99,21 +99,40 @@ import path
 import root
 
 from tarsqi import Options
+from docmodel.document import TarsqiDocument
 from docmodel.source_parser import SourceParser
 from docmodel.main import create_source_parser
 from components.classifier.vectors import collect_tarsqidoc_vectors
 
-from library.timeMLspec import TLINK, RELTYPE, EVENT_INSTANCE_ID, TIME_ID
-from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
-from library.timeMLspec import BEFORE, IBEFORE, BEGINS, BEGUN_BY
-from library.timeMLspec import DURING, DURING_INV
-from library.timeMLspec import IS_INCLUDED, SIMULTANEOUS, IDENTITY, INCLUDES
-from library.timeMLspec import ENDED_BY, ENDS, IAFTER, AFTER
+from library.main import LIBRARY
+
 
 GOLD_DIR = os.path.join('data', 'gold')
 
 ee_fh = open("vectors.ee", 'w')
 et_fh = open("vectors.et", 'w')
+
+TLINK = LIBRARY.timeml.TLINK
+RELTYPE = LIBRARY.timeml.RELTYPE
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+TIME_ID = LIBRARY.timeml.TIME_ID
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
+
+BEFORE = LIBRARY.timeml.BEFORE
+IBEFORE = LIBRARY.timeml.IBEFORE
+BEGINS = LIBRARY.timeml.BEGINS
+BEGUN_BY = LIBRARY.timeml.BEGUN_BY
+DURING = LIBRARY.timeml.DURING
+DURING_INV = LIBRARY.timeml.DURING_INV
+IS_INCLUDED = LIBRARY.timeml.IS_INCLUDED
+SIMULTANEOUS = LIBRARY.timeml.SIMULTANEOUS
+IDENTITY = LIBRARY.timeml.IDENTITY
+INCLUDES = LIBRARY.timeml.INCLUDES
+ENDED_BY = LIBRARY.timeml.ENDED_BY
+ENDS = LIBRARY.timeml.ENDS
+IAFTER = LIBRARY.timeml.IAFTER
+AFTER = LIBRARY.timeml.AFTER
 
 INVERSE = {
     BEFORE: AFTER,
@@ -140,6 +159,7 @@ def process_dir(gold_dir):
     for fname in os.listdir(gold_dir):
         if fname.startswith('.') or fname.endswith('~'):
             continue
+        process_file(gold_dir, fname)
         try:
             print fname
             process_file(gold_dir, fname)
@@ -150,7 +170,9 @@ def process_dir(gold_dir):
 def process_file(gold_dir, fname):
     infile = os.path.join(gold_dir, fname)
     source_parser = create_source_parser(options)
-    tarsqidoc = source_parser.parse_file(infile)
+    #tarsqidoc = source_parser.parse_file(infile)
+    tarsqidoc = TarsqiDocument()
+    source_parser.parse_file(infile, tarsqidoc)
     (ee_vectors, et_vectors) = collect_tarsqidoc_vectors(tarsqidoc)
     tlinks = collect_tlinks(tarsqidoc)
     add_reltype_to_vectors(tlinks, ee_vectors, et_vectors)
@@ -179,8 +201,10 @@ def collect_tlinks(tarsqidoc):
         id1 = attrs.get(EVENT_INSTANCE_ID, attrs.get(TIME_ID))
         id2 = attrs.get(RELATED_TO_EVENT_INSTANCE, attrs.get(RELATED_TO_TIME))
         rel = attrs[RELTYPE]
-        tlinks["%s-%s" % (id1, id2)] = rel
-        tlinks["%s-%s" % (id2, id1)] = INVERSE[rel]
+        # skip disjunctive links
+        if not rel.find('|') > -1:
+            tlinks["%s-%s" % (id1, id2)] = rel
+            tlinks["%s-%s" % (id2, id1)] = INVERSE[rel]
     return tlinks
 
 

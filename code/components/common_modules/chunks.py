@@ -11,8 +11,7 @@ import types
 
 import library.forms as forms
 import library.patterns as patterns
-from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT, EPOS, MOD, POL
-from library.timeMLspec import EVENTID, EIID, CLASS, EVENT, TIMEX
+from library.main import LIBRARY
 
 from components.common_modules import utils
 from components.common_modules.constituent import Constituent
@@ -95,20 +94,22 @@ class Chunk(Constituent):
             return None
         if name == 'pos':
             return None
-        if name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
-                    EPOS, MOD, POL, EVENTID, EIID, CLASS]:
+        if name in ['eventStatus', 'text', LIBRARY.timeml.FORM, LIBRARY.timeml.STEM,
+                    LIBRARY.timeml.POS, LIBRARY.timeml.TENSE, LIBRARY.timeml.ASPECT,
+                    LIBRARY.timeml.EPOS, LIBRARY.timeml.MOD, LIBRARY.timeml.POL,
+                    LIBRARY.timeml.EVENTID, LIBRARY.timeml.EIID, LIBRARY.timeml.CLASS]:
             if not self.event:
                 return None
             if name == 'eventStatus':
                 return '1'
-            if name == 'text' or name == FORM:
-                return self.tree.events[self.eid][FORM]
-            if name == MOD:
-                return self.tree.events[self.eid].get(MOD, 'NONE')
-            if name == POL:
-                return self.tree.events[self.eid].get(POL, 'POS')
-            if name == POS:
-                return self.tree.events[self.eid].get(POS, 'NONE')
+            if name == 'text' or name == LIBRARY.timeml.FORM:
+                return self.tree.events[self.eid][LIBRARY.timeml.FORM]
+            if name == LIBRARY.timeml.MOD:
+                return self.tree.events[self.eid].get(LIBRARY.timeml.MOD, 'NONE')
+            if name == LIBRARY.timeml.POL:
+                return self.tree.events[self.eid].get(LIBRARY.timeml.POL, 'POS')
+            if name == LIBRARY.timeml.POS:
+                return self.tree.events[self.eid].get(LIBRARY.timeml.POS, 'NONE')
             return self.tree.events[self.eid][name]
         else:
             raise AttributeError(name)

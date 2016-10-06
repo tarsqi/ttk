@@ -1,0 +1,128 @@
+<ttk>
+<text>
+John saw an explosion today and in 2000.
+Sue slept on Wednesday.
+John saw the miners build a fence.
+
+He said the dogs slept.
+I was there in 2000 and 2016, and today too.
+
+</text>
+<metadata>
+  <dct value="20161006"/>
+</metadata>
+<source_tags>
+  <TEXT id="1" begin="0" end="171" />
+</source_tags>
+<tarsqi_tags>
+  <docelement id="d1" begin="1" end="100" origin="DOCSTRUCTURE" type="paragraph" />
+  <s id="s1" begin="1" end="41" origin="PREPROCESSOR" />
+  <lex id="l1" begin="1" end="5" lemma="John" origin="PREPROCESSOR" pos="NNP" text="John" />
+  <ng id="c1" begin="1" end="5" origin="PREPROCESSOR" />
+  <lex id="l2" begin="6" end="9" lemma="see" origin="PREPROCESSOR" pos="VBD" text="saw" />
+  <vg id="c2" begin="6" end="9" origin="PREPROCESSOR" />
+  <EVENT begin="6" end="9" aspect="NONE" class="PERCEPTION" eid="e1" eiid="ei1" epos="VERB" form="saw" origin="EVITA" pos="VBD" tense="PAST" />
+  <ng id="c3" begin="10" end="28" origin="PREPROCESSOR" />
+  <lex id="l3" begin="10" end="12" lemma="an" origin="PREPROCESSOR" pos="DT" text="an" />
+  <lex id="l4" begin="13" end="22" lemma="explosion" origin="PREPROCESSOR" pos="NN" text="explosion" />
+  <lex id="l5" begin="23" end="28" lemma="today" origin="PREPROCESSOR" pos="NN" text="today" />
+  <TIMEX3 begin="23" end="28" origin="GUTIME" tid="t1" type="DATE" value="20161006" />
+  <lex id="l6" begin="29" end="32" lemma="and" origin="PREPROCESSOR" pos="CC" text="and" />
+  <lex id="l7" begin="33" end="35" lemma="in" origin="PREPROCESSOR" pos="IN" text="in" />
+  <lex id="l8" begin="36" end="40" lemma="@card@" origin="PREPROCESSOR" pos="CD" text="2000" />
+  <TIMEX3 begin="36" end="40" origin="GUTIME" tid="t2" type="DATE" value="2000" />
+  <lex id="l9" begin="40" end="41" lemma="." origin="PREPROCESSOR" pos="." text="." />
+  <s id="s2" begin="42" end="65" origin="PREPROCESSOR" />
+  <lex id="l10" begin="42" end="45" lemma="Sue" origin="PREPROCESSOR" pos="NNP" text="Sue" />
+  <ng id="c4" begin="42" end="45" origin="PREPROCESSOR" />
+  <lex id="l11" begin="46" end="51" lemma="sleep" origin="PREPROCESSOR" pos="VBD" text="slept" />
+  <vg id="c5" begin="46" end="51" origin="PREPROCESSOR" />
+  <EVENT begin="46" end="51" aspect="NONE" class="OCCURRENCE" eid="e2" eiid="ei2" epos="VERB" form="slept" origin="EVITA" pos="VBD" tense="PAST" />
+  <lex id="l12" begin="52" end="54" lemma="on" origin="PREPROCESSOR" pos="IN" text="on" />
+  <lex id="l13" begin="55" end="64" lemma="Wednesday" origin="PREPROCESSOR" pos="NNP" text="Wednesday" />
+  <ng id="c6" begin="55" end="64" origin="PREPROCESSOR" />
+  <TIMEX3 begin="55" end="64" origin="GUTIME" tid="t3" type="DATE" value="20161005" />
+  <lex id="l14" begin="64" end="65" lemma="." origin="PREPROCESSOR" pos="." text="." />
+  <s id="s3" begin="66" end="100" origin="PREPROCESSOR" />
+  <lex id="l15" begin="66" end="70" lemma="John" origin="PREPROCESSOR" pos="NNP" text="John" />
+  <ng id="c7" begin="66" end="70" origin="PREPROCESSOR" />
+  <lex id="l16" begin="71" end="74" lemma="see" origin="PREPROCESSOR" pos="VBD" text="saw" />
+  <vg id="c8" begin="71" end="74" origin="PREPROCESSOR" />
+  <EVENT begin="71" end="74" aspect="NONE" class="PERCEPTION" eid="e3" eiid="ei3" epos="VERB" form="saw" origin="EVITA" pos="VBD" tense="PAST" />
+  <ng id="c9" begin="75" end="85" origin="PREPROCESSOR" />
+  <lex id="l17" begin="75" end="78" lemma="the" origin="PREPROCESSOR" pos="DT" text="the" />
+  <lex id="l18" begin="79" end="85" lemma="miner" origin="PREPROCESSOR" pos="NNS" text="miners" />
+  <lex id="l19" begin="86" end="91" lemma="build" origin="PREPROCESSOR" pos="VBP" text="build" />
+  <vg id="c10" begin="86" end="91" origin="PREPROCESSOR" />
+  <EVENT begin="86" end="91" aspect="NONE" class="OCCURRENCE" eid="e4" eiid="ei4" epos="VERB" form="build" origin="EVITA" pos="VBP" tense="PRESENT" />
+  <ng id="c11" begin="92" end="99" origin="PREPROCESSOR" />
+  <lex id="l20" begin="92" end="93" lemma="a" origin="PREPROCESSOR" pos="DT" text="a" />
+  <lex id="l21" begin="94" end="99" lemma="fence" origin="PREPROCESSOR" pos="NN" text="fence" />
+  <lex id="l22" begin="99" end="100" lemma="." origin="PREPROCESSOR" pos="." text="." />
+  <docelement id="d2" begin="102" end="170" origin="DOCSTRUCTURE" type="paragraph" />
+  <s id="s4" begin="102" end="125" origin="PREPROCESSOR" />
+  <lex id="l23" begin="102" end="104" lemma="he" origin="PREPROCESSOR" pos="PP" text="He" />
+  <ng id="c12" begin="102" end="104" origin="PREPROCESSOR" />
+  <lex id="l24" begin="105" end="109" lemma="say" origin="PREPROCESSOR" pos="VBD" text="said" />
+  <vg id="c13" begin="105" end="109" origin="PREPROCESSOR" />
+  <EVENT begin="105" end="109" aspect="NONE" class="REPORTING" eid="e5" eiid="ei5" epos="VERB" form="said" origin="EVITA" pos="VBD" tense="PAST" />
+  <ng id="c14" begin="110" end="118" origin="PREPROCESSOR" />
+  <lex id="l25" begin="110" end="113" lemma="the" origin="PREPROCESSOR" pos="DT" text="the" />
+  <lex id="l26" begin="114" end="118" lemma="dog" origin="PREPROCESSOR" pos="NNS" text="dogs" />
+  <lex id="l27" begin="119" end="124" lemma="sleep" origin="PREPROCESSOR" pos="VBD" text="slept" />
+  <vg id="c15" begin="119" end="124" origin="PREPROCESSOR" />
+  <EVENT begin="119" end="124" aspect="NONE" class="OCCURRENCE" eid="e6" eiid="ei6" epos="VERB" form="slept" origin="EVITA" pos="VBD" tense="PAST" />
+  <lex id="l28" begin="124" end="125" lemma="." origin="PREPROCESSOR" pos="." text="." />
+  <s id="s5" begin="126" end="170" origin="PREPROCESSOR" />
+  <lex id="l29" begin="126" end="127" lemma="I" origin="PREPROCESSOR" pos="PP" text="I" />
+  <ng id="c16" begin="126" end="127" origin="PREPROCESSOR" />
+  <lex id="l30" begin="128" end="131" lemma="be" origin="PREPROCESSOR" pos="VBD" text="was" />
+  <vg id="c17" begin="128" end="131" origin="PREPROCESSOR" />
+  <lex id="l31" begin="132" end="137" lemma="there" origin="PREPROCESSOR" pos="RB" text="there" />
+  <lex id="l32" begin="138" end="140" lemma="in" origin="PREPROCESSOR" pos="IN" text="in" />
+  <lex id="l33" begin="141" end="145" lemma="@card@" origin="PREPROCESSOR" pos="CD" text="2000" />
+  <TIMEX3 begin="141" end="145" origin="GUTIME" tid="t4" type="DATE" value="2000" />
+  <lex id="l34" begin="146" end="149" lemma="and" origin="PREPROCESSOR" pos="CC" text="and" />
+  <lex id="l35" begin="150" end="154" lemma="@card@" origin="PREPROCESSOR" pos="CD" text="2016" />
+  <TIMEX3 begin="150" end="154" origin="GUTIME" tid="t5" type="DATE" value="2016" />
+  <lex id="l36" begin="154" end="155" lemma="," origin="PREPROCESSOR" pos="," text="," />
+  <lex id="l37" begin="156" end="159" lemma="and" origin="PREPROCESSOR" pos="CC" text="and" />
+  <lex id="l38" begin="160" end="165" lemma="today" origin="PREPROCESSOR" pos="NN" text="today" />
+  <ng id="c18" begin="160" end="165" origin="PREPROCESSOR" />
+  <TIMEX3 begin="160" end="165" origin="GUTIME" tid="t6" type="DATE" value="PRESENT_REF" />
+  <lex id="l39" begin="166" end="169" lemma="too" origin="PREPROCESSOR" pos="RB" text="too" />
+  <lex id="l40" begin="169" end="170" lemma="." origin="PREPROCESSOR" pos="." text="." />
+  <SLINK eventInstanceID="ei3" lid="l1" origin="SLINKET" relType="EVIDENTIAL" subordinatedEventInstance="ei4" syntax="thatClause_NOT_that" />
+  <SLINK eventInstanceID="ei5" lid="l2" origin="SLINKET" relType="EVIDENTIAL" subordinatedEventInstance="ei6" syntax="thatClause_NOT_that" />
+  <TLINK eventInstanceID="ei1" origin="BLINKER-Rule-3-19" relType="BEFORE" relatedToEventInstance="ei2" />
+  <TLINK eventInstanceID="ei1" origin="BLINKER-Type-1a" relType="IS_INCLUDED" relatedToTime="t1" />
+  <TLINK eventInstanceID="ei3" origin="LINK_MERGER" relType="AFTER" relatedToEventInstance="ei2" />
+  <TLINK eventInstanceID="ei3" lid="l3" origin="S2T" relType="BEFORE" relatedToEventInstance="ei4" syntax="RULE-1" />
+  <TLINK eventInstanceID="ei2" origin="LINK_MERGER" relType="AFTER" relatedToEventInstance="ei1" />
+  <TLINK eventInstanceID="ei2" origin="BLINKER-Rule-3-19" relType="BEFORE" relatedToEventInstance="ei3" />
+  <TLINK eventInstanceID="ei5" lid="l5" origin="S2T" relType="AFTER" relatedToEventInstance="ei6" syntax="RULE-3" />
+  <TLINK eventInstanceID="ei4" origin="LINK_MERGER" relType="AFTER" relatedToEventInstance="ei3" />
+  <TLINK eventInstanceID="ei6" origin="LINK_MERGER" relType="BEFORE" relatedToEventInstance="ei5" />
+  <TLINK origin="LINK_MERGER" relType="BEFORE" relatedToTime="t2" timeID="t6" />
+  <TLINK origin="LINK_MERGER" relType="BEFORE" relatedToTime="t1" timeID="t6" />
+  <TLINK origin="LINK_MERGER" relType="IDENTITY|SIMULTANEOUS|DURING" relatedToTime="t2" timeID="t4" />
+  <TLINK origin="LINK_MERGER" relType="BEFORE" relatedToTime="t1" timeID="t4" />
+  <TLINK origin="LINK_MERGER" relType="AFTER" relatedToTime="t2" timeID="t5" />
+  <TLINK origin="LINK_MERGER" relType="INCLUDES" relatedToTime="t3" timeID="t5" />
+  <TLINK origin="LINK_MERGER" relType="INCLUDES" relatedToTime="t1" timeID="t5" />
+  <TLINK origin="BLINKER-TimexLinking" relType="AFTER" relatedToTime="t6" timeID="t2" />
+  <TLINK origin="BLINKER-TimexLinking" relType="IDENTITY" relatedToTime="t4" timeID="t2" />
+  <TLINK origin="BLINKER-TimexLinking" relType="BEFORE" relatedToTime="t5" timeID="t2" />
+  <TLINK origin="BLINKER-TimexLinking" relType="BEFORE" relatedToTime="t3" timeID="t2" />
+  <TLINK origin="LINK_MERGER" relType="BEFORE" relatedToTime="t1" timeID="t2" />
+  <TLINK origin="BLINKER-TimexLinking" relType="IS_INCLUDED" relatedToTime="t5" timeID="t3" />
+  <TLINK origin="LINK_MERGER" relType="AFTER" relatedToTime="t2" timeID="t3" />
+  <TLINK origin="LINK_MERGER" relType="BEFORE" relatedToTime="t1" timeID="t3" />
+  <TLINK origin="LINK_MERGER" relType="INCLUDES" relatedToEventInstance="ei1" timeID="t1" />
+  <TLINK origin="BLINKER-TimexLinking" relType="AFTER" relatedToTime="t6" timeID="t1" />
+  <TLINK origin="BLINKER-TimexLinking" relType="AFTER" relatedToTime="t4" timeID="t1" />
+  <TLINK origin="BLINKER-TimexLinking" relType="IS_INCLUDED" relatedToTime="t5" timeID="t1" />
+  <TLINK origin="BLINKER-TimexLinking" relType="AFTER" relatedToTime="t2" timeID="t1" />
+  <TLINK origin="BLINKER-TimexLinking" relType="AFTER" relatedToTime="t3" timeID="t1" />
+</tarsqi_tags>
+</ttk>

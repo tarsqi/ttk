@@ -9,10 +9,7 @@ import sys, codecs, StringIO
 from copy import copy
 from xml.sax.saxutils import escape, quoteattr
 
-from library.timeMLspec import TIMEX, EVENT, TID, EIID, ALINK, SLINK, TLINK
-from library.timeMLspec import EVENT_INSTANCE_ID, TIME_ID
-from library.timeMLspec import SUBORDINATED_EVENT_INSTANCE
-from library.timeMLspec import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
+from library.main import LIBRARY
 
 
 class TarsqiDocument:
@@ -22,12 +19,11 @@ class TarsqiDocument:
     processing options, a set of identifier counters and a TagRepository.
 
     Instance Variables:
-       source - an instance of DocSource
-       metadata - a dictionary
-       options - the Options instance from the Tasqi instance
-       library - an instance of library.main.TarsqiLibrary
-       tags - an instance of TagRepository
-       counters - a set of counters used to create unique identifiers
+       source    -  an instance of DocSource
+       metadata  -  a dictionary
+       options   -  the Options instance from the Tarsqi instance
+       tags      -  an instance of TagRepository
+       counters  -  a set of counters used to create unique identifiers
 
     Note that he processing options are available to the wrappers only through
     this class by accessing the options variable."""
@@ -37,7 +33,11 @@ class TarsqiDocument:
         self.metadata = {}
         self.options = {}
         self.tags = TagRepository()
-        self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
+        self.counters = {LIBRARY.timeml.TIMEX: 0,
+                         LIBRARY.timeml.EVENT: 0,
+                         LIBRARY.timeml.ALINK: 0,
+                         LIBRARY.timeml.SLINK: 0,
+                         LIBRARY.timeml.TLINK: 0}
 
     def __str__(self):
         return "<TarsqiDocument on '%s'>" % (self.source.filename)
@@ -56,16 +56,16 @@ class TarsqiDocument:
 
     def events(self):
         """Convenience method for easy access to events."""
-        return self.tags.find_tags(EVENT)
+        return self.tags.find_tags(LIBRARY.timeml.EVENT)
 
     def timexes(self):
         """Convenience method for easy access to timexes."""
-        return self.tags.find_tags(TIMEX)
+        return self.tags.find_tags(LIBRARY.timeml.TIMEX)
 
     def has_event(self, begin, end):
         """Return True if there is already an event at the given begin and
         end."""
-        for tag in self.tags.find_tags('EVENT'):
+        for tag in self.tags.find_tags(LIBRARY.timeml.EVENT):
             if tag.begin == begin and tag.end == end:
                 return True
         return False
@@ -96,12 +96,12 @@ class TarsqiDocument:
         print
 
     def next_event_id(self):
-        self.counters['EVENT'] += 1
-        return "e%d" % self.counters['EVENT']
+        self.counters[LIBRARY.timeml.EVENT] += 1
+        return "e%d" % self.counters[LIBRARY.timeml.EVENT]
 
     def next_timex_id(self):
-        self.counters['TIMEX3'] += 1
-        return "t%d" % self.counters['TIMEX3']
+        self.counters[LIBRARY.timeml.TIMEX3] += 1
+        return "t%d" % self.counters[LIBRARY.timeml.TIMEX3]
 
     def next_link_id(self, link_type):
         """Return a unique lid. The link_type argument is one of {ALINK, SLINK,
@@ -110,13 +110,13 @@ class TarsqiDocument:
          using the link counters in the document. Breaks down if there are
          already links added without using those counters."""
         self.counters[link_type] += 1
-        return "l%d" % (self.counters['ALINK'] +
-                        self.counters['SLINK'] +
-                        self.counters['TLINK'])
+        return "l%d" % (self.counters[LIBRARY.timeml.ALINK] +
+                        self.counters[LIBRARY.timeml.SLINK] +
+                        self.counters[LIBRARY.timeml.TLINK])
 
     def remove_tlinks(self):
         """Remove all TLINK tags from the tags repository."""
-        self.tags.remove_tags(TLINK)
+        self.tags.remove_tags(LIBRARY.timeml.TLINK)
 
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file
@@ -377,16 +377,16 @@ class TagRepository:
     def index_events(self):
         self.eid2event = {}
         for tag in self.tags:
-            if tag.name == EVENT:
-                self.eid2event[tag.attrs[EIID]] = tag
+            if tag.name == LIBRARY.timeml.EVENT:
+                self.eid2event[tag.attrs[LIBRARY.timeml.EIID]] = tag
 
     def index_timexes(self):
         # TODO: merge with ei2events and create id2tag, assumes all tags have
         # ids and they are unique
         self.tid2timex = {}
         for tag in self.tags:
-            if tag.name == TIMEX:
-                self.tid2timex[tag.attrs[TID]] = tag
+            if tag.name == LIBRARY.timeml.TIMEX:
+                self.tid2timex[tag.attrs[LIBRARY.timeml.TID]] = tag
 
     def find_tags(self, name, begin=None, end=None):
         """Return all tags of this name. If the optional begin and end are given
@@ -399,21 +399,26 @@ class TagRepository:
     def find_linktags(self, name, o1, o2):
         """Return all the link tages with type name. Only include the ones that
         fall between offsets o1 and o2."""
+        EID = LIBRARY.timeml.EVENT_INSTANCE_ID
+        SEI = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
+        REI = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+        TID = LIBRARY.timeml.TIME_ID
+        RTT = LIBRARY.timeml.RELATED_TO_TIME
         tags = []
         for tag in sorted([t for t in self.tags if t.name == name]):
-            if name == SLINK:
-                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
-                t2 = self.eid2event.get(tag.attrs.get(SUBORDINATED_EVENT_INSTANCE))
-            if name == ALINK:
-                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
-                t2 = self.eid2event.get(tag.attrs.get(RELATED_TO_EVENT_INSTANCE))
-            if name == TLINK:
-                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
-                t2 = self.eid2event.get(tag.attrs.get(RELATED_TO_EVENT_INSTANCE))
+            if name == LIBRARY.timeml.SLINK:
+                t1 = self.eid2event.get(tag.attrs.get(EID))
+                t2 = self.eid2event.get(tag.attrs.get(SEI))
+            if name == LIBRARY.timeml.ALINK:
+                t1 = self.eid2event.get(tag.attrs.get(EID))
+                t2 = self.eid2event.get(tag.attrs.get(REI))
+            if name == LIBRARY.timeml.TLINK:
+                t1 = self.eid2event.get(tag.attrs.get(EID))
+                t2 = self.eid2event.get(tag.attrs.get(REI))
                 if t1 is None:
-                    t1 = self.tid2timex.get(tag.attrs.get(TIME_ID))
+                    t1 = self.tid2timex.get(tag.attrs.get(TID))
                 if t2 is None:
-                    t2 = self.tid2timex.get(tag.attrs.get(RELATED_TO_TIME))
+                    t2 = self.tid2timex.get(tag.attrs.get(RTT))
             offsets = [t1.begin, t1.end, t2.begin, t2.end]
             to1 = min(offsets)
             to2 = max(offsets)

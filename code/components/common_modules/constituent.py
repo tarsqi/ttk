@@ -2,10 +2,7 @@ from types import ListType, TupleType
 from pprint import pprint
 
 from utilities import logger
-from library.timeMLspec import EVENT_INSTANCE_ID
-from library.timeMLspec import SUBORDINATED_EVENT_INSTANCE
-from library.timeMLspec import RELATED_TO_EVENT_INSTANCE
-from library.timeMLspec import ALINK, SLINK, SYNTAX, RELTYPE
+from library.main import LIBRARY
 
 
 class Constituent:
@@ -75,6 +72,7 @@ class Constituent:
     def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used
         in the pattern matching phase."""
+        print name
         if name == 'nodeType':
             return self.__class__.__name__
         elif name == 'text':
@@ -307,11 +305,11 @@ class Constituent:
                 eiid = event_context[length_of_match - 1].eiid
                 # print self, self.eiid
                 alinkAttrs = {
-                    EVENT_INSTANCE_ID: self.eiid,
-                    RELATED_TO_EVENT_INSTANCE: eiid,
-                    RELTYPE: reltype,
-                    SYNTAX: fsa.fsaname }
-                self.tree.addLink(alinkAttrs, ALINK)
+                    LIBRARY.timeml.EVENT_INSTANCE_ID: self.eiid,
+                    LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE: eiid,
+                    LIBRARY.timeml.RELTYPE: reltype,
+                    LIBRARY.timeml.SYNTAX: fsa.fsaname }
+                self.tree.addLink(alinkAttrs, LIBRARY.timeml.ALINK)
                 # for l in self.tree.alink_list: print '  ', l
                 logger.debug("ALINK CREATED")
                 return True
@@ -391,11 +389,11 @@ class Constituent:
                 reltype = get_reltype(reltype_list, i)
                 eiid = event_context[length_of_match - 1].eiid
                 slinkAttrs = {
-                    EVENT_INSTANCE_ID: self.eiid,
-                    SUBORDINATED_EVENT_INSTANCE: eiid,
-                    RELTYPE: reltype,
-                    SYNTAX: fsa.fsaname }
-                self.tree.addLink(slinkAttrs, SLINK)
+                    LIBRARY.timeml.EVENT_INSTANCE_ID: self.eiid,
+                    LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE: eiid,
+                    LIBRARY.timeml.RELTYPE: reltype,
+                    LIBRARY.timeml.SYNTAX: fsa.fsaname }
+                self.tree.addLink(slinkAttrs, LIBRARY.timeml.SLINK)
                 logger.debug("SLINK CREATED")
                 return True
             else:

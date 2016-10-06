@@ -1,11 +1,24 @@
 
 from library import forms
-from library.timeMLspec import FORM, STEM, POS, TENSE, ASPECT
-from library.timeMLspec import EPOS, POS_PREP, MOD, POL, EVENTID, EIID, CLASS
+from library.main import LIBRARY
 from components.evita.event import Event
 from components.evita.gramChunk import GramAChunk
 from components.common_modules.constituent import Constituent
 from utilities import logger
+
+
+FORM = LIBRARY.timeml.FORM
+STEM = LIBRARY.timeml.STEM
+POS = LIBRARY.timeml.POS
+TENSE = LIBRARY.timeml.TENSE
+ASPECT = LIBRARY.timeml.ASPECT
+EPOS = LIBRARY.timeml.EPOS
+POS_PREP = LIBRARY.timeml.POS_PREP
+MOD = LIBRARY.timeml.MOD
+POL = LIBRARY.timeml.POL
+EVENTID = LIBRARY.timeml.EVENTID
+EIID = LIBRARY.timeml.EIID
+CLASS = LIBRARY.timeml.CLASS
 
 
 class Token(Constituent):

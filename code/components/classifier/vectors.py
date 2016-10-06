@@ -24,10 +24,22 @@ The only difference is in the second column (no relation versus a relation).
 import os, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree
+from library.main import LIBRARY
 
-from library.timeMLspec import EVENT, EID, EIID, CLASS, STEM, EPOS
-from library.timeMLspec import TENSE, ASPECT, MODALITY, POLARITY
-from library.timeMLspec import TIMEX, TID, TYPE, VALUE
+EVENT = LIBRARY.timeml.EVENT
+EID = LIBRARY.timeml.EID
+EIID = LIBRARY.timeml.EIID
+CLASS = LIBRARY.timeml.CLASS
+STEM = LIBRARY.timeml.STEM
+EPOS = LIBRARY.timeml.EPOS
+TENSE = LIBRARY.timeml.TENSE
+ASPECT = LIBRARY.timeml.ASPECT
+MODALITY = LIBRARY.timeml.MODALITY
+POLARITY = LIBRARY.timeml.POLARITY
+TIMEX = LIBRARY.timeml.TIMEX
+TID = LIBRARY.timeml.TID
+TYPE = LIBRARY.timeml.TYPE
+VALUE = LIBRARY.timeml.VALUE
 
 # Determines what attributes to use for the object vectors
 EVENT_FEATURES = [CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]

@@ -1,8 +1,14 @@
 from utils import intersect_lists
 from utils import intersect_relations
 from utils import compare_id
-from library.timeMLspec import TID, EIID, TIMEX, EVENT, FORM, VALUE
+from library.main import LIBRARY
 
+TIMEX = LIBRARY.timeml.TIMEX
+TID = LIBRARY.timeml.TID
+EVENT = LIBRARY.timeml.EVENT
+EIID = LIBRARY.timeml.EIID
+FORM = LIBRARY.timeml.FORM
+VALUE = LIBRARY.timeml.VALUE
 
 SIMPLE_RELS = ('<', 'm', 'di', 'si', 'fi', '=', '>', 'mi', 'd', 's', 'f')
 NORMALIZED_RELS = ('<', 'm', 'di', 'si', 'fi', '=')
