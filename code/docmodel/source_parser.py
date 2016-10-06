@@ -72,7 +72,7 @@ class SourceParserTTK(SourceParser):
         self.sourcedoc = None
         self.tarsqidoc = None
 
-    def parse_file(self, filename, tarsqidoc=None):
+    def parse_file(self, filename, tarsqidoc):
         """Parse the TTK file and put the contents in the appropriate parts of
         the SourceDoc."""
         self._load_dom(filename)

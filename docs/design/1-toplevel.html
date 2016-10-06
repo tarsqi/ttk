@@ -51,6 +51,9 @@ the TimeML specifications, but more library items will be added over time.
 a list of pairs where each pair has the name of the component and the Python
 class that implements it.
 
+<li>Initialize an instance of TarsqiDocument, which is the class that is central
+to all TTTK processing.
+
 <li>Select the source parser and the metadata parser using the value of the
 --source option. There are three source parsers defined in
 docmodel.source_parser: SourceParserXML, SourceParserText and
@@ -65,17 +68,18 @@ MetadataParserVA.
 </ol>
 
 <p>There is an instance of the Tarsqi class for each document processed. Actual
-processing occurs through the Tarsqi.process() method, which calls the
-process_document() method which does the following things:</p>
+processing occurs through the Tarsqi.process_document() method which does the
+following things:</p>
 
 <ol class="spacy">
 
-<li>Parse the input document and create a TarsqiDocument. This involves running
-a source parser, a metadata parser and a minimal document structure parser.</li>
+<li>Run a source parser, a metadata parser and a minimal document structure
+parser. All take the TarsqiDocument as an argument and all add information to
+it.</li>
 
-<img src="images/sourceparser.png"/ height="95">
+<img src="images/docprocessing.png"/ height="195">
 
-<li>Add processing options and the Tarsqi library to the TarsqiDocument.</li>
+<li>Add processing options to the TarsqiDocument.</li>
 
 <li>Apply components as specified by the pipeline.</li>
 
@@ -105,23 +109,17 @@ TarsqiDocument are shown in the table below.</p>
   <td>an instance of tarsqi.Options containing processing options</td>
 </tr>
 <tr>
-  <td class="attribute">library</td>
-  <td>an instance of library.main.TarsqiLibrary, this library is initially read
-  by the Tarsqi instance and copied into each document</td>
-</tr>
-<tr>
   <td class="attribute">tags</td>
   <td>an instance of docmodel.document.TagRepository, tags are added here by the
   Tarsqi components</td>
 </tr>
 </table>
 
-<p>The TarsqiDocument is created in step 1 above by the source parser, which
-also creates the SourceDoc in the source instance variable. The metadata
-dictionary is filled in by the metadata parser and the document structure parser
-adds docelement tags to the tag repository in tags. Processing options are set
-in step 2. Application of pipeline components (step 3) changes the tags
-  repository.</p>
+<p>The TarsqiDocument is created during Tarsqi initialization. In step 1 above,
+the SourceParser adds a SourceDoc, the MetadataParser sets values in a meta data
+dictionary and the DocSructureParser adds docelement tags to a tag repository in
+tags. Processing options are set in step 2. Application of pipeline components
+(step 3) changes the tags repository.</p>
 
 <p>The SourceDoc instance has the following structure:</p>
 
@@ -184,12 +182,12 @@ the TarsqiDocument and SourceDoc structures.</p>
 <a name="source"/>
 <h3>Parsing the source, its metadata and its structure</h3>
 
-<p><span class="header">SourceParser</span>. As the first part of step 1, the
-TarsqiDocument is initialized by one of the subclasses of
-docmodel.source_parser.SourceParser. These classes parse the input file using
-parse_file(filename) and build the embedded SourceDoc instance in the source
-variable. The other variables (metadata, options and elements) are not filled in
-yet.</p>
+<p><span class="header">SourceParser</span>. When the source parser applies the
+main variables on the TarsqiDocument (source, metadata, options and tags) are
+not filled in yet. As the first part of step 1, the TarsqiDocument is processed
+by one of the subclasses of docmodel.source_parser.SourceParser. These classes
+parse the input file using parse_file(filename) and build the embedded SourceDoc
+instance in the source variable.</p>
 
 <p>Three subclasses of SourceParser are defined: SourceParserXML,
 SourceParserText and SourceParserTTK. Which one is picked depends on the
@@ -223,23 +221,17 @@ python tarsqi.py --pipeline=EVITA,SLINKET --source=ttk test-p.xml test-pge.xml
 <p>Back to document parsing. The Tarsqi initialization method takes the result
 of create_source_parser() and uses it to set the value of the source_parser
 variable of the Tarsqi instance. And this parser is used by the
-Tarsqi.process_document() method, a fragment of which is shown here, together
-with its helper method _process_aux().</p>
+Tarsqi.process_document() method, a fragment of which is shown here.</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
 
 def process_document(self):
-    self.document = <b>self.source_parser.parse_file(self.input)</b>
-    self._process_aux()
-    self._write_output()
-
-def _process_aux(self):
-    self.metadata_parser.parse(self.document)
-    self.docstructure_parser.parse(self.document)
-    self.document.add_options(self.options)
+    <b>self.source_parser.parse_file(self.input, self.tarsqidoc)</b>
+    self.metadata_parser.parse(self.tarsqidoc)
+    self.docstructure_parser.parse(self.tarsqidoc)
     for (name, wrapper) in self.pipeline:
-        self._apply_component(name, wrapper, self.document)
+        self._apply_component(name, wrapper, self.tarsqidoc)
 </pre>
 
 <p>When we use --source=xml on the command line then self.source_parser contains
@@ -296,20 +288,20 @@ dictionary for the above example is:
 opened at offset 5. The TagRepository class has convenience methods to access
 tags.</p>
 
-<p>The two other source parsers, SourceParserText and SourceParserTTK, produce a
-TarsqiDocument with a SourceDoc instance, just as SourceParserXML does. The
+<p>The two other source parsers, SourceParserText and SourceParserTTK, add a
+SourceDoc instance to the TarsqiDocument, just as SourceParserXML does. The
 SourceParserText justs puts a string in the text variable and leaves all others
 empty. The SourceParserTTK however is used to deal with documents that were
 previsously saved as a TTK document and which may contain metadata, source tags
 and Tarsqi tags. Therefore, this parser adds elements to the metadata dictionary
-on the SourceDoc, source tags to the tags repository on the SOurceDoc, and
+on the SourceDoc, source tags to the tags repository on the SourceDoc, and
 Tarsqi tags to the tags repository on the TarsqiDocument (and in some cases to
 the comments variable as well if the TTK document was created from an XML
 document with comments).</p>
 
 
 <p><span class="header">MetadataParser</span>. The second part of step 1 is to
-run a metadata parser, all metadata parser are defined in
+run a metadata parser, all metadata parsers are defined in
 docmodel.metadata_parser. Again, what metadata parser to use is determined by
 the --source command line option and the mapping in the PARSERS dictionary in
 docmodel.main.</p>
@@ -317,19 +309,19 @@ docmodel.main.</p>
 <p>For generic XML we can use the default MetadataParser which takes a
 TarsqiDocument and fills in elements in its metadata dictionary. In fact, it
 only fills in one element, the Document Creation Time (DCT) which is added under
-the 'dct' key. To see how this recall the process_document() and _process_aux()
-methods in the Tarsqi class, the latter is repeated here with the call to the
-metadata parser in bold face.</p>
+the 'dct' key. To see how this recall the process_document() method in the
+Tarsqi class, repeated here with the call to the metadata parser in bold
+face.</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
 
-def _process_aux(self):
-    <b>self.metadata_parser.parse(self.document)</b>
-    self.docstructure_parser.parse(self.document)
-    self.document.add_options(self.options)
+def process_document(self):
+    self.source_parser.parse_file(self.input, self.tarsqidoc)
+    <b>self.metadata_parser.parse(self.tarsqidoc)</b>
+    self.docstructure_parser.parse(self.tarsqidoc)
     for (name, wrapper) in self.pipeline:
-        self._apply_component(name, wrapper, self.document)
+        self._apply_component(name, wrapper, self.tarsqidoc)
 </pre>
 
 <p>All metadata parsers define a parse() method, which in the case of the
@@ -373,12 +365,12 @@ this time with the document parser invocation highlighted.</p>
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
 
-def _process_aux(self):
-    self.metadata_parser.parse(self.document)
-    <b>self.docstructure_parser.parse(self.document)</b>
-    self.document.add_options(self.options)
+def process_document(self):
+    self.source_parser.parse_file(self.input, self.tarsqidoc)
+    self.metadata_parser.parse(self.tarsqidoc)
+    <b>self.docstructure_parser.parse(self.tarsqidoc)</b>
     for (name, wrapper) in self.pipeline:
-        self._apply_component(name, wrapper, self.document)
+        self._apply_component(name, wrapper, self.tarsqidoc)
 </pre>
 
 <p>There is a simple default document parser named DocumentStructureParser
@@ -386,7 +378,7 @@ defined in docmodel.docstructure_parser. This parser first checks whether
 document structure is already available in the form of docelement tags in the
 tags repository on the TarsqiDocument (which would happen if the input is a ttk
 file). If not, the parser finds the offsets of paragraph boundaries using white
-lines as the heuristic. These offsets are then used to add docelement tags to
+lines as a heuristic. These offsets are then used to add docelement tags to
 the tags repository on the TarsqiDocument. This simple parsers only adds
 docelement tags of type "paragraph", but future versions may also add other
 types like "section-header".</p>
@@ -401,12 +393,12 @@ described above:</p>
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
 
-def _process_aux(self):
-    self.metadata_parser.parse(self.document)
-    self.docstructure_parser.parse(self.document)
-    self.document.add_options(self.options)
+def process_document(self):
+    self.source_parser.parse_file(self.input, self.tarsqidoc)
+    self.metadata_parser.parse(self.tarsqidoc)
+    self.docstructure_parser.parse(self.tarsqidoc)
     <b>for (name, wrapper) in self.pipeline:
-        self._apply_component(name, wrapper, self.document)</b>
+        self._apply_component(name, wrapper, self.tarsqidoc)</b>
 </pre>
 
 
