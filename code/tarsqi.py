@@ -81,6 +81,7 @@ import sys, os, time, types, getopt
 
 import root
 from components import COMPONENTS
+from docmodel.document import TarsqiDocument
 from docmodel.main import get_default_pipeline
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
@@ -108,6 +109,7 @@ class Tarsqi:
        output               -  absolute path
        basename             -  basename of input file
        options              -  an instance of Options with processing options
+       tarsqidoc            -  an instance of TarsqiDocument
        source_parser        -  a source-specific parser for the source
        metadata_parser      -  a source-specific metadata parser
        docstructure_parser  -  a document structure parser
@@ -133,7 +135,8 @@ class Tarsqi:
         self.output = outfile
         self.basename = _basename(infile) if infile else None
         self.options = Options(opts)
-        self.library = TarsqiLibrary(self)
+        self.tarsqidoc = TarsqiDocument()
+        self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
         self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
@@ -143,22 +146,19 @@ class Tarsqi:
         self.docstructure_parser = create_docstructure_parser()
         self.pipeline = self._create_pipeline()
 
-    def process(self):
-        """Default to processing a document."""
-        self.process_document()
-
     def process_document(self):
         """Parse the source with the source parser, the metadata parser and the
         document structure parser, apply all components and write the results to
         a file. The actual processing itself is driven using the processing
         options set at initialization. Components are given the TarsqiDocument
         and update it."""
-        if self._skip_file():
-            return
         self._cleanup_directories()
         logger.info(self.input)
-        self.document = self.source_parser.parse_file(self.input)
-        self._process_aux()
+        self.source_parser.parse_file(self.input, self.tarsqidoc)
+        self.metadata_parser.parse(self.tarsqidoc)
+        self.docstructure_parser.parse(self.tarsqidoc)
+        for (name, wrapper) in self.pipeline:
+            self._apply_component(name, wrapper, self.tarsqidoc)
         self._write_output()
 
     def process_string(self, input_string):
@@ -166,29 +166,12 @@ class Tarsqi:
         on a file, it does not write the output to a file and it returns the
         TarsqiDocument."""
         logger.info(input_string)
-        self.document = self.source_parser.parse_string(input_string)
-        self._process_aux()
-        return self.document
-
-    def _process_aux(self):
-        """Method for shared functionality of both process_document() and
-        process_string(). Process the document by running the metadata parser,
-        the document structure parser and the pipeline components."""
-        self.document.library = self.library
-        self.metadata_parser.parse(self.document)
-        self.docstructure_parser.parse(self.document)
-        self.document.add_options(self.options)
+        self.source_parser.parse_string(input_string,self.tarsqidoc)
+        self.metadata_parser.parse(self.tarsqidoc)
+        self.docstructure_parser.parse(self.tarsqidoc)
         for (name, wrapper) in self.pipeline:
-            self._apply_component(name, wrapper, self.document)
-
-    def _skip_file(self):
-        """Return true if file does not match specified extension. Useful when
-        the script is given a directory as input. Probably obsolete, use ignore
-        option instead."""
-        extension = self.options.extension
-        if not extension:
-            return False
-        return self.input.endswith(extension)
+            self._apply_component(name, wrapper, self.tarsqidoc)
+        return self.tarsqidoc
 
     def _cleanup_directories(self):
         """Remove all fragments from the temporary data directory."""
@@ -229,11 +212,11 @@ class Tarsqi:
         """Write the TarsqiDocument to the output file."""
         if self.options.trap_errors:
             try:
-                self.document.print_all(self.output)
+                self.tarsqidoc.print_all(self.output)
             except:
                 print "ERROR printing output"
         else:
-            self.document.print_all(self.output)
+            self.tarsqidoc.print_all(self.output)
 
     def pretty_print(self):
         print self
@@ -342,11 +325,11 @@ def run_tarsqi(args):
             outfile = outpath + os.sep + file
             if os.path.isfile(infile):
                 print infile
-                Tarsqi(opts, infile, outfile).process()
+                Tarsqi(opts, infile, outfile).process_document()
     elif os.path.isfile(inpath):
         if os.path.exists(outpath):
             raise TarsqiError('output file ' + outpath + ' already exists')
-        Tarsqi(opts, inpath, outpath).process()
+        Tarsqi(opts, inpath, outpath).process_document()
     else:
         raise TarsqiError('Invalid input and/or output options')
     logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))

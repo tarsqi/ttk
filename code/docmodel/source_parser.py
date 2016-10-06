@@ -49,20 +49,18 @@ class SourceParser:
 
 class SourceParserText(SourceParser):
 
-    def parse_file(self, filename):
+    def parse_file(self, filename, tarsqidoc):
         """Parses filename and returns a SourceDoc. Simply dumps the full file
         content into the text variable of the SourceDoc."""
-        sourcedoc = SourceDoc(filename)
-        sourcedoc.text = codecs.open(filename, encoding='utf8').read()
-        return TarsqiDocument(sourcedoc, {})
+        tarsqidoc.sourcedoc = SourceDoc(filename)
+        tarsqidoc.sourcedoc.text = codecs.open(filename, encoding='utf8').read()
 
-    def parse_string(self, text):
+    def parse_string(self, text, tarsqidoc):
         """Parses a text string and returns a SourceDoc. Simply dumps the full
         string into the text variable of the SourceDoc."""
-        sourcedoc = SourceDoc(None)
+        tarsqidoc.sourcedoc = SourceDoc(None)
         # TODO: do we need to ensure the text is unicode?
-        sourcedoc.text = text
-        return TarsqiDocument(sourcedoc, {})
+        tarsqidoc.sourcedoc.text = text
 
 
 class SourceParserTTK(SourceParser):
@@ -74,23 +72,23 @@ class SourceParserTTK(SourceParser):
         self.sourcedoc = None
         self.tarsqidoc = None
 
-    def parse_file(self, filename):
+    def parse_file(self, filename, tarsqidoc=None):
         """Parse the TTK file and put the contents in the appropriate parts of
         the SourceDoc."""
         self._load_dom(filename)
         self.sourcedoc = SourceDoc(filename)
-        self.tarsqidoc = TarsqiDocument(self.sourcedoc, {})
+        self.tarsqidoc = tarsqidoc
+        self.tarsqidoc.source = self.sourcedoc
         self.sourcedoc.text = self.topnodes['text'].firstChild.data
         self._add_source_tags()
         self._add_tarsqi_tags()
         self._add_comments()
         self._add_metadata()
-        return self.tarsqidoc
 
     def parse_string(self, text):
         # TODO: not used yet, finish when needed
         dom = minidom.parseString(text)
-        exit()
+        exit('Not Implemented: SourceParserTTK.parse_string()')
 
     def _load_dom(self, filename):
         """Loads the DOM object in the file into the dom variable and fills the
@@ -196,7 +194,7 @@ class SourceParserXML(SourceParser):
         self.parser.CharacterDataHandler = self._handle_characters
         self.parser.DefaultHandler = self._handle_default
 
-    def parse_file(self, filename):
+    def parse_file(self, filename, tarsqidoc):
         """Parses filename and returns a SourceDoc. Uses the ParseFile routine
         of the expat parser, where all the handlers are set up to fill in the
         text and tags in SourceDoc."""
@@ -204,10 +202,9 @@ class SourceParserXML(SourceParser):
         # TODO: should this be codecs.open() for non-ascii?
         self.parser.ParseFile(open(filename))
         self.sourcedoc.finish()
-        tarsqidoc = TarsqiDocument(self.sourcedoc, {})
-        return tarsqidoc
+        tarsqidoc.source = self.sourcedoc
 
-    def parse_string(self, text):
+    def parse_string(self, text, tarsqidoc):
         """Parses a text string and returns a SourceDoc. Uses the ParseFile routine of
         the expat parser, where all the handlers are set up to fill in the text
         and tags in SourceDoc."""
@@ -215,8 +212,7 @@ class SourceParserXML(SourceParser):
         # TODO: do we need to make sure that text is unicode?
         self.parser.Parse(text)
         self.sourcedoc.finish()
-        tarsqidoc = TarsqiDocument(self.sourcedoc, {})
-        return tarsqidoc
+        tarsqidoc.source = self.sourcedoc
 
     def _handle_xmldecl(self, version, encoding, standalone):
         """Store the XML declaration."""

@@ -32,10 +32,9 @@ class TarsqiDocument:
     Note that he processing options are available to the wrappers only through
     this class by accessing the options variable."""
 
-    def __init__(self, docsource, metadata):
-        self.source = docsource
-        self.metadata = metadata
-        self.library = None
+    def __init__(self):
+        self.source = None
+        self.metadata = {}
         self.options = {}
         self.tags = TagRepository()
         self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
