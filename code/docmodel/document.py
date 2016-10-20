@@ -297,11 +297,12 @@ class TagRepository:
 
     self.closing_tags
        A dictionary indexed on end offset and begin offset, the values are
-       dictionary of tagnames. For example, closing_tags[547][543] =
-       {'lex':True, 'NG':True } indicates that there is both a lex tag and an NG
-       tag from 543-547. The opening tags dictionary will have encoded that the
-       opening NG occurs before the opening lex: opening_tags[543] = [<Tag 204
-       NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
+       dictionary of tagnames. For example,
+          closing_tags[547][543] = {'lex':True, 'NG':True }
+       indicates that there is both a lex tag and an NG tag from 543-547. The
+       opening tags dictionary will have encoded that the opening NG occurs
+       before the opening lex:
+          opening_tags[543] = [<Tag 204 NG 543-547 {}>, <Tag 205 lex 543-547 {...}]
 
     """
 
@@ -318,6 +319,9 @@ class TagRepository:
         self.closing_tags = {}
         self.eid2event = {}
         self.tid2timex = {}
+
+    def reset(self):
+        self.__init__()
 
     def all_tags(self):
         return self.tags

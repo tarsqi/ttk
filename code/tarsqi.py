@@ -86,7 +86,6 @@ from docmodel.main import get_default_pipeline
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
-from library.main import TarsqiLibrary
 from utilities import logger
 from utilities.file import read_settings
 
@@ -358,6 +357,26 @@ def process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False)
                                     "--trap-errors=%s" % trap_errors])
     tarsqi = Tarsqi(opts, None, None)
     return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
+
+
+def load_ttk_document(fname, loglevel=2, trap_errors=False):
+    """Load a TTK document with all its Tarsqi tags and return the Tarsqi instance
+    and the TarsqiDocument instance. Do not run the pipeline, but run the source
+    parser, metadata parser and the document structure parser. Used by the
+    evaluation code."""
+    # For now, we are skipping the link merger because it is too slow on some of
+    # the timebank documents
+    pipeline = "PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"
+    (opts, args) = _read_arguments(["--source=ttk",
+                                    "--pipeline=%s" % pipeline,
+                                    "--loglevel=%s" % loglevel,
+                                    "--trap-errors=%s" % trap_errors])
+    tarsqi = Tarsqi(opts, fname, None)
+    tarsqi.source_parser.parse_file(tarsqi.input, tarsqi.tarsqidoc)
+    tarsqi.metadata_parser.parse(tarsqi.tarsqidoc)
+    tarsqi.docstructure_parser.parse(tarsqi.tarsqidoc)
+    return (tarsqi, tarsqi.tarsqidoc)
+
 
 
 if __name__ == '__main__':
