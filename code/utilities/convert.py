@@ -1,15 +1,16 @@
 """Some conversion utilities.
 
-Currently just a utility to convert LDC TimeBank into a modern TImeBank in the
-TTK format.
+1. Convert LDC TimeBank into a modern TimeBank in the TTK format.
 
 The following command can be run from the command line from the directory this
 file is in:
 
-   $ convert.py --convert-timebank -i INDIR -o OUTDIR
+   $ python convert.py --convert-timebank -i INDIR -o OUTDIR
 
    Converts TimeBank 1.2 as released by LDC into a version without makeinstance
-   tags using the TTK format.
+   tags using the TTK format. This should be run on the data/extra files in the
+   LDC distribution because those have the metadata that allow the TimeBank meta
+   data parser to find the DCT.
 
 """
 
@@ -42,42 +43,37 @@ MAKEINSTANCE = 'MAKEINSTANCE'
 TIMEML_TAGS = (TIMEX, EVENT, MAKEINSTANCE, SIGNAL, ALINK, SLINK, TLINK)
 
 
-def load(infile):
-    options = tarsqi.Options([('--source', 'timebank')])
-    source_parser = create_source_parser(options)
-    metadata_parser = create_metadata_parser(options)
-    docstructure_parser = create_docstructure_parser()
-    tarsqidoc = TarsqiDocument(LIBRARY)
-    source_parser.parse_file(infile, tarsqidoc)
-    metadata_parser.parse(tarsqidoc)
-    docstructure_parser.parse(tarsqidoc)
-    tarsqidoc.add_options(options)
-    for tagname in TIMEML_TAGS:
-        tarsqidoc.tags.import_tags(tarsqidoc.source.tags, tagname)
-        tarsqidoc.source.tags.remove_tags(tagname)
-    return tarsqidoc
-
-
 def convert_timebank(timebank_dir, out_dir):
+    """Take the LDC TimeBank files in timebank_dir and create timebank files in
+    out_dir that are in the TTK format and do not have MAKEINSTANCE tags."""
+    # make the paths absolute so we do not get bitten by Tarsqi's habit of
+    # changing the current directory
+    timebank_dir = os.path.abspath(timebank_dir)
+    out_dir = os.path.abspath(out_dir)
     for fname in os.listdir(timebank_dir):
         if fname.endswith('.tml'):
             print fname
-            infile = os.path.join(timebank_dir, fname)
-            outfile = os.path.join(out_dir, fname)
-            convert_timebank_file(infile, outfile)
+            _convert_timebank_file(os.path.join(timebank_dir, fname),
+                                   os.path.join(out_dir, fname))
 
 
-def convert_timebank_file(infile, outfile):
-    tarsqidoc = load(infile)
-    events = tarsqidoc.tags.find_tags(EVENT)
-    instances = tarsqidoc.tags.find_tags(MAKEINSTANCE)
+def _convert_timebank_file(infile, outfile):
+    opts = [("--source", "timebank"), ("--loglevel", "2"), ("--trap-errors", "False")]
+    t = tarsqi.Tarsqi(opts, infile, None)
+    t.source_parser.parse_file(t.input, t.tarsqidoc)
+    t.metadata_parser.parse(t.tarsqidoc)
+    for tagname in TIMEML_TAGS:
+        t.tarsqidoc.tags.import_tags(t.tarsqidoc.source.tags, tagname)
+        t.tarsqidoc.source.tags.remove_tags(tagname)
+    events = t.tarsqidoc.tags.find_tags(EVENT)
+    instances = t.tarsqidoc.tags.find_tags(MAKEINSTANCE)
     instances = { i.attrs.get(EVENTID): i for i in instances }
     for event in events:
         instance = instances[event.attrs[EID]]
         del instance.attrs[EVENTID]
         event.attrs.update(instance.attrs)
-    tarsqidoc.tags.remove_tags(MAKEINSTANCE)
-    tarsqidoc.print_all(outfile)
+    t.tarsqidoc.tags.remove_tags(MAKEINSTANCE)
+    t.tarsqidoc.print_all(outfile)
 
 
 if __name__ == '__main__':
