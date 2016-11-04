@@ -266,7 +266,7 @@ class Node(object):
             tree_element = VerbChunk(VERBCHUNK)
         elif self.name == LEX:
             pos = self.tag.attrs[POS]
-            word = self.tree.tarsqidoc.source[self.begin:self.end]
+            word = self.tree.tarsqidoc.sourcedoc[self.begin:self.end]
             token_class = AdjectiveToken if pos.startswith(POS_ADJ) else Token
             tree_element = token_class(word, pos)
         elif self.name == EVENT:
@@ -408,7 +408,7 @@ class TarsqiTree:
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation
         of the sentences."""
-        print "\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.source.filename
+        print "\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.sourcedoc.filename
         print "len(dtrs) = %s" % (len(self.dtrs))
         self.pretty_print_tagged_events_dict()
         self.pretty_print_sentences()

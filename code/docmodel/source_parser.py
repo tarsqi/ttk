@@ -78,7 +78,7 @@ class SourceParserTTK(SourceParser):
         self._load_dom(filename)
         self.sourcedoc = SourceDoc(filename)
         self.tarsqidoc = tarsqidoc
-        self.tarsqidoc.source = self.sourcedoc
+        self.tarsqidoc.sourcedoc = self.sourcedoc
         self.sourcedoc.text = self.topnodes['text'].firstChild.data
         self._add_source_tags()
         self._add_tarsqi_tags()
@@ -202,7 +202,7 @@ class SourceParserXML(SourceParser):
         # TODO: should this be codecs.open() for non-ascii?
         self.parser.ParseFile(open(filename))
         self.sourcedoc.finish()
-        tarsqidoc.source = self.sourcedoc
+        tarsqidoc.sourcedoc = self.sourcedoc
 
     def parse_string(self, text, tarsqidoc):
         """Parses a text string and returns a SourceDoc. Uses the ParseFile routine of

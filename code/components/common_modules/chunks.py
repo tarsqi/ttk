@@ -275,7 +275,7 @@ class VerbChunk(Chunk):
             e_p1 = self.dtrs[-1].begin
             e_p2 = self.dtrs[-1].end
             text = ' '.join(text.split())
-            sentence = self.tree.tarsqidoc.source.text[p1:p2]
+            sentence = self.tree.tarsqidoc.sourcedoc.text[p1:p2]
             sentence = ' '.join(sentence.split())
             line = "%s\t%s\t%s\t%s:%s\n" % (header, text, sentence, e_p1, e_p2)
             VerbChunk.DRIBBLE_FH.write(line)

@@ -31,7 +31,7 @@ class DocumentStructureParser:
         white lines to separate the paragraphs."""
         doc_elements = tarsqidoc.tags.find_tags('docelement')
         if not doc_elements:
-            element_offsets = split_paragraphs(tarsqidoc.source.text)
+            element_offsets = split_paragraphs(tarsqidoc.sourcedoc.text)
             count = 0
             for (p1, p2) in element_offsets:
                 count += 1

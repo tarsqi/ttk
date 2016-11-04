@@ -29,7 +29,7 @@ class TarsqiDocument:
     this class by accessing the options variable."""
 
     def __init__(self):
-        self.source = None
+        self.sourcedoc = None
         self.metadata = {}
         self.options = {}
         self.tags = TagRepository()
@@ -40,7 +40,8 @@ class TarsqiDocument:
                          LIBRARY.timeml.TLINK: 0}
 
     def __str__(self):
-        return "<TarsqiDocument on '%s'>" % (self.source.filename)
+        fname = self.sourcedoc.filename if self.sourcedoc is not None else None
+        return "<TarsqiDocument on %s>" % fname
 
     def add_options(self, options):
         self.options = options
@@ -49,7 +50,7 @@ class TarsqiDocument:
         return self.metadata.get('dct')
 
     def text(self, p1, p2):
-        return self.source.text[p1:p2]
+        return self.sourcedoc.text[p1:p2]
 
     def elements(self):
         return self.tags.find_tags('docelement')
@@ -86,7 +87,7 @@ class TarsqiDocument:
             print "   options.%-15s  -->  %s" % (key, value)
         if source_tags:
             print "\nSOURCE_TAGS:"
-            self.source.tags.pp()
+            self.sourcedoc.tags.pp()
         if tarsqi_tags:
             print "\nTARSQI_TAGS:"
             self.tags.pp()
@@ -121,7 +122,7 @@ class TarsqiDocument:
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file
         fname."""
-        self.source.print_source(fname)
+        self.sourcedoc.print_source(fname)
 
     def print_sentences(self, fname=None):
         """Write to file (or stadard output if no filename was given) a Python
@@ -138,18 +139,18 @@ class TarsqiDocument:
         all to one file."""
         fh = codecs.open(fname, mode='w', encoding='UTF-8')
         fh.write("<ttk>\n")
-        fh.write("<text>%s</text>\n" % escape(self.source.text))
+        fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
         self._print_comments(fh)
         self._print_metadata(fh)
-        self._print_tags(fh, 'source_tags', self.source.tags.tags)
+        self._print_tags(fh, 'source_tags', self.sourcedoc.tags.tags)
         self._print_tags(fh, 'tarsqi_tags', self.tags.tags)
         fh.write("</ttk>\n")
 
     def _print_comments(self, fh):
-        if self.source.comments:
+        if self.sourcedoc.comments:
             fh.write("<comments>\n")
-            for offset in sorted(self.source.comments.keys()):
-                for comment in self.source.comments[offset]:
+            for offset in sorted(self.sourcedoc.comments.keys()):
+                for comment in self.sourcedoc.comments[offset]:
                     comment = escape(comment.replace("\n", '\\n'))
                     fh.write("  <comment offset=\"%s\">%s</comment>\n"
                              % (offset, comment))

@@ -108,7 +108,7 @@ class PreprocessorWrapper:
         TarsqiDocument's tags TagRepositories. """
         TagId.reset()
         for element in self.document.elements():
-            text = self.document.source.text[element.begin:element.end]
+            text = self.document.sourcedoc.text[element.begin:element.end]
             tokens = self.tokenize_text(text)
             adjust_lex_offsets(tokens, element.begin)
             text = self.tag_text(tokens)

@@ -169,7 +169,7 @@ class Vector(object):
     def __init__(self, tarsqidoc, sentence, source, source_tag, features):
         self.source = source
         self.sentence = sentence
-        string = tarsqidoc.source.text[source.begin:source.end]
+        string = tarsqidoc.sourcedoc.text[source.begin:source.end]
         string = '_'.join(string.split())
         self.features = {TAG: source_tag,
                          STRING: string,
@@ -258,7 +258,7 @@ class PairVector(Vector):
 
     def _set_identifier(self):
         self.identifier = "%s-%s-%s" \
-            % (os.path.basename(self.tarsqidoc.source.filename),
+            % (os.path.basename(self.tarsqidoc.sourcedoc.filename),
                self.v1.identifier, self.v2.identifier)
 
     def _inherit_object_features(self):

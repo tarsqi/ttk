@@ -39,7 +39,7 @@ class MetadataParser:
     def get_source(self):
         """A convenience method to lift the SourceDoc out of the tarsqi
         instance."""
-        return self.tarsqidoc.source
+        return self.tarsqidoc.sourcedoc
 
     def _get_tag_content(self, tagname):
         """Return the text content of the first tag with name tagname, return
@@ -62,7 +62,7 @@ class MetadataParserTTK(MetadataParser):
         metadata dictionary is the DCT, which is copied from the metadata in the
         SourceDoc."""
         self.tarsqidoc = tarsqidoc
-        self.tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.source)
+        self.tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.sourcedoc)
 
     def get_dct(self, sourcedoc):
         return sourcedoc.metadata.get('dct')

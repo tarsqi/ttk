@@ -97,7 +97,7 @@ def _create_gutime_input(tarsqidoc, fname=None):
                 fh.write("<s>\n")
                 closing_s_needed = True
             if tag.name == 'lex':
-                text = tarsqidoc.source.text[tag.begin:tag.end]
+                text = tarsqidoc.sourcedoc.text[tag.begin:tag.end]
                 fh.write("   %s\n" % tag.as_lex_xml_string(text))
     if closing_s_needed:
         fh.write("</s>\n")
