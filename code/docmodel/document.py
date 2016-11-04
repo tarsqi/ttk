@@ -340,6 +340,14 @@ class TagRepository:
         self.opening_tags.setdefault(begin, []).append(tag)
         self.closing_tags.setdefault(end, {}).setdefault(begin, {})[tag.name] = True
 
+    def add_tag_with_id(self, name, identifier, begin, end, attrs):
+        """Add a tag to the tags list and the opening_tags and closing_tags
+        dictionaries."""
+        tag = Tag(identifier, name, begin, end, attrs)
+        self.tags.append(tag)
+        self.opening_tags.setdefault(begin, []).append(tag)
+        self.closing_tags.setdefault(end, {}).setdefault(begin, {})[tag.name] = True
+
     def append(self, tag):
         """Appends an instance of Tag to the tags list."""
         self.tags.append(tag)
@@ -484,7 +492,7 @@ class Tag:
         self.begin = o1
         self.end = o2
         self.attrs = attrs
-        # TODO: should investigate tag initialization since I there is an
+        # TODO: should investigate tag initialization since there is an
         # impression that it is not consistent
         if self.id is None and attrs.has_key('id'):
             self.id = attrs.get('id')

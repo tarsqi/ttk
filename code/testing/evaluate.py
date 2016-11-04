@@ -29,13 +29,13 @@ import tarsqi
 from library.main import LIBRARY
 
 EVENT = LIBRARY.timeml.EVENT
-TIMEX3 = LIBRARY.timeml.TIMEX
+TIMEX = LIBRARY.timeml.TIMEX
 ALINK = LIBRARY.timeml.ALINK
 SLINK = LIBRARY.timeml.SLINK
 TLINK = LIBRARY.timeml.TLINK
 
 LINK_TAGS = (ALINK, SLINK, TLINK)
-TIMEML_TAGS = (EVENT, TIMEX3, ALINK, SLINK, TLINK)
+TIMEML_TAGS = (EVENT, TIMEX, ALINK, SLINK, TLINK)
 
 TID = LIBRARY.timeml.TID
 EIID = LIBRARY.timeml.EIID
@@ -75,6 +75,10 @@ def create_system_files_from_gold_standard(gold_dir, system_dir, limit):
 
 
 def create_system_file_from_gold_standard(gold_file, system_file):
+    # TODO: need to deal with the fact that with THYME we have a ttk version and
+    # we use source=ttk, but there really needs to be a metadata parser that
+    # does works for THYME documents. One option is to have the conversion find
+    # the DCT.
     tarsqi_inst, tarsqidoc = tarsqi.load_ttk_document(gold_file)
     # before you reset, keep the docelement tags so that we do not have to rerun
     # the document parser
@@ -113,14 +117,15 @@ def compare_dirs(gold_dir, system_dir, limit=sys.maxint):
 
 def get_annotations(tag_repository):
     """Return a dictionary of the TimeML annotations in the tag repository."""
-    timeml_tags = (EVENT, TIMEX3, ALINK, SLINK, TLINK)
+    timeml_tags = (EVENT, TIMEX, ALINK, SLINK, TLINK)
     annotations = { tagname: {} for tagname in timeml_tags }
     event_idx = {}
     timex_idx = {}
     for tag in tag_repository.all_tags():
+        #print tag
         if tag.name == EVENT:
             event_idx[tag.attrs[EIID]] = tag
-        elif tag.name == TIMEX3:
+        elif tag.name == TIMEX:
             timex_idx[tag.attrs[TID]] = tag
     for tag in tag_repository.all_tags():
         if tag.name in timeml_tags:
@@ -182,7 +187,7 @@ class FileStatistics(object):
         self.gold = get_annotations(gold_tags)
         self.system = get_annotations(system_tags)
         self.events = EntityStatistics(self.filename, EVENT, self.gold, self.system)
-        self.timexes = EntityStatistics(self.filename, TIMEX3, self.gold, self.system)
+        self.timexes = EntityStatistics(self.filename, TIMEX, self.gold, self.system)
         self.alinks = LinkStatistics(self.filename, ALINK, self.gold, self.system)
         self.slinks = LinkStatistics(self.filename, SLINK, self.gold, self.system)
         self.tlinks = LinkStatistics(self.filename, TLINK, self.gold, self.system)

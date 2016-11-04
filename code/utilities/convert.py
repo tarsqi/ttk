@@ -2,19 +2,34 @@
 
 1. Convert LDC TimeBank into a modern TimeBank in the TTK format.
 
-The following command can be run from the command line from the directory this
-file is in:
-
-   $ python convert.py --convert-timebank -i INDIR -o OUTDIR
+   $ python convert.py --convert-timebank TIMEBANK_DIR TTK_DIR
 
    Converts TimeBank 1.2 as released by LDC into a version without makeinstance
    tags using the TTK format. This should be run on the data/extra files in the
    LDC distribution because those have the metadata that allow the TimeBank meta
    data parser to find the DCT.
 
+2. Convert Thyme format into TTK format.
+
+   $ python convert.py --convert-thyme THYME_TEXT_DIR THYME_ANNO_DIR TTK_DIR
+
+   Note that in the Thyme corpus we have annotation directories like
+   AnnotationData/coloncancer/Dev, whereas in the text directories we find
+   TextData/dev. The latter will have more files than the former. Files in
+   THYME_TEXT_DIR but not in THYME_ANNO_DIR will be ignored.
+
+3. Convert the TTK format into HTML.
+
+   $ python convert.py --convert-ttk-into-html TTK_DIR HTML_DIR
+   $ python convert.py --convert-ttk-into-html --show-links TTK_DIR HTML_DIR
+
+   Converts TTK files in TTK_DIR into HTML files in HTML_DIR, if --show-links is
+   used links are shown in addition to the timexes and events.
+
 """
 
 import os, sys, getopt
+from xml.dom import minidom, Node
 
 import path
 import tarsqi
@@ -24,6 +39,8 @@ from docmodel.main import create_docstructure_parser
 from docmodel.document import TarsqiDocument
 from library.main import TarsqiLibrary
 
+DEBUG = True
+DEBUG = False
 
 LIBRARY = TarsqiLibrary()
 
@@ -43,6 +60,8 @@ MAKEINSTANCE = 'MAKEINSTANCE'
 TIMEML_TAGS = (TIMEX, EVENT, MAKEINSTANCE, SIGNAL, ALINK, SLINK, TLINK)
 
 
+### CONVERTING TIMEBANK INTO TTK
+
 def convert_timebank(timebank_dir, out_dir):
     """Take the LDC TimeBank files in timebank_dir and create timebank files in
     out_dir that are in the TTK format and do not have MAKEINSTANCE tags."""
@@ -50,36 +69,378 @@ def convert_timebank(timebank_dir, out_dir):
     # changing the current directory
     timebank_dir = os.path.abspath(timebank_dir)
     out_dir = os.path.abspath(out_dir)
+    _makedir(out_dir)
     for fname in os.listdir(timebank_dir):
         if fname.endswith('.tml'):
             print fname
             _convert_timebank_file(os.path.join(timebank_dir, fname),
                                    os.path.join(out_dir, fname))
-
+            break
 
 def _convert_timebank_file(infile, outfile):
-    opts = [("--source", "timebank"), ("--loglevel", "2"), ("--trap-errors", "False")]
-    t = tarsqi.Tarsqi(opts, infile, None)
-    t.source_parser.parse_file(t.input, t.tarsqidoc)
-    t.metadata_parser.parse(t.tarsqidoc)
+    tarsqidoc = _get_tarsqidoc(infile, "timebank")
     for tagname in TIMEML_TAGS:
-        t.tarsqidoc.tags.import_tags(t.tarsqidoc.source.tags, tagname)
-        t.tarsqidoc.source.tags.remove_tags(tagname)
-    events = t.tarsqidoc.tags.find_tags(EVENT)
-    instances = t.tarsqidoc.tags.find_tags(MAKEINSTANCE)
+        tarsqidoc.tags.import_tags(tarsqidoc.sourcedoc.tags, tagname)
+        tarsqidoc.sourcedoc.tags.remove_tags(tagname)
+    events = tarsqidoc.tags.find_tags(EVENT)
+    instances = tarsqidoc.tags.find_tags(MAKEINSTANCE)
     instances = { i.attrs.get(EVENTID): i for i in instances }
     for event in events:
         instance = instances[event.attrs[EID]]
         del instance.attrs[EVENTID]
         event.attrs.update(instance.attrs)
-    t.tarsqidoc.tags.remove_tags(MAKEINSTANCE)
-    t.tarsqidoc.print_all(outfile)
+    tarsqidoc.tags.remove_tags(MAKEINSTANCE)
+    tarsqidoc.print_all(outfile)
+
+
+### CONVERTING THYME INTO TTK
+
+def convert_thyme(thyme_text_dir, thyme_anno_dir, out_dir, limit=sys.maxint):
+    thyme_text_dir = os.path.abspath(thyme_text_dir)
+    thyme_anno_dir = os.path.abspath(thyme_anno_dir)
+    out_dir = os.path.abspath(out_dir)
+    _makedir(out_dir)
+    count = 0
+    for fname in os.listdir(thyme_anno_dir):
+        count += 1
+        if count > limit:
+            break
+        thyme_text_file = os.path.join(thyme_text_dir, fname)
+        out_file = os.path.join(out_dir, fname)
+        # in the annotations the file is actually a directory of annotations
+        anno_files = os.listdir(os.path.join(thyme_anno_dir, fname))
+        timeml_files = [f for f in anno_files if f.find('Temporal') > -1]
+        if timeml_files:
+            print fname
+            thyme_anno_file = os.path.join(thyme_anno_dir, fname, timeml_files[0])
+            _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file)
+
+
+def _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file):
+    tarsqidoc = _get_tarsqidoc(thyme_text_file, "text")
+    dom = minidom.parse(thyme_anno_file)
+    entities = [Entity(e) for e in dom.getElementsByTagName('entity')]
+    relations = [Relation(r) for r in dom.getElementsByTagName('relation')]
+    doctimes = [e for e in entities if e.type == 'DOCTIME']
+    sectiontimes = [e for e in entities if e.type == 'SECTIONTIME']
+    events = [e for e in entities if e.type == 'EVENT']
+    timexes = [e for e in entities if e.type == 'TIMEX3']
+    alinks = [r for r in relations if r.type == 'ALINK']
+    tlinks = [r for r in relations if r.type == 'TLINK']
+    event_idx = {}
+    timex_idx = {}
+    metadata = {'dct': None}
+    timexes = doctimes + sectiontimes + timexes
+    _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc)
+    _add_events_to_tarsqidoc(events, event_idx, metadata['dct'], tarsqidoc)
+    _add_links_to_tarsqidoc(alinks + tlinks, tarsqidoc)
+    tarsqidoc.print_all(out_file)
+
+
+def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
+    for timex in timexes:
+        try:
+            begin, end = timex.span.split(',')
+            if timex_idx.has_key(timex.id):
+                print "WARNING: timex %s already exists" % timex.id
+            timex_idx[timex.id] = begin
+            attrs = {'tid': timex.id}
+            if timex.type == 'DOCTIME':
+                metadata['dct'] = timex
+                attrs['functionInDocument'] = 'DOCTIME'
+                doctime = tarsqidoc.text(int(begin), int(end))
+                month, day, year = doctime.split('/')
+                dct_value = "%02d%02d%s" % (int(year), int(month), day)
+                tarsqidoc.metadata['dct'] = dct_value
+            elif timex.type == 'SECTIONTIME':
+                attrs['functionInDocument'] = 'SECTIONTIME'
+            # TODO: see comment above
+            tarsqidoc.tags.add_tag_with_id('TIMEX3', timex.id, begin, end, attrs)
+        except ValueError:
+            print "Skipping discontinuous timex"
+
+
+def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
+    dct_rel_id = 0
+    for event in events:
+        try:
+            begin, end = event.span.split(',')
+            if event_idx.has_key(event.id):
+                print "WARNING: event %s already exists" % event.id
+            event_idx[event.id] = begin
+            # TODO: is it okay for these to be the same?
+            attrs = {'eid': event.id, 'eiid': event.id}
+            # TODO: could I just use add_tag()?
+            tarsqidoc.tags.add_tag_with_id('EVENT', event.id, begin, end, attrs)
+            dct_rel_id += 1
+            attrs = {'relType': event.DocTimeRel,
+                     'eventInstanceID': event.id,
+                     'relatedToTime': dct.id}
+            tarsqidoc.tags.add_tag_with_id('TLINK', "d%s" % dct_rel_id, None, None, attrs)
+        except ValueError:
+            print "Skipping discontinuous event"
+
+
+def _add_links_to_tarsqidoc(links, tarsqidoc):
+    for rel in links:
+        linkid = "r%s" % rel.id.split('@')[0]
+        sourceid = "%s%s" % (rel.Source.split('@')[1], rel.Source.split('@')[0])
+        targetid = "%s%s" % (rel.Target.split('@')[1], rel.Target.split('@')[0])
+        attrs = { source_attr_name(rel.type, rel.Source): sourceid,
+                  target_attr_name(rel.type, rel.Target): targetid,
+                  'relType': rel.RelType}
+        tarsqidoc.tags.add_tag_with_id(rel.type, linkid, None, None, attrs)
+
+
+def source_attr_name(link_type, source_id):
+    if link_type == 'ALINK':
+        return 'eventInstance'
+    elif source_id.split('@')[1] == 'e':
+        return 'eventInstanceID'
+    elif source_id.split('@')[1] == 't':
+        return 'timeID'
+    else:
+        print "WARNING", source_id
+
+
+def target_attr_name(link_type, target_id):
+    if link_type == 'ALINK':
+        return 'relatedToEventInstance'
+    elif target_id.split('@')[1] == 'e':
+        return 'relatedToEventInstanceID'
+    elif target_id.split('@')[1] == 't':
+        return 'relatedToTime'
+    else:
+        print "WARNING", target_id
+
+
+class Entity(object):
+
+    """An entity from a Thyme annotation, either an event or a timex."""
+
+    def __init__(self, dom_element):
+        self.id = get_simple_value(dom_element, 'id')
+        self.span = get_simple_value(dom_element, 'span')
+        self.type = get_simple_value(dom_element, 'type')
+        self.properties = get_value(dom_element, 'properties')
+        self.id = "%s%s" % (self.id.split('@')[1], self.id.split('@')[0])
+        if self.type == 'EVENT':
+            self.DocTimeRel = get_simple_value(self.properties, 'DocTimeRel')
+            self.Polarity = get_simple_value(self.properties, 'Polarity')
+        elif self.type == 'TIMEX3':
+            self.Class = get_simple_value(self.properties, 'Class')
+
+    def __str__(self):
+        if self.type == 'EVENT':
+            return "<%s id=%s span=%s DocTimeRel=%s Polarity=%s>" % \
+                (self.type, self.id, self.span, self.DocTimeRel, self.Polarity)
+        elif self.type == 'TIMEX3':
+            return "<%s id=%s span=%s Class=%s>" % \
+                (self.type, self.id, self.span, self.Class)
+        else:
+            return "<%s id=%s span=%s>" % \
+                (self.type, self.id, self.span)
+
+
+class Relation(object):
+
+    def __init__(self, dom_element):
+        self.id = get_simple_value(dom_element, 'id')
+        self.type = get_simple_value(dom_element, 'type')
+        self.properties = get_value(dom_element, 'properties')
+        self.Source = get_simple_value(self.properties, 'Source')
+        self.RelType = get_simple_value(self.properties, 'Type')
+        self.Target = get_simple_value(self.properties, 'Target')
+
+    def __str__(self):
+        return "<%s id=%s %s(%s,%s)>" % \
+            (self.type, self.id, self.RelType, self.Source, self.Target)
+
+
+def get_value(entity, attr):
+    return entity.getElementsByTagName(attr)[0]
+
+def get_simple_value(entity, attr):
+    return entity.getElementsByTagName(attr)[0].firstChild.data
+
+
+### CONVERTING TTK INTO HTML
+
+def convert_ttk_into_html(ttk_dir, html_dir, showlinks, limit):
+    ttk_dir = os.path.abspath(ttk_dir)
+    html_dir = os.path.abspath(html_dir)
+    _makedir(html_dir)
+    print ttk_dir
+    print html_dir
+    index = open(os.path.join(html_dir, 'index.html'), 'w')
+    count = 0
+    for fname in os.listdir(ttk_dir):
+        count += 1
+        if count > limit:
+            break
+        ttk_file = os.path.join(ttk_dir, fname)
+        html_file = os.path.join(html_dir, fname + '.html')
+        index.write("<li><a href=%s.html>%s.html</a></li>\n" % (fname, fname))
+        _convert_ttk_into_html(ttk_file, html_file, showlinks)
+
+def _convert_ttk_into_html(ttk_file, html_file, showlinks):
+    print "creating", html_file
+    tarsqidoc = _get_tarsqidoc(ttk_file, "ttk")
+    event_idx = _get_events(tarsqidoc)
+    timex_idx = _get_timexes(tarsqidoc)
+    entity_idx = _get_entities(event_idx, timex_idx)
+    link_idx = _get_links(tarsqidoc)
+    fh = _open_html_file(html_file)
+    count = 0
+    previous_was_space = False
+    current_sources = []
+    fh.write("<tr>\n<td>\n")
+    for char in tarsqidoc.sourcedoc.text:
+        if event_idx['close'].has_key(count):
+            _write_closing_tags(event_idx, count, 'event', fh, showlinks)
+        if timex_idx['close'].has_key(count):
+            _write_closing_tags(timex_idx, count, 'timex', fh, showlinks)
+        if event_idx['open'].has_key(count):
+            _write_opening_tags(event_idx, count, 'event', fh)
+            current_sources.append(event_idx['open'][count][0])
+        if timex_idx['open'].has_key(count):
+            _write_opening_tags(timex_idx, count, 'timex', fh)
+            current_sources.append(timex_idx['open'][count][0])
+        if char == "\n":
+            if previous_was_space and showlinks and current_sources:
+                fh.write("<tr><td width=40%>\n")
+                for event in current_sources:
+                    for link in link_idx.get(event.id,[]):
+                        _write_link(link, entity_idx, fh)
+                fh.write("\n<tr valign=top>\n<td>\n")
+                previous_was_space = False
+                current_sources = []
+            else:
+                fh.write("<br/>\n")
+                previous_was_space = True
+        else:
+            fh.write(char)
+        count += 1
+
+def _get_events(tarsqidoc):
+    """Return an index of events indexed on the begin and end offset."""
+    events = tarsqidoc.tags.find_tags('EVENT')
+    event_idx = {'open': {}, 'close': {}}
+    for event in events:
+        event_idx['open'].setdefault(event.begin, []).append(event)
+        event_idx['close'].setdefault(event.end, []).append(event)
+    return event_idx
+
+def _get_timexes(tarsqidoc):
+    """Return an index of times indexed on the begin and end offset."""
+    timexes = tarsqidoc.tags.find_tags('TIMEX3')
+    timex_idx = {'open': {}, 'close': {}}
+    for timex in timexes:
+        timex_idx['open'].setdefault(timex.begin, []).append(timex)
+        timex_idx['close'].setdefault(timex.end, []).append(timex)
+    return timex_idx
+
+def _get_entities(event_idx, timex_idx):
+    """Return an index of all entities indexed on the event or timex id."""
+    entity_idx = {}
+    for elist in event_idx['open'].values() + timex_idx['open'].values():
+        entity = elist[0]
+        entity_idx[entity.id] = entity
+    return entity_idx
+
+def _get_links(tarsqidoc):
+    slinks = tarsqidoc.tags.find_tags('SLINK')
+    tlinks = tarsqidoc.tags.find_tags('TLINK')
+    links = {}
+    for link in slinks + tlinks:
+        source = link.attrs['eventInstanceID']
+        target = link.attrs.get('relatedToEventInstanceID')
+        if target is None:
+            target = link.attrs.get('relatedToTime')
+        if target is None:
+            print "WARNING, no target for", link
+        links.setdefault(source, []).append([link.id, source, link.attrs['relType'], target])
+    return links
+
+def _open_html_file(html_file):
+    fh = open(html_file, 'w')
+    fh.write("<html>\n<body>\n" +
+             "<style>\n" +
+             "body { font-size: 14pt; }\n" +
+             "sup { font-size: 10pt; font-weight: normal; }\n" +
+             "td { padding-top: 10pt; }\n" +
+             "event { xfont-weight: bold; color: darkred; }\n" +
+             "timex { xfont-weight: bold; color: darkblue; }\n" +
+             ".link { color: darkgreen; }\n" +
+             "</style>\n" +
+             "<body>\n" +
+             "<table cellspacing=0 border=0>\n")
+    return fh
+
+def _write_event_close(event, fh, showlinks):
+    if showlinks:
+        fh.write("<sup>%s:%s</sup></event>" % (event.id, event.begin))
+    else:
+        fh.write("<sup>%s</sup></event>" % event.id)
+
+def _write_closing_tags(idx, count, tagname, fh, showlinks):
+    entities = idx['close'][count]
+    for entity in reversed(entities):
+        if showlinks:
+            fh.write("<sup>%s:%s</sup></%s>]" % (entity.id, entity.begin, tagname))
+        else:
+            fh.write("<sup>%s</sup></%s>]" % (entity.id, tagname))
+
+def _write_opening_tags(idx, count, tagname, fh):
+    entities = idx['open'][count]
+    for entity in entities:
+        fh.write("[<%s>" % tagname)
+
+def _write_link(link, entity_idx, fh):
+    link_id = link[0]
+    reltype = link[2]
+    source_id = link[1]
+    target_id = link[3]
+    source_entity = entity_idx.get(source_id)
+    source_begin = source_entity.begin
+    target_entity = entity_idx.get(target_id)
+    target_begin = target_entity.begin
+    fh.write("<span class=link id=%s>[%s:%s&nbsp;%s&nbsp;%s:%s]</span>\n"
+             % (link_id, source_id, source_begin,
+                reltype.lower(), target_id, target_begin))
+    if target_entity is None:
+        print "WARNING", (link_id, source_id, reltype, target_id)
+
+
+### UTILITIES
+
+def _makedir(directory):
+    if os.path.exists(directory):
+        exit("ERROR: directory already exists")
+    else:
+        os.makedirs(directory)
+
+def _get_tarsqidoc(infile, source, metadata=True):
+    """Return an instance of TarsqiDocument for infile"""
+    opts = [("--source", source), ("--trap-errors", "False")]
+    t = tarsqi.Tarsqi(opts, infile, None)
+    t.source_parser.parse_file(t.input, t.tarsqidoc)
+    t.metadata_parser.parse(t.tarsqidoc)
+    return t.tarsqidoc
 
 
 if __name__ == '__main__':
 
-    long_options = ['convert-timebank']
+    long_options = ['convert-timebank', 'convert-thyme',
+                    'convert-ttk-into-html', 'show-links']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
     if '--convert-timebank' in opts:
-        convert_timebank(opts['-i'], opts['-o'])
+        convert_timebank(args[0], args[1])
+    elif '--convert-thyme' in opts:
+        limit = 10 if DEBUG else sys.maxint
+        convert_thyme(args[0], args[1], args[2], limit)
+    elif '--convert-ttk-into-html' in opts:
+        limit = 10 if DEBUG else sys.maxint
+        showlinks = True if '--show-links' in opts else False
+        convert_ttk_into_html(args[0], args[1], showlinks, limit)
