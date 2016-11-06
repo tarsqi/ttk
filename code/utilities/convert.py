@@ -150,7 +150,7 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
                 attrs['functionInDocument'] = 'DOCTIME'
                 doctime = tarsqidoc.text(int(begin), int(end))
                 month, day, year = doctime.split('/')
-                dct_value = "%02d%02d%s" % (int(year), int(month), day)
+                dct_value = "%04d%02d%02d" % (int(year), int(month), int(day))
                 tarsqidoc.metadata['dct'] = dct_value
             elif timex.type == 'SECTIONTIME':
                 attrs['functionInDocument'] = 'SECTIONTIME'

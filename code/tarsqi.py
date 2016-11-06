@@ -165,7 +165,7 @@ class Tarsqi:
         on a file, it does not write the output to a file and it returns the
         TarsqiDocument."""
         logger.info(input_string)
-        self.source_parser.parse_string(input_string,self.tarsqidoc)
+        self.source_parser.parse_string(input_string, self.tarsqidoc)
         self.metadata_parser.parse(self.tarsqidoc)
         self.docstructure_parser.parse(self.tarsqidoc)
         for (name, wrapper) in self.pipeline:

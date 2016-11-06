@@ -212,7 +212,7 @@ class SourceParserXML(SourceParser):
         # TODO: do we need to make sure that text is unicode?
         self.parser.Parse(text)
         self.sourcedoc.finish()
-        tarsqidoc.source = self.sourcedoc
+        tarsqidoc.sourcedoc = self.sourcedoc
 
     def _handle_xmldecl(self, version, encoding, standalone):
         """Store the XML declaration."""
