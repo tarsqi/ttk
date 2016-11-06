@@ -259,7 +259,13 @@ class TreeTagger(object):
         self.process.stdout.close()
 
     def tag_text(self, text):
-        """Open a thread to the TreeTagger and get results."""
+        """Open a thread to the TreeTagger, pipe in the text and return the results."""
+        # We add a period as an extra token. This is a hack to deal with a nasty
+        # problem where sometimes the TreeTagger will not return a value. It is
+        # not clear why this is. Later in this method we pop off the extra tag
+        # that we get because of this. TODO: it would be better to deal with
+        # this in a more general way, see multiprocessing.Pool with a timeout.
+        text += "\n.\n"
         args = (self.process.stdin, text)
         thread = threading.Thread(target=_write_to_stdin, args=args)
         thread.start()
@@ -273,7 +279,8 @@ class TreeTagger(object):
                 break
             elif line and collect:
                 result.append(line)
-        thread.join()  # this may avoid problems
+        thread.join()
+        result.pop()
         return result
 
 
@@ -281,7 +288,7 @@ def _write_to_stdin(pipe, text):
     pipe.write("%s\n" % START_TEXT)
     if text:
         pipe.write("%s\n" % text)
-        # NOTE. Without this the tagger will hang. Do not try to make this
-        # shorter, I think it may need at least a space, but I have no idea why.
+        # NOTE. Without the following the tagger will hang. Do not try to make
+        # it shorter, it may need at least a space, but I have no idea why.
         pipe.write("%s\n.\ndummy sentence\n.\n" % END_TEXT)
         pipe.flush()
