@@ -27,7 +27,7 @@ import components.common_modules.tokens
 
 import components.evita.bayes
 import components.evita.event
-import components.evita.gramChunk
+import components.evita.features
 import components.evita.main
 import components.evita.rule
 import components.evita.wrapper
@@ -89,7 +89,7 @@ MODULES = [
 
     components.evita.bayes,
     components.evita.event,
-    components.evita.gramChunk,
+    components.evita.features,
     components.evita.main,
     components.evita.rule,
     components.evita.wrapper,

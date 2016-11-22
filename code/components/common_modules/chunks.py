@@ -17,7 +17,7 @@ from components.common_modules import utils
 from components.common_modules.constituent import Constituent
 
 from components.evita.event import Event
-from components.evita.gramChunk import GramNChunk, GramVChunkList
+from components.evita.features import GramNChunk, GramVChunkList
 from components.evita import wordnet
 from components.evita import bayes
 

@@ -2,7 +2,7 @@
 from library import forms
 from library.main import LIBRARY
 from components.evita.event import Event
-from components.evita.gramChunk import GramAChunk
+from components.evita.features import GramAChunk
 from components.common_modules.constituent import Constituent
 from utilities import logger
 
