@@ -55,6 +55,13 @@ EID = LIBRARY.timeml.EID
 EIID = LIBRARY.timeml.EIID
 EVENTID = LIBRARY.timeml.EVENTID
 
+RELTYPE = LIBRARY.timeml.RELTYPE
+TIME_ID = LIBRARY.timeml.TIME_ID
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
+
 MAKEINSTANCE = 'MAKEINSTANCE'
 
 TIMEML_TAGS = (TIMEX, EVENT, MAKEINSTANCE, SIGNAL, ALINK, SLINK, TLINK)
@@ -133,7 +140,7 @@ def _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file):
     timexes = doctimes + sectiontimes + timexes
     _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc)
     _add_events_to_tarsqidoc(events, event_idx, metadata['dct'], tarsqidoc)
-    _add_links_to_tarsqidoc(alinks + tlinks, tarsqidoc)
+    _add_links_to_tarsqidoc(alinks + tlinks, timex_idx, event_idx, tarsqidoc)
     tarsqidoc.print_all(out_file)
 
 
@@ -173,45 +180,46 @@ def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
             # TODO: could I just use add_tag()?
             tarsqidoc.tags.add_tag_with_id('EVENT', event.id, begin, end, attrs)
             dct_rel_id += 1
-            attrs = {'relType': event.DocTimeRel,
-                     'eventInstanceID': event.id,
-                     'relatedToTime': dct.id}
+            attrs = {RELTYPE: event.DocTimeRel,
+                     EVENT_INSTANCE_ID: event.id,
+                     RELATED_TO_TIME: dct.id}
             tarsqidoc.tags.add_tag_with_id('TLINK', "d%s" % dct_rel_id, None, None, attrs)
         except ValueError:
             print "Skipping discontinuous event"
 
 
-def _add_links_to_tarsqidoc(links, tarsqidoc):
+def _add_links_to_tarsqidoc(links, timex_idx, event_idx, tarsqidoc):
     for rel in links:
         linkid = "r%s" % rel.id.split('@')[0]
         sourceid = "%s%s" % (rel.Source.split('@')[1], rel.Source.split('@')[0])
         targetid = "%s%s" % (rel.Target.split('@')[1], rel.Target.split('@')[0])
-        attrs = { source_attr_name(rel.type, rel.Source): sourceid,
-                  target_attr_name(rel.type, rel.Target): targetid,
-                  'relType': rel.RelType}
+        attrs = {
+            _source_attr_name(rel.type, sourceid, timex_idx, event_idx): sourceid,
+            _target_attr_name(rel.type, targetid, timex_idx, event_idx): targetid,
+            RELTYPE: rel.RelType}
         tarsqidoc.tags.add_tag_with_id(rel.type, linkid, None, None, attrs)
 
 
-def source_attr_name(link_type, source_id):
-    if link_type == 'ALINK':
-        return 'eventInstance'
-    elif source_id.split('@')[1] == 'e':
-        return 'eventInstanceID'
-    elif source_id.split('@')[1] == 't':
-        return 'timeID'
+def _source_attr_name(link_type, source_id, timex_idx, event_idx):
+    if link_type == ALINK:
+        return EVENT_INSTANCE_ID
+    elif source_id in timex_idx:
+        return TIME_ID
+    elif source_id in event_idx:
+        return EVENT_INSTANCE_ID
     else:
-        print "WARNING", source_id
+        print "WARNING: cannot find attribute name for", source_id
 
 
-def target_attr_name(link_type, target_id):
-    if link_type == 'ALINK':
-        return 'relatedToEventInstance'
-    elif target_id.split('@')[1] == 'e':
-        return 'relatedToEventInstanceID'
-    elif target_id.split('@')[1] == 't':
-        return 'relatedToTime'
+def _target_attr_name(link_type, target_id, timex_idx, event_idx):
+    if link_type == ALINK:
+        return RELATED_TO_EVENT_INSTANCE
+    elif target_id in timex_idx:
+        return RELATED_TO_TIME
+    elif target_id in event_idx:
+        return RELATED_TO_EVENT_INSTANCE
     else:
-        print "WARNING", target_id
+        print "WARNING: cannot find attribute name for", target_id
 
 
 class Entity(object):
@@ -224,17 +232,17 @@ class Entity(object):
         self.type = get_simple_value(dom_element, 'type')
         self.properties = get_value(dom_element, 'properties')
         self.id = "%s%s" % (self.id.split('@')[1], self.id.split('@')[0])
-        if self.type == 'EVENT':
+        if self.type == EVENT:
             self.DocTimeRel = get_simple_value(self.properties, 'DocTimeRel')
             self.Polarity = get_simple_value(self.properties, 'Polarity')
-        elif self.type == 'TIMEX3':
+        elif self.type == TIMEX:
             self.Class = get_simple_value(self.properties, 'Class')
 
     def __str__(self):
-        if self.type == 'EVENT':
+        if self.type == EVENT:
             return "<%s id=%s span=%s DocTimeRel=%s Polarity=%s>" % \
                 (self.type, self.id, self.span, self.DocTimeRel, self.Polarity)
-        elif self.type == 'TIMEX3':
+        elif self.type == TIMEX:
             return "<%s id=%s span=%s Class=%s>" % \
                 (self.type, self.id, self.span, self.Class)
         else:
@@ -283,6 +291,7 @@ def convert_ttk_into_html(ttk_dir, html_dir, showlinks, limit):
         index.write("<li><a href=%s.html>%s.html</a></li>\n" % (fname, fname))
         _convert_ttk_into_html(ttk_file, html_file, showlinks)
 
+
 def _convert_ttk_into_html(ttk_file, html_file, showlinks):
     print "creating", html_file
     tarsqidoc = _get_tarsqidoc(ttk_file, "ttk")
@@ -296,21 +305,21 @@ def _convert_ttk_into_html(ttk_file, html_file, showlinks):
     current_sources = []
     fh.write("<tr>\n<td>\n")
     for char in tarsqidoc.sourcedoc.text:
-        if event_idx['close'].has_key(count):
+        if count in event_idx['close']:
             _write_closing_tags(event_idx, count, 'event', fh, showlinks)
-        if timex_idx['close'].has_key(count):
+        if count in timex_idx['close']:
             _write_closing_tags(timex_idx, count, 'timex', fh, showlinks)
-        if event_idx['open'].has_key(count):
+        if count in event_idx['open']:
             _write_opening_tags(event_idx, count, 'event', fh)
             current_sources.append(event_idx['open'][count][0])
-        if timex_idx['open'].has_key(count):
+        if count in timex_idx['open']:
             _write_opening_tags(timex_idx, count, 'timex', fh)
             current_sources.append(timex_idx['open'][count][0])
         if char == "\n":
             if previous_was_space and showlinks and current_sources:
                 fh.write("<tr><td width=40%>\n")
                 for event in current_sources:
-                    for link in link_idx.get(event.id,[]):
+                    for link in link_idx.get(event.id, []):
                         _write_link(link, entity_idx, fh)
                 fh.write("\n<tr valign=top>\n<td>\n")
                 previous_was_space = False
@@ -322,6 +331,7 @@ def _convert_ttk_into_html(ttk_file, html_file, showlinks):
             fh.write(char)
         count += 1
 
+
 def _get_events(tarsqidoc):
     """Return an index of events indexed on the begin and end offset."""
     events = tarsqidoc.tags.find_tags('EVENT')
@@ -330,6 +340,7 @@ def _get_events(tarsqidoc):
         event_idx['open'].setdefault(event.begin, []).append(event)
         event_idx['close'].setdefault(event.end, []).append(event)
     return event_idx
+
 
 def _get_timexes(tarsqidoc):
     """Return an index of times indexed on the begin and end offset."""
@@ -340,6 +351,7 @@ def _get_timexes(tarsqidoc):
         timex_idx['close'].setdefault(timex.end, []).append(timex)
     return timex_idx
 
+
 def _get_entities(event_idx, timex_idx):
     """Return an index of all entities indexed on the event or timex id."""
     entity_idx = {}
@@ -347,6 +359,7 @@ def _get_entities(event_idx, timex_idx):
         entity = elist[0]
         entity_idx[entity.id] = entity
     return entity_idx
+
 
 def _get_links(tarsqidoc):
     slinks = tarsqidoc.tags.find_tags('SLINK')
@@ -361,6 +374,7 @@ def _get_links(tarsqidoc):
             print "WARNING, no target for", link
         links.setdefault(source, []).append([link.id, source, link.attrs['relType'], target])
     return links
+
 
 def _open_html_file(html_file):
     fh = open(html_file, 'w')
@@ -377,11 +391,13 @@ def _open_html_file(html_file):
              "<table cellspacing=0 border=0>\n")
     return fh
 
+
 def _write_event_close(event, fh, showlinks):
     if showlinks:
         fh.write("<sup>%s:%s</sup></event>" % (event.id, event.begin))
     else:
         fh.write("<sup>%s</sup></event>" % event.id)
+
 
 def _write_closing_tags(idx, count, tagname, fh, showlinks):
     entities = idx['close'][count]
@@ -391,10 +407,12 @@ def _write_closing_tags(idx, count, tagname, fh, showlinks):
         else:
             fh.write("<sup>%s</sup></%s>]" % (entity.id, tagname))
 
+
 def _write_opening_tags(idx, count, tagname, fh):
     entities = idx['open'][count]
     for entity in entities:
         fh.write("[<%s>" % tagname)
+
 
 def _write_link(link, entity_idx, fh):
     link_id = link[0]
@@ -419,6 +437,7 @@ def _makedir(directory):
         exit("ERROR: directory already exists")
     else:
         os.makedirs(directory)
+
 
 def _get_tarsqidoc(infile, source, metadata=True):
     """Return an instance of TarsqiDocument for infile"""
