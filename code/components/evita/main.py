@@ -24,7 +24,7 @@ class Evita (TarsqiComponent):
         self.NAME = EVITA
         self.tarsqidoc = tarsqidoc    # instance of TarsqiDocument
         self.docelement = docelement  # instance of Tag
-        self.doctree = None           # instance of TarsqiTree
+        self.doctree = None           # will be an instance of TarsqiTree
 
     def process_element(self):
         """Process the element slice of the TarsqiDocument. Loop through all

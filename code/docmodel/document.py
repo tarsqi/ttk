@@ -53,6 +53,8 @@ class TarsqiDocument:
         return self.sourcedoc.text[p1:p2]
 
     def elements(self):
+        """Method that returns the tags that contain paragraphs, that is, the
+        tags of type docelement."""
         return self.tags.find_tags('docelement')
 
     def events(self):

@@ -305,16 +305,15 @@ def run_tarsqi(args):
     """Main method that is called when the script is executed from the command
     line. It creates a Tarsqi instance and lets it process the input. If the
     input is a directory, this method will iterate over the contents, setting up
-    TrasqiControlInstances for all files in the directory. The arguments are the
-    list of arguments given by the user on the command line. There is no return
-    value."""
+    Tarsqi instances for all files in the directory. The arguments are the list
+    of arguments given by the user on the command line."""
     (opts, args) = _read_arguments(args)
     if len(args) < 2:
         raise TarsqiError("missing input or output arguments\n%s"
                           % _usage_string())
-    # Use os.path.abspath here because some components change the working
-    # directory and when some component fails the cwd may not be reset to the
-    # root directory
+    # Using absolute paths here because some components change the working
+    # directory and when some component fails the cwd command may not reset to
+    # the root directory
     inpath = os.path.abspath(args[0])
     outpath = os.path.abspath(args[1])
     t0 = time.time()

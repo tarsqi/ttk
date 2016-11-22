@@ -36,23 +36,25 @@
 <p>The top-level processing chain is implemented in the run_tarsqi() method and
 the Tarsqi class in tarsqi.py. The run_tarsqi() method reads the arguments,
 deals with some file/directory bookkeeping, and initializes a Tarsqi instance
-and then runs the process() method on the instance. Upon initialization the
-Tarsqi instance does the following:</p>
+and then runs the process_document() method on the instance. Upon initialization
+the Tarsqi instance does the following:</p>
 
 <ol class="spacy">
 
-<li>Read the parameters. These are read from settings.txt but can
-also be overridden on the command line invocation.
+<li>Store processing parameters on the instance. They were originally read by
+run_tarsqi() which hands them into the Tarsqi initialization. Parameters are
+defined in settings.txt, but values in there can be overridden on the command
+line invocation.</li>
 
 <li>Read the Tarsqi library. This library currently contains only elements from
-the TimeML specifications, but more library items will be added over time.
+the TimeML specifications, but more library items will be added over time.</li>
 
 <li>Create a pipeline from the --pipeline parameter. A pipeline is
 a list of pairs where each pair has the name of the component and the Python
-class that implements it.
+class that implements it.</li>
 
 <li>Initialize an instance of TarsqiDocument, which is the class that is central
-to all TTTK processing.
+to all TTK processing. Hand the processing options to the TarsqiDocument.</li>
 
 <li>Select the source parser and the metadata parser using the value of the
 --source option. There are three source parsers defined in
@@ -61,9 +63,9 @@ SourceParserTTK. These deal with the three input formats that the Tarsqi Toolkit
 is sensitive to. Metadata parsers are defined in docmodel.metadata_parser,
 currently there are five of them: MetadataParser, MetadataParserTTK,
 MetadataParserTimebank, MetadataParserATEE, MetadataParserRTE3 and
-MetadataParserVA.
+MetadataParserVA.</li>
 
-<li>Set the minimal document structure parser that is used as a default.
+<li>Set the minimal document structure parser that is used as a default.</li>
 
 </ol>
 
@@ -78,8 +80,6 @@ parser. All take the TarsqiDocument as an argument and all add information to
 it.</li>
 
 <img src="images/docprocessing.png"/ height="195">
-
-<li>Add processing options to the TarsqiDocument.</li>
 
 <li>Apply components as specified by the pipeline.</li>
 
@@ -118,8 +118,8 @@ TarsqiDocument are shown in the table below.</p>
 <p>The TarsqiDocument is created during Tarsqi initialization. In step 1 above,
 the SourceParser adds a SourceDoc, the MetadataParser sets values in a meta data
 dictionary and the DocSructureParser adds docelement tags to a tag repository in
-tags. Processing options are set in step 2. Application of pipeline components
-(step 3) changes the tags repository.</p>
+tags. Application of pipeline components (step 2) changes the tags repository by
+adding new tags.</p>
 
 <p>The SourceDoc instance has the following structure:</p>
 
@@ -133,7 +133,7 @@ tags. Processing options are set in step 2. Application of pipeline components
 </tr>
 <tr>
   <td class="attribute">text</td>
-  <td>unicode string</td>
+  <td>a unicode string</td>
 </tr>
 <tr>
   <td class="attribute">metadata</td>
@@ -182,7 +182,7 @@ the TarsqiDocument and SourceDoc structures.</p>
 <a name="source"/>
 <h3>Parsing the source, its metadata and its structure</h3>
 
-<p><span class="header">SourceParser</span>. When the source parser applies the
+<p><span class="header">SourceParser</span>. When the source parser applies, the
 main variables on the TarsqiDocument (source, metadata, options and tags) are
 not filled in yet. As the first part of step 1, the TarsqiDocument is processed
 by one of the subclasses of docmodel.source_parser.SourceParser. These classes
@@ -218,10 +218,10 @@ python tarsqi.py --pipeline=PREPROCESSOR --source=xml test.xml test-p.xml
 python tarsqi.py --pipeline=EVITA,SLINKET --source=ttk test-p.xml test-pge.xml
 </pre>
 
-<p>Back to document parsing. The Tarsqi initialization method takes the result
-of create_source_parser() and uses it to set the value of the source_parser
-variable of the Tarsqi instance. And this parser is used by the
-Tarsqi.process_document() method, a fragment of which is shown here.</p>
+<p>Back to document parsing. On Tarsqi initialization, the method
+create_source_parser() was used to set the value of the source_parser variable
+of the Tarsqi instance. And this parser is used by the Tarsqi.process_document()
+method, a fragment of which is shown here.</p>
 
 <pre class="example indent">
 <i>tarsqi.Tarsqi</i>
@@ -309,7 +309,7 @@ docmodel.main.</p>
 <p>For generic XML we can use the default MetadataParser which takes a
 TarsqiDocument and fills in elements in its metadata dictionary. In fact, it
 only fills in one element, the Document Creation Time (DCT) which is added under
-the 'dct' key. To see how this recall the process_document() method in the
+the 'dct' key. To see how this works recall the process_document() method in the
 Tarsqi class, repeated here with the call to the metadata parser in bold
 face.</p>
 
@@ -410,7 +410,8 @@ initialization the Tarsqi class creates a pipeline of components from the user's
 $ python tarsqi.py --pipeline=PREPROCESSOR,GUTIME,EVITA in.xml out.xml
 </pre>
 
-<p>then the pipeline as stored in the Tarsqi instance would be</p>
+<p>then the pipeline as stored on the pipeline variable in the Tarsqi instance
+would be</p>
 
 <pre class="example indent">
 [('PREPROCESSOR', &lt;class components.preprocessing.wrapper.PreprocessorWrapper at 0x10514a668>), 
@@ -419,10 +420,9 @@ $ python tarsqi.py --pipeline=PREPROCESSOR,GUTIME,EVITA in.xml out.xml
 </pre>
 
 <p>The code for all components is wrapped in special wrapper classes like
-PreprocessorWrapper and EvitaWrapper in the example above. All available
-wrappers are defined in the COMPONENTS dictionary in
-components.__init__.py. Every wrapper is required to have the following two
-methods:</p>
+PreprocessorWrapper in the example above. All available wrappers are defined in
+the COMPONENTS dictionary in components.__init__.py. Every wrapper is required
+to have the following two methods:</p>
 
 <ol class="tight">
 <li>an initialization method that takes the TarsqiDocument as its sole argument,
@@ -442,10 +442,10 @@ to the TarsqiDocument.</p>
 <p>The Tarsqi class prints results by asking the TarsqiDocument to print the
 source text and all tags to a document, which in turn is done by retrieving the
 source and the source tags from the SourceDoc instance and the added Tarsqi tags
-from the TagRepository in the tarsqi_tags attributes on TarsqiDocElements. The
-output is written to one file with both the primary data and the tags. Here is
-an example of an output file that the Tarsqi toolkit produces. Suppose we have
-the input below.</p>
+from the TagRepository in the tarsqi_tags attribute. The output is written to
+one file with both the primary data and the tags. Here is an example of an
+output file that the Tarsqi toolkit produces. Suppose we have the input
+below.</p>
 
 <pre class="example indent">
 &lt;?xml version="1.0" ?>
@@ -490,8 +490,7 @@ She sleeps on Friday.
 
 <p>All elements added by Tarsqi processing, with the exception of meta data
 elements like the DCT, are direct children of the tarsqi_tags tag. There is no
-particular defined order, but in general textual occurrence is used to order the
-tags.</p>
+strictly defined order, but in general textual occurrence is used for ordering.</p>
 
 <a name="tags"/>
 <h2>Tags added by the Tarsqi Toolkit</h2>
@@ -561,12 +560,13 @@ prefixes and the tags they go with are listed in the table below.</p>
 <p>Tags introduced by the document structure parser and the preprocessor have
 lower case names and use the "id" attribute for the identifiers. TimeML tags are
 uppercase and introduce their identifiers with special attributes "tid", "eid",
-"eiid", and "lid". Noun chunks and verb chunks share the same prefix and so do
-the three link types. As per the TimeML specifications, events have an event
-identifier and an event instance identifier, this allows us to deal with those
-events that have more than one instance. The latter case is not recognized by
-the Tarsqi Toolkit however and the eid and eiid will always have the same
-integer in it (but not with the same prefix).</p>
+"eiid", and "lid". Identifiers of noun chunks and verb chunks share the same
+prefix and so do th eidentifiers on the three link types. As per the TimeML
+specifications, events have an event identifier and an event instance
+identifier, this allows us to deal with those events that have more than one
+instance. The latter case is not recognized by the Tarsqi Toolkit however and
+the eid and eiid will always have the same integer in it (but not with the same
+prefix).</p>
 
 </body>
 </html>

@@ -26,7 +26,7 @@ text. For each element, the wrapper extracts the source text, runs the
 tokenizer, tagger and chunker on that text and then exports the results back to
 the TarsqiDocElements.</p>
 
-<img src="images/preprocessing.png" height="250"/>
+<img src="images/preprocessing.png" height="350"/>
 
 <p>The tokenizer gets a copy of a slice of the text from the TarsqiDocument
 (stored in the SourceDoc in the source instance variable) and it returns a list
@@ -102,10 +102,10 @@ and eventually set it to:</p>
 </pre>
 
 <p>Notice that the tags are added by a depth-first post-order traversal of the
-tree, but this is incidental of the algorithm and in no way a requirement on the
-order of the tags. When this tags list is built the preprocessor uses the
-index() method on the TagRepository to create the opening_tags and closing_tags
-dictionaries, which will look as follows:</p>
+tree, but this is an accidental feature of the algorithm and in no way a
+requirement on the order of the tags. When this tags list is built the
+preprocessor uses the index() method on the TagRepository to create the
+opening_tags and closing_tags dictionaries, which will look as follows:</p>
 
 <pre class="example indent">
 { 0: [ &lt;Tag docelement id=d1 0:13 {'type': paragraph'}>,

@@ -31,14 +31,14 @@
 <h2>Evita and the TarsqiTree class</h2>
 
 <p>The EvitaWrapper class is handed the TarsqiDocument and loops over all
-docelement Tags in it, creating an Evita instance for all of them and then
-procesing the element. The Evita instance has slots for the TarsqiDocument, the
-docelement tag and a TarsqiTree instance which contains a document tree for the
-part of the TarsqiDocument that is being processed. The TarsqiTree instance
-itself knows what TarsqiDocument it belongs to and what docelement Tag it was
-created for since these were handed in from the Evita instance. The TarsqiTree
-instance also has a list of daughters as well as some other attributes that are
-ignored here because they are not used by Evita.</p>
+docelement Tags in it, creating an Evita instance for each of them and then
+procesing the elements one by one. The Evita instance has slots for the
+TarsqiDocument, the docelement tag and a TarsqiTree instance which contains a
+document tree for the part of the TarsqiDocument that is being processed. The
+TarsqiTree instance itself knows what TarsqiDocument it belongs to and what
+docelement Tag it was created for since these were handed in from the Evita
+instance. The TarsqiTree instance also has a list of daughters as well as some
+other attributes that are ignored here because they are not used by Evita.</p>
 
 <table class="pythonclass indent spacy">
 <tr>
@@ -62,12 +62,13 @@ ignored here because they are not used by Evita.</p>
       </tr>
       <tr>
 	<td class="attribute">tarsqidoc</td>
-	<td>an instance of docmodel.document.TarsqiDocument</td>
+	<td>an instance of docmodel.document.TarsqiDocument, this is the same
+	one as on the Evita instance</td>
       </tr>
       <tr>
 	<td class="attribute">docelement</td>
 	<td>an instance of docmodel.document.Tag, the element that the document
-	tree is created for</td>
+	tree is created for, this is the same one as on the Evita instance</td>
       </tr>
       <tr>
 	<td class="attribute">dtrs</td>
@@ -96,8 +97,7 @@ the TarsqiTree for "The dog barked yesterday.".</p>
 </pre>
 
 <p>A TarsqiTree contains sentences, chunks, tokens and event and time
-constituents. It is created from a TarsqiDocument and a Tag as a first
-processing step by using the create_tarsqi_tree() method in
+constituents. It is created from a TarsqiDocument and a Tag by the create_tarsqi_tree() method in
 components.common_modules.tree. This method uses the intermediary Node object to
 create a tree hierarchy and then replaces all Node objects with instances of
 Sentence, NounChunk, VerbChunk, Token, AdjectiveToken, EventTag and TimexTag
@@ -141,14 +141,14 @@ are all subclasses of Constituent and have the following instance variables:</p>
 process over. For example, Evita and Slinket both run patterns over elements of
 this tree and major parts of the Evita and Slinket code are expressed as methods
 on constituents. Components may update elements of the tree, but it is important
-to note that those changes are incidental and will not be handed over to a next
+to note that those changes are local and will not be handed over to a next
 component in the pipeline. Instead, results from processing have to be exported
 to the TagRepository on the TarsqiDocument, as in the following figure.</p>
 
-<img src="images/component.png" width="550"/>
+<img src="images/component.png" width="650"/>
 
 <p>Components import the TarsqiDocument and for each Tag create a TarsqiTree
-using the TarsqiDocumengt's data. They then use this sequence of trees one by
+using the TarsqiDocument's data. They then use this sequence of trees one by
 one as input to processing and export the resulting tags back into the
 TagRepository. The next component in the pipeline will start afresh with a new
 set of TarsqiTrees which will be created from the updated TarsqiDocument.</p>
@@ -190,9 +190,9 @@ sections give details on how the three kinds of events are created.</p>
 <h2>Nominal events</h2>
 
 <p>Most of the code that deals with nominal events is expressed on the NounChunk
-class, which is a sublass of Chunk and Constituent. Recall that Constituents
+class, which is a sublass of Chunk and Constituent. Recall that Constituent
 defines instance variables tree, parent, position, dtrs, being and end. These
-are all filled in during TarsqiTree construction with create_tarsqi_tree(), as
+are all filled in during TarsqiTree construction by create_tarsqi_tree(), as
 mentioned earlier in this section. Several other instance variables are defined
 on chunks. The table below has just the variables added by NounChunk that are
 relevant for Evita.</p>
@@ -257,7 +257,7 @@ relevant for Evita.</p>
 features for the noun chunk. This instance has a pointer back to the NounChunk
 it is in and four grammatical features. Three of them are typically 'NONE' for
 nouns, and it may sound a wee bit odd for nouns to have tense, aspect or
-modality, nominal, but in some cases nominal will inherit these from a governing
+modality, but in some cases the nominal will inherit these from a governing
 verb, for example, with phrases like "This would be a tragedy". When the verb
 chunk "be" tries to create an event it will recognize that the actual event is
 the nominal following it, it will then try to create an event on that nominal
@@ -275,7 +275,7 @@ createEvent(self, gramvchunk=None):
       self._conditionallyAddEvent()
 </pre>
 
-<p>GramNchunk creation for the NounChunk is a simple affair, setting the
+<p>GramNChunk creation for the NounChunk is a simple affair, setting the
 defaults and then leting them be overwritten if features were handed in from the
 governing verb. The main work occurs in the isEventCandidate() method on the
 chunk, which first checks whether the noun chunk is syntactically able to be an
@@ -370,7 +370,7 @@ why these numbers are floats, probably a historical accident).
 
 The file semcorNomEventContextProb.pickle contains probability adjustments for
 the nominals given a small amount of features (definite versus indefinite and
-singualer versus plural). The numbers are adjustments for the non-event
+singular versus plural). The numbers are adjustments for the non-event
 probability and the event probability respectively. Adjustments for two of the
 nominals above are given below.
 
@@ -391,13 +391,13 @@ nominals above are given below.
 For example, if we take 'drawing', which has a proability of 0.14 of being an
 event and 0.86 of not being an event, and say that we have the features INDEF
 and NN, then the adjusted event probability would be 0.14 * 0.9 * 0.9 = 0.11 and
-the adjusted non-event probability would be 0.86 * 0.9 * 0.7 = 0.26, after which
+the adjusted non-event probability would be 0.86 * 0.9 * 0.34 = 0.20, after which
 the adjusted chance of not being an event is still bigger. Note that the
 combined probabilities are not 1 anymore.
 
 <p/>
 
-There is some ancient code in library/evita/build_event_nominals1.py which will
+There is some ancient code in library/evita/nominal_trainer.py which does
 not work, but which was originally used to create the pickle files. The content
 of the pickle files is also listed in a friendlier format in files with the .txt
 extension in the same directory.
@@ -425,7 +425,7 @@ _conditionallyAddEvent(self, gramChunk=None):
 
 <p>This method is defined on Chunk and is used by VerbChunks as well. The core
 is to invoke addEvent() on the TarsqiTree instance in the tree variable, handing
-it an Event instance which was created from the GramNChunk (or gramVChunk for
+it an Event instance which was created from the GramNChunk (or GramVChunk for
 verb chunks).</p>
 
 <pre class="example indent">
