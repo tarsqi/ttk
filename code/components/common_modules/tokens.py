@@ -2,7 +2,7 @@
 from library import forms
 from library.main import LIBRARY
 from components.evita.event import Event
-from components.evita.features import GramAChunk
+from components.evita.features import AdjectiveChunkFeatures
 from components.common_modules.constituent import Constituent
 from utilities import logger
 
@@ -44,7 +44,7 @@ class Token(Constituent):
         self.event = None
         self.event_tag = None
         self.textIdx = None
-        self.gramchunk = None
+        self.features = None
         self.checkedEvents = False
 
     def __str__(self):
@@ -154,19 +154,19 @@ class AdjectiveToken(Token):
     def isAdjToken(self):
         return True
         
-    def createAdjEvent(self, gramvchunk=None):
+    def createAdjEvent(self, verbfeatures=None):
         """Processes the adjective after a copular verb and make it an event if the
         adjective has an event class."""
-        logger.debug("AdjectiveToken.createAdjEvent(gramvchunk)")
+        logger.debug("AdjectiveToken.createAdjEvent(verbfeatures)")
         if not self.parent.__class__.__name__ == 'Sentence':
             logger.warn("Unexpected syntax tree")
             return
-        self.gramchunk = GramAChunk(self, gramvchunk)
-        logger.debug(self.gramchunk.as_verbose_string())
+        self.features = AdjectiveChunkFeatures(self, verbfeatures)
+        logger.debug(self.features.as_verbose_string())
         self._conditionallyAddEvent()
 
     def _conditionallyAddEvent(self):
         """Check whether there is an event class and add the event to self.tree if
         there is one. There is a sister of this method on Chunk."""
-        if self.gramchunk.evClass:
-            self.tree.addEvent(Event(self.gramchunk))
+        if self.features.evClass:
+            self.tree.addEvent(Event(self.features))

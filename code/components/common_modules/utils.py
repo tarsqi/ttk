@@ -84,11 +84,11 @@ def contains_adverbs_only(sequence):
 
 
 
-# Removing interjections from a GramVChunkList
+# Removing interjections from a VerbChunkFeaturesList
 
-def remove_interjections(gchunklist):
-    """Remove interjections and punctuations from gchunk, which is a
-    GramVChunkList, where self.node is either a VerbChunk or a list of
+def remove_interjections(flist):
+    """Remove interjections and punctuations from flist, which is a
+    VerbChunkFeaturesList, where self.node is either a VerbChunk or a list of
     tokens. Examples:
        - ['ah', ',', 'coming', 'up']
          >> ['ah', 'coming', 'up']
@@ -106,9 +106,9 @@ def remove_interjections(gchunklist):
 
     # TODO: this is to avoid that the code breaks on embedded timexes, this did
     # not break the regression test; but what is the impact, generally, of
-    # ignoring inernal structure? (the nodes distributed in the gramchunk are
-    # now always tokens, which may be as it should be)
-    nodes = get_tokens(gchunklist.nodes)
+    # ignoring internal structure? (the nodes distributed in the chunk are now
+    # always tokens, which may be as it should be)
+    nodes = get_tokens(flist.nodes)
 
     for item in nodes:
         if item.pos not in (',', '"', '``'):

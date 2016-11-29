@@ -38,7 +38,7 @@ forms), and the second word can be any string but its pos has to be VB or VBP.
 
 All rules are exported in the FEATURE_RULES dictionary, which is indexed on the
 length of the rule. The rules are used by Evita, where the classes FeatureRule
-and GramVChunk control application of these rules.
+and VerbChunkFeatures control application of these rules.
 
 """
 

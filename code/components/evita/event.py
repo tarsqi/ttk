@@ -25,21 +25,21 @@ class Event:
 
     """
 
-    def __init__(self, gramCh):
-        """Initialize from a GramNChunk, GramVChunk or GramAChunk. Creates the list of
-        the head of the GramChunk and creates the tokens list with the head as
-        the sole element. Currently Evita only recocgnizes one-token events (in
-        line with the old TimeML specifications), the list is a hook for adding
-        multi-token events. Modality and polarity are not added if they have the
-        default values."""
-        self.tokens = [gramCh.head]
+    def __init__(self, feats):
+        """Initialize from an instance of a subclass of ChunkFeatures. Creates
+        the list of tokens for the event from just the head of the chunk because
+        currently Evita only recognizes one-token events (in line with the old
+        TimeML specifications), the list is a hook for adding multi-token events
+        later. Modality and polarity are not added if they have the default
+        values."""
+        self.tokens = [feats.head]
         self.attrs = { LIBRARY.timeml.EID: None, LIBRARY.timeml.EIID: None }
         self.attrs[LIBRARY.timeml.ORIGIN] = EVITA
-        self.attrs[LIBRARY.timeml.CLASS] = gramCh.evClass
-        self.attrs[LIBRARY.timeml.TENSE] = gramCh.tense
-        self.attrs[LIBRARY.timeml.ASPECT] = gramCh.aspect
-        self.attrs[LIBRARY.timeml.POS] = gramCh.nf_morph
-        if gramCh.modality != 'NONE':
-            self.attrs[LIBRARY.timeml.MODALITY] = gramCh.modality
-        if gramCh.polarity != 'POS':
+        self.attrs[LIBRARY.timeml.CLASS] = feats.evClass
+        self.attrs[LIBRARY.timeml.TENSE] = feats.tense
+        self.attrs[LIBRARY.timeml.ASPECT] = feats.aspect
+        self.attrs[LIBRARY.timeml.POS] = feats.nf_morph
+        if feats.modality != 'NONE':
+            self.attrs[LIBRARY.timeml.MODALITY] = feats.modality
+        if feats.polarity != 'POS':
             self.attrs[LIBRARY.timeml.POLARITY] = "NEG"

@@ -17,7 +17,7 @@ from components.common_modules import utils
 from components.common_modules.constituent import Constituent
 
 from components.evita.event import Event
-from components.evita.features import GramNChunk, GramVChunkList
+from components.evita.features import NounChunkFeatures, VerbChunkFeaturesList
 from components.evita import wordnet
 from components.evita import bayes
 
@@ -55,8 +55,8 @@ class Chunk(Constituent):
     Instance variables (in addition to the ones defined on Constituent)
        phraseType         - string indicating the chunk type, either 'vg' or 'ng'
        head = -1          - the index of the head of the chunk
-       gramchunk = None   - an instance of GramNChunk or GramVChunk
-       gramchunks = []    - a list of GramVChunks, used for verb chunks
+       features = None    - an instance of NounChunkFeatures or VerbChunkFeatures
+       features_list = [] - a list of VerbChunkFeatures, used for verb chunks
        event = None       - set to True if the chunk contains an event
        eid = None         - set to an identifier if the chunk contains an event
        eiid = None        - set to an identifier if the chunk contains an event
@@ -72,12 +72,13 @@ class Chunk(Constituent):
     # TODO: the matcher may rely on event being 1 instead of True, check that
 
     def __init__(self, phraseType):
+        # the constituent sets tree, parent, position, dtrs, begin, and end
         Constituent.__init__(self)
         self.phraseType = phraseType
         self.name = phraseType
         self.head = -1
-        self.gramchunk = None
-        self.gramchunks = []
+        self.features = None
+        self.features_list = []
         self.event = None
         self.eid = None
         self.eiid = None
@@ -118,13 +119,13 @@ class Chunk(Constituent):
         """Return the head of the chunk (by default the last element)."""
         return self.dtrs[self.head]
 
-    def _conditionallyAddEvent(self, gramChunk=None):
+    def _conditionallyAddEvent(self, features=None):
         """Perform a few little checks on the head and check whether there is
         an event class, then add the event to the tree. When this is called on
         a NounChunk, then there is no GramChunk handed in and it will be
-        retrieved from the gramchunk instance variable, when it is called from
+        retrieved from the features instance variable, when it is called from
         VerbChunk, then the GramChunk will be handed in."""
-        gchunk = self.gramchunk if gramChunk is None else gramChunk
+        gchunk = self.features if features is None else features
         text = gchunk.head.getText()
         # the second and third tests seem relevant for verbs only, but we keep
         # them anyway for all chunks
@@ -185,21 +186,21 @@ class NounChunk(Chunk):
         """Return True if the chunk is empty, False otherwise."""
         return False if self.dtrs else True
 
-    def createEvent(self, gramvchunk=None):
+    def createEvent(self, verbfeatures=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
-        event candidate, then conditionally adds it. The gramvchunk dictionary
+        event candidate, then conditionally adds it. The verbfeatures dictionary
         is used when a governing verb hands in its features to a nominal in a
         predicative complement."""
-        logger.debug("NounChunk.createEvent(gramvchunk=%s)")
+        logger.debug("NounChunk.createEvent(verbfeatures=%s)")
         if self.isEmpty():
             # this happened at some point due to a crazy bug in some old code
             # that does not exist anymore, log a warning in case this returns
             logger.warn("There are no dtrs in the NounChunk")
         else:
-            self.gramchunk = GramNChunk(self, gramvchunk)
-            logger.debug(self.gramchunk.as_verbose_string())
+            self.features = NounChunkFeatures(self, verbfeatures)
+            logger.debug(self.features.as_verbose_string())
             # don't bother if the head already is an event
-            if self.gramchunk.head.isEvent():
+            if self.features.head.isEvent():
                 logger.debug("Nominal already contains an event")
             # Even if preceded by a BE or a HAVE form, only tagging NounChunks
             # headed by an eventive noun, so "was an intern" will NOT be tagged
@@ -218,15 +219,15 @@ class NounChunk(Chunk):
         head which cannot be a timex and the head has to be a common noun."""
         # using the regular expression is a bit faster then lookup in the short
         # list of common noun parts of speech (forms.nounsCommon)
-        return (not self.gramchunk.head.isTimex() and
-                forms.RE_nounsCommon.match(self.gramchunk.head.pos))
+        return (not self.features.head.isTimex() and
+                forms.RE_nounsCommon.match(self.features.head.pos))
 
     def isEventCandidate_Sem(self):
         """Return True if the nominal can be an event semantically. Depending
         on user settings this is done by a mixture of wordnet lookup and using a
         simple classifier."""
         logger.debug("event candidate?")
-        lemma = self.gramchunk.getEventLemma()
+        lemma = self.features.head_lemma
         # return True if all WordNet senses are events, no classifier needed
         is_event = wordnet.allSensesAreEvents(lemma)
         logger.debug("  all WordNet senses are events ==> %s" % is_event)
@@ -255,7 +256,7 @@ class NounChunk(Chunk):
         features = []
         if EVITA_NOM_CONTEXT:
             features = ['DEF' if self.isDefinite() else 'INDEF',
-                        self.gramchunk.head.pos]
+                        self.features.head.pos]
         is_event = nomEventRec.isEvent(lemma, features)
         logger.debug("  nomEventRec.isEvent(%s) ==> %s" % (lemma, is_event))
         return is_event
@@ -285,49 +286,50 @@ class VerbChunk(Chunk):
         return True
 
     def createEvent(self):
-        """Try to create one or more events in the VerbChunk. How this works depends on
-        how many GramVChunks can be created for the chunk. For all non-final and
-        non-axiliary GramVChunks in the chunk, just process them as events. For
-        the chunk-final one there is more work to do."""
-        GramVChList = GramVChunkList(verbchunk=self)
-        logger.debug("len(GramVChList) = %d" % len(GramVChList))
-        if len(GramVChList) > 0 and DEBUG:
-            for gvc in GramVChList:
+        """Try to create one or more events in the VerbChunk. How this works
+        depends on how many instances of VerbChunkFeatures can be created for
+        the chunk. For all non-final and non-axiliary elements in the list,
+        just process them as events. For the chunk-final one there is more work
+        to do."""
+        vcf_list = VerbChunkFeaturesList(verbchunk=self)
+        logger.debug("len(features_list) = %d" % len(vcf_list))
+        if len(vcf_list) > 0 and DEBUG:
+            for vcf in vcf_list:
                 print ' ',
-                gvc.pp()
-        for gramchunk in GramVChList:
-            logger.debug(gramchunk.as_verbose_string())
-        GramVChList = [gvchunk for gvchunk in GramVChList if gvchunk.is_wellformed()]
-        if GramVChList:
-            for gramvchunk in GramVChList[:-1]:
-                if not gramvchunk.isAuxVerb():
-                    self._conditionallyAddEvent(gramvchunk)
-            self._createEventOnRightmostVerb(GramVChList[-1])
+                vcf.pp()
+        for vcf in vcf_list:
+            logger.debug(vcf.as_verbose_string())
+        vcf_list = [vcf for vcf in vcf_list if vcf.is_wellformed()]
+        if vcf_list:
+            for vcf in vcf_list[:-1]:
+                if not vcf.isAuxVerb():
+                    self._conditionallyAddEvent(vcf)
+            self._createEventOnRightmostVerb(vcf_list[-1])
 
-    def _createEventOnRightmostVerb(self, GramVCh):
-        if GramVCh.nodeIsNotEventCandidate():
+    def _createEventOnRightmostVerb(self, features):
+        if features.nodeIsNotEventCandidate():
             return
         next_node = self.next_node()
-        if GramVCh.nodeIsModal(next_node):
+        if features.nodeIsModal(next_node):
             self._createEventOnModal()
-        elif GramVCh.nodeIsBe(next_node):
-            self._createEventOnBe(GramVCh)
-        elif GramVCh.nodeIsHave():
-            self._createEventOnHave(GramVCh)
-        elif GramVCh.nodeIsFutureGoingTo():
-            self._createEventOnFutureGoingTo(GramVCh)
-        elif GramVCh.nodeIsPastUsedTo():
-            self._createEventOnPastUsedTo(GramVCh)
-        elif GramVCh.nodeIsDoAuxiliar():
-            self._createEventOnDoAuxiliar(GramVCh)
-        elif GramVCh.nodeIsBecome(next_node):
-            self._createEventOnBecome(GramVCh)
-        elif GramVCh.nodeIsContinue(next_node):
-            self._createEventOnContinue(GramVCh)
-        elif GramVCh.nodeIsKeep(next_node):
-            self._createEventOnKeep(GramVCh)
+        elif features.nodeIsBe(next_node):
+            self._createEventOnBe(features)
+        elif features.nodeIsHave():
+            self._createEventOnHave(features)
+        elif features.nodeIsFutureGoingTo():
+            self._createEventOnFutureGoingTo(features)
+        elif features.nodeIsPastUsedTo():
+            self._createEventOnPastUsedTo(features)
+        elif features.nodeIsDoAuxiliar():
+            self._createEventOnDoAuxiliar(features)
+        elif features.nodeIsBecome(next_node):
+            self._createEventOnBecome(features)
+        elif features.nodeIsContinue(next_node):
+            self._createEventOnContinue(features)
+        elif features.nodeIsKeep(next_node):
+            self._createEventOnKeep(features)
         else:
-            self._createEventOnOtherVerb(GramVCh)
+            self._createEventOnOtherVerb(features)
 
     def _createEventOnModal(self):
         """Try to create an event when the head of the chunk is a modal. Check
@@ -342,12 +344,12 @@ class VerbChunk(Chunk):
             self.dribble("MODAL", self.getText())
             self._processEventInMultiVChunk(substring)
 
-    def _createEventOnBe(self, GramVCh):
+    def _createEventOnBe(self, features):
         logger.debug("Checking for BE + NOM Predicative Complement...")
         substring = self._lookForMultiChunk(patterns.BE_N_FSAs, 'chunked')
         if substring:
             self.dribble("BE-NOM", self.getText())
-            self._processEventInMultiNChunk(GramVCh, substring)
+            self._processEventInMultiNChunk(features, substring)
         else:
             logger.debug("Checking for BE + ADJ Predicative Complement...")
             substring = self._lookForMultiChunk(patterns.BE_A_FSAs, 'chunked')
@@ -355,7 +357,7 @@ class VerbChunk(Chunk):
                 matched_texts = [s.getText() for s in substring]
                 matched = self.getText() + ' ' + ' '.join(matched_texts)
                 self.dribble("BE-ADJ", matched)
-                self._processEventInMultiAChunk(GramVCh, substring)
+                self._processEventInMultiAChunk(features, substring)
             else:
                 logger.debug("Checking for BE + VERB Predicative Complement...")
                 substring = self._lookForMultiChunk(patterns.BE_FSAs)
@@ -363,7 +365,7 @@ class VerbChunk(Chunk):
                     self.dribble("BE-V", self.getText())
                     self._processEventInMultiVChunk(substring)
 
-    def _createEventOnHave(self, GramVCh):
+    def _createEventOnHave(self, features):
         logger.debug("Checking for toHave pattern...")
         substring = self._lookForMultiChunk(patterns.HAVE_FSAs)
         if substring:
@@ -371,9 +373,9 @@ class VerbChunk(Chunk):
             self._processEventInMultiVChunk(substring)
         else:
             self.dribble("HAVE-2", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnFutureGoingTo(self, GramVCh):
+    def _createEventOnFutureGoingTo(self, features):
         logger.debug("Checking for futureGoingTo pattern...")
         substring = self._lookForMultiChunk(patterns.GOINGto_FSAs)
         if substring:
@@ -381,9 +383,9 @@ class VerbChunk(Chunk):
             self._processEventInMultiVChunk(substring)
         else:
             self.dribble("GOING", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnPastUsedTo(self, GramVCh):
+    def _createEventOnPastUsedTo(self, features):
         logger.debug("Checking for pastUsedTo pattern...")
         substring = self._lookForMultiChunk(patterns.USEDto_FSAs)
         if substring:
@@ -391,9 +393,9 @@ class VerbChunk(Chunk):
             self._processEventInMultiVChunk(substring)
         else:
             self.dribble("USED-2", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnDoAuxiliar(self, GramVCh):
+    def _createEventOnDoAuxiliar(self, features):
         logger.debug("Checking for doAuxiliar pattern...")
         substring = self._lookForMultiChunk(patterns.DO_FSAs)
         if substring:
@@ -401,48 +403,48 @@ class VerbChunk(Chunk):
             self._processEventInMultiVChunk(substring)
         else:
             self.dribble("DO", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnBecome(self, GramVCh):
+    def _createEventOnBecome(self, features):
         # Looking for BECOME + ADJ Predicative Complement e.g., He became famous at
         # the age of 21
         logger.debug("Checking for BECOME + ADJ Predicative Complement...")
         substring = self._lookForMultiChunk(patterns.BECOME_A_FSAs, 'chunked')
         if substring:
             self.dribble("BECOME-ADJ", self.getText())
-            self._processDoubleEventInMultiAChunk(GramVCh, substring)
+            self._processDoubleEventInMultiAChunk(features, substring)
         else:
             self.dribble("BECOME", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnContinue(self, GramVCh):
+    def _createEventOnContinue(self, features):
         # Looking for CONTINUE + ADJ Predicative Complement e.g., Interest rate
         # continued low.
         logger.debug("Checking for CONTINUE + ADJ...")
         substring = self._lookForMultiChunk(patterns.CONTINUE_A_FSAs, 'chunked')
         if substring:
             self.dribble("CONTINUE-ADJ", self.getText())
-            self._processDoubleEventInMultiAChunk(GramVCh, substring)
+            self._processDoubleEventInMultiAChunk(features, substring)
         else:
             self.dribble("CONTINUE", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnKeep(self, GramVCh):
+    def _createEventOnKeep(self, features):
         # Looking for KEEP + ADJ Predicative Complement e.g., The announcement
         # kept everybody Adj.
         logger.debug("Checking for KEEP + [NChunk] + ADJ...")
         substring = self._lookForMultiChunk(patterns.KEEP_A_FSAs, 'chunked')
         if substring:
             self.dribble("KEEP-N-ADJ", self.getText())
-            self._processDoubleEventInMultiAChunk(GramVCh, substring)
+            self._processDoubleEventInMultiAChunk(features, substring)
         else:
             self.dribble("KEEP", self.getText())
-            self._conditionallyAddEvent(GramVCh)
+            self._conditionallyAddEvent(features)
 
-    def _createEventOnOtherVerb(self, GramVCh):
+    def _createEventOnOtherVerb(self, features):
         self.dribble("OTHER", self.getText())
         logger.debug("General case")
-        self._conditionallyAddEvent(GramVCh)
+        self._conditionallyAddEvent(features)
 
     def _lookForMultiChunk(self, FSA_set, structure_type='flat'):
         """Returns the prefix of the rest of the sentence is it matches one of
@@ -505,27 +507,27 @@ class VerbChunk(Chunk):
             return (0, fsaCounter)
 
     def _processEventInMultiVChunk(self, substring):
-        chunk_list = utils.get_tokens(self) + substring
-        gramvchunklist = GramVChunkList(tokens=chunk_list)
-        GramMultiVChunk = gramvchunklist[0]
+        token_list = utils.get_tokens(self) + substring
+        verbfeatureslist = VerbChunkFeaturesList(tokens=token_list)
+        GramMultiVChunk = verbfeatureslist[0]
         self._conditionallyAddEvent(GramMultiVChunk)
         map(update_event_checked_marker, substring)
 
-    def _processEventInMultiNChunk(self, GramVCh, substring):
+    def _processEventInMultiNChunk(self, features, substring):
         nounChunk = substring[-1]
-        nounChunk.createEvent(GramVCh)
+        nounChunk.createEvent(features)
         map(update_event_checked_marker, substring)
 
-    def _processEventInMultiAChunk(self, GramVCh, substring):
+    def _processEventInMultiAChunk(self, features, substring):
         adjToken = substring[-1]
-        adjToken.createAdjEvent(GramVCh)
+        adjToken.createAdjEvent(features)
         map(update_event_checked_marker, substring)
 
-    def _processDoubleEventInMultiAChunk(self, GramVCh, substring):
-        """Tagging EVENT in both VerbChunk and AdjectiveToken. In this case the adjective
-        will not be given the verb features."""
-        logger.debug("[V_2Ev] " + GramVCh.as_verbose_string())
-        self._conditionallyAddEvent(GramVCh)
+    def _processDoubleEventInMultiAChunk(self, features, substring):
+        """Tagging EVENT in both VerbChunk and AdjectiveToken. In this case the
+        adjective will not be given the verb features."""
+        logger.debug("[V_2Ev] " + features.as_verbose_string())
+        self._conditionallyAddEvent(features)
         adjToken = substring[-1]
         adjToken.createAdjEvent()
         map(update_event_checked_marker, substring)
