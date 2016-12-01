@@ -2,7 +2,7 @@
 from library import forms
 from library.main import LIBRARY
 from components.evita.event import Event
-from components.evita.features import AdjectiveChunkFeatures
+from components.evita.features import AChunkFeatures
 from components.common_modules.constituent import Constituent
 from utilities import logger
 
@@ -161,7 +161,7 @@ class AdjectiveToken(Token):
         if not self.parent.__class__.__name__ == 'Sentence':
             logger.warn("Unexpected syntax tree")
             return
-        self.features = AdjectiveChunkFeatures(self, verbfeatures)
+        self.features = AChunkFeatures(self, verbfeatures)
         logger.debug(self.features.as_verbose_string())
         self._conditionallyAddEvent()
 

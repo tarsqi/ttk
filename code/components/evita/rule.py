@@ -2,7 +2,7 @@
 
 Contains the code for matching token sequences against feature rules. The
 feature rules are defined in library.evita.patterns.feature_rules.FEATURE_RULES
-and are used by the VerbChunkFeatures class in Evita.
+and are used by the VChunkFeatures class in Evita.
 
 """
 

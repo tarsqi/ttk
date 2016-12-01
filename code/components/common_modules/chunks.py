@@ -17,7 +17,7 @@ from components.common_modules import utils
 from components.common_modules.constituent import Constituent
 
 from components.evita.event import Event
-from components.evita.features import NounChunkFeatures, VerbChunkFeaturesList
+from components.evita.features import NChunkFeatures, VChunkFeaturesList
 from components.evita import wordnet
 from components.evita import bayes
 
@@ -55,8 +55,8 @@ class Chunk(Constituent):
     Instance variables (in addition to the ones defined on Constituent)
        phraseType         - string indicating the chunk type, either 'vg' or 'ng'
        head = -1          - the index of the head of the chunk
-       features = None    - an instance of NounChunkFeatures or VerbChunkFeatures
-       features_list = [] - a list of VerbChunkFeatures, used for verb chunks
+       features = None    - an instance of NChunkFeatures or VChunkFeatures
+       features_list = [] - a list of VChunkFeatures, used for verb chunks
        event = None       - set to True if the chunk contains an event
        eid = None         - set to an identifier if the chunk contains an event
        eiid = None        - set to an identifier if the chunk contains an event
@@ -197,7 +197,7 @@ class NounChunk(Chunk):
             # that does not exist anymore, log a warning in case this returns
             logger.warn("There are no dtrs in the NounChunk")
         else:
-            self.features = NounChunkFeatures(self, verbfeatures)
+            self.features = NChunkFeatures(self, verbfeatures)
             logger.debug(self.features.as_verbose_string())
             # don't bother if the head already is an event
             if self.features.head.isEvent():
@@ -285,48 +285,49 @@ class VerbChunk(Chunk):
         """Return True."""
         return True
 
+    def isNotEventCandidate(self, features):
+        """Return True if the chunk cannot possibly be an event. This is the place
+        for performing some simple stoplist-like tests."""
+        # TODO: why would any of these ever occur?
+        # TODO: if we use a stop list it should be separated from the code
+        return ((features.headForm == 'including' and features.tense == 'NONE')
+                or features.headForm == '_')
+
     def createEvent(self):
         """Try to create one or more events in the VerbChunk. How this works
-        depends on how many instances of VerbChunkFeatures can be created for
+        depends on how many instances of VChunkFeatures can be created for
         the chunk. For all non-final and non-axiliary elements in the list,
         just process them as events. For the chunk-final one there is more work
         to do."""
-        vcf_list = VerbChunkFeaturesList(verbchunk=self)
-        logger.debug("len(features_list) = %d" % len(vcf_list))
-        if len(vcf_list) > 0 and DEBUG:
-            for vcf in vcf_list:
-                print ' ',
-                vcf.pp()
-        for vcf in vcf_list:
-            logger.debug(vcf.as_verbose_string())
+        vcf_list = VChunkFeaturesList(verbchunk=self)
+        _debug_vcf(vcf_list)
         vcf_list = [vcf for vcf in vcf_list if vcf.is_wellformed()]
         if vcf_list:
             for vcf in vcf_list[:-1]:
                 if not vcf.isAuxVerb():
                     self._conditionallyAddEvent(vcf)
-            self._createEventOnRightmostVerb(vcf_list[-1])
+            if not self.isNotEventCandidate(vcf_list[-1]):
+                self._createEventOnRightmostVerb(vcf_list[-1])
 
     def _createEventOnRightmostVerb(self, features):
-        if features.nodeIsNotEventCandidate():
-            return
         next_node = self.next_node()
-        if features.nodeIsModal(next_node):
+        if features.is_modal() and next_node:
             self._createEventOnModal()
-        elif features.nodeIsBe(next_node):
+        elif features.is_be() and next_node:
             self._createEventOnBe(features)
-        elif features.nodeIsHave():
+        elif features.is_have():
             self._createEventOnHave(features)
-        elif features.nodeIsFutureGoingTo():
+        elif features.is_future_going_to():
             self._createEventOnFutureGoingTo(features)
-        elif features.nodeIsPastUsedTo():
+        elif features.is_past_used_to():
             self._createEventOnPastUsedTo(features)
-        elif features.nodeIsDoAuxiliar():
+        elif features.is_do_auxiliar():
             self._createEventOnDoAuxiliar(features)
-        elif features.nodeIsBecome(next_node):
+        elif features.is_become() and next_node:
             self._createEventOnBecome(features)
-        elif features.nodeIsContinue(next_node):
+        elif features.is_continue() and next_node:
             self._createEventOnContinue(features)
-        elif features.nodeIsKeep(next_node):
+        elif features.is_keep() and next_node:
             self._createEventOnKeep(features)
         else:
             self._createEventOnOtherVerb(features)
@@ -508,7 +509,7 @@ class VerbChunk(Chunk):
 
     def _processEventInMultiVChunk(self, substring):
         token_list = utils.get_tokens(self) + substring
-        verbfeatureslist = VerbChunkFeaturesList(tokens=token_list)
+        verbfeatureslist = VChunkFeaturesList(tokens=token_list)
         GramMultiVChunk = verbfeatureslist[0]
         self._conditionallyAddEvent(GramMultiVChunk)
         map(update_event_checked_marker, substring)
@@ -531,3 +532,13 @@ class VerbChunk(Chunk):
         adjToken = substring[-1]
         adjToken.createAdjEvent()
         map(update_event_checked_marker, substring)
+
+
+def _debug_vcf(vcf_list):
+    logger.debug("len(features_list) = %d" % len(vcf_list))
+    if len(vcf_list) > 0 and DEBUG:
+        for vcf in vcf_list:
+            print ' ',
+            vcf.pp()
+    for vcf in vcf_list:
+        logger.debug(vcf.as_verbose_string())

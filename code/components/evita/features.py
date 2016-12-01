@@ -64,8 +64,8 @@ class ChunkFeatures:
     of instances of those classes."""
 
     def __init__(self, category, chunk_or_token, verbfeatures=None):
-        """Common initialization for GramAChunk, NounChunkFeatures and
-        VerbChunkFeatures."""
+        """Common initialization for AChunkFeatures, NChunkFeatures and
+        VChunkFeatures."""
         self.nf_morph = category
         self.node = chunk_or_token
         self.head = None
@@ -77,7 +77,7 @@ class ChunkFeatures:
         self.add_verb_features(verbfeatures)
 
     def __str__(self):
-        return "<NounChunkFeatures %s %s %s %s %s %s %s>" \
+        return "<NChunkFeatures %s %s %s %s %s %s %s>" \
             % (self.nf_morph, self.evClass, self.tense, self.aspect,
                self.modality, self.polarity, self.head)
 
@@ -104,7 +104,7 @@ class ChunkFeatures:
             % (self.nf_morph, self.modality, self.polarity)
 
 
-class AdjectiveChunkFeatures(ChunkFeatures):
+class AChunkFeatures(ChunkFeatures):
 
     """Contains the grammatical features for an AdjectiveToken. There is a
     little naming disconnect here since we call these chunk features."""
@@ -124,7 +124,7 @@ class AdjectiveChunkFeatures(ChunkFeatures):
         return 'I_STATE' if headString in forms.istateAdj else 'STATE'
 
 
-class NounChunkFeatures(ChunkFeatures):
+class NChunkFeatures(ChunkFeatures):
 
     """Contains the grammatical features for a NounChunk."""
 
@@ -150,7 +150,7 @@ class NounChunkFeatures(ChunkFeatures):
             return stemmer.stem(self.head.getText().lower())
 
 
-class VerbChunkFeatures(ChunkFeatures):
+class VChunkFeatures(ChunkFeatures):
 
     """Contains the grammatical features for a VerbChunk. Applies some feature
     rules from the evita library in the course of setting tense and aspect
@@ -159,9 +159,9 @@ class VerbChunkFeatures(ChunkFeatures):
 
     def __init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost):
         """Initialize with a verb chunk and the lists handed in from the
-        VerbChunkFeaturesList object."""
+        VChunkFeaturesList object."""
         # TODO: note that there is not a straight correspondence between the
-        # VerbChunk and the tokens that the VerbChunkFeatures instance is for,
+        # VerbChunk and the tokens that the VChunkFeatures instance is for,
         # so how do we know that the right event is added?
         ChunkFeatures.__init__(self, "VERB", verbchunk)
         self.trueChunk = tCh
@@ -183,7 +183,7 @@ class VerbChunkFeatures(ChunkFeatures):
 
     def __str__(self):
         return \
-            "<VerbChunkFeatures %s %s %s trueChunk=[%s]>" \
+            "<VChunkFeatures %s %s %s trueChunk=[%s]>" \
             % (self.evClass, self.tense, self.aspect,
                ', '.join(getWordPosList(self.trueChunk)))
 
@@ -224,7 +224,7 @@ class VerbChunkFeatures(ChunkFeatures):
             self.tense = tense
             self.aspect = aspect
         elif len(self.trueChunk) > 1 and self.head is not None:
-            features = VerbChunkFeaturesList(tokens=[self.head])[0]
+            features = VChunkFeaturesList(tokens=[self.head])[0]
             self.tense = features.tense
             self.aspect = features.aspect
 
@@ -261,46 +261,35 @@ class VerbChunkFeatures(ChunkFeatures):
                     modal = modal+' '+self.normalizeHave(item.getText())+' to'
         return modal.strip() if modal else 'NONE'
 
-    # TODO: maybe all these nodeIsXXXX methods should be moved to VerbChunk,
-    # which is wehere they are all used
+    def is_modal(self):
+        return self.headPos == 'MD'
 
-    def nodeIsNotEventCandidate(self):
-        """Return True if the chunk cannot possibly be an event. This is the place
-        for performing some simple stoplist-like tests."""
-        # TODO: why would any of these ever occur?
-        # TODO: if we use a stop list it should be separated from the code
-        return ((self.headForm == 'including' and self.tense == 'NONE')
-                or self.headForm == '_')
+    def is_be(self):
+        return self.headForm in forms.be
 
-    def nodeIsModal(self, nextNode):
-        return self.headPos == 'MD' and nextNode
+    def is_become(self):
+        return self.headForm in forms.become
 
-    def nodeIsBe(self, nextNode):
-        return self.headForm in forms.be and nextNode
+    def is_continue(self):
+        return forms.RE_continue.match(self.headForm)
 
-    def nodeIsBecome(self, nextNode):
-        return self.headForm in forms.become and nextNode
+    def is_keep(self):
+        return forms.RE_keep.match(self.headForm)
 
-    def nodeIsContinue(self, nextNode):
-        return forms.RE_continue.match(self.headForm) and nextNode
-
-    def nodeIsKeep(self, nextNode):
-        return forms.RE_keep.match(self.headForm) and nextNode
-
-    def nodeIsHave(self):
+    def is_have(self):
         return self.headForm in forms.have and self.headPos is not 'MD'
 
-    def nodeIsFutureGoingTo(self):
+    def is_future_going_to(self):
         return len(self.trueChunk) > 1 \
             and self.headForm == 'going' \
             and self.preHeadForm in forms.be
 
-    def nodeIsPastUsedTo(self):
+    def is_past_used_to(self):
         return len(self.trueChunk) == 1 \
             and self.headForm == 'used' \
             and self.headPos == 'VBD'
 
-    def nodeIsDoAuxiliar(self):
+    def is_do_auxiliar(self):
         return self.headForm in forms.do
 
     def normalizeMod(self, form):
@@ -350,15 +339,15 @@ class VerbChunkFeatures(ChunkFeatures):
             logger.warn("Error running event class patterns")
 
     def as_short_string(self):
-        return "<VerbChunkFeatures trueChunk=[%s]>" \
+        return "<VChunkFeatures trueChunk=[%s]>" \
             % ', '.join(getWordPosList(self.trueChunk))
 
     def as_verbose_string(self):
         if self.node is None:
-            opening_string = 'VerbChunkFeatures: None'
+            opening_string = 'VChunkFeatures: None'
         else:
             # TODO: this crashes since often self.node is a list
-            opening_string = "VerbChunkFeatures: '%s'" % self.node.getText().strip()
+            opening_string = "VChunkFeatures: '%s'" % self.node.getText().strip()
         try:
             head_string = self.head.getText().strip()
         except AttributeError:
@@ -382,18 +371,18 @@ class VerbChunkFeatures(ChunkFeatures):
             print self
 
 
-class VerbChunkFeaturesList:
+class VChunkFeaturesList:
 
-    """This class is used to create a list of VerbChunkFeatures instances. What
+    """This class is used to create a list of VChunkFeatures instances. What
     it does is (1) collecting information from a VerbChunk or a list of Tokens,
     (2) move this information into separate bins depending on the type of items
     in the source, (3) decide whether we need more than one instance for some
-    input, and (4) create a list of VerbChunkFeatures.
+    input, and (4) create a list of VChunkFeatures.
 
-    On initialization, an instance of NounChunkFeatures is given a NounChunk,
-    but a VerbChunkFeaturesList is given a VerbChunk or a list of Tokens (or
-    maybe other categories as well). VerbChunks are different from NounChunks in
-    that there can be more than one VerbChunkFeatures instance for a single
+    On initialization, an instance of NChunkFeatures is given a NounChunk, but a
+    VChunkFeaturesList is given a VerbChunk or a list of Tokens (or maybe
+    other categories as well). VerbChunks are different from NounChunks in that
+    there can be more than one VChunkFeatures instance for a single
     VerbChunk. This is not very common, but it happens for example in
 
        "More problems in Hong Kong for a place, for an economy, that many
@@ -401,16 +390,16 @@ class VerbChunkFeaturesList:
 
     where "thought was" ends up as one verb chunk, but we get two features sets.
 
-    Another difference is that sometimes a VerbChunkFeatures instance is created
+    Another difference is that sometimes a VChunkFeatures instance is created
     for a sequence that includes tokens to the right of the VerbChunk, for
     example in
 
        "All Arabs [would have] [to move] behind Iraq."
 
     where there are two adjacent VerbChunks. With the current implementation,
-    when processing [would have], we end up creating VerbChunkFeatures instances
+    when processing [would have], we end up creating VChunkFeatures instances
     for "would have" and "would have to move", and then, when dealing with "to
-    move", we create a VerbChunkFeatures instance for "to move".
+    move", we create a VChunkFeatures instance for "to move".
 
     TODO: check whether "would have" and "to move" should be ruled out
     TODO: check why "to move" is not already ruled out through the flag
@@ -425,9 +414,9 @@ class VerbChunkFeaturesList:
     def __init__(self, verbchunk=None, tokens=None):
         """Initialize several kinds of lists, distributing information from the
         VerbChunk or list of Tokens that is handed in on initialization and
-        create a list of VerbChunkFeatures instances in self.featuresList."""
+        create a list of VChunkFeatures instances in self.featuresList."""
         source = "VerbChunk" if verbchunk else "Tokens"
-        logger.debug("Initializing VerbChunkFeaturesList from %s" % source)
+        logger.debug("Initializing VChunkFeaturesList from %s" % source)
         self.node = verbchunk
         self.tokens = tokens
         self._initialize_nodes()
@@ -440,7 +429,7 @@ class VerbChunkFeaturesList:
         """Given the VerbChunk or a list of Tokens, set the nodes variable to
         either the daughters of the VerbChunk or the list of Tokens. Also sets
         node and tokens, where the first one has the VerbChunk or None (this is
-        so we can hand the chunk to VerbChunkFeatures instance, following
+        so we can hand the chunk to VChunkFeatures instance, following
         ChunkFeatures behaviour), and where the second one is the list of Tokens
         or None."""
         if self.node:
@@ -448,13 +437,13 @@ class VerbChunkFeaturesList:
         elif self.tokens:
             self.nodes = self.tokens
         else:
-            logger.error("Incorrect initialization of VerbChunkFeaturesList")
+            logger.error("Incorrect initialization of VChunkFeaturesList")
 
     def _initialize_lists(self):
         """Initializes the lists that contain items (Tokens) of the chunk. Since
-        one chunk may spawn more than one VerbChunkFeatures instance, these
+        one chunk may spawn more than one VChunkFeatures instance, these
         lists are actually lists of lists."""
-        self.featuresList = []      # the list of VerbChunkFeatures instances
+        self.featuresList = []      # the list of VChunkFeatures instances
         self.counter = 0            # controls different subchunks in a chunk
         self.trueChunkLists = [[]]  # the cores of the subchunks
         self.negMarksLists = [[]]
@@ -473,12 +462,12 @@ class VerbChunkFeaturesList:
     def __str__(self):
         words = '-'.join(getWordList(self.nodes))
         return \
-            "<VerbChunkFeaturesList length=%d words=%s>\n\n" % (len(self), words) + \
+            "<VChunkFeaturesList length=%d words=%s>\n\n" % (len(self), words) + \
             "\n".join([gvch.as_verbose_string() for gvch in self.featuresList])
 
     def _distributeNodes(self):
         """Distribute the item's information over the lists in the
-        VerbChunkFeaturesLists."""
+        VChunkFeaturesLists."""
         # TODO: figure out whether to keep remove_interjections
         tempNodes = remove_interjections(self)
         debug("\n" + '-'.join([n.getText() for n in tempNodes]))
@@ -527,9 +516,9 @@ class VerbChunkFeaturesList:
                 else:
                     # Given the VerbChunk methods used above, this should
                     # probably never happen.
-                    logger.warn("Unexpected input for VerbChunkFeaturesList")
+                    logger.warn("Unexpected input for VChunkFeaturesList")
             except IndexError:
-                logger.warn("Unexpected input for VerbChunkFeaturesList")
+                logger.warn("Unexpected input for VChunkFeaturesList")
 
     def _distributeNode_NEG(self, item):
         """Do not add the negation item to the core in self.trueChunkLists, but add it
@@ -565,7 +554,7 @@ class VerbChunkFeaturesList:
         to add it. Factors are the location of the item in the tempNodes list
         and the pos tags of the elements following the item."""
         # TODO. This does often not do the right thing. For example, in the
-        # phrase 'will end up being eliminated', we get two VerbChunkFeatures
+        # phrase 'will end up being eliminated', we get two VChunkFeatures
         # instances, but 'up' will live in the adverbsPre list of the second one
         # (instead of in the adverbsPost list of the first). This is of limited
         # negative effect since the only thing that the adverbs are used for is
@@ -611,7 +600,7 @@ class VerbChunkFeaturesList:
 
     def _updateChunkLists(self):
         """Append an empty list to the end of all lists maintained in the
-        VerbChunkFeaturesList and update the counter."""
+        VChunkFeaturesList and update the counter."""
         self.counter += 1
         for chunkList in self.chunkLists:
             chunkList.append([])
@@ -642,7 +631,7 @@ class VerbChunkFeaturesList:
 
     def _generate_features_list(self):
         for idx in range(len(self.trueChunkLists)):
-            features = VerbChunkFeatures(
+            features = VChunkFeatures(
                 self.node, self.trueChunkLists[idx],
                 self.negMarksLists[idx], self.infMarkLists[idx],
                 self.adverbsPreLists[idx], self.adverbsPostLists[idx])

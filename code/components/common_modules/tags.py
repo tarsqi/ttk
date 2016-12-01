@@ -74,7 +74,7 @@ class EventTag(Tag):
             if self.tree.events.has_key(self.eid):
                 return self.tree.events[self.eid][FORM]
             else:
-                logger.warn("Event %s is not store in the events on the TarsqiTree" % self)
+                logger.warn("Event %s is not stored in the events on the TarsqiTree" % self)
                 return ' '.join([t.text for t in get_tokens(self)])
         elif name == POS:
             try:

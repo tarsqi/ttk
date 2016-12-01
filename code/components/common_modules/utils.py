@@ -84,11 +84,11 @@ def contains_adverbs_only(sequence):
 
 
 
-# Removing interjections from a VerbChunkFeaturesList
+# Removing interjections from a VChunkFeaturesList
 
 def remove_interjections(flist):
     """Remove interjections and punctuations from flist, which is a
-    VerbChunkFeaturesList, where self.node is either a VerbChunk or a list of
+    VChunkFeaturesList, where self.node is either a VerbChunk or a list of
     tokens. Examples:
        - ['ah', ',', 'coming', 'up']
          >> ['ah', 'coming', 'up']
