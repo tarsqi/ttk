@@ -159,12 +159,12 @@ def process_dir(gold_dir):
     for fname in os.listdir(gold_dir):
         if fname.startswith('.') or fname.endswith('~'):
             continue
-        process_file(gold_dir, fname)
         try:
             print fname
             process_file(gold_dir, fname)
-        except:
+        except Exception as e:
             print "WARNING: could not process %s" % fname
+            print "        ", sys.exc_info()[1]
 
 
 def process_file(gold_dir, fname):
