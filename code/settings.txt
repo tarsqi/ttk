@@ -1,6 +1,6 @@
-# This file contains configuration options. Option can be changed here or on
-# the command line when calling the tarsqy.py script. Options specified here
-# will be overwritten by command line options.
+# This file contains configuration options. Option can be changed here or in
+# some cases on the command line when calling the tarsqy.py script. Command line
+# options, when possible, will overwrite options specified here.
 
 
 # The platform, possible values are 'linux2' and 'darwin'. This is the value of
@@ -35,3 +35,12 @@ et-model = tb-vectors.et.model
 source = xml
 loglevel = 3
 trap-errors = True
+
+
+# User settings. Arbitray parameters can be added here and will then be
+# accessible to user-specific code. Below is just one parameter that is used by
+# example code that finds the DCT in a database (see MetadataParserDB in
+# docmodel.metadata_parser). These parameters cannot be overruled by command
+# line options.
+
+dct-database = data/in/va/dct.sqlite
