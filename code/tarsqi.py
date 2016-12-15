@@ -240,6 +240,8 @@ class Options:
         for (attr, value) in self._options.items():
             if value in ('True', 'False') or value.isdigit():
                 self._options[attr] = eval(value)
+        # put options in instance variables for convenience, this is not done
+        # for those options from settings.txt that are user-specific
         self.genre = self.getopt('genre')
         self.source = self.getopt('source')
         self.platform = self.getopt('platform')

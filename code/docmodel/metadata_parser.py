@@ -148,24 +148,33 @@ class MetadataParserRTE3(MetadataParser):
         return get_today()
 
 
-class MetadataParserVA(MetadataParser):
+class MetadataParserDB(MetadataParser):
 
-    """A minimal example parser for VA data. It is identical to MetadataParser
-    except for how it gets the DCT. This is done by lookup in a database. This
-    here is the simplest possible case, and it is quite inefficient. It assumes
-    there is an sqlite databse at 'TTK_ROOT/code/data/in/va/dct.sqlite' which
-    was created as follows:
+    """A minimal example parser for cases where the DCT is retrieved from a
+    database. It is identical to MetadataParser except for how it gets the
+    DCT. This is done by lookup in a database. This here is the simplest
+    possible case, and it is quite inefficient. It assumes there is an sqlite
+    database at 'TTK_ROOT/code/data/in/va/dct.sqlite' which was created as
+    follows:
 
        $ sqlite3 dct.sqlite
        sqlite> create table dct (filename TEXT, dct TEXT)
        sqlite> insert into dct values ("test.xml", "1999-12-31");
 
-    The get_dct method uses this database. """
+    The get_dct() method uses this database and the location of the database is
+    specified in the settings.txt file. The first use case for this were VA
+    documents where the DCT was stored externally. To see this class in action
+    run
+
+       $ python tarsqi.py --source=va data/in/va/test.xml out.xml
+
+    """
 
     def get_dct(self):
-        fname = self.sourcedoc.filename
+        fname = self.get_source().filename
         fname = os.path.basename(fname)
-        db_connection = sqlite3.connect('data/in/va/dct.sqlite')
+        db_location = self.options.getopt('dct-database')
+        db_connection = sqlite3.connect(db_location)
         db_cursor = db_connection.cursor()
         db_cursor.execute('SELECT dct FROM dct WHERE filename=?', (fname,))
         dct = db_cursor.fetchone()[0]

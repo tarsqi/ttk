@@ -16,7 +16,7 @@ from docmodel.source_parser import SourceParserXML, SourceParserText
 from docmodel.source_parser import SourceParserTTK
 from docmodel.metadata_parser import MetadataParser, MetadataParserTTK
 from docmodel.metadata_parser import MetadataParserText
-from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserVA
+from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserDB
 from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
 from docmodel.docstructure_parser import DocumentStructureParser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
@@ -28,7 +28,7 @@ PARSERS = {
     'timebank': (SourceParserXML, MetadataParserTimebank),
     'atee': (SourceParserXML, MetadataParserATEE),
     'rte3': (SourceParserXML, MetadataParserRTE3),
-    'va': (SourceParserXML, MetadataParserVA),
+    'va': (SourceParserXML, MetadataParserDB),
     'text': (SourceParserText, MetadataParserText),
     'ttk': (SourceParserTTK, MetadataParserTTK)
 }
