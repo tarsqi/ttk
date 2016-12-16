@@ -19,6 +19,7 @@ from docmodel.metadata_parser import MetadataParserText
 from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserDB
 from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
 from docmodel.docstructure_parser import DocumentStructureParser
+from library.tarsqi_constants import TOKENIZER, TAGGER, CHUNKER
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER
 

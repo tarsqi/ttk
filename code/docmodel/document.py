@@ -449,6 +449,10 @@ class TagRepository:
                 return t
         return None
 
+    def find_tags_at(self, begin_offset):
+        """Return the list of tags which start at begin_offset."""
+        return self.opening_tags.get(begin_offset, [])
+
     def import_tags(self, tag_repository, tagname):
         """Import all tags with name=tagname from tag_repository into self. This
         is moslty used when we want to take tags from the SourceDoc and add them

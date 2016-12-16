@@ -19,6 +19,26 @@
 
 <h2>TARSQI Toolkit - The Preprocessor</h2>
 
+<p>The standard Tarsqi preprocessor can be run in two ways:</p>
+
+<pre class="example indent">
+$ python tarsqi.py --pipeline=PREPROCESSOR &lt;INFILE> &lt;OUTFILE>
+$ python tarsqi.py --pipeline=TOKENIZER,TAGGER,CHUNKER &lt;INFILE> &lt;OUTFILE>
+</pre>
+
+<p>In the first case, the PreprocessorWrapper is used, which wraps tokenizer,
+tagger and chunker and chunker all together. In the second case, the tokenizer,
+tagger and chunker are each wrapped individually. The second invocation allows
+some more flexibility. For example, we can now run TTK on input that was already
+tokenized, but not tagged and chunked. This is useful in case we want to adopt
+external tokenization. In addition, it is now easier to swap in different
+taggers if needed. We would just an additional tagger component and reference
+that one in the pipeline (some extra coding would be needed to write the wrapper
+of course). The default is to use the PREPROCESSOR.</p>
+  
+  
+<h3>PreProcessorWrapper</h3>
+
 <p>The PreprocessorWrapper loops through the document elements by using the
 TarsqiDocument.elements() method, which returns a list of Tags of type
 "docelement" where each tag has pointers to the begin and end offset in the
@@ -125,6 +145,19 @@ opening_tags and closing_tags dictionaries, which will look as follows:</p>
   13: { 0: {'docelement': True}}}
 </pre>
 
+<p>These dictionaries can be used for quick access based on character
+offsets.</p>
+
+
+<h3>TokenizerWrapper, TaggerWrapper and ChunkerWrapper</h3>
+
+These work with the same tokenizer, tagger and chunker as the
+PreprocessorWrapper and the tokenizer, tagger and chunker take the same input
+and create the same output no matter what wrapper they are called from. The
+difference is that each wrapper will retrieve the data it needs from the
+TarsqiDocument and will always export to the TarsqiDocument. In contrast, with
+the PreprocessorWrapper we could almost directly pipe the output of the tagger
+into the chunker, without doing an export and import inbetween.
 
 </body>
 </html>

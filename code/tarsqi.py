@@ -94,8 +94,8 @@ SETTINGS = os.path.join(TTK_ROOT, 'settings.txt')
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
-logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'),
-                         level=3)
+logfile = os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log')
+logger.initialize_logger(logfile, level=3)
 
 
 class Tarsqi:
@@ -273,6 +273,7 @@ class Options:
 
 class TarsqiError(Exception):
     """Tarsqi Exception class, so far only used in this file."""
+    # TODO: should probably be defined elsewhere
     pass
 
 
