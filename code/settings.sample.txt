@@ -1,6 +1,10 @@
-# This file contains configuration options. Option can be changed here or in
-# some cases on the command line when calling the tarsqy.py script. Command line
-# options, when possible, will overwrite options specified here.
+# This is an example file with configuration options. You should rename this
+# file into settings.txt (or copy it into settings.txt) and make changes as
+# desired.
+
+# Option can be changed here or in some cases on the command line when
+# calling the tarsqy.py script. Command line options, when possible, will
+# overwrite options specified here.
 
 
 # The platform, possible values are 'linux2' and 'darwin'. This is the value of
