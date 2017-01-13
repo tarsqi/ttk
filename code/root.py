@@ -2,9 +2,9 @@
 
 All this module does is to set the TTK_ROOT environment variable.
 
-Previsouly this was done inline in for example tarsqi.py, but this resulted in
-an ugly situation where a piece of code was inserted inbetween a set of import
-statements.
+Previously, this was done inline for all the modules that needed it, but this
+resulted in an ugly situation where a piece of code was inserted inbetween a set
+of import statements.
 
 """
 

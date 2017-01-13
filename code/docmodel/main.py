@@ -19,9 +19,6 @@ from docmodel.metadata_parser import MetadataParserText
 from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserDB
 from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
 from docmodel.docstructure_parser import DocumentStructureParser
-from library.tarsqi_constants import TOKENIZER, TAGGER, CHUNKER
-from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
-from library.tarsqi_constants import CLASSIFIER, BLINKER, LINK_MERGER
 
 
 PARSERS = {
@@ -34,9 +31,6 @@ PARSERS = {
     'ttk': (SourceParserTTK, MetadataParserTTK)
 }
 
-
-DEFAULT_PIPELINE = [PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T,
-                    BLINKER, CLASSIFIER, LINK_MERGER]
 
 DEFAULT_SOURCE_PARSER = SourceParserXML
 DEFAULT_METADATA_PARSER = MetadataParser
@@ -60,9 +54,3 @@ def create_docstructure_parser():
     # where the parser creates tags similar to other components and where the
     # elements variable is gone.
     return DocumentStructureParser()
-
-
-def get_default_pipeline(options):
-    """Now always returns the same but can be used for genre-specific
-    pipelines."""
-    return DEFAULT_PIPELINE

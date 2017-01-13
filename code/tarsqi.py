@@ -6,6 +6,7 @@ Source-specific processing is delegated to the docmodel package, which has
 access to source parsers and metadata parsers. This script also calls on
 various tarsqi modules to do the rest of the real work.
 
+
 USAGE
 
    % python tarsqy.py [OPTIONS] INPUT OUTPUT
@@ -17,63 +18,60 @@ USAGE
 
    OPTIONS
 
-      --genre=GENRE_NAME
-             the genre of the file, None by default; this would in the future
-             distinguish between genres or domains like newswire, historical,
-             medial etcetera, but it is not yet used
-
-      --source=SOURCE_NAME
+      --source SOURCE_NAME
              the source of the file; this reflects the source type of the
              document and allows components, especially the source parser,
              metadata parser and document structure parser, to be sensitive to
              idiosyncratic properties of the text (for example, location of the
              DCT and the format of the text); xml by default, other source types
-             are text and ttk
+             are text and ttk.
 
-      --pipeline=LIST
-             comma-separated list of Tarsqi components, defaults to the full
-             pipeline
+      --pipeline LIST
+             Comma-separated list of Tarsqi components, defaults to the full
+             pipeline.
 
-      --perl=PATH
-             path to the Perl executable
+      --perl PATH
+             Path to the Perl executable. Typically the operating system default
+             is fine here and this options does not need to be used.
 
-      --treetagger=PATH
-             path to the TreeTagger
+      --treetagger PATH
+             Path to the TreeTagger.
 
-      --mallet
+      --mallet PATH
              Location of Mallet, this should be the directory that contains the
-             bin directory
+             bin directory.
 
-      --classifier
+      --classifier STRING
              The classifier used by the Mallet classifier, the default is MaxEnt
 
-      --ee-model
+      --ee-model FILENAME
              The model used for classifying event-event tlinks, this is a model
              file in components/classifier/models, the default is set to
-             tb-vectors.ee.model
+             tb-vectors.ee.model.
 
-      --et-model
+      --et-model FILENAME
              The model used for classifying event-timex tlinks, this is a model
              file in components/classifier/models, the default is set to
-             tb-vectors.et.model
+             tb-vectors.et.model.
 
-      --trap-errors=BOOLEAN
-             set error trapping, errors are trapped by default
+      --trap-errors True|False
+             Set error trapping, errors are trapped by default.
 
-      --loglevel=LEVEL
-             set log level to an integer from 0 to 4, the higher the level the
+      --loglevel INTEGER
+             Set log level to an integer from 0 to 4, the higher the level the
              more messages will be written to the log, see utilities.logger for
-             more details
+             more details.
 
       All these options can also be set in the settings.txt file. See the manual
       in docs/manual/ for more details on the parameters.
+
 
 VARIABLES:
 
    SETTINGS - file with user settings
    COMPONENTS - dictionary with all Tarsqi components
    USE_PROFILER - a boolean determining whether the profiler is used
-   PROFILE_OUTPUT - file that profiler statistics are written to
+   PROFILER_OUTPUT - file that profiler statistics are written to
 
 """
 
@@ -82,7 +80,6 @@ import sys, os, time, types, getopt
 import root
 from components import COMPONENTS
 from docmodel.document import TarsqiDocument
-from docmodel.main import get_default_pipeline
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
@@ -94,8 +91,8 @@ SETTINGS = os.path.join(TTK_ROOT, 'settings.txt')
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
-logfile = os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log')
-logger.initialize_logger(logfile, level=3)
+logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'),
+                         level=3)
 
 
 class Tarsqi:
@@ -113,19 +110,19 @@ class Tarsqi:
        metadata_parser      -  a source-specific metadata parser
        docstructure_parser  -  a document structure parser
        pipeline             -  list of name-wrapper pairs
-       components           -  dictionary of components
+       components           -  dictionary of Tarsqi components
        document             -  instance of TarsqiDocument
-       DIR_TMP_DATA         -  path for temporary files
+       tmp_data             -  path to directory for temporary files
 
     The first nine instance variables are initialized using the arguments
-    provided by the user, document is initialized and changed during
-    processing."""
+    provided by the user, the document variable is initialized and changed
+    during processing. """
 
     def __init__(self, opts, infile, outfile):
         """Initialize Tarsqi object conform the data source identifier and the
         processing options. Does not set the instance variables related to the
         document model and the meta data. The opts argument has a list of
-        commanid line options and the infile and outfile arguments are typically
+        command line options and the infile and outfile arguments are typically
         absolute paths, but they can be None when we are processing strings."""
         # Make sure we're in the right directory. If the toolkit crashed on a
         # previous file we may be in a different directory.
@@ -138,7 +135,7 @@ class Tarsqi:
         self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
-        self.DIR_TMP_DATA = os.path.join(TTK_ROOT, 'data', 'tmp')
+        self.tmp_data = os.path.join(TTK_ROOT, 'data', 'tmp')
         self.components = COMPONENTS
         self.source_parser = create_source_parser(self.options)
         self.metadata_parser = create_metadata_parser(self.options)
@@ -174,12 +171,12 @@ class Tarsqi:
 
     def _cleanup_directories(self):
         """Remove all fragments from the temporary data directory."""
-        for file in os.listdir(self.DIR_TMP_DATA):
-            if os.path.isfile(self.DIR_TMP_DATA + os.sep + file):
+        for file in os.listdir(self.tmp_data):
+            if os.path.isfile(self.tmp_data + os.sep + file):
                 # sometimes, on linux, weird files show up here, do not delete
                 # them should trap these here with an OSError
                 if not file.startswith('.'):
-                    os.remove(self.DIR_TMP_DATA + os.sep + file)
+                    os.remove(self.tmp_data + os.sep + file)
 
     def _apply_component(self, name, wrapper, tarsqidocument):
         """Apply a component by taking the TarsqDocument, which includes the
@@ -190,11 +187,8 @@ class Tarsqi:
         logger.info(name + '............')
         t1 = time.time()
         if self.options.trap_errors:
-            try:
-                wrapper(tarsqidocument).process()
-            except:
-                logger.error("%s error:\n\t%s\n\t%s\n"
-                             % (name, sys.exc_type, sys.exc_value))
+            try: wrapper(tarsqidocument).process()
+            except: _log_error(name)
         else:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
@@ -202,9 +196,7 @@ class Tarsqi:
     def _create_pipeline(self):
         """Return the pipeline as a list of pairs with the component name and
         wrapper."""
-        component_names = get_default_pipeline(self.options)
-        if self.options.pipeline:
-            component_names = self.options.pipeline.split(',')
+        component_names = self.options.pipeline.split(',')
         return [(name, self.components[name]) for name in component_names]
 
     def _write_output(self):
@@ -224,37 +216,47 @@ class Tarsqi:
         print '   document    ', self.xml_document
 
 
-class Options:
+class Options():
 
-    """A dictionary to keep track of all the options. Options are stored in a
-    dictionary, but are also accessable directly through instance variables."""
+    """A class to keep track of all the options. Options can be accessed with the
+    getopt() method, but standard options are also accessable directly through
+    the following instance variables: source, pipeline, loglevel, trap_errors,
+    perl, treetagger, mallet, classifier, ee_model and et_model. There is no
+    instance variable access for user-defined options in the settings.txt file."""
 
     def __init__(self, options):
-        """Initialize options from the settings file and the opts parameter.
-        Loop through the options dictionary and replace some of the strings with
-        other objects: replace 'True' with True, 'False' with False, and strings
-        indicating an integer with that integer."""
-        self._options = read_settings(SETTINGS)
-        for (option, value) in options:
-            self._options[option[2:]] = value
-        for (attr, value) in self._options.items():
-            if value in ('True', 'False') or value.isdigit():
-                self._options[attr] = eval(value)
+        """Initialize options from the settings file and the options handed in to the
+        tarsqi script."""
+        self._read_options(SETTINGS, options)
+        self._massage_options()
         # put options in instance variables for convenience, this is not done
         # for those options from settings.txt that are user-specific
-        self.genre = self.getopt('genre')
         self.source = self.getopt('source')
-        self.platform = self.getopt('platform')
         self.pipeline = self.getopt('pipeline')
         self.loglevel = self.getopt('loglevel')
         self.trap_errors = self.getopt('trap-errors', True)
-        self.extension = self.getopt('extension', '')
         self.perl = self.getopt('perl', 'perl')
         self.mallet = self.getopt('mallet')
         self.treetagger = self.getopt('treetagger')
         self.classifier = self.getopt('classifier')
         self.ee_model = self.getopt('ee-model')
         self.et_model = self.getopt('et-model')
+
+    def _read_options(self, SETTINGS, options):
+        """Read options from settings file and command line options."""
+        self._options = read_settings(SETTINGS)
+        for (option, value) in options:
+            self._options[option[2:]] = value
+
+    def _massage_options(self):
+        """Loop through the options dictionary and replace some of the strings with
+        other objects: replace 'True' with True, 'False' with False, and strings
+        indicating an integer with that integer."""
+        for (attr, value) in self._options.items():
+            if value in ('True', 'False') or value.isdigit():
+                self._options[attr] = eval(value)
+            #elif attr in ('perl', 'mallet', 'treetagger'):
+            #    print os.path.isdir(value)
 
     def __str__(self):
         return str(self._options)
@@ -263,29 +265,37 @@ class Options:
         return self._options[key]
 
     def items(self):
-        # TODO: there must be a better way to do this dictionary emulation
+        """Simplistic way to do dictionary emulation."""
         return self._options.items()
 
     def getopt(self, option_name, default=None):
         """Return the option, use None as default."""
         return self._options.get(option_name, default)
 
+    def pp(self):
+        print "OPTIONS:"
+        for option in sorted(self._options.keys()):
+            print "   %-12s  -->  %s" % (option, self._options[option])
+
 
 class TarsqiError(Exception):
     """Tarsqi Exception class, so far only used in this file."""
-    # TODO: should probably be defined elsewhere
+    # TODO: should probably be defined elsewhere (in utilities)
     pass
 
 
-def _read_arguments(args):
+def _read_arguments(args, check=True):
     """ Read the list of arguments given to the tarsqi.py script.  Return a
     tuple with three elements: processing options dictionary, input path and
     output path."""
-    options = ['genre=', 'source=', 'pipeline=', 'trap-errors=',
-               'perl=', 'loglevel=', 'platform=', 'treetagger=',
+    options = ['source=', 'pipeline=', 'trap-errors=',
+               'perl=', 'loglevel=', 'treetagger=',
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
+        if check and len(args) < 2:
+            raise TarsqiError("missing input or output arguments\n%s"
+                              % _usage_string())
         return (opts, args)
     except getopt.GetoptError:
         print "ERROR: %s" % sys.exc_value
@@ -295,6 +305,10 @@ def _read_arguments(args):
 def _usage_string():
     return "Usage: % python tarsqi.py [OPTIONS] INPUT OUTPUT\n" + \
            "See tarsqy.py and docs/manual for more details"
+
+
+def _log_error(name):
+    logger.error("%s error:\n\t%s\n\t%s\n" % (name, sys.exc_type, sys.exc_value))
 
 
 def _basename(path):
@@ -311,9 +325,6 @@ def run_tarsqi(args):
     Tarsqi instances for all files in the directory. The arguments are the list
     of arguments given by the user on the command line."""
     (opts, args) = _read_arguments(args)
-    if len(args) < 2:
-        raise TarsqiError("missing input or output arguments\n%s"
-                          % _usage_string())
     # Using absolute paths here because some components change the working
     # directory and when some component fails the cwd command may not reset to
     # the root directory
@@ -356,7 +367,8 @@ def process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False)
     loglevel and error trapping options."""
     (opts, args) = _read_arguments(["--pipeline=%s" % pipeline,
                                     "--loglevel=%s" % loglevel,
-                                    "--trap-errors=%s" % trap_errors])
+                                    "--trap-errors=%s" % trap_errors],
+                                   check=False)
     tarsqi = Tarsqi(opts, None, None)
     return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
 

@@ -5,7 +5,7 @@ to have libraries defined independently from the implementation, defining a
 syntax for all libraries (simple settings, rules, etcetera) and then read in the
 libraries (which allows you to read only those libraries that are required).
 
-The LIBRARY variable allows other modules a single import from which all
+The LIBRARY variable provides other modules a single import point from which all
 settings can be accessed.
 
 """

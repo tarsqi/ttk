@@ -30,6 +30,9 @@ sys.path.append('../..')
 # variable is not used so we hand in a dummy value
 os.environ['TTK_ROOT'] = 'DUMMY'
 
+# TODO: why not just import root???
+
+
 from utilities.FSA import compileOP
 from library.evita.multi_chunk_patterns import patternsGroups
 

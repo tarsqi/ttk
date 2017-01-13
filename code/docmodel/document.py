@@ -6,10 +6,26 @@ This module contains TarsqiDocument and some of the classes used by it.
 """
 
 import sys, codecs, StringIO
-from copy import copy
 from xml.sax.saxutils import escape, quoteattr
 
 from library.main import LIBRARY
+
+
+TIMEX = LIBRARY.timeml.TIMEX
+EVENT = LIBRARY.timeml.EVENT
+ALINK = LIBRARY.timeml.ALINK
+SLINK = LIBRARY.timeml.SLINK
+TLINK = LIBRARY.timeml.TLINK
+
+TID = LIBRARY.timeml.TID
+EID = LIBRARY.timeml.EID
+EIID = LIBRARY.timeml.EIID
+
+TIME_ID = LIBRARY.timeml.TIME_ID
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
+SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 
 
 class TarsqiDocument:
@@ -33,11 +49,7 @@ class TarsqiDocument:
         self.metadata = {}
         self.options = {}
         self.tags = TagRepository()
-        self.counters = {LIBRARY.timeml.TIMEX: 0,
-                         LIBRARY.timeml.EVENT: 0,
-                         LIBRARY.timeml.ALINK: 0,
-                         LIBRARY.timeml.SLINK: 0,
-                         LIBRARY.timeml.TLINK: 0}
+        self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
 
     def __str__(self):
         fname = self.sourcedoc.filename if self.sourcedoc is not None else None
@@ -59,16 +71,16 @@ class TarsqiDocument:
 
     def events(self):
         """Convenience method for easy access to events."""
-        return self.tags.find_tags(LIBRARY.timeml.EVENT)
+        return self.tags.find_tags(EVENT)
 
     def timexes(self):
         """Convenience method for easy access to timexes."""
-        return self.tags.find_tags(LIBRARY.timeml.TIMEX)
+        return self.tags.find_tags(TIMEX)
 
     def has_event(self, begin, end):
         """Return True if there is already an event at the given begin and
         end."""
-        for tag in self.tags.find_tags(LIBRARY.timeml.EVENT):
+        for tag in self.tags.find_tags(EVENT):
             if tag.begin == begin and tag.end == end:
                 return True
         return False
@@ -99,12 +111,12 @@ class TarsqiDocument:
         print
 
     def next_event_id(self):
-        self.counters[LIBRARY.timeml.EVENT] += 1
-        return "e%d" % self.counters[LIBRARY.timeml.EVENT]
+        self.counters[EVENT] += 1
+        return "e%d" % self.counters[EVENT]
 
     def next_timex_id(self):
-        self.counters[LIBRARY.timeml.TIMEX3] += 1
-        return "t%d" % self.counters[LIBRARY.timeml.TIMEX3]
+        self.counters[TIMEX] += 1
+        return "t%d" % self.counters[TIMEX]
 
     def next_link_id(self, link_type):
         """Return a unique lid. The link_type argument is one of {ALINK, SLINK,
@@ -113,13 +125,13 @@ class TarsqiDocument:
          using the link counters in the document. Breaks down if there are
          already links added without using those counters."""
         self.counters[link_type] += 1
-        return "l%d" % (self.counters[LIBRARY.timeml.ALINK] +
-                        self.counters[LIBRARY.timeml.SLINK] +
-                        self.counters[LIBRARY.timeml.TLINK])
+        return "l%d" % (self.counters[ALINK] +
+                        self.counters[SLINK] +
+                        self.counters[TLINK])
 
     def remove_tlinks(self):
         """Remove all TLINK tags from the tags repository."""
-        self.tags.remove_tags(LIBRARY.timeml.TLINK)
+        self.tags.remove_tags(TLINK)
 
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file
@@ -392,16 +404,16 @@ class TagRepository:
     def index_events(self):
         self.eid2event = {}
         for tag in self.tags:
-            if tag.name == LIBRARY.timeml.EVENT:
-                self.eid2event[tag.attrs[LIBRARY.timeml.EIID]] = tag
+            if tag.name == EVENT:
+                self.eid2event[tag.attrs[EIID]] = tag
 
     def index_timexes(self):
         # TODO: merge with ei2events and create id2tag, assumes all tags have
         # ids and they are unique
         self.tid2timex = {}
         for tag in self.tags:
-            if tag.name == LIBRARY.timeml.TIMEX:
-                self.tid2timex[tag.attrs[LIBRARY.timeml.TID]] = tag
+            if tag.name == TIMEX:
+                self.tid2timex[tag.attrs[TID]] = tag
 
     def find_tags(self, name, begin=None, end=None):
         """Return all tags of this name. If the optional begin and end are given
@@ -414,26 +426,21 @@ class TagRepository:
     def find_linktags(self, name, o1, o2):
         """Return all the link tages with type name. Only include the ones that
         fall between offsets o1 and o2."""
-        EID = LIBRARY.timeml.EVENT_INSTANCE_ID
-        SEI = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
-        REI = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
-        TID = LIBRARY.timeml.TIME_ID
-        RTT = LIBRARY.timeml.RELATED_TO_TIME
         tags = []
         for tag in sorted([t for t in self.tags if t.name == name]):
-            if name == LIBRARY.timeml.SLINK:
-                t1 = self.eid2event.get(tag.attrs.get(EID))
-                t2 = self.eid2event.get(tag.attrs.get(SEI))
-            if name == LIBRARY.timeml.ALINK:
-                t1 = self.eid2event.get(tag.attrs.get(EID))
-                t2 = self.eid2event.get(tag.attrs.get(REI))
-            if name == LIBRARY.timeml.TLINK:
-                t1 = self.eid2event.get(tag.attrs.get(EID))
-                t2 = self.eid2event.get(tag.attrs.get(REI))
+            if name == SLINK:
+                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
+                t2 = self.eid2event.get(tag.attrs.get(SUBORDINATED_EVENT_INSTANCE))
+            if name == ALINK:
+                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
+                t2 = self.eid2event.get(tag.attrs.get(RELATED_TO_EVENT_INSTANCE))
+            if name == TLINK:
+                t1 = self.eid2event.get(tag.attrs.get(EVENT_INSTANCE_ID))
+                t2 = self.eid2event.get(tag.attrs.get(RELATED_TO_EVENT_INSTANCE))
                 if t1 is None:
-                    t1 = self.tid2timex.get(tag.attrs.get(TID))
+                    t1 = self.tid2timex.get(tag.attrs.get(TIME_ID))
                 if t2 is None:
-                    t2 = self.tid2timex.get(tag.attrs.get(RTT))
+                    t2 = self.tid2timex.get(tag.attrs.get(RELATED_TO_TIME))
             offsets = [t1.begin, t1.end, t2.begin, t2.end]
             to1 = min(offsets)
             to2 = max(offsets)
@@ -500,7 +507,7 @@ class Tag:
         self.attrs = attrs
         # TODO: should investigate tag initialization since there is an
         # impression that it is not consistent
-        if self.id is None and attrs.has_key('id'):
+        if self.id is None and 'id' in attrs:
             self.id = attrs.get('id')
             del(self.attrs['id'])
 
@@ -543,6 +550,7 @@ class Tag:
             (self.name, identifier, begin, end, self.attributes_as_string())
 
     def as_lex_xml_string(self, text):
+        """Return an opening and closing tag wrapped around text."""
         return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \
             (self.id, self.begin, self.end, str(self.attrs['pos']), escape(text))
 
