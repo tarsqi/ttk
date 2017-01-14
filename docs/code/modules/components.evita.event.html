@@ -1,0 +1,56 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.evita.event</div>
+
+<pre>
+<a href=#Event>Event</a>
+</pre>
+
+<pre>
+event.py
+
+The Event class here is used by Evita when creating a new event by
+Chunk._processEventInChunk() or AdjectiveToken._processEventInToken().</pre>
+
+
+<a name="Event"/><div class="section">class Event</div>
+<pre>
+
+Instances of this class are created by Evita when it finds a new
+event. Instances have a short life because all that they are used for is to
+be added to the TarsqiDocument as a Tag instance.
+
+Instance variables:
+  tokens  -  a list of Tokens or AdjectiveTokens
+  attrs   -  the TimeML attributes of the event
+
+The eid and eiid identifiers are not set by this class, they are added later
+when the TarsqiTree adds the event to the TarsqiDocument. Also note that
+the nf_morph is value is added to the POS attribute.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, feats)</div>
+Initialize from an instance of a subclass of ChunkFeatures. Creates
+the list of tokens for the event from just the head of the chunk because
+currently Evita only recognizes one-token events (in line with the old
+TimeML specifications), the list is a hook for adding multi-token events
+later. Modality and polarity are not added if they have the default
+values.</pre>
+</blockquote>

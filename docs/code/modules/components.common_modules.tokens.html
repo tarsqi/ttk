@@ -1,0 +1,116 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.common_modules.tokens</div>
+
+<pre>
+<a href=#AdjectiveToken>AdjectiveToken</a>
+<a href=#Token>Token</a>
+</pre>
+
+
+<a name="AdjectiveToken"/><div class="section">class AdjectiveToken</div>
+<pre>
+<strong>Inherits from: <a href=components.common_modules.tokens.html#Token>Token</a></strong></strong>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>createAdjEvent(self, verbfeatures=None)</div>
+Processes the adjective after a copular verb and make it an event if the
+adjective has an event class.</pre>
+<pre>
+<div class=function>feature_value(self, name)</div>
+Used by matchConstituent. Needs cases for all instance variables used in the
+pattern matching phase.</pre>
+<pre>
+<div class=function>isAdjToken(self)</div>
+</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_conditionallyAddEvent(self)</div>
+Check whether there is an event class and add the event to self.tree if
+there is one. There is a sister of this method on Chunk.</pre>
+</blockquote>
+
+<a name="Token"/><div class="section">class Token</div>
+<pre>
+<strong>Inherits from: <a href=components.common_modules.constituent.html#Constituent>Constituent</a></strong></strong>
+
+implements a single token.
+
+Instance variables:
+    text        -  the text string of the token
+    pos         -  the part-of-speech of the token
+    event       -  set to True if the token is wrapped in an EventTag
+    event_tag   -  contains the EventTag
+
+The event, eid and event are set at TarsqiTree creation for the daughters of
+event tags.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__getitem__(self, index)</div>
+The method with the same name on Constituent made sure that we can view the
+Token as something that has elements. But here we add that Token has
+itself as its one daughter. This is used by update_event_checked_marker
+in the chunks module.</pre>
+<pre>
+<div class=function>__init__(self, word, pos)</div>
+Initialize with the word and a part-of-speech, use defaults for all
+the other variables.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>createEvent(self)</div>
+Do nothing when an AdjectiveToken or Token is asked to create an
+event. Potential adjectival events are processed from the VerbChunk
+using the createAdjEvent() method. Do not log a warning since it is
+normal for a Token to be asked this, without this method a method with
+the same name on Consituent would log a warning.</pre>
+<pre>
+<div class=function>debug_string(self)</div>
+</pre>
+<pre>
+<div class=function>feature_value(self, name)</div>
+Used by matchConstituent. Needs cases for all instance variables used in the
+pattern matching phase.</pre>
+<pre>
+<div class=function>getText(self)</div>
+Return the text of the token.</pre>
+<pre>
+<div class=function>isMainVerb(self)</div>
+Return True if self is a main verb and False if not.</pre>
+<pre>
+<div class=function>isPreposition(self)</div>
+Return True if self is a preposition and False if not. Note that this
+method returns False for the preposition in 'to the barn'.</pre>
+<pre>
+<div class=function>isToken(self)</div>
+Returns True</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>pretty_print(self, indent=0)</div>
+</pre>
+</blockquote>

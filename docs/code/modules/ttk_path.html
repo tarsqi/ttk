@@ -1,0 +1,34 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module ttk_path</div>
+
+<pre>
+Provides root directory and adds utilities directory to path
+
+Get the directory the script runs from and add the directories with ttk modules to the
+Python search path, inserting them after the current directory. This script needs to be in
+the same directory as ttk.py, the main python TTK script. I would really like this to be
+done in the main tarsqi.py script.
+
+Other modules can use the following to get at the root directory:
+
+    from ttk_path import TTK_ROOT
+
+Extending the path used to be how all imports were done, which was rather moronic. The
+only holdout is the utilities directory. This is because all FSA's in patterns were
+compiled while using the old system, need to keep it until all FSA are recompiled.</pre>
+

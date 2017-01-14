@@ -1,0 +1,118 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module utilities.logger</div>
+
+<pre>
+<a href=#Logger>Logger</a>
+</pre>
+
+<pre>
+Simple logging code that write messages to a log file. It uses five
+levels:
+
+   Level 0: no messages
+   Level 1: errors
+   Level 2: errors and warnings
+   Level 3: errors and warnings and info
+   Level 4: errors and warnings and info and debugging
+
+Initialize the logger, typically from the main script, as follows
+
+   import utilities.logger as logger
+   logger.initialize_logger(&lt;filename&gt;, &lt;level&gt;)
+
+This will open for writing a file &lt;filename&gt;.html. The &lt;level&gt;
+argument is optional, the default is to print info, errors and warnings
+(level 3). After initialization, the logger can be used from any
+module by importing it and using its methods:
+
+   from utilities import logger
+   logger.info(&lt;string&gt;)
+   logger.debug(&lt;string&gt;)
+   logger.warn(&lt;string&gt;)
+   logger.error(&lt;string&gt;)
+
+In addition, there is one method that writes to the log no matter what
+the level:
+
+   logger.write(&lt;string&gt;)
+
+Finally, it provides two convenience method that print directly to the
+standard output:
+
+   logger.out(*args)
+   logger.outnl()
+
+The first one writes the string representation of all arguments to the
+standard output and the second writes a white line. Printing to the
+standard output can be turned on and off with
+
+   set_stdout_printing(Boolean)</pre>
+
+
+<a name="Logger"/><div class="section">class Logger</div>
+<pre>
+
+The Logger class, has no other function than to store the logging
+level and the log file.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, filename, level=2)</div>
+Set logging level and the log file.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>debug(string)</div>
+Print a debugging message to the log file.</pre>
+<pre>
+<div class=function>error(string)</div>
+Print an error to the log file, also print it to standard error.</pre>
+<pre>
+<div class=function>info(string)</div>
+Print an info string to the log file.</pre>
+<pre>
+<div class=function>initialize_logger(filename, level=2)</div>
+Initialize the logger on &lt;filename&gt;, default logging level is 2.
+Only initialize if logger has not been initialized yet.</pre>
+<pre>
+<div class=function>out(*args)</div>
+Method to write to standard output rather than the html
+file. Intended for quick and dirty debugging that should not be
+left in the code. Using this method makes it easier to later
+remove the debugging code (as opposed to using print statements
+right in the text). Works well only for one-liners.</pre>
+<pre>
+<div class=function>outnl()</div>
+</pre>
+<pre>
+<div class=function>set_level(integer)</div>
+</pre>
+<pre>
+<div class=function>set_stdout_printing(Boolean)</div>
+When this function is called, the out and outnl methods will
+not print to the output.</pre>
+<pre>
+<div class=function>warn(string)</div>
+Print a warning to the log file.</pre>
+<pre>
+<div class=function>write(string)</div>
+Print a string to the log file, no matter what the logging
+level. This will be printed as an INFO string</pre>

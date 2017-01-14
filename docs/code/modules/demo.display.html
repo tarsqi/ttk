@@ -1,0 +1,171 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module demo.display</div>
+
+<pre>
+<a href=#Event>Event</a>
+<a href=#HtmlGenerator>HtmlGenerator</a>
+<a href=#Link>Link</a>
+<a href=#Sentence>Sentence</a>
+</pre>
+
+<pre>
+Module that is responsible for creating the HTML files used when the
+Toolkit GUI presents the results of a parse. Use this module by
+creating a generator on an input file and asking it to create various
+output files:
+
+    from demo.display import HtmlGenerator
+    generator = HtmlGenerator('data/tmp/in1.cla.xml')
+    generator.create_file('out.bli.html', [BLINKER])
+    generator.create_file('out.all.html', [S2T, BLINKER, CLASSIFIER])
+
+The second line creates a generator on the file
+data/tml/in1.cla.xml. In the third line an output file is created with all
+sentences grouped with links from blinker
+
+In addition, the generator can create a couple of html tables with
+events, timexes and tlinks:
+
+    generator.create_events_table('out.events.html')
+    generator.create_timexes_table('out.timexes.html')
+    generator.create_links_table('out.links.html')</pre>
+
+
+<a name="Event"/><div class="section">class Event</div>
+<pre>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, event, instance)</div>
+</pre>
+</blockquote>
+
+<a name="HtmlGenerator"/><div class="section">class HtmlGenerator</div>
+<pre>
+
+An HtmlGenerator is created for an XML file with TimeML tags. It is
+used to create HTML files that display the text with events and
+times highlighted and links lined up with the sentences. It can
+also be used to create tables for events, times and links.
+
+Instance variables:
+   file_name - an absolute path
+   xmldoc - an XmlDocument
+   sentences - a list
+   instances - a mapping from eiid and eid to XmlDocElements that contain an instance
+   links - a mapping from eids and tids to links that contain them</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, file_name)</div>
+</pre>
+<pre>
+<div class=function>create_events_table(self, file)</div>
+</pre>
+<pre>
+<div class=function>create_file(self, outfile, creators)</div>
+Creates a file with all sentences and the links lined up with the
+sentences.</pre>
+<pre>
+<div class=function>create_links_table(self, file)</div>
+</pre>
+<pre>
+<div class=function>create_timexes_table(self, file)</div>
+</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_get_text(self, id)</div>
+</pre>
+<pre>
+<div class=function>_init_events_list(self)</div>
+</pre>
+<pre>
+<div class=function>_init_indexes(self)</div>
+The value for these indixes are always XML elements.</pre>
+<pre>
+<div class=function>_init_link_index(self)</div>
+</pre>
+<pre>
+<div class=function>_init_sentence_list(self)</div>
+Fill in the self.sentences list. Sentences do not include their
+opening and closing tags.</pre>
+<pre>
+<div class=function>_init_timexes_list(self)</div>
+</pre>
+</blockquote>
+
+<a name="Link"/><div class="section">class Link</div>
+<pre>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, xmlelement, instances)</div>
+</pre>
+<pre>
+<div class=function>convert(self)</div>
+</pre>
+<pre>
+<div class=function>get_id(self, attrs)</div>
+</pre>
+<pre>
+<div class=function>get_id1(self)</div>
+</pre>
+<pre>
+<div class=function>get_id2(self)</div>
+</pre>
+<pre>
+<div class=function>set_creator(self)</div>
+</pre>
+</blockquote>
+
+<a name="Sentence"/><div class="section">class Sentence</div>
+<pre>
+
+A Sentence is a list of XmlDocElements.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, elements)</div>
+</pre>
+<pre>
+<div class=function>get_ids(self)</div>
+</pre>
+<pre>
+<div class=function>print_html(self, file)</div>
+</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>color_id(id)</div>
+</pre>
+<pre>
+<div class=function>color_text(text, id)</div>
+</pre>
+<pre>
+<div class=function>create_dct_element(dct)</div>
+Returns an XmlDocElement that represents the Document Creation Time as an opening
+tag. The argument is a string of the format YYYYMMDD.</pre>

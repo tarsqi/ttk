@@ -1,0 +1,44 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.evita.wrapper</div>
+
+<pre>
+<a href=#EvitaWrapper>EvitaWrapper</a>
+</pre>
+
+<pre>
+Contains the Evita wrapper.</pre>
+
+
+<a name="EvitaWrapper"/><div class="section">class EvitaWrapper</div>
+<pre>
+
+Wrapper for Evita.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, document)</div>
+Sets instance variables.</pre>
+<pre>
+<div class=function>process(self)</div>
+Hand in all document elements to Evita for processing. Document
+elements are instances of Tag with name=docelement. This is a simple
+approach that assumes that all document elements are processed the same
+way.</pre>
+</blockquote>

@@ -8,21 +8,30 @@
 
 <h1>The TARSQI Toolkit</h1>
 
-<p>Release Notes and Manual for Version 2.
+<p class="subtitle">Release Notes and Manual for Version 2.
 
-<p>Marc Verhagen, January 2017.
+<p class="subtitle">Marc Verhagen, January 2017.
+
+<p class="navigation">
+[ <a href="#intro">introduction</a>
+| <a href="#license">license</a>
+| <a href="#prereq">installation</a>
+| <a href="#using">getting started</a>
+| <a href="#docs">documentation</a>
+| <a href="#contact">contact</a>
+| <a href="#future">future</a>
+]
+</p>
 
 
+<a name="intro"></a>
 
-<h2>Introduction</h2>
+<h2>1. Introduction</h2>
 
 <p>The Tarsqi Toolkit (also referred to as TTK or the Toolkit) is a set of
 components for extracting temporal information from news wire texts. TTK
 extracts time expressions, events, subordination links and temporal links; in
-addition, it can ensure consistency of temporal
-information. See <a href="http://tarsqi.org">http://tarsqi.org</a> for more
-general information on the TARSQI project and for descriptions of TTK and its
-components.</p>
+addition, it can ensure consistency of temporal information.</p>
 
 <p>The first version of the toolkit, version 1.0, was released in 2007,
 accompanied by many promises and threats that there would be a new version
@@ -30,26 +39,13 @@ soon... it took a decade. Version 2.0.0 differs from version 1.0 in many
 respects: code was simplified and debugged, documentation was updated, the
 Mallet toolkit was used, stand-off annotation was adopted, libraries were
 redesigned, and test and evaluation code was added. However, version 2.0.0 does
-not significantly change the toolkit's performance in terms of precision and
-recall.</p>
+not significantly change the toolkit's performance in terms of speed or
+precision and recall.</p>
 
 
-<p>This manual contains the following sections:
+<a name="license"></a>
 
-<ol>
-<li><a href="#license">Copyright and License</a></li>
-<li><a href="#prereq">Prerequisites and Installation</a></li>
-<li><a href="#using">Using the Tarsqi Toolkit</a></li>
-<li><a href="#codedocs">More Documentation</a></li>
-<li><a href="#contrib">Contributors</a></li>
-<li><a href="#contact">Contact</a></li>
-<li><a href="#future">Future Work</a></li>
-</ol>
-
-
-
-<a name="license"><h2>1. Copyright and License</h2></a>
-
+<h2>2. Copyright and License</h2>
 
 <p>The Tarsqi Toolkit is copyright &copy;2017 of Brandeis University and is
 distributed under the <a rel="license"
@@ -62,12 +58,14 @@ under the license in <a href="tempex-license.pdf">tempex-license.pdf</a>.</p>
 various content providers and can be used for academic purposes only.</p>
 
 
-<a name="prereq"><h2>2. Requirements and Installation</h2></a>
+<a name="prereq"></a>
+
+<h2>3. Requirements and Installation</h2>
 
 <p>The toolkit runs on recent versions of Linux and Mac OSX (and should run on
 Windows, but see below). The code requires Python version 2.7, Perl version 5.8
-and the Java developer’s kit (JDK) version 8 (version 7 will probably work as
-well). Java is needed for running the third party software used by the
+or newer and the Java Development Kit (JDK) version 8 (version 7 will probably
+work as well). Java is needed for running the third party software used by the
 toolkit.</p>
 
 <p>Installation is a four step process:</p>
@@ -170,7 +168,9 @@ may not be entirely correct for Windows (for example, it may be the case that
 MALLET has to be installed in the top level directory of the c: drive).</p>
 
 
-<a name="using"><h2>3. Using the TARSQI Toolkit</h2></a>
+<a name="using"></a>
+
+<h2>4. Using the TARSQI Toolkit</h2>
 
 
 To run the TARSQI Toolkit, open a terminal, change the working
@@ -256,101 +256,71 @@ times and events are taken for granted and only links are added.
 </blockquote>
 
 
+<a name="docs"></a>
 
-<a name=gui><h2>5. Using the Toolkit GUI</h2></a>
+<h2>5. Documentation</h2>
 
-The Toolkit GUI can be used by typing one of
+<p>There is more documentation apart from the installation notes and minimal
+manual in this document. All documentation is in the <code>docs</code>
+directory. Some of it is quite useful, but some documents are there merely for
+historical reference. Here is a short description for each subdirectory
+in <code>docs</code>:</p>
 
-<blockquote>
-<code>
-% pythonw gui.py<br/>
-% python gui.py
-</code>
-</blockquote>
+<table cellspacing="0" cellpadding="5" border="1">
 
-Use <code>pythonw</code> when available, <code>python</code>
-otherwise. In both cases the wxPython package needs to be
-installed. The GUI has three advantages over using the command line
-version:
+<tr valign=top>
+<td>docs/code</td>
+<td>The documentation of the Python code can be browsed
+at <a href="../code/index.html">docs/code/index.html</a>, which has a list of
+links to all modules. For each module the documentation strings for classes and
+functions are printed. Documentation of the code is uneven: some modules are
+well-documented, other have spotty and underwhelming documentation or are not
+documented at all. The pages are generated with the
+<code>code/utilities/make_documentation.py</code> script, which was created
+because the <code>pydoc</code> command used to crash on many of the toolkit
+modules.</td>
+</tr>
 
-<ol>
-<li>It is faster when using on a file-by-file basis because all
-libraries are loaded either at start-up or when the first file is processed.
-<li>It is easier to use.
-<li>It allows the user to type some input and see what happens.
-</ol>
+<tr valign=top>
+<td>docs/design</td>
+<td>Notes on the design of the toolkit including the algorithms used in many
+components are
+in <a href="../design/index.html">docs/design/index.html</a>. Quite unfinished. There is a list of tags generated in <a href="../design/1-toplevel.html#tags">docs/design/1-toplevel.html#tags</a>.</td>
+</tr>
 
-The main disadvantage is that it is not possible to process all files
-in a directory. Here's a screen shot:
+<tr valign=top>
+<td>docs/manual</td>
+<td>Contains the document you are reading now.</td>
+</tr>
 
-<blockquote>
-<img src="gui-1.png" width="800" height="480"/>
-</blockquote>
+<tr valign=top>
+<td>docs/notes</td>
+<td>Various notes, mostly out of date.</td>
+</tr>
 
-There is no separate manual for the GUI, but usage should be pretty
-straightforward. Functionality can be summed up as follows:
+<tr valign=top>
+<td>docs/papers</td>
+<td>Toolkit publications.</td>
+</tr>
 
-<ul>
+<tr valign=top>
+<td>docs/specifications</td>
+<td>Contains a document written a decade ago, for historical interest only.</td>
+</tr>
 
-<li>Use "Load File" to select a file to be processed. 
+<tr valign=top>
+<td>docs/tracking</td>
+<td>Some old bugs and feature requests that will be folded into the GitHub site
+or else be discarded.</td>
+</tr>
 
-<li>Use "Load Text" to type in text. This will create a file in
-the <code>data/in/User</code> directory, which is then selected as the
-input file.
-
-<li>Use the"Document Type", "Trap Errors" and "Content Tag" pull-downs
-and text field to enter processing options. Setting the "Document
-Type" option will set the "Content Tag" text field to the default for
-the document type. It will also select the default components for the
-document type. The default components can be overridden by checking
-and unchecking the component check boxes. Note that the three
-pre-processing components are all either on or off.
-
-<li>Use "Process File" to process the input file conform to the selected settings.
-
-<li>Finally, "View Results" will pop up a new window that displays the
-processing results in a more informative way (the large text field in
-the control panel just prints the result file as is). The buttons in
-the results view control what is shown in it. There are two
-exceptions: (i) the "Graph" button will start the Tango annotation
-tool on the results file, showing a graph of the annotation and
-including a "TBox" button which displays an alternative format, and
-(ii) the "TBox" button doesn't do anything yet, in the future it will
-provide a more direct way to the TBox representation.
-
-</ul>
+</table>
 
 
-<a name=codedocs><h2>6. More Documentation</h2></a>
+<!--
+<a name="issues"></a>
 
-
-<p><a href="../design/index.html">design</a></p>
-
-
-<p>Even with all the updates for version 2.0, documentation of the code is still
-uneven: some modules are well-documented, other have spotty and underwhelming
-documentation, and yet others are not documented at all. To create browsable
-documentation in <a href="../code/index.html">docs/code</a> you can use
-the <code>make_documentation.py</code> script:
-
-<blockquote>
-<code>
-% cd code/utilities<br>
-% python make_documentation.py 
-</code>
-</blockquote>
-
-<p>This creates a file <code>index.html</code> with a list of links to all
-modules. For each module, and each class and function in that module,
-the documentation strings are printed. There are also links to the
-source code of each function.</p>
-
-<p>This script was created because the <code>pydoc</code> command used to crash
-on many of the toolkit modules.</p>
-
-
-<a name=issues><h2>7. Known Issues</h2></a>
-
+<h2>7. Known Issues</h2>
 
 <li>Bad CPU type in executable
 
@@ -375,8 +345,9 @@ and replace it with
 </blockquote>
 
 Note that this should really be fixed by using the new treetaggerwrapper.</p>
+-->
 
-
+<!--
 <a name=contrib><h2>7. Contributors</h2></a>
 
 Many people have contributed to the Tarsqi toolkit, they are listed
@@ -389,76 +360,68 @@ Marc Verhagen, and Ben Wellner.
 <p>
 The Tango annotation tool was developed by Linda van Guilder, Andrew
 See, Bob Knippen and Alex Baron.
+-->
 
 
 
 
+<a name="contact"></a>
+
+<h2>6. Contact</h2>
+
+<p>Please send an email to ttk-bugs@timeml.org with any issue, question or
+comment you may have. When reporting a bug, please tell us what platform you're
+using and include a file that illustrates the errant behavior.</p>
 
 
-<a name=contact><h2>8. Contact</h2></a>
+<a name="future"></a>
 
+<h2>7. Future Releases</h2>
 
-If you have problems installing the toolkit or if you want to report a
-bug, please send an email to ttk-bugs@timeml.org. When reporting a
-bug, please tell us what platform you're using (including Perl and
-Python versions) and include a file that illustrates the errant
-behavior. A database with known issues will be made available on the
-web site.
-
-<p>
-
-Suggestions, criticisms, disappointments, feature requests and kudos
-are also welcome at the above address.
-
-
-
-<a name=future><h2>9. Future Work</h2></a>
-
-
-The next major revision of the TARSQI Toolkit will be numbered 1.1 and will
-be released in early 2008. Minor revisions will be released with
-version number 1.0.X and will concentrate on bug fixes (as well as on
-providing a non-problematic Windows version).
-
-<p>
-
-The following major changes to the code base are now in progress or
-under consideration:
-
+<p>The next releases of the TTK will most likely not take a decade. First, there
+will be several more release candidates for version 2.0.0 (2.0.0.rc2, 2.0.0.rc3
+etcetera). This is the wish list for 2.0.0:</p>
 
 <ol>
 
-<li>Re-implement the temporal closure code into Python and integrate it
-better with the toolkit. Includes major speed optimizations (the
-temporal closure components is by far the slowest component of the
-toolkit and it slows down to a crawl on large documents).
+<li>Test code on Windows and update manual accordingly if needed.</li>
 
-<li>Re-implement GUTime in Python, splitting it into two components,
-one to add the TIMEX3 tags and one to fill in the VAL field.
-
-<li>Eliminate all remaining Perl components (glue scripts and filtering
-scripts) and replace them with Python components
-
-<li>Use standoff annotation instead of in-line XML. This would make it
-much easier to deal with existing tags.
-
-<li>Finish porting all rule types from GutenLink to Blinker
-
-<li>Hook up the toolkit to other pre-processing components (for
-example the NLTK toolkit).
-
-<li>Add browsers and editors for the dictionaries and pattern sets.
-
-<li>Improve on the merging code. It seems to throw away a few to many
-temporal links that are considered high-precision (most notable links
-between timex tags generated by Blinker).
-
-<li>Add a <code>text</code> document type.
+<li>Any serious or less serious issues that may pop up, including the following
+already listed on the github repository:
+<ul>
+<li><a href="https://github.com/tarsqi/ttk/issues/15">confirm correctness of character offsets</a>
+<li><a href="https://github.com/tarsqi/ttk/issues/19">various documentation updates</a>,
+<li><a href="https://github.com/tarsqi/ttk/issues/21">test removal of GUTime tmp files</a>,
+<li><a href="https://github.com/tarsqi/ttk/issues/23">use confidence scores in merger component</a>,
+<li><a href="https://github.com/tarsqi/ttk/issues/29">update old TimeML library in Slinket</a>,
+<li><a href="https://github.com/tarsqi/ttk/issues/32">fix bug with duplicate attribute</a>,
+<li><a href="https://github.com/tarsqi/ttk/issues/37">clarify preprocessor modules</a>,
+<li><a href="https://github.com/tarsqi/ttk/issues/38">fix missing link identifiers</a>.
+</ul>
+</li>
 
 </ol>
 
-A much longer list of feature requests and known bugs will be put on
-the toolkit website in the near future.
+<p>For the longer run, the following items are on the agenda:</P>
+
+<ol>
+
+<li>Any other issue listed
+on <a href="https://github.com/tarsqi/ttk/issues">https://github.com/tarsqi/ttk/issues</a></li>
+
+<li>Add reference intervals to the temporal closure code, which should reduce
+time complexity. Consider implementing parts in C or Java.</li>
+
+<li>Finish implementation of BTime.</li>
+
+<li>Revisit the rules in Blinker. May include revisiting old GutenLink rules.</li>
+
+<li>Hook up the toolkit to other pre-processing components (for example the NLTK
+toolkit and HeidelTime).</li>
+
+<li>Add browsers and editors for the dictionaries and pattern sets.</li>
+
+</ol>
 
 
 </body>

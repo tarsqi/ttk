@@ -1,0 +1,360 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.evita.gramChunk</div>
+
+<pre>
+<a href=#GramAChunk>GramAChunk</a>
+<a href=#GramChunk>GramChunk</a>
+<a href=#GramNChunk>GramNChunk</a>
+<a href=#GramVChunk>GramVChunk</a>
+<a href=#GramVChunkList>GramVChunkList</a>
+</pre>
+
+<pre>
+This module contains classes that add grammatical features to NounChunks,
+VerbChunks and AdjectiveTokens. The grammatical features drive part of the event
+recognition.</pre>
+
+
+<a name="GramAChunk"/><div class="section">class GramAChunk</div>
+<pre>
+<strong>Inherits from: <a href=components.evita.gramChunk.html#GramChunk>GramChunk</a></strong></strong>
+
+Contains the grammatical features for an AdjectiveToken.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, adjectivetoken, gramvchunk=None)</div>
+Initialize with an AdjectiveToken and use default values for most instance
+variables, but percolate grammatical features from the copular verb if
+they were handed in.</pre>
+<pre>
+<div class=function>getEventClass(self)</div>
+Return I_STATE if the head is on a short list of intentional state
+adjectives, return STATE otherwise.</pre>
+</blockquote>
+
+<a name="GramChunk"/><div class="section">class GramChunk</div>
+<pre>
+
+The subclasses of this class are used to add grammatical features to a
+NounChunk, VerbChunk or AdjectiveToken. It lives in the gramchunk variable
+of instances of those classes.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, chunk_or_token, gramvchunk)</div>
+Common initialization for GramNChunk and GramAChunk.</pre>
+<pre>
+<div class=function>add_verb_features(self, gramvchunk)</div>
+Set some features (tense, aspect, modality and polarity) to the values of
+those features on the governing verb.</pre>
+<pre>
+<div class=function>as_verbose_string(self)</div>
+Debugging method to print the GramChunk and its features.</pre>
+<pre>
+<div class=function>print_vars(self)</div>
+Debugging method to print all variables.</pre>
+</blockquote>
+
+<a name="GramNChunk"/><div class="section">class GramNChunk</div>
+<pre>
+<strong>Inherits from: <a href=components.evita.gramChunk.html#GramChunk>GramChunk</a></strong></strong>
+
+Contains the grammatical features for a NounChunk.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, nounchunk, gramvchunk=None)</div>
+Initialize with a NounChunk and use default values for most instance
+variables.</pre>
+<pre>
+<div class=function>getEventClass(self)</div>
+Get the event class for the GramChunk. For nominals, the event class
+is always OCCURRENCE.</pre>
+<pre>
+<div class=function>getEventLemma(self)</div>
+Return the lemma from the head of the GramNChunk. If there is no head
+or the head has no lemma, then build it from the text using a stemmer.</pre>
+</blockquote>
+
+<a name="GramVChunk"/><div class="section">class GramVChunk</div>
+<pre>
+<strong>Inherits from: <a href=components.evita.gramChunk.html#GramChunk>GramChunk</a></strong></strong>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, verbchunk, tCh, negMk, infMk, advPre, advPost)</div>
+Initialize with a verb chunk and the lists handed in from the
+GramVChunkList object.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>apply_feature_rules(self)</div>
+Returns a triple of TENSE, ASPECT and CATEGORY given the tokens of the chunk,
+which are stored in self.trueChunk. Selects the rules relevant for the
+length of the chunk and applies them. Returns None if no rule applies.</pre>
+<pre>
+<div class=function>as_short_string(self)</div>
+</pre>
+<pre>
+<div class=function>as_verbose_string(self)</div>
+</pre>
+<pre>
+<div class=function>getEventClass(self)</div>
+Return the event class for the nominal, using the regeluar expressions
+in the library.</pre>
+<pre>
+<div class=function>getHead(self)</div>
+Return the head of the GramVChunk, which is the last element of the
+core in self.trueChunk, return None if there is no such core.</pre>
+<pre>
+<div class=function>getModality(self)</div>
+</pre>
+<pre>
+<div class=function>getPolarity(self)</div>
+</pre>
+<pre>
+<div class=function>getPreHead(self)</div>
+Return the element before the head of the GramVChunk, which is the
+last element of the core in self.trueChunk, return None if there is no
+such element.</pre>
+<pre>
+<div class=function>isAuxVerb(self)</div>
+Return True if the head of the GramVChunk is an auxiliary verb.</pre>
+<pre>
+<div class=function>is_wellformed(self)</div>
+Return True if this GramVChunk is well-formed, that is, it has content in its
+trueChunks core and it has a head.</pre>
+<pre>
+<div class=function>nodeIsBe(self, nextNode)</div>
+</pre>
+<pre>
+<div class=function>nodeIsBecome(self, nextNode)</div>
+</pre>
+<pre>
+<div class=function>nodeIsContinue(self, nextNode)</div>
+</pre>
+<pre>
+<div class=function>nodeIsDoAuxiliar(self)</div>
+</pre>
+<pre>
+<div class=function>nodeIsFutureGoingTo(self)</div>
+</pre>
+<pre>
+<div class=function>nodeIsHave(self)</div>
+</pre>
+<pre>
+<div class=function>nodeIsKeep(self, nextNode)</div>
+</pre>
+<pre>
+<div class=function>nodeIsModal(self, nextNode)</div>
+</pre>
+<pre>
+<div class=function>nodeIsNotEventCandidate(self)</div>
+Return True if the GramVChunk cannot possibly be an event. This is the place
+for performing some simple stoplist-like tests.</pre>
+<pre>
+<div class=function>nodeIsPastUsedTo(self)</div>
+</pre>
+<pre>
+<div class=function>normalizeHave(self, form)</div>
+</pre>
+<pre>
+<div class=function>normalizeMod(self, form)</div>
+</pre>
+<pre>
+<div class=function>pp(self, verbose=False)</div>
+</pre>
+<pre>
+<div class=function>set_tense_and_aspect(self)</div>
+Sets the tense and aspect attributes by overwriting the default
+values with results from the feature rules in FEATURE_RULES. If no
+feature rules applied, create a throw-away GramVChunk for the head and
+use the features from there (which might still be defaults).</pre>
+</blockquote>
+
+<a name="GramVChunkList"/><div class="section">class GramVChunkList</div>
+<pre>
+
+This class is used to create a list of GramVChunk instances. What it does
+is (1) collecting information from a VerbChunk or a list of Tokens, (2) move
+this information into separate bins depending on the type of items in the
+source, (3) decide whether we need more than one GramVChunk for some input,
+and (4) create a list of VerbChunks.
+
+Where a GramNChunk is given a NounChunk on initialization, a GramVChunkList
+is given a VerbChunk or a list of Tokens (or maybe other categories as well)
+GramVChunks are different from NounChunks in that there can be more than one
+GramVChunk for a VerbChunk. This is not very common, but it happens for
+example in
+
+   "More problems in Hong Kong for a place, for an economy, that many
+    experts [thought was] once invincible."
+
+where "thought was" ends up as one verb chunk.
+
+Another difference is that sometimes a GramVChunk is created for tokens
+including tokens to the right of the VerbChunk, for example in
+
+   "All Arabs [would have] [to move] behind Iraq."
+
+where there are two adjacent VerbChunks. With the current implementation,
+when processing [would have], we end up creating GramVChunks for "would
+have" and "would have to move", and then, when dealing with [to move", we
+create a GramVChunk for "to move".
+
+TODO: check whether "would have" and "to move" should be ruled out
+TODO: check why "to move" is not already ruled out through the flag
+
+Note that in both cases, the root of the issue is that the chunking is not
+appropriate for Evita.
+
+TODO: consider updating the Chunker and simplifying the code here.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__getitem__(self, index)</div>
+</pre>
+<pre>
+<div class=function>__init__(self, verbchunk=None, tokens=None)</div>
+Initialize several kinds of lists, distributing information from the
+VerbChunk or list of Tokens that is handed in on initialization and
+create a list of GramVChunks in self.gramVChunksList.</pre>
+<pre>
+<div class=function>__len__(self)</div>
+</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>print_ChunkLists(self)</div>
+</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_addInCurrentSublist(self, sublist, element)</div>
+Add the element to the current element (that is, the last element) in
+sublist. The elements of the sublist are lists themselves.</pre>
+<pre>
+<div class=function>_addInPreviousSublist(self, sublist, element)</div>
+Add the element to the previous element (that is, the penultimate
+element) in sublist. The elements of the sublist are lists themselves.</pre>
+<pre>
+<div class=function>_distributeNode_ADV(self, item, tempNodes, itemCounter)</div>
+Just add the adverb to an adverb list, the trick is to figure out which list
+to add it. Factors are the location of the item in the tempNodes list
+and the pos tags of the elements following the item.</pre>
+<pre>
+<div class=function>_distributeNode_MD(self, item)</div>
+Add the modal element to the core list.</pre>
+<pre>
+<div class=function>_distributeNode_NEG(self, item)</div>
+Do not add the negation item to the core in self.trueChunkLists, but add it
+to the list with negation markers.</pre>
+<pre>
+<div class=function>_distributeNode_TO(self, item, itemCounter)</div>
+If the item is the first one, just add the item to the infinitive markers
+list. Otherwise, see if the last element in the core is one of a small
+group ('going', 'used' and forms of 'have'), if it is, add the element to the
+core, if not, do nothing at all.</pre>
+<pre>
+<div class=function>_distributeNode_V(self, item, tempNodes, itemCounter)</div>
+Add a verb to the lists. This takes one of two actions, depending on the kind
+of verb we are dealing with and on whether it is followed by TO.</pre>
+<pre>
+<div class=function>_distributeNodes(self)</div>
+Distribute the item's information over the lists in the GramVChunkLists.</pre>
+<pre>
+<div class=function>_generateGramVChunks(self)</div>
+</pre>
+<pre>
+<div class=function>_initialize_lists(self)</div>
+Initializes the lists that contain items (Tokens) of the chunk. Since
+one chunk may spawn more than one GramVChunk, these lists are actually
+lists of lists.</pre>
+<pre>
+<div class=function>_initialize_nodes(self)</div>
+Given the VerbChunk or a list of Tokens, set the nodes variable to
+either the daughters of the VerbChunk or the list of Tokens. Also sets
+node and tokens, where the first one has the VerbChunk or None (this is
+so we can hand the chunk to GramVChunk, following GramChunk behaviour),
+and where the second one is the list of Tokens or None.</pre>
+<pre>
+<div class=function>_item_is_followed_by_TO(self, tempNodes, itemCounter)</div>
+Return True if one of the next two tokens is TO, return False otherwise.</pre>
+<pre>
+<div class=function>_treatMainVerb(self, item, tempNodes, itemCounter)</div>
+Add a main verb to the trueChunks list. That is all that is done when the
+item is followed by adverbs only. In other cases, we have a chunk which
+has two subchunks and _updateChunkLists is called to introduce the
+second chunk. This is to deal with cases like 'might consider filing',
+where we want to end up with two events.</pre>
+<pre>
+<div class=function>_updateChunkLists(self)</div>
+Append an empty list to the end of all lists maintained in the
+GramVChunkList and update the counter.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>contains_adverbs_only(sequence)</div>
+Return true if sequence only contains adverbs, return false otherwise. Return
+True if the argument is an empty sequence.</pre>
+<pre>
+<div class=function>debug(text, newline=True)</div>
+</pre>
+<pre>
+<div class=function>getPOSList(constituents)</div>
+Returns a list of parts-of-speech from the list of constituents, typically
+the constituents are instances of NounChunk, VerbChunk or Token. Used for
+debugging purposes.</pre>
+<pre>
+<div class=function>getWordList(constituents)</div>
+Returns a list of words from the list of constituents, typically the
+constituents are instances of NounChunk, VerbChunk or Token. Used for
+debugging purposes.</pre>
+<pre>
+<div class=function>getWordPosList(constituents)</div>
+Returns a list of word/POS for all constituents.</pre>
+<pre>
+<div class=function>get_tokens(node_or_sequence)</div>
+Get tokens from a node or sequence.</pre>
+<pre>
+<div class=function>open_pickle_file(fname)</div>
+Return the contents of a pickle file.</pre>
+<pre>
+<div class=function>pprint(object, stream=None, indent=1, width=80, depth=None)</div>
+Pretty-print a Python object to a stream [default is sys.stdout].</pre>
+<pre>
+<div class=function>remove_interjections(gchunklist)</div>
+Remove interjections and punctuations from gchunk, which is a
+GramVChunkList, where self.node is either a VerbChunk or a list of
+tokens. Examples:
+   - ['ah', ',', 'coming', 'up']
+     &gt;&gt; ['ah', 'coming', 'up']
+   - ['she', 'has', ',',  'I', 'think', ',', 'to', 'go']
+     &gt;&gt; ['she', 'has', 'to', 'go']</pre>

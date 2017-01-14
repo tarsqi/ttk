@@ -1,0 +1,51 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.evita.main</div>
+
+<pre>
+<a href=#Evita>Evita</a>
+</pre>
+
+<pre>
+Main module for Evita, the event recognition component.
+
+Responsible for the top-level processing of Evita.</pre>
+
+
+<a name="Evita"/><div class="section">class Evita</div>
+<pre>
+<strong>Inherits from: <a href=components.common_modules.component.html#TarsqiComponent>TarsqiComponent</a></strong></strong>
+
+Class that implements Evita's event recognizer. Instance variables contain
+the name of the component, the TarsqiDocument, a docelement Tag and a
+TarsqiTree instance. The TarsqiTree instance in the doctree variable is the
+tree for just one element and not for the whole document or string.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidoc, docelement)</div>
+Set the NAME instance variable. The doctree variables is filled in during
+processing.</pre>
+<pre>
+<div class=function>process_element(self)</div>
+Process the element slice of the TarsqiDocument. Loop through all
+sentences in self.doctree and through all nodes in each sentence and
+determine if the node contains an event. Events are added to the tag
+repository on the element.</pre>
+</blockquote>

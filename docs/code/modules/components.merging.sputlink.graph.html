@@ -1,0 +1,166 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.merging.sputlink.graph</div>
+
+<pre>
+<a href=#Graph>Graph</a>
+</pre>
+
+<pre>
+Implements the Graph object which is used by the ConstraintPropagator.
+
+It is here where Allen's constraint propagation algorithm is implemented.</pre>
+
+
+<a name="Graph"/><div class="section">class Graph</div>
+<pre>
+
+Implements the graph object used in the constraint propagation algorithm.
+
+Instance variables:
+   filename      -  the name of the source file
+   cycle         -  an integer
+   queue         -  a list of Constraints
+   nodes         -  a hash of Nodes, indexed on node identifiers
+   edges         -  a hash of hashes of Edges, indexed on node identifiers
+   compositions  -  a CompositionTable</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, compositions)</div>
+Initialize an empty graph, with empty queue, nodes dictionary and
+edges dictionary.</pre>
+<pre>
+<div class=function>add_nodes(self, sources, source_type)</div>
+Creates Nodes for each source and add them to the nodes table. Also
+initializes the edges table now that all nodes are known. A source is
+either an event or timex tag or simply an identifier.</pre>
+<pre>
+<div class=function>get_edges(self)</div>
+Return all edges that have a constraint on them.</pre>
+<pre>
+<div class=function>pp_html(self, filename=None, filehandle=None, standalone=False)</div>
+Print the graph to an HTML table in filename.</pre>
+<pre>
+<div class=function>pp_nodes(self)</div>
+Print all nodes with their edges_in and edges_out attributes to
+standard output.</pre>
+<pre>
+<div class=function>propagate(self, constraint)</div>
+Propagate the constraint through the graph, using Allen's
+constraint propagation algorithm.</pre>
+<pre>
+<div class=function>reduce(self)</div>
+Reduce the grap to one that does not contain any relations derived by
+closure. This does not get you a graph with the original annotations
+because some might have been removed due to inconsistencies.</pre>
+<pre>
+<div class=function>remove_node(self, node_id)</div>
+Remove a node from the graph. Involves removing the node from the
+nodes hash, removing the node's column and row in the edges array and
+removing the node from edges_in and edges_out attributes of other
+nodes. This is not being used right now.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_constraint_to_edge(self, constraint, edge)</div>
+This method links a constraints to its edge by retrieving the edge
+from the graph, adding the constraint to this edge, and setting the edge
+attribute on the constraint.</pre>
+<pre>
+<div class=function>_add_constraint_to_queue(self, edge, relset, c1, c2)</div>
+</pre>
+<pre>
+<div class=function>_check_all_i_j_k(self, node_i, node_j, edge_i_j)</div>
+Check the constriants on [node_i --&gt; node_j --&gt; node_k].</pre>
+<pre>
+<div class=function>_check_all_k_i_j(self, node_i, node_j, edge_i_j)</div>
+Check the constraints on [node_k --&gt; node_i --&gt; node_j].</pre>
+<pre>
+<div class=function>_check_i_j_k(self, edge_i_j, edge_j_k, node_i, node_j)</div>
+Look at the i-&gt;j-&gt;k subgraph and check whether the new constraint in
+Edge(i,j) allows you to derive something new by composition. The nodes
+node_i and node_j could be derived from edge_i_j but are handed to this
+function because they were already available and it saves a bit of time
+this way.</pre>
+<pre>
+<div class=function>_check_k_i_j(self, edge_k_i, edge_i_j, node_i, node_j)</div>
+Look at the k-&gt;i-&gt;j subgraph and check whether the new constraint in
+Edge(i,j) allows you to derive something new by composition. The nodes
+node_i and node_j could be derived from edge_i_j but are handed to this
+function because they were already available and it saves a bit of time
+this way.</pre>
+<pre>
+<div class=function>_combine(self, edge, relset, c1, c2)</div>
+Compare the relation set on the edge to the relation set created by
+composition. Creates the intersection of the relation sets and checks
+the result: (i) inconsistency, (ii) more specific than relation set on
+edge, or (iii) something else. The alrgument c1 and c2 are the
+constraints that were composed to create relset and will be used to set
+the history on a new constraint if it is created.</pre>
+<pre>
+<div class=function>_compose(self, object1, object2)</div>
+Return the composition of the relation sets on the two objects. One
+object is an edge, the other a Constraint. Once the relations
+are retrieved from the objects all that's needed is a simple
+lookup in the compositions table.</pre>
+<pre>
+<div class=function>_get_edge(self, node1, node2)</div>
+Return the edge from node1 to node2.</pre>
+<pre>
+<div class=function>_html_added_table(self, fh)</div>
+</pre>
+<pre>
+<div class=function>_html_nodes_table(self, fh, nodes)</div>
+</pre>
+<pre>
+<div class=function>_intersect_constraints(self, edge, constraint)</div>
+Intersect the constraint that was just derived with the one already
+on the edge. There are three cases: (1) the new constraint, if it is the
+one originally handed to the propagate() function, introduces an
+inconsistency; (2) the new constraint is identical to the one already
+there and can be ignored; (3) the intersection of the new constraint
+with the old constraint is the same as the old constraint; and (4) the
+new constraint is more specific than the already existing
+constraint. The method returns False in the first two cases and the
+intersection in the last case.</pre>
+<pre>
+<div class=function>_normalize_relations(self)</div>
+Remove all relations that are not in the set of normalized relations,
+not used now but may come in handy later.</pre>
+<pre>
+<div class=function>_remove_derived_relations(self)</div>
+Remove all derived relations from the graph.</pre>
+<pre>
+<div class=function>_remove_disjunctions(self)</div>
+Remove all disjunctions from the graph, not used now but may come in
+handy later.</pre>
+<pre>
+<div class=function>_update_constraint(self, edge_i_j, constraint_i_j, intersection)</div>
+Update a constraint by setting its relation set to the intersection
+and then add it to the edge. Once you have done that you need to check
+whether this constraint then puts further constraints on incoming edges
+to node i and outgoing edges from node j.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>debug(indent=0, str='')</div>
+</pre>

@@ -1,0 +1,67 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module library.classifier.create_model</div>
+
+<pre>
+Create a MaxEnt model.
+
+Usage:
+
+$ python create_model.py OPTIONS &lt;VECTORS_FILE&gt;
+
+Options:
+
+   --mallet-dir DIR
+
+      Directory where Mallet lives, it should contain the bin subdirectory. The
+      default is set by the MALLET variable below.
+
+   --cross-validation N
+
+      There is no cross validation by default, set this to a number to turn
+      validation on, for example, with 5 you will get 5-fold cross validation.
+
+   --trainer 'MaxEnt'|'NaiveBayes'|'C45'|'DecisionTree'|...
+
+      One of the trainers allowed by Mallet, the Mallet API at
+      http://mallet.cs.umass.edu/api/ has a list somewhere in the
+      cs.mallet.classify package. The default is MaxEnt.
+
+The vectors file is the text file created by create_vectors.py. By default, this
+will use the MaxEnt classifier and perform no cross validation. Edit the TRAINER
+and CROSS_VALIDATION variables to change this behaviour.
+
+The script creates the following files:
+
+   &lt;VECTORS_FILE&gt;.model
+   &lt;VECTORS_FILE&gt;.err
+   &lt;VECTORS_FILE&gt;.out
+   &lt;VECTORS_FILE&gt;.vect
+
+The first one is the one needed for running the classifier. Note that if cross
+validation is on then there will be no .model file, instead there will be models
+for each fold.</pre>
+
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>create_model(vectors, trainer='MaxEnt', cross_validation=None, output=False)</div>
+Create a Mallet model given a vectors file.</pre>
+<pre>
+<div class=function>remove_files(vectors)</div>
+Remove all files derived from the vectors file.</pre>
