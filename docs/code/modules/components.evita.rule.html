@@ -1,0 +1,65 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.evita.rule</div>
+
+<pre>
+<a href=#FeatureRule>FeatureRule</a>
+</pre>
+
+<pre>
+Code to apply Evita feature rules
+
+Contains the code for matching token sequences against feature rules. The
+feature rules are defined in library.evita.patterns.feature_rules.FEATURE_RULES
+and are used by the VChunkFeatures class in Evita.</pre>
+
+
+<a name="FeatureRule"/><div class="section">class FeatureRule</div>
+<pre>
+
+Objects of this class contain a chunk and a feature rule and are tasked
+with matching the rule to the chunk.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, rule, chunk)</div>
+Initialize the rule, with name, left-hand side and right-hand side, and add
+the chunk it will apply to.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>match(self)</div>
+Match the rule to the chunk. Return the right-hand side of the rule if it was
+succesfull and return False otherwise.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_checkItem(self, chunk_element, ruleInfo)</div>
+Check whether the chunk element matches the rule.</pre>
+<pre>
+<div class=function>_matchPos(self, ruleInfo, i)</div>
+Match the rule info to the pos of the token at index i. If there
+is no ruleInfo, then consider the rule matched.</pre>
+<pre>
+<div class=function>_matchWord(self, ruleInfo, i)</div>
+Match the rule info to the string of the token at index i. If there
+is no ruleInfo, then consider the rule matched.</pre>
+</blockquote>

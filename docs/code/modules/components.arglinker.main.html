@@ -1,0 +1,80 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.arglinker.main</div>
+
+<pre>
+<a href=#ArgLinker>ArgLinker</a>
+</pre>
+
+<pre>
+Main module for the ArgLinker component.
+
+ArgLinker is a simple Python placeholder for the later to be added
+MaxEnt argument linker.</pre>
+
+
+<a name="ArgLinker"/><div class="section">class ArgLinker</div>
+<pre>
+<strong>Inherits from: <a href=components.common_modules.component.html#TarsqiComponent>components.common_modules.component.TarsqiComponent</a></strong>
+
+Simple Python place holder for a more sophisticated argument linker
+using a MaxEnt classifier.
+
+Instance variables:
+   NAME - a string
+   doctree - a Document</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+Load the Slinket dictionaries if they have not been loaded yet.</pre>
+<pre>
+<div class=function>getLinks(self, sentence, args)</div>
+</pre>
+<pre>
+<div class=function>process(self, infile, outfile, depfile)</div>
+Run the ArgLinker on the input file and write the results to the
+output file. Both input an doutput file are fragments. Uses
+the xml parser as well as the fragment converter to prepare
+the input and create the shallow tree that ArgLinker requires.
+Arguments:
+   infile - an absolute path
+   outfile - an absolute path</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_check_pair(self, noun, verb, sentence)</div>
+</pre>
+<pre>
+<div class=function>_crawl(self, sent, objs=None)</div>
+</pre>
+<pre>
+<div class=function>_create_arglink(self, event_token, argument)</div>
+</pre>
+<pre>
+<div class=function>_create_arglinks(self, sentence, alinks)</div>
+For each noun group in the sentence, get the head and find a event
+that it is an argument of.</pre>
+<pre>
+<div class=function>_extractLinks(self)</div>
+</pre>
+<pre>
+<div class=function>_find_by_lid(self, sent, lid)</div>
+</pre>
+</blockquote>

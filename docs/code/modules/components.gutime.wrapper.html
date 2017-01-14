@@ -1,0 +1,74 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.gutime.wrapper</div>
+
+<pre>
+<a href=#GUTimeWrapper>GUTimeWrapper</a>
+</pre>
+
+<pre>
+Contains the GUTime wrapper.
+
+The wrapper takes all sentences in the TarsqiDocument and creates the input
+needed by TimeTag.pl, which is the wrapper around TempEx.pm.
+
+The input required by TimeTag.pl looks as follows:
+
+   &lt;DOC&gt;
+   &lt;DATE&gt;20120912&lt;/DATE&gt;
+   &lt;s&gt;
+      &lt;lex id=1 pos="NNP"&gt;Monday&lt;/lex&gt;
+      &lt;lex id=2 pos="NN"&gt;morning&lt;/lex&gt;
+      &lt;lex id=3&gt;and&lt;/lex&gt;
+      &lt;lex id=4&gt;today&lt;/lex&gt;
+   &lt;/s&gt;
+   &lt;/DOC&gt;
+
+The DOC root is required and so is the DATE tag. Otherwise, only s and lex tags
+are allowed. Any kind of spacing between the tags is allowed.
+
+Note that the directory that this wrapper is in has two unused files: gutime.pl
+and postTempEx.pl. Much of the functionality in those files is either in this
+wrapper or obsolete. They are kept around for reference, mostly for the language
+on temporal functions in postTempEx.pl.</pre>
+
+
+<a name="GUTimeWrapper"/><div class="section">class GUTimeWrapper</div>
+<pre>
+
+Wrapper for GUTime.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, document)</div>
+</pre>
+<pre>
+<div class=function>process(self)</div>
+</pre>
+<pre>
+<div class=function>process_using_files(self)</div>
+Create the input required by TimeTag.pl, call the Perl script and
+collect the TIMEX3 tags.</pre>
+<pre>
+<div class=function>process_using_string(self)</div>
+Create the input required by TimeTag.pl, call the Perl script and
+collect the TIMEX3 tags.</pre>
+</blockquote>
+
+<div class="section">module functions</div>

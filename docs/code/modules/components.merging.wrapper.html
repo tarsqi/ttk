@@ -1,0 +1,73 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.merging.wrapper</div>
+
+<pre>
+<a href=#MergerWrapper>MergerWrapper</a>
+</pre>
+
+<pre>
+Python wrapper around the merging code.
+
+Calls SputLink's ConstraintPropagator do do all the work. For now does not do
+any graph reduction at the end.
+
+TODO:
+
+- Decide what we want to take from the output. We now take all non-disjunctive
+  links. We could add the disjunctive links as well. Or we could not take
+  inverse relations. Or we could reduce the graph to a minimal graph.
+
+- We now give all links, but they are not ordered. For the merging routine to be
+  fully effective we should rank the TLINKs in terms of how likely they are to
+  be correct.</pre>
+
+
+<a name="MergerWrapper"/><div class="section">class MergerWrapper</div>
+<pre>
+
+Wraps the merging code, including Sputlink's temporal closure code.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, document)</div>
+</pre>
+<pre>
+<div class=function>process(self)</div>
+Run the contraint propagator on all TLINKS in the TarsqiDocument and
+add resulting links to the TarsqiDocument.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_constraint_to_tarsqidoc(self, edge)</div>
+Add the constraint as a TLINK to the TarsqiDocument.</pre>
+<pre>
+<div class=function>_update_tarsqidoc(self, cp)</div>
+Remove existing TLINKs from the TarsqiDocument and add new ones given
+the final constraints in the graph used by the constraint propagator.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>tlink_arg1_attr(identifier)</div>
+Return the TLINK attribute for the element linked given the identifier.</pre>
+<pre>
+<div class=function>tlink_arg2_attr(identifier)</div>
+Return the TLINK attribute for the element linked given the identifier.</pre>

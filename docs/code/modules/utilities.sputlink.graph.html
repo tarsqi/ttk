@@ -1,0 +1,161 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module utilities.sputlink.graph</div>
+
+<pre>
+<a href=#Graph>Graph</a>
+</pre>
+
+
+<a name="Graph"/><div class="section">class Graph</div>
+<pre>
+
+Implements the graph object used in the constraint propagation algorithm.
+
+Instance variable:
+   file - the name of the source file
+   cycle - an integer
+   queue - a list of Constraints
+   nodes - a hash of Nodes, indexed on node identifiers
+   edges - a hashs of hashes of Edges, indexed on node identifiers
+   compositions - a CompositionTable</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+Initialize an empty graph, with empty queue, node list and edges
+hash.</pre>
+<pre>
+<div class=function>add_nodes(self, events, instances, timexes)</div>
+Adds the events/instances and timexes to the nodes table. Also
+initializes the edges table now that all nodes are known.</pre>
+<pre>
+<div class=function>get_edges(self)</div>
+Return all edges that have a constraint on them.</pre>
+<pre>
+<div class=function>pp(self, filename)</div>
+Print the graph to an HTML table in filename.</pre>
+<pre>
+<div class=function>pp_nodes(self)</div>
+Print all nodes with their edges_in and edges_out attributes to
+standard output.</pre>
+<pre>
+<div class=function>propagate(self, constraint)</div>
+Propagate the constraint through the graph, using Allen's
+constraint propagation algorithm.</pre>
+<pre>
+<div class=function>reduce(self)</div>
+Create a minimal graph, removing disjunctions, normalizing
+relations, removing all constraints that can be derived, and
+collapsing equivalence classes.</pre>
+<pre>
+<div class=function>remove_node(self, id)</div>
+Remove a node from the graph. Involves removing the node from the
+nodes hash, removing the node's column and row in the edges
+array and removing the node from edges_in and edges_out
+attributes of other nodes.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_OLD_get_edge(self, node1, node2)</div>
+Return the edge from node1 to node2.</pre>
+<pre>
+<div class=function>_add_constraint_to_edge(self, constraint, edge)</div>
+This method links a constraints to its edge by retrieving the edge
+from the graph, adding the constraint to this edge, and
+setting the edge attribute on the constraint.</pre>
+<pre>
+<div class=function>_add_constraint_to_queue(self, edge, relset, c1, c2)</div>
+</pre>
+<pre>
+<div class=function>_check_i_j_k(self, edge_i_j, edge_j_k, node_i, node_j)</div>
+Look at the i-&gt;j-&gt;k subgraph and check whether the new constraint
+in Edge(i,j) allows you to derive something new by
+composition. The nodes node_i and node_j could be derived from
+edge_i_j but are handed to this function because they were
+already available and it saves a bit of time this way.</pre>
+<pre>
+<div class=function>_check_k_i_j(self, edge_k_i, edge_i_j, node_i, node_j)</div>
+Look at the k-&gt;i-&gt;j subgraph and check whether the new constraint
+in Edge(i,j) allows you to derive something new by
+composition. The nodes node_i and node_j could be derived from
+edge_i_j but are handed to this function because they were
+already available and it saves a bit of time this way.</pre>
+<pre>
+<div class=function>_collapse_equivalence_classes(self)</div>
+</pre>
+<pre>
+<div class=function>_combine(self, edge, relset, c1, c2)</div>
+Compare the relation set on the edge to the relation set created by
+composition. Creates the intersection of the relation sets and
+checks the result: (i) inconsistency, (ii) more specific than
+relation set on edge, or (iii) something else. The alrgument
+c1 and c2 are the constraints that were composed to create
+relset and will be used to set the history on a new constraint
+if it is created.</pre>
+<pre>
+<div class=function>_compose(self, object1, object2)</div>
+Return the composition of the relation sets on the two objects. One
+object is an edge, the other a Constraint. Once the relations
+are retrieved from the objects all that's needed is a simple
+lookup in the compositions table.</pre>
+<pre>
+<div class=function>_get_edge(self, node1, node2)</div>
+Return the edge from node1 to node2.</pre>
+<pre>
+<div class=function>_intersect_constraints(self, edge, constraint)</div>
+Intersect the constraint that was just derived to the one already
+on the edge. There are three cases. (1) The new constraint, if
+it is the one originally handed to the propagate() function,
+could introduce an inconsistency, this should be reported
+(***which is not done yet***). (2) The new constraint could be
+identical to the one already there and can be ignored. (3) The
+new constraint is more specifc than the already existing
+constraint. The method returns False in the first two cases
+and the intersection in the last case.</pre>
+<pre>
+<div class=function>_normalize_relations(self)</div>
+Remove all relations that are not in the set of normalized
+relations.</pre>
+<pre>
+<div class=function>_remove_derivable_relations(self)</div>
+First mark and then remove all constraints that can be derived.</pre>
+<pre>
+<div class=function>_remove_disjunctions(self)</div>
+Remove all disjunctions from the graph.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>abbreviate_convex_relation(rel)</div>
+</pre>
+<pre>
+<div class=function>compare_id(a, b)</div>
+</pre>
+<pre>
+<div class=function>debug(indent=0, str='')</div>
+</pre>
+<pre>
+<div class=function>intersect_relations(rels1, rels2)</div>
+Returns the intersection of two relation sets. Returns None if both
+of the two sets are None.</pre>
+<pre>
+<div class=function>invert_interval_relations(relations)</div>
+Take a disjunction of interval relations represented as a string,
+replace each disjunct with its inverse and return the result.</pre>

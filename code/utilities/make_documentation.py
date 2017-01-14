@@ -3,8 +3,11 @@
 Create manual pages with the docstrings for modules, classes and functions,
 using the modules listed in modules.py.
 
+To update the documentation run this script from the directory it is in.
+
 This code was written because pydoc breaks on some of the tarsqi modules, most
 notably those that import the treetagger.
+
 
 TODO:
 
@@ -14,8 +17,7 @@ TODO:
 - At some point the code created potentially undesired documentation for the
   module components.preprocessing.wrapper, adding a couple of module-level
   functions that are not in the code, but are imported functions. This has
-  seized to be the case for that module, but this did not happen through an
-  intentional change on my end.
+  seized to be the case for that module, but it is not clear why.
 
 """
 
@@ -28,15 +30,15 @@ from types import ClassType, FunctionType, MethodType, TypeType
 from modules import MODULES
 
 # Set this to True if you want the sources for all functions written to files
-# that are linked to from the module page, this slows down the code a bit and
-# requires 6MB more space.
+# that are linked to from the module page, this slows down the code quite a bit
+# and requires 6MB more space.
 WRITE_FUNCTION_SOURCES = False
 
 # With this one set to True, private functions (those that start with a single
 # underscore) are included.
 PRINT_PRIVATE_FUNCTIONS = True
 
-# directory where the document ation is written
+# directory where the documentation is written
 DOCUMENTATION_DIR = os.path.join('..', '..', 'docs', 'code')
 
 

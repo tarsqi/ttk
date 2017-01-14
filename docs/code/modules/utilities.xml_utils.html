@@ -1,0 +1,54 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module utilities.xml_utils</div>
+
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>emptyContentString(tagname, attrs)</div>
+Return the string representation of a non-consuming tag given the tagname and a
+dictionary of attributes.</pre>
+<pre>
+<div class=function>endElementString(tagname)</div>
+Return the string representation of a closing tag given the tagname.</pre>
+<pre>
+<div class=function>escape(data, entities={})</div>
+Escape &, &lt;, and &gt; in a string of data.
+
+You can escape other strings of data by passing a dictionary as
+the optional entities parameter.  The keys and values must all be
+strings; each key will be replaced with its corresponding value.</pre>
+<pre>
+<div class=function>merge_tags_from_files(infile1, infile2, merged_file)</div>
+Merge the tags from infile1, which has all tags from the input, with tags from
+infile2, which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots
+and it is assumed that both files contain the same amount of lex tags.</pre>
+<pre>
+<div class=function>merge_tags_from_xmldocs(doc1, doc2)</div>
+Merge the tags from doc1, which has all tags from the input, with tags from doc2,
+which has only s, lex and TIMEX3 tags. The lex tags are used as the pivots and it is
+assumed that both files contain the same amount of lex tags. The TIMEX3 tags from doc2
+are merged into doc1.</pre>
+<pre>
+<div class=function>protect_text(text)</div>
+Take a text string and protect XML special characters. Should also do something
+with non-ascii characters as well as with things like &#2435; and &quote;. Should use
+xml.sax.saxutils methods.</pre>
+<pre>
+<div class=function>startElementString(tagname, attrs)</div>
+Return the string representation of an opening tag given the tagname and a dictionary
+of attributes.</pre>

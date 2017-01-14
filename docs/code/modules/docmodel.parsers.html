@@ -1,0 +1,163 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module docmodel.parsers</div>
+
+<pre>
+<a href=#ATEEParser>ATEEParser</a>
+<a href=#DefaultParser>DefaultParser</a>
+<a href=#RTE3Parser>RTE3Parser</a>
+<a href=#TimebankParser>TimebankParser</a>
+</pre>
+
+
+<a name="ATEEParser"/><div class="section">class ATEEParser</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.parsers.html#DefaultParser>docmodel.parsers.DefaultParser</a></strong>
+
+The parser for ATEE document.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self)</div>
+All ATEE documents have a DATE tag with a value attribute, the value of that attribute
+is returned.</pre>
+</blockquote>
+
+<a name="DefaultParser"/><div class="section">class DefaultParser</div>
+<pre>
+
+The simplest parser, much like the SimpleXml parser for the old simple-xml
+doctype. It creates a TarsqiDocument instance with a list of TarsqiDocParagraphs in
+it. It finds the target tag, which is assumed to be TEXT, and considers all text
+inside as the content of a single TarsqiDocParagraph.
+
+TODO: figure out exatly what it does with the paragraphs and update the documentation
+
+TODO: may want to allow the user to hand in a target_tag as a processing parameter,
+thereby bypassing the default list in CONTENT_TAGS. Should include the option to use
+--target_tag=None so that we overrule using any tag (for example for documents with
+lots of TEXT tags, in which case only the first one of those would be used).
+
+TODO: make this work with pure text input, taking all content, perhaps a default
+should be to take all text if no target tag could be found.
+
+Instance variables:
+   sourcedoc - a SourceDoc instance
+   elements - a list with TarsqiDocParagraph elements
+   xmldoc - an XmlDocument instance
+   metadata - a dictionary</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, parameters)</div>
+Not used now but could be used to hand in specific metadata parsers or other
+functionality that cuts through genres.</pre>
+<pre>
+<div class=function>get_dct(self)</div>
+Return today's date in YYYYMMDD format.</pre>
+<pre>
+<div class=function>parse(self, sourcedoc)</div>
+Return an instance of TarsqiDocument. Use self.content_tag to determine what
+part of the suorce to take. Populate the TarsqiDocument with the following
+content: (i) sourcedoc: the SourceDoc instance that was created by the
+SourceParser, (ii) elements: a list of TarsqiDocParagraphs, (iii) xmldoc: an
+XmlDocument, this is being phased out, (iv) metadata: a dictionary with now one
+element, the DCT, which is set to today.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_find_target_tag(self)</div>
+Return the Tag that contains the main content that needs to be processed. Any
+text outside of the tag will NOT be processed. Uses the tagnames in CONTENT_TAGS
+or the overide in the self.content_tag, which originated from the user
+parameters. Return None if there is no such tag.</pre>
+<pre>
+<div class=function>_get_tag_content(self, tagname)</div>
+Return the text content of the first tag with name tagname, return None if
+there is no such tag.</pre>
+</blockquote>
+
+<a name="RTE3Parser"/><div class="section">class RTE3Parser</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.parsers.html#DefaultParser>docmodel.parsers.DefaultParser</a></strong>
+
+The parser for RTE3 documents, does not differ yet from the default
+parser.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self)</div>
+</pre>
+</blockquote>
+
+<a name="TimebankParser"/><div class="section">class TimebankParser</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.parsers.html#DefaultParser>docmodel.parsers.DefaultParser</a></strong>
+
+The parser for Timebank documents. All it does is overwriting the get_dct() method.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self, xmldoc=None)</div>
+Takes an XmlDocument, extracts the document creation time, and returns it as
+a string of the form YYYYMMDD. Depending on the source, the DCT can be
+found in one of the following tags: DOCNO, DATE_TIME, PUBDATE or FILEID.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_get_doc_source(self)</div>
+Return the name of the content provider as well as the content of the DOCNO
+tag that has that information.</pre>
+<pre>
+<div class=function>_parse_tag_content(self, regexpr, tagname)</div>
+Return the DCT part of the tag content of tagname, requires a reqular
+expression as one of the arguments.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>escape(data, entities={})</div>
+Escape &, &lt;, and &gt; in a string of data.
+
+You can escape other strings of data by passing a dictionary as
+the optional entities parameter.  The keys and values must all be
+strings; each key will be replaced with its corresponding value.</pre>
+<pre>
+<div class=function>get_today()</div>
+Return today's date in YYYYMMDD format.</pre>
+<pre>
+<div class=function>slurp(text, offset, test)</div>
+Starting at offset in text, find a substring where all characters pass test. Return
+the begin and end position and the substring.</pre>
+<pre>
+<div class=function>slurp_space(text, offset)</div>
+Starting at offset consume a string of space characters, then return the
+begin and end position and the consumed string.</pre>
+<pre>
+<div class=function>slurp_token(text, offset)</div>
+Starting at offset consume a string of non-space characters, then return
+the begin and end position and the consumed string.</pre>
+<pre>
+<div class=function>split_paragraph(text, adjustment=0)</div>
+Very simplistic way to split a paragraph into more than one paragraph, simply by
+looking for an empty line.</pre>

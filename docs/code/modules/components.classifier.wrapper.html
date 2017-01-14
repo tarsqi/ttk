@@ -1,0 +1,63 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.classifier.wrapper</div>
+
+<pre>
+<a href=#ClassifierWrapper>ClassifierWrapper</a>
+</pre>
+
+<pre>
+Python wrapper around the Mallet Classifier</pre>
+
+
+<a name="ClassifierWrapper"/><div class="section">class ClassifierWrapper</div>
+<pre>
+
+Wraps the maxent link classifier.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, document)</div>
+</pre>
+<pre>
+<div class=function>process(self)</div>
+Create files with vectors and hand them to the classifier for
+processing. Processing will update the document's tag repository
+when tlinks are added.</pre>
+<pre>
+<div class=function>process_future(self)</div>
+This is an alternative way to do process() that is not used yet. The
+difference is that it uses subprocess instead of os.system() and that it
+pipes each line to the classifier, not using any temporary files. It has
+one weird problem, which is that when we process the very first line the
+identifier is missing from the output.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_links(self, ee_vectors, et_vectors, ee_results, et_results)</div>
+Insert new tlinks into the document using the vectors and the results
+from the classifier.</pre>
+<pre>
+<div class=function>_add_links_future(self, ee_results, et_results)</div>
+Insert new tlinks into the document using the results from the
+classifier.</pre>
+</blockquote>
+
+<div class="section">module functions</div>

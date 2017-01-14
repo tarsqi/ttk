@@ -1,0 +1,120 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module utilities.sputlink.main</div>
+
+<pre>
+<a href=#ConstraintPropagator>ConstraintPropagator</a>
+</pre>
+
+
+<a name="ConstraintPropagator"/><div class="section">class ConstraintPropagator</div>
+<pre>
+
+Main SputLink class.
+
+Instance variables:
+   file - a file object
+   xmldoc - the Xml document created from the file
+   grap - a Graph
+   pending - a list
+   compositions - a CompositionTable
+   intersections - not yet used</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>add_constraint(self)</div>
+Pop a Constraint from the pending list if it is not empty and ask
+the graph to propagate it..</pre>
+<pre>
+<div class=function>add_constraints(self, force=False, threshold=0)</div>
+Add all constraints to the graph, which will propagate them in
+turn. Currently hands all constraints to the graph. A later
+version will either use a confidence threshold under which
+constraints will not be added or some other mechanism to
+create the pending queue. Also, the force parameter is not yet
+used.</pre>
+<pre>
+<div class=function>create_output(self, outfile)</div>
+Take the edges from the graph and add them to the xml document as
+tlinks.</pre>
+<pre>
+<div class=function>pp_compositions(self, filename)</div>
+Print the composition table to an HTML table.</pre>
+<pre>
+<div class=function>pp_graph(self, file)</div>
+Print the graph in an HTML table.</pre>
+<pre>
+<div class=function>reduce_graph(self)</div>
+Ask the graph to reduce itself.</pre>
+<pre>
+<div class=function>reset(self)</div>
+Reset the file, graph and pendng instance variables.</pre>
+<pre>
+<div class=function>setup(self, compositions_file, tml_file)</div>
+Read the compositions table and export the compositions to the
+graph. Read the TimeML file and send the events, instances and
+timexes to the graph, and use the tlinks to build the pending
+queue.</pre>
+<pre>
+<div class=function>setup_for_chronicler(self, compositions_file, timexes, tlinks)</div>
+Read the compositions table and export the compositions to
+the graph. Read the timexes and the tlinks as given by the
+chronicler. Send the events, instances and timexes to the
+graph, and use the tlinks to build the pending queue.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_build_pending_queue(self, tlinks)</div>
+Take a list of tlinks, encoded as XmlDocElements, and add them to the
+pending queue as instances of Constraint.</pre>
+<pre>
+<div class=function>_filter_tlinks(self, tlinks)</div>
+Return only the S2T links, the Blinker links and the classifier
+links with confidence of 0.95 or higher. This is here to mimic
+functionality of the Perl version of SputLink.</pre>
+<pre>
+<div class=function>_load_objects(self, events, instances, timexes, tlinks)</div>
+Add the events, instances and timexes to the graph and the tlinks
+to the pending queue.</pre>
+<pre>
+<div class=function>_read_file(self, file)</div>
+Read the contents of a TimeML file using the XML parser of the
+Tarsqi Toolkit. Extract all events, instances, timexes and
+tlinks and return these.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>create_dct_element(dct)</div>
+Returns an XmlDocElement that represents the Document Creation Time as an opening
+tag. The argument is a string of the format YYYYMMDD.</pre>
+<pre>
+<div class=function>invert_timeml_relation(reltype)</div>
+Look up the TimeML relation in the table and return its inverse.</pre>
+<pre>
+<div class=function>translate_interval_relation(reltype)</div>
+Look up a TimeML relation in the table and return it as an interval
+relation.</pre>
+<pre>
+<div class=function>translate_timeml_relation(reltype)</div>
+Look up a TimeML relation in the table and return it as an interval
+relation.</pre>

@@ -1,11 +1,8 @@
 
 body {
-   max-width: 1000pt;
+   max-width: 900pt;
    background-color: #fff;
-   margin-top: 10pt;
-   margin-left: 15pt;
-   margin-right: 15pt;
-   margin-bottom: 10pt;
+   margin: 10pt;
 }
 
 body, p, td {
@@ -18,7 +15,6 @@ h1 {
    border-style: solid;
    border-width: thin;
    margin-top: 10pt;
-   margin-left: -5pt;
    padding: 15pt;
    padding-left: 10pt;
    font-size: 24pt
@@ -30,7 +26,6 @@ h2 {
    border-width: thin;
    margin-top: 30pt;
    margin-bottom: 15pt;
-   margin-left: -5pt;
    padding: 10pt;
    font-size: 16pt
 }
@@ -46,4 +41,12 @@ code {
     border: thin dotted gray;
     font-family: monospace;
     background-color: #eee;
+}
+
+.navigation {
+    font-size: 120%;
+}
+
+.subtitle {
+    font-size: 110%;
 }

@@ -1,0 +1,58 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.evita.bayes</div>
+
+<pre>
+<a href=#DisambiguationError>DisambiguationError</a>
+<a href=#BayesEventRecognizer>BayesEventRecognizer</a>
+</pre>
+
+<pre>
+Contains a Bayesian disambiguator.</pre>
+
+
+<a name="DisambiguationError"/><div class="section">class DisambiguationError</div>
+<pre>
+<strong>Inherits from: <a href=exceptions.html#LookupError>LookupError</a></strong></strong>
+
+Use a special exception class to distinguish general KeyErrors from
+errors due to failed disambiguation.</pre>
+
+
+<a name="BayesEventRecognizer"/><div class="section">class BayesEventRecognizer</div>
+<pre>
+
+Simple Bayesian disambiguator. The only features used are the pos
+tag and the definiteness of the noun chunk.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, senseProbs, condProbs)</div>
+Initialize with dictionaries of sense frequencies/probabilities and
+conditional probabilities that take features into account.</pre>
+<pre>
+<div class=function>isEvent(self, lemma, features)</div>
+Return True if lemma is an event, False if it is not, and raise a
+DisambiguationError if there is not enough data for a decision.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>get_classifier()</div>
+</pre>

@@ -1,0 +1,39 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module docmodel.main</div>
+
+<pre>
+Initialization of parsers responsible for first-level processing.
+
+This file includes the PARSERS dictionary, which is indexed on a source
+identifier (handed in by the --source option). If a new source type is
+introduced, then an item needs to be added to the PARSERS dictionary. In
+addition, if new parsers are required they should be added to source_parser.py
+and metadata_parser.py.</pre>
+
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>create_docstructure_parser()</div>
+Return the default document structure parser.</pre>
+<pre>
+<div class=function>create_metadata_parser(options)</div>
+</pre>
+<pre>
+<div class=function>create_source_parser(options)</div>
+</pre>

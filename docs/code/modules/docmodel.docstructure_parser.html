@@ -1,0 +1,72 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module docmodel.docstructure_parser</div>
+
+<pre>
+<a href=#DocumentStructureParser>DocumentStructureParser</a>
+</pre>
+
+<pre>
+Document Structure Parser.
+
+This module contains a minimal document structure parser. It is meant as a
+temporary default and will be replaced by more sophisticated parsers and these
+parsers will act more like the other tarsqi components.
+
+The main goal of the parser is to add docelement tags to the tag repository on
+the TarsqiDocument. Sometimes docelement tags already exist in the tag
+repository (for example when reading a ttk file), in which case the parser does
+nothing. Otherwise, the parser calls a simple method to recognize paragraphs and
+creates a docelement Tag for each of them.
+
+The docelements are used by Tarsqi components by looping over them and
+processing the elements one by one.</pre>
+
+
+<a name="DocumentStructureParser"/><div class="section">class DocumentStructureParser</div>
+<pre>
+
+Simple document structure parser used as a default if no structure tags are
+found in the tag repository of the TarsqiDocument.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>parse(self, tarsqidoc)</div>
+Apply a default document structure parser to the TarsqiDocument if
+there are no docelement tags in the tags repository. The parser uses
+white lines to separate the paragraphs.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>slurp(text, offset, test)</div>
+Starting at offset in text, find a substring where all characters pass
+test. Return the begin and end position and the substring.</pre>
+<pre>
+<div class=function>slurp_space(text, offset)</div>
+Starting at offset consume a string of space characters, then return the
+begin and end position and the consumed string.</pre>
+<pre>
+<div class=function>slurp_token(text, offset)</div>
+Starting at offset consume a string of non-space characters, then return
+the begin and end position and the consumed string.</pre>
+<pre>
+<div class=function>split_paragraphs(text)</div>
+Very simplistic way to split a paragraph into more than one paragraph,
+simply by looking for an empty line.</pre>

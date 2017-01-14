@@ -1,0 +1,160 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.merging.sputlink.objects</div>
+
+<pre>
+<a href=#Constraint>Constraint</a>
+<a href=#Edge>Edge</a>
+<a href=#Node>Node</a>
+</pre>
+
+
+<a name="Constraint"/><div class="section">class Constraint</div>
+<pre>
+
+An object representing the constraint on an edge.
+
+Instance variables:
+   node1 - an eiid or tid
+   node2 - an eiid or tid
+   relset - a string
+   edge - the Edge the constraint is expressed on
+   cycle - an integer, the closure cycle in which the constraint was created
+   source -
+   graph -
+   history -</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, id1, rels, id2, cycle=None, source=None, history=None)</div>
+</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>get_node1(self)</div>
+Retrieve the node1 object from the edge.</pre>
+<pre>
+<div class=function>get_node2(self)</div>
+Retrieve the node2 object from the edge.</pre>
+<pre>
+<div class=function>has_normalized_relation(self)</div>
+Return True if the relation is one of the normalized ones, return
+False otherwise.</pre>
+<pre>
+<div class=function>has_simple_relation(self)</div>
+Return True if the relation is one of the non-disjunctive ones,
+return False otherwise.</pre>
+<pre>
+<div class=function>history_string(self)</div>
+</pre>
+<pre>
+<div class=function>is_disjunction(self)</div>
+Return True if the relation set is a disjunction, return False
+otherwise.</pre>
+<pre>
+<div class=function>is_garbage(self)</div>
+Return True if the constraint is useless and potentially damaging to the
+algorithm. We don't like constraints like [e1 &lt; e1].</pre>
+<pre>
+<div class=function>pp_history(self, indent='')</div>
+</pre>
+</blockquote>
+
+<a name="Edge"/><div class="section">class Edge</div>
+<pre>
+
+Implements the edges of the graph.
+
+Instance variables:
+   id           -  the node identifier
+   node1        -  an eiid, tid or other identifier
+   node2        -  an eiid, tid or other identifier
+   graph        -  the Graph the edge is in
+   constraint   -  None or the current Constraint on the edge
+   relset       -  None or the value of constraint.relset
+   constraints  -  history of Constraints, a list</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, n1, n2, graph)</div>
+Initialize from two node identifiers and the graph.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>add_constraint(self, constraint)</div>
+Set the constaint attribute and append to the constraints
+attribute.</pre>
+<pre>
+<div class=function>get_node1(self)</div>
+retrun the Node object for node1.</pre>
+<pre>
+<div class=function>get_node2(self)</div>
+retrun the Node object for node2.</pre>
+<pre>
+<div class=function>is_derived(self)</div>
+Returns True if the constraint on the edge was derived by closure.</pre>
+<pre>
+<div class=function>remove_constraint(self)</div>
+Remove the constraint from the edge. Also updates the edges_in and
+edges_out attributes on the source and target node.</pre>
+</blockquote>
+
+<a name="Node"/><div class="section">class Node</div>
+<pre>
+
+Implements the node objects of the graph.
+
+Instance variables:
+   id           -  an eiid, tid or other identifier
+   text         -  string from the document or empty string
+   source       -  a Tag or an identifier
+   source-type  -  'TIMEX3', 'EVENT', or 'IDENTIFIER'
+   edges_in     -  a hash indexed on node ids
+   edges_out    -  a hash indexed on node ids
+
+The source and source-type attributes encode what element or elements the
+Node was created from. If source-type is TIMEX or EVENT then source is a
+single tag.
+
+But if source-type is 'class', then the Node implements an equivalence set
+of time expressions and events, that is, a set defined by the = interval
+relation. The source attribute than is a list of tuples, where each tuple
+contains (i) a Tag, (ii) a pair of interval relation and TimeML relation,
+and (iii) another XmlDocElement or pair of XmlDocElements. The very first
+Node in the entire list is the class representative. (TODO: is this still
+relevant?)</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, source, identifier, source_type, text)</div>
+Initialize from a timex, an event or simply an identifier, using tid,
+eiid or the identifier for the node identifier. Set edges_in and
+edges_out to the empty hash.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+Returns string in "&lt;Node id text&gt;" format.</pre>
+<pre>
+<div class=function>pretty_print(self)</div>
+Print the node with its edges_in and edges_out attributes to standard
+output.</pre>
+</blockquote>

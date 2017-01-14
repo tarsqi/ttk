@@ -1,0 +1,95 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.slinket.EventExpression</div>
+
+<pre>
+<a href=#EventExpression>EventExpression</a>
+</pre>
+
+
+<a name="EventExpression"/><div class="section">class EventExpression</div>
+<pre>
+
+Class that wraps an event in a way that's convenient for
+Slinket.
+
+Instance variables:
+
+   dict
+   eid
+   eiid
+   tense
+   aspect
+   nf_morph
+   polarity
+   modality
+   evClass
+   pos
+   form
+
+   locInSent - idx of node bearing event tag in the document, wrt to its
+               sentence parent node.
+   eventNum - position of event in sentence.eventList (needed for
+              potential slinking w/ previous or next events in list)
+   isSlinking - an integer, set to 0 at initialization, does not seem to
+                be used</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, eid, locInSent, eventNum, dict)</div>
+Set all attributes, using default values if appropriate.
+Arguments:
+   eid - a string
+   locInSent - an integer
+   eventNum - an integer
+   dict - a dictionary with event attributes</pre>
+<pre>
+<div class=function>alinkingContexts(self, key)</div>
+Returns the list of alink patterns from the dictionary.</pre>
+<pre>
+<div class=function>can_introduce_alink(self)</div>
+Returns True if the EventExpression instance can introduce an
+Alink, False otherwise. This ability is determined by a
+dictionary lookup.</pre>
+<pre>
+<div class=function>can_introduce_slink(self)</div>
+Returns True if the EventExpression instance can introduce an
+Slink, False otherwise. This ability is determined by a
+dictionary lookup.</pre>
+<pre>
+<div class=function>get_event_attribute(self, attr, optional=False)</div>
+Return the value of an attribute from self.dict. If the attribute
+is not in the dictionary, then (i) return a default value, and
+(ii) write an error if the attribute is not optinal.
+Arguments:
+   attr - a string
+   optional - a boolean</pre>
+<pre>
+<div class=function>pretty_print(self)</div>
+Print all attributes to the log file.</pre>
+<pre>
+<div class=function>slinkingContexts(self, key)</div>
+Returns the list of slink patterns from the dictionary.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>lower(s)</div>
+lower(s) -&gt; string
+
+Return a copy of the string s converted to lowercase.</pre>

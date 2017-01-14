@@ -1,0 +1,214 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.common_modules.document</div>
+
+<pre>
+<a href=#Document>Document</a>
+</pre>
+
+<pre>
+Contains functionality specific to documents.</pre>
+
+
+<a name="Document"/><div class="section">class Document</div>
+<pre>
+
+Implements the shallow tree that is input to some of the Tarsqi components.
+
+Instance variables
+
+    nodeList - a list of strings, each representing a document element
+    sentenceList - a list of Sentences
+    nodeCounter - an integer
+    sourceFileName  an absolute path
+    taggedEventsDict - a dictionary containing tagged event in the input
+    instanceCounter - an integer
+    insertDict - dictionary (integer --&gt; string)
+
+    event_dict - dictionary (eid --&gt; EventTag)
+    instance_dict a dictionary (eiid --&gt; InstanceTag)
+    alink_list - a list of AlinkTags
+    slink_list - a list of SlinkTags
+    tlink_list - a list of TlinkTags
+
+    eventCount - an integer
+    alinkCount - an integer
+    slinkCount - an integer
+    tlinkCount - an integer
+    linkCount - an integer
+    positionCount - an integer
+
+The taggedEventsDicts is used by Slinket, storing events indexed on event IDs, its
+function can probably be taken over by the event_dict variable. The insertDict
+variable is used by Evita. It keeps track of event and instance tags that need to be
+inserted and indexes them on the index in the nodeList where they need to be inserted.
+
+The variables event_dict, instance_dict, alink_list, slink_list and tlink_list are
+filled in by the FragmentConverter.
+
+The counters are incremented when elements are added, most counters are used to create
+unique ids for newly created tags. The positionCount is incremented when a sentence or
+a timex is added to the document (using addSentence or addTimex). It is used so the
+position variable can be set on Sentences (that is, the Sentence knows at what
+position in the document it occurrs).</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__getitem__(self, index)</div>
+Indexing occurs on the sentenceList variable.</pre>
+<pre>
+<div class=function>__getslice__(self, i, j)</div>
+Slice from the sentenceList variable.</pre>
+<pre>
+<div class=function>__init__(self, fileName)</div>
+Initialize all dictionaries, list and counters and set the file name.</pre>
+<pre>
+<div class=function>__len__(self)</div>
+Length is determined by the length of the sentenceList.</pre>
+<pre>
+<div class=function>addDocLink(self, loc, string)</div>
+Add a node to the document's nodeList. Inserts it at the specified location and
+not at the ned of the document (as indicated by noedeCounter. Still increments the
+nodeCounter becasue the document grows by one element. This is much like
+addDocNode, but it used for adding nodes that were not in the input but that were
+created by a Tarsqi component.
+Arguments
+   loc - an integer, iundicating the location of the insert point
+   string - a string representing a tag or text</pre>
+<pre>
+<div class=function>addDocNode(self, string)</div>
+Add a node to the document's nodeList. Inserts it at the location
+indicated by the nodeCounter.
+Arguments
+   string - a string representing a tag or text</pre>
+<pre>
+<div class=function>addEvent(self, event)</div>
+Adds an Event to the document.</pre>
+<pre>
+<div class=function>addLink(self, linkAttrs, linkType)</div>
+Add an Alink or Slink to the document. Adds it at the end of the document, that
+is, at the position indicated by the instance variable nodeCount. This means that
+the resulting file is not valid XML, but this is not problematic since the file is
+a fragment that is inserted back into the whole file. This will break down though
+is the fragment happens to be the outermost tag of the input file. This method
+should probably use addDocLink instead of addDocNode.
+
+Also adds alinks, slinks and tlinks to the link lists. This is to make sure that
+for example the main function of Slinket can easily access newly created links in
+the Document and insert them in the XmlDocument.
+
+Note that TLinks are added directly to the xml document and not to the
+Document. Evita and Slinket are not yet updated to add to the xmldoc and hence
+need this method.
+
+Arguments
+   linkAttrs - dictionary of attributes
+   linkType - 'ALINK' | 'SLINK'</pre>
+<pre>
+<div class=function>addSentence(self, sentence)</div>
+Append a Sentence to the sentenceList and sets the parent feature of the
+sentence to the document. Also increments the positionCount.</pre>
+<pre>
+<div class=function>addTimex(self, timex)</div>
+Applied when a timex cannot be added to a Chunk or a Sentence, probably
+intended for the DCT.</pre>
+<pre>
+<div class=function>document(self)</div>
+Returns the document itself. This is so that chunks can ask their parent for
+the document without having to worry whether the parent is a Sentence or a
+Document.</pre>
+<pre>
+<div class=function>hasEventWithAttribute(self, eid, att)</div>
+Returns the attribute value if the taggedEventsDict has an event with the given
+id that has a value for the given attribute, returns False otherwise
+Arguments
+   eid - a string indicating the eid of the event
+   att - a string indicating the attribute</pre>
+<pre>
+<div class=function>pp(self)</div>
+Short form of pretty_print()</pre>
+<pre>
+<div class=function>pretty_print(self)</div>
+Pretty printer that prints all instance variables and a neat representation of
+the sentence list.</pre>
+<pre>
+<div class=function>pretty_print_sentences(self)</div>
+</pre>
+<pre>
+<div class=function>pretty_print_tagged_events_dict(self)</div>
+</pre>
+<pre>
+<div class=function>storeEventValues(self, pairs)</div>
+Store attributes associated with an event (that is, they live on an event or
+makeinstance tag) in the taggedEventsDictionary. The pairs argument is a
+dcitionary of attributes</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_getNextAlinkID(self)</div>
+Increment alinkCount and return a new unique lid.</pre>
+<pre>
+<div class=function>_getNextEventID(self)</div>
+Increment eventCount and return a new unique eid. Assumes that all events are
+added using this method, otherwise, non-unique eids could be assigned.</pre>
+<pre>
+<div class=function>_getNextInstanceID(self)</div>
+Increment eventCount and return a new unique eiid. Assumes that all instances
+are added using this method, otherwise, non-unique eiids could be assigned.</pre>
+<pre>
+<div class=function>_getNextLinkID(self, linkType)</div>
+Return a unique lid. The linkType argument is one of {ALINK,SLINK,TLINK} and
+has no influence over the lid that is returned but determines what link counter is
+incremented. Assumes that all links are added using the link counters in the
+document. Breaks down if there are already links added without using those
+counters.</pre>
+<pre>
+<div class=function>_getNextSlinkID(self)</div>
+Increment slinkCount and return a new unique lid.</pre>
+<pre>
+<div class=function>_getNextTimexID(self)</div>
+</pre>
+<pre>
+<div class=function>_getNextTlinkID(self)</div>
+Increment tlinkCount and return a new unique lid.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>emptyContentString(tagname, attrs)</div>
+Return the string representation of a non-consuming tag given the tagname and a
+dictionary of attributes.</pre>
+<pre>
+<div class=function>escape(data, entities={})</div>
+Escape &, &lt;, and &gt; in a string of data.
+
+You can escape other strings of data by passing a dictionary as
+the optional entities parameter.  The keys and values must all be
+strings; each key will be replaced with its corresponding value.</pre>
+<pre>
+<div class=function>quoteattr(data, entities={})</div>
+Escape and quote an attribute value.
+
+Escape &, &lt;, and &gt; in a string of data, then quote it for use as
+an attribute value.  The " character will be escaped as well, if
+necessary.
+
+You can escape other strings of data by passing a dictionary as
+the optional entities parameter.  The keys and values must all be
+strings; each key will be replaced with its corresponding value.</pre>

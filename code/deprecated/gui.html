@@ -1,0 +1,63 @@
+<a name=gui><h2>5. Using the Toolkit GUI</h2></a>
+
+The Toolkit GUI can be used by typing one of
+
+<blockquote>
+<code>
+% pythonw gui.py<br/>
+% python gui.py
+</code>
+</blockquote>
+
+Use <code>pythonw</code> when available, <code>python</code>
+otherwise. In both cases the wxPython package needs to be
+installed. The GUI has three advantages over using the command line
+version:
+
+<ol>
+<li>It is faster when using on a file-by-file basis because all
+libraries are loaded either at start-up or when the first file is processed.
+<li>It is easier to use.
+<li>It allows the user to type some input and see what happens.
+</ol>
+
+The main disadvantage is that it is not possible to process all files
+in a directory. Here's a screen shot:
+
+<blockquote>
+<img src="gui-1.png" width="800" height="480"/>
+</blockquote>
+
+There is no separate manual for the GUI, but usage should be pretty
+straightforward. Functionality can be summed up as follows:
+
+<ul>
+
+<li>Use "Load File" to select a file to be processed. 
+
+<li>Use "Load Text" to type in text. This will create a file in
+the <code>data/in/User</code> directory, which is then selected as the
+input file.
+
+<li>Use the"Document Type", "Trap Errors" and "Content Tag" pull-downs
+and text field to enter processing options. Setting the "Document
+Type" option will set the "Content Tag" text field to the default for
+the document type. It will also select the default components for the
+document type. The default components can be overridden by checking
+and unchecking the component check boxes. Note that the three
+pre-processing components are all either on or off.
+
+<li>Use "Process File" to process the input file conform to the selected settings.
+
+<li>Finally, "View Results" will pop up a new window that displays the
+processing results in a more informative way (the large text field in
+the control panel just prints the result file as is). The buttons in
+the results view control what is shown in it. There are two
+exceptions: (i) the "Graph" button will start the Tango annotation
+tool on the results file, showing a graph of the annotation and
+including a "TBox" button which displays an alternative format, and
+(ii) the "TBox" button doesn't do anything yet, in the future it will
+provide a more direct way to the TBox representation.
+
+</ul>
+
