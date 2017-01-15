@@ -19,16 +19,19 @@ perl = perl
 
 
 # Location of the IMS TreeTagger, can be overridden with the --treetagger
-# command line option.
+# command line option. The default is the directory where the example build
+# script build/install-treetagger-osx.sh puts the TreeTagger.
 
-treetagger = /Applications/ADDED/nlp/treetagger
+treetagger = ../build/treetagger
 
 
 # Location of Mallet, this should be the directory that contains the bin
 # directory. This option can be overridden by the --mallet command line
-# option.
+# option. The default is the directory where the example build script
+# build/install-mallet-osx.sh puts Mallet.
 
-mallet = /Applications/ADDED/nlp/mallet/mallet-2.0.8
+
+mallet = ../build/mallet/mallet-2.0.8
 
 
 # Other options used for the classifier, where ee-model and et-model should

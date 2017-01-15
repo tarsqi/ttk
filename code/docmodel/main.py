@@ -22,13 +22,13 @@ from docmodel.docstructure_parser import DocumentStructureParser
 
 
 PARSERS = {
+    'ttk': (SourceParserTTK, MetadataParserTTK),
     'xml': (SourceParserXML, MetadataParser),
+    'text': (SourceParserText, MetadataParserText),
     'timebank': (SourceParserXML, MetadataParserTimebank),
     'atee': (SourceParserXML, MetadataParserATEE),
     'rte3': (SourceParserXML, MetadataParserRTE3),
-    'va': (SourceParserXML, MetadataParserDB),
-    'text': (SourceParserText, MetadataParserText),
-    'ttk': (SourceParserTTK, MetadataParserTTK)
+    'db': (SourceParserXML, MetadataParserDB)
 }
 
 

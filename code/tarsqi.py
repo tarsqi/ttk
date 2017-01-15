@@ -19,51 +19,52 @@ USAGE
    OPTIONS
 
       --source SOURCE_NAME
-             the source of the file; this reflects the source type of the
-             document and allows components, especially the source parser,
-             metadata parser and document structure parser, to be sensitive to
-             idiosyncratic properties of the text (for example, location of the
-             DCT and the format of the text); xml by default, other source types
-             are text and ttk.
+          The source of the file; this reflects the source type of the document
+          and allows components, especially the source parser and the metadata
+          parser, to be sensitive to idiosyncratic properties of the text (for
+          example, location of the DCT and the format of the text). The source
+          type is xml by default, other widely applicable source types are text
+          and ttk. There are four more types that can be used to process
+          specific sample data in data/ib: timebank for data/in/TimeBank, atee
+          for data/in/ATEE, rte3 for data/in/RTE3 and db for data/in/db.
 
       --pipeline LIST
-             Comma-separated list of Tarsqi components, defaults to the full
-             pipeline.
+          Comma-separated list of Tarsqi components, defaults to the full
+          pipeline.
 
       --perl PATH
-             Path to the Perl executable. Typically the operating system default
-             is fine here and this options does not need to be used.
+          Path to the Perl executable. Typically the operating system default is
+          fine here and this options does not need to be used.
 
       --treetagger PATH
-             Path to the TreeTagger.
+          Path to the TreeTagger.
 
       --mallet PATH
-             Location of Mallet, this should be the directory that contains the
-             bin directory.
+          Location of Mallet, this should be the directory that contains the
+          bin directory.
 
       --classifier STRING
-             The classifier used by the Mallet classifier, the default is MaxEnt
+          The classifier used by the Mallet classifier, the default is MaxEnt.
 
       --ee-model FILENAME
-             The model used for classifying event-event tlinks, this is a model
-             file in components/classifier/models, the default is set to
-             tb-vectors.ee.model.
+          The model used for classifying event-event tlinks, this is a model
+          file in components/classifier/models, the default is set to
+          tb-vectors.ee.model.
 
       --et-model FILENAME
-             The model used for classifying event-timex tlinks, this is a model
-             file in components/classifier/models, the default is set to
-             tb-vectors.et.model.
+          The model used for classifying event-timex tlinks, this is a model
+          file in components/classifier/models, the default is set to
+          tb-vectors.et.model.
 
       --trap-errors True|False
-             Set error trapping, errors are trapped by default.
+          Set error trapping, errors are trapped by default.
 
       --loglevel INTEGER
-             Set log level to an integer from 0 to 4, the higher the level the
-             more messages will be written to the log, see utilities.logger for
-             more details.
+          Set log level to an integer from 0 to 4, the higher the level the
+          more messages will be written to the log, see utilities.logger for
+          more details.
 
-      All these options can also be set in the settings.txt file. See the manual
-      in docs/manual/ for more details on the parameters.
+      All these options can also be set in the settings.txt file.
 
 
 VARIABLES:
@@ -124,9 +125,7 @@ class Tarsqi:
         document model and the meta data. The opts argument has a list of
         command line options and the infile and outfile arguments are typically
         absolute paths, but they can be None when we are processing strings."""
-        # Make sure we're in the right directory. If the toolkit crashed on a
-        # previous file we may be in a different directory.
-        os.chdir(TTK_ROOT)
+        _set_working_directory()
         self.input = infile
         self.output = outfile
         self.basename = _basename(infile) if infile else None
@@ -249,14 +248,17 @@ class Options():
             self._options[option[2:]] = value
 
     def _massage_options(self):
-        """Loop through the options dictionary and replace some of the strings with
-        other objects: replace 'True' with True, 'False' with False, and strings
-        indicating an integer with that integer."""
+        """Loop through the options dictionary and replace some of the strings
+        with other objects: replace 'True' with True, 'False' with False, and
+        strings indicating an integer with that integer. Also, for the --mallet
+        and --treetagger options, which are known to be paths, replace the value
+        with the absolute path."""
         for (attr, value) in self._options.items():
             if value in ('True', 'False') or value.isdigit():
                 self._options[attr] = eval(value)
-            #elif attr in ('perl', 'mallet', 'treetagger'):
-            #    print os.path.isdir(value)
+            elif attr in ('mallet', 'treetagger'):
+                if os.path.isdir(value):
+                    self._options[attr] = os.path.abspath(value)
 
     def __str__(self):
         return str(self._options)
@@ -318,6 +320,14 @@ def _basename(path):
     return basename
 
 
+def _set_working_directory():
+    """Make sure we're in the right directory. If the toolkit crashed on a
+    previous file we may be in a different directory. This may also be important
+    for those cases where the initially invoced script is not in the TTK_ROOT
+    directory, for example when you run the tests."""
+    os.chdir(TTK_ROOT)
+
+
 def run_tarsqi(args):
     """Main method that is called when the script is executed from the command
     line. It creates a Tarsqi instance and lets it process the input. If the
@@ -331,11 +341,24 @@ def run_tarsqi(args):
     inpath = os.path.abspath(args[0])
     outpath = os.path.abspath(args[1])
     t0 = time.time()
-    if os.path.isdir(inpath) and os.path.isdir(outpath):
+    if os.path.isdir(inpath):
+        if os.path.exists(outpath) and not os.path.isdir(outpath):
+            raise TarsqiError(outpath + ' already exists and it is not a directory')
+        if not os.path.isdir(outpath):
+            os.makedirs(outpath)
+        else:
+            print "WARNING: Directory %s already exists" % outpath
+            print "WARNING: Existing files in %s will be overwritten" % outpath
+            print "Continue? (y/n)\n?",
+            answer = raw_input()
+            if answer != 'y':
+                exit()
         for file in os.listdir(inpath):
             infile = inpath + os.sep + file
             outfile = outpath + os.sep + file
-            if os.path.isfile(infile):
+            if (os.path.isfile(infile)
+                and os.path.basename(infile)[0] != '.'
+                and os.path.basename(infile)[-1] != '~'):
                 print infile
                 Tarsqi(opts, infile, outfile).process_document()
     elif os.path.isfile(inpath):

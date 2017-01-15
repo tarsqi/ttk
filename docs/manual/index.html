@@ -79,25 +79,29 @@ toolkit.</p>
   </li>
 
   <li>
-    <p>Install the Part-of-Speech Tagger. The Tarsqi toolkit is designed
-      to work seamlessly with the IMS TreeTagger. Download the packages needed
-      for your platform from
+    <p>Install the Part-of-Speech Tagger. The Tarsqi toolkit is designed to work
+      seamlessly with the IMS TreeTagger. Download the packages needed for your
+      platform from
       the <a href="http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/">TreeTagger
       website</a> and follow the directions. You can install the TreeTagger
       wherever you like, but you will need to tell the Toolkit where it can find
-      the tagger (see below).
+      the tagger (see below). There is an example script
+      <code>build/install-treetagger-osx.sh</code> which shows how to install
+      the TreeTagger on Mac OSX. (Note: all file names printed in this manual
+      are relative to the path where TTK is installed).
   </li>
 
   <li>
     <p>Install MALLET. The classifiers in the Toolkit use the MAchine Learning
       for LanguagE Toolkit (McCallum, Andrew Kachites. "MALLET: A Machine
       Learning for Language Toolkit."
-	<a href="http://mallet.cs.umass.edu">http://mallet.cs.umass.edu</a>. 2002). Download
-	version 2.0.8
-	from <a href="http://mallet.cs.umass.edu/download.php">http://mallet.cs.umass.edu/download.php</a>. Version
-	2.0.7 will most likely work as well. You can put Mallet wherever you
-	want, but as with the TreeTagger you need to tell the Toolkit where to
-	find MALLET.</p>
+      <a href="http://mallet.cs.umass.edu">http://mallet.cs.umass.edu</a>. 2002). Download
+      version 2.0.8
+      from <a href="http://mallet.cs.umass.edu/download.php">http://mallet.cs.umass.edu/download.php</a>. Version
+      2.0.7 will most likely work as well. You can put MALLET wherever you want,
+      but as with the TreeTagger you need to tell the Toolkit where to find
+      it. There is an example script <code>build/install-mallet-osx.sh</code>
+      which shows how to install MALLET on Mac OSX.</p>
   </li>
 
   <li>
@@ -111,12 +115,12 @@ toolkit.</p>
 
 </ol>
 
-<p>To test the toolit open a terminal and makes sure your working directory is
+<p>To test the toolit open a terminal and make sure your working directory is
 in the <code>code</code> directory of the distribution, then type the
 following:</p>
 
 <pre class="example">
-python tarsqi.py data/in/simple-xml/test.xml out.xml
+python tarsqi.py data/in/simple-xml/tiny.xml out.xml
 </pre>
 
 <p>If all is well you will now have a file named <code>out.xml</code> with the
@@ -134,9 +138,8 @@ Fido sleeps today.
   &lt;dct value="20170113"/>
 &lt;/metadata>
 &lt;source_tags>
-  &lt;text id="1" begin="1" end="14" />
+  &lt;text id="1" begin="1" end="21" />
 &lt;/source_tags>
-
 &lt;tarsqi_tags>
   &lt;docelement id="d1" begin="2" end="20" origin="DOCSTRUCTURE" type="paragraph" />
   &lt;s id="s1" begin="2" end="20" origin="PREPROCESSOR" />
@@ -162,31 +165,41 @@ Fido sleeps today.
 </pre>
 
 <p>A note for Windows users. TTK 1.0 depended on some software that did not run
-on Windows. Thecurrent version does not have that problem and the code should
-run on Windows. THis has not been tested properly yet and the above instructions
-may not be entirely correct for Windows (for example, it may be the case that
-MALLET has to be installed in the top level directory of the c: drive).</p>
+on Windows. The current version does not have that problem and the code should
+run on Windows. However, this has not been tested properly yet and the above
+instructions may not be entirely correct for Windows (for example, it may be the
+case that MALLET has to be installed in the top level directory of the c:
+drive).</p>
 
 
 <a name="using"></a>
 
 <h2>4. Using the TARSQI Toolkit</h2>
 
-
-To run the TARSQI Toolkit, open a terminal, change the working
-directory to the <code>code</code> directory of the distribution and
-type
+<p>To run the TARSQI Toolkit, open a terminal and change the working directory
+to the <code>code</code> directory of the distribution. You can run Tarsqi on a
+file or a directory and the general format of the command is as follows:</p>
 
 <pre class="example">
-python tarsqi.py --source data/in/simple-xml/test.xml out.xml
+python tarsqi.py [OPTIONS] INFILE OUTFILE
+python tarsqi.py [OPTIONS] INDIR OUTDIR
 </pre>
 
+<p>In the first invocation INFILE needs to exist but OUTFILE should not
+exist. In the second invocation INDIR has to be a directory and OUTDIR either
+should not exist, in which case it is created, or it should be a directory. In
+the latter case you will be asked to confirm whether it is okay to overwrite
+files in OUTDIR, if not, the program will exit. All files in INDIR will be
+processed except for hidden files (starting with '.' and files ending in '~').</p>
 
-The following input types are defined:
+<p>There are several options you can use, none of them are mandatory. Options
+can be set in the options file (<code>code/settings.txt</code>) or overruled on
+the command line. For a full list see the settings file and the module
+documentation string in <code>code/tarsqi</code> (which can also be browsed
+at <a href="../code/modules/tarsqi.html">docs/code/modules/tarsqi.html</a>). Here
+we will just present the two options you are most likely to use.</p>
 
-<blockquote>
-
-<code>xml</code>
+<p><code>--source (xml|text|ttk|...)</code></p>
 
 <blockquote>
 An input type that should be used for default XML. It assumes that a
@@ -197,8 +210,8 @@ content_tag flag (see below). This input type can be used for the
 files in <code>code/data/in/simple-xml</code>.
 </blockquote>
 
+<!--
 <code>timebank</code>
-
 <blockquote>
 This input type is very similar to <code>simple-xml</code>, the main
 difference is that it activates a component that parses document
@@ -208,50 +221,38 @@ consists of all TimeBank files with all tags (except some document
 level tags) stripped out.  
 </blockquote>
 
-
 <code>rte3</code>
-
 <blockquote>
 Use this input type when processing pre-processed data from
 <code>code/data/in/RTE3</code>, which contains data from the <a
 href="http://www.pascal-network.org/Challenges/RTE3/">Third Pascal
 Textual Entailment Challenge</a>. 
 </blockquote>
+-->
 
-</blockquote>
-
-
-<p>Flags are feature-value pairs where the feature and value are
-separated by an equals sign. The following flags are defined:</p>
-
-<code>--trap-errors True|False</code>
+<p><code>--pipeline String</code></p>
 
 <blockquote>
-Determines whether errors inside of components are trapped. The
-default is that errors are trapped.
-</blockquote>
 
-
-<code>--pipeline String</code>
-
-<blockquote>
-Can be used to overrule the default pipeline determined by the data
-source identifier. A pipeline is a comma-separated string of component
-names. Allowed component names are <code>PREPROCESSOR, GUTIME, EVITA,
-SLINKET, S2T, BLINKER, CLASSIFIER</code> and
+<p>Can be used to overrule the default pipeline specified
+in <code>code/settings.txt</code>. A pipeline is a comma-separated string of
+component names. Allowed component names are <code>PREPROCESSOR, TOKENIZER,
+TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER, CLASSIFIER</code> and
 <code>LINK_MERGER</code>. The order of the components in the pipeline
-specification is significant. Some examples are:
+specification is significant. Some examples are:</p>
 
-<blockquote>
-<code>
+<p class="example">
 --pipeline PREPROCESSOR,GUTIME,EVITA<br>
+--pipeline TOKENIZER,TAGGER,CHUNKER,GUTIME,EVITA<br>
 --pipeline SLINKET,S2T,BLINKER,CLASSIFIER,LINK_MERGER
-</code>
-</blockquote>
+</p>
 
-The first example instructs TTK to take a file, preprocess it and add
-time expressions and events. For the second example, preprocessing,
-times and events are taken for granted and only links are added. 
+<p>The first example instructs TTK to take a file, preprocess it and add time
+expressions and events. The second example is identical except that individual
+preprocessing modules are used instead of the PREPROCESSOR shorthand. For the
+third example, preprocessing, times and events are taken for granted and only
+links are added. In this case the input needs to be a ttk file which has the
+needed information.</p>
 
 </blockquote>
 

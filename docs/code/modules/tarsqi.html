@@ -43,51 +43,52 @@ USAGE
    OPTIONS
 
       --source SOURCE_NAME
-             the source of the file; this reflects the source type of the
-             document and allows components, especially the source parser,
-             metadata parser and document structure parser, to be sensitive to
-             idiosyncratic properties of the text (for example, location of the
-             DCT and the format of the text); xml by default, other source types
-             are text and ttk.
+          The source of the file; this reflects the source type of the document
+          and allows components, especially the source parser and the metadata
+          parser, to be sensitive to idiosyncratic properties of the text (for
+          example, location of the DCT and the format of the text). The source
+          type is xml by default, other widely applicable source types are text
+          and ttk. There are four more types that can be used to process
+          specific sample data in data/ib: timebank for data/in/TimeBank, atee
+          for data/in/ATEE, rte3 for data/in/RTE3 and db for data/in/db.
 
       --pipeline LIST
-             Comma-separated list of Tarsqi components, defaults to the full
-             pipeline.
+          Comma-separated list of Tarsqi components, defaults to the full
+          pipeline.
 
       --perl PATH
-             Path to the Perl executable. Typically the operating system default
-             is fine here and this options does not need to be used.
+          Path to the Perl executable. Typically the operating system default is
+          fine here and this options does not need to be used.
 
       --treetagger PATH
-             Path to the TreeTagger.
+          Path to the TreeTagger.
 
       --mallet PATH
-             Location of Mallet, this should be the directory that contains the
-             bin directory.
+          Location of Mallet, this should be the directory that contains the
+          bin directory.
 
       --classifier STRING
-             The classifier used by the Mallet classifier, the default is MaxEnt
+          The classifier used by the Mallet classifier, the default is MaxEnt.
 
       --ee-model FILENAME
-             The model used for classifying event-event tlinks, this is a model
-             file in components/classifier/models, the default is set to
-             tb-vectors.ee.model.
+          The model used for classifying event-event tlinks, this is a model
+          file in components/classifier/models, the default is set to
+          tb-vectors.ee.model.
 
       --et-model FILENAME
-             The model used for classifying event-timex tlinks, this is a model
-             file in components/classifier/models, the default is set to
-             tb-vectors.et.model.
+          The model used for classifying event-timex tlinks, this is a model
+          file in components/classifier/models, the default is set to
+          tb-vectors.et.model.
 
       --trap-errors True|False
-             Set error trapping, errors are trapped by default.
+          Set error trapping, errors are trapped by default.
 
       --loglevel INTEGER
-             Set log level to an integer from 0 to 4, the higher the level the
-             more messages will be written to the log, see utilities.logger for
-             more details.
+          Set log level to an integer from 0 to 4, the higher the level the
+          more messages will be written to the log, see utilities.logger for
+          more details.
 
-      All these options can also be set in the settings.txt file. See the manual
-      in docs/manual/ for more details on the parameters.
+      All these options can also be set in the settings.txt file.
 
 
 VARIABLES:
@@ -140,9 +141,11 @@ Simplistic way to do dictionary emulation.</pre>
 <h3>Private Functions</h3>
 <pre>
 <div class=function>_massage_options(self)</div>
-Loop through the options dictionary and replace some of the strings with
-other objects: replace 'True' with True, 'False' with False, and strings
-indicating an integer with that integer.</pre>
+Loop through the options dictionary and replace some of the strings
+with other objects: replace 'True' with True, 'False' with False, and
+strings indicating an integer with that integer. Also, for the --mallet
+and --treetagger options, which are known to be paths, replace the value
+with the absolute path.</pre>
 <pre>
 <div class=function>_read_options(self, SETTINGS, options)</div>
 Read options from settings file and command line options.</pre>
