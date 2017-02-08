@@ -11,22 +11,21 @@ body, p, td {
 }
 
 h1 {
-   background-color: lightyellow;
-   border-style: solid;
-   border-width: thin;
+   background: linear-gradient(rgba(128,207,216,0.6), rgba(127,202,147,0.45));
+   border: thin solid gray;
    margin-top: 10pt;
    padding: 15pt;
    padding-left: 10pt;
+   margin-left: -2pt;
    font-size: 24pt
 }
 
 h2 {
-   background-color: lightyellow;
-   border-style: solid;
-   border-width: thin;
-   margin-top: 30pt;
+   border-bottom: medium solid gray;
+   margin-top: 20pt;
    margin-bottom: 15pt;
-   padding: 10pt;
+   padding-bottom: 6pt;
+   margin-left: -2pt;
    font-size: 16pt
 }
 
@@ -45,8 +44,13 @@ code {
 
 .navigation {
     font-size: 120%;
+    margin-bottom: 30pt;
 }
 
 .subtitle {
     font-size: 110%;
+}
+
+.indent {
+    margin-left: 10pt;
 }

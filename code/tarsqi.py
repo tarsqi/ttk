@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
-"""Main script that drives all tarsqi toolkit processing.
+"""tarsqi.py
+
+Main script that drives all tarsqi toolkit processing.
 
 Source-specific processing is delegated to the docmodel package, which has
 access to source parsers and metadata parsers. This script also calls on
@@ -22,10 +24,10 @@ USAGE
           The source of the file; this reflects the source type of the document
           and allows components, especially the source parser and the metadata
           parser, to be sensitive to idiosyncratic properties of the text (for
-          example, location of the DCT and the format of the text). The source
-          type is xml by default, other widely applicable source types are text
-          and ttk. There are four more types that can be used to process
-          specific sample data in data/ib: timebank for data/in/TimeBank, atee
+          example, the location of the DCT and the format of the text). The
+          source type is xml by default, other general source types are text and
+          ttk. There are four more types that can be used to process the more
+          specific sample data in data/in: timebank for data/in/TimeBank, atee
           for data/in/ATEE, rte3 for data/in/RTE3 and db for data/in/db.
 
       --pipeline LIST

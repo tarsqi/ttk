@@ -137,8 +137,8 @@ class NChunkFeatures(ChunkFeatures):
         self.head_lemma = self.getEventLemma()
 
     def getEventClass(self):
-        """Get the event class for the ChunkFeatures. For nominals, the event class
-        is always OCCURRENCE."""
+        """Get the event class for the ChunkFeatures. For nominals, the event
+        class is always OCCURRENCE."""
         return "OCCURRENCE"
   
     def getEventLemma(self):
