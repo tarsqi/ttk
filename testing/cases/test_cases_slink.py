@@ -7,7 +7,7 @@ likely to be found.
 Cases are split into a SIMPLE category with some quick and dirty minimal checks
 and sets of cases for each relation type. The relation type cases were initially
 all taken from Timebank as processed by TTK on December 2015. These cases were
-manually selected from the output of code/testing/create_slinket_cases.py.
+manually selected from the output of testing/create_slinket_cases.py.
 
 Cases added later should have comments.
 

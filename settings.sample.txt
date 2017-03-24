@@ -22,7 +22,7 @@ perl = perl
 # command line option. The default is the directory where the example build
 # script build/install-treetagger-osx.sh puts the TreeTagger.
 
-treetagger = ../build/treetagger
+treetagger = build/treetagger
 
 
 # Location of Mallet, this should be the directory that contains the bin
@@ -31,7 +31,7 @@ treetagger = ../build/treetagger
 # build/install-mallet-osx.sh puts Mallet.
 
 
-mallet = ../build/mallet/mallet-2.0.8
+mallet = build/mallet/mallet-2.0.8
 
 
 # Other options used for the classifier, where ee-model and et-model should

@@ -92,7 +92,7 @@ def create_event_vg_cases():
     outfile = 'testing/cases/cases-evita-vg.txt'
     out = open(outfile, 'w')
     out.write("# EVITA TEST CASES FOR VERBAL EVENTS\n")
-    out.write("# Created by create_event_vg_cases() in code/testing/regression.py\n\n")
+    out.write("# Created by create_event_vg_cases() in testing/regression.py\n\n")
     for line in open(infile):
         if line[0] == '#': continue
         if not line.strip(): continue

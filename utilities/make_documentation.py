@@ -39,7 +39,7 @@ WRITE_FUNCTION_SOURCES = False
 PRINT_PRIVATE_FUNCTIONS = True
 
 # directory where the documentation is written
-DOCUMENTATION_DIR = os.path.join('..', '..', 'docs', 'code')
+DOCUMENTATION_DIR = os.path.join('..', 'docs', 'code')
 
 
 javascript_code = """<script language="JavaScript" type="text/JavaScript">

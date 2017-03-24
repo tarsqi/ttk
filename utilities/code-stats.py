@@ -16,8 +16,8 @@ This script should be run from the code directory:
 
 Since this file is not part of early commits, the best way to use it when
 getting statistic over old commits is to copy it to the code directory and then
-run it from there. There never was a file code/code-stats.py, so that will not
-cause conflicts.
+run it from there. There never was a file code-stats.py, so that will not cause
+conflicts.
 
 There is a playpen for this on /DATA/misc/ttk. It has several stats files, which
 report the following number of lines for the code (excluding the libraries):

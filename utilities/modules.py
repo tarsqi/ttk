@@ -65,7 +65,7 @@ import library.classifier.create_vectors
 import utilities.mallet
 import utilities.binsearch
 import utilities.logger
-import utilities.porterstemmer
+import utilities.stemmer
 
 
 MODULES = [
@@ -126,5 +126,5 @@ MODULES = [
     utilities.binsearch,
     utilities.logger,
     utilities.mallet,
-    utilities.porterstemmer,
+    utilities.stemmer,
 ]

@@ -93,8 +93,8 @@ toolkit.</p>
 
   <li>
     <p>Create the settings file. The toolkit comes with an example settings file
-      in <code>code/settings.sample.txt</code>. Copy that file into
-      <code>code/settings.txt</code> and edit as needed. In most cases, the only
+      in <code>settings.sample.txt</code>. Copy that file into
+      <code>settings.txt</code> and edit as needed. In most cases, the only
       settings you will need to change are the <code>treetagger</code>
       and <code>mallet</code> options, with the values depending on where you
       installed the TreeTagger and MALLET. If you use the same installation
@@ -113,7 +113,7 @@ examples):</p>
 $ python tarsqi.py data/in/simple-xml/tiny.xml out.xml
 </pre>
 
-<p>If all is well you will now have a file named <code>code/out.xml</code> with
+<p>If all is well you will now have a file named <code>out.xml</code> with
   content similar to the output printed below.</p>
 
 <pre class="example">
@@ -187,9 +187,9 @@ OUTDIR, if not, the program will exit. All files in INDIR will be processed
 except for hidden files (starting with '.') and backup files (ending in '~').</p>
 
 <p>There are several options you can use, none of them are mandatory. Options
-can be set in the settings file (<code>code/settings.txt</code>) or overruled on
+can be set in the settings file (<code>settings.txt</code>) or overruled on
 the command line. For a full list see the settings file and the module
-documentation string in <code>code/tarsqi</code> (which can be browsed
+documentation string in <code>tarsqi</code> (which can be browsed
 at <a href="../code/modules/tarsqi.html">docs/code/modules/tarsqi.html</a>). Here
 we just present the two options you are most likely to use, these options also
 happen to shed light on how the toolkit works.</p>
@@ -208,14 +208,14 @@ the <code>xml</code> input type the system has no good way to determine
 properties derived in an idiosyncratic way like the document creation time (DCT)
 and it will simply use today's date. A future version will allow the DCT to be
 handed in on the command line. This input type can be used for the files
-in <code>code/data/in/simple-xml</code>. The <code>text</code> type is similar
+in <code>data/in/simple-xml</code>. The <code>text</code> type is similar
 to the <code>xml</code> type, except that it assumes that the entire content of
 the file is to be parsed. Since the toolkit does not try to recognize any tags
 this type should only be used for real raw text.</p>
 
 <p>With both <code>xml</code> and <code>text</code> the output of the processing
 will be in the TTK format, an example of which was given above for the result of
-processing <code>code/data/in/simple.xml/tiny.xml</code>. The TTK format is a
+processing <code>data/in/simple-xml/tiny.xml</code>. The TTK format is a
 standoff format which contains both the original unaltered text as well as the
 tags added and it contains four main elements:
 
@@ -243,7 +243,7 @@ TTK format. Typically the input here would be a file previously processed but
 the toolkit or a file that was converted into the TTK format.</p>
 
 <p>The <code>timebank</code> source type is an example of a specific source
-type. When using this for one of the files in <code>code/data/in/TimeBank</code>
+type. When using this for one of the files in <code>data/in/TimeBank</code>
 the toolkit will know where to find the DCT, which in the TimeBank case is in
 the file name or in some tag in the input.</p>
 
@@ -255,7 +255,7 @@ the file name or in some tag in the input.</p>
 This input type is very similar to <code>simple-xml</code>, the main
 difference is that it activates a component that parses document
 creation times for the various TimeBank formats. This input type can
-be used for the files in <code>code/data/in/TimeBank</code>, which
+be used for the files in <code>data/in/TimeBank</code>, which
 consists of all TimeBank files with all tags (except some document
 level tags) stripped out.  
 </blockquote>
@@ -263,7 +263,7 @@ level tags) stripped out.
 <code>rte3</code>
 <blockquote>
 Use this input type when processing pre-processed data from
-<code>code/data/in/RTE3</code>, which contains data from the <a
+<code>data/in/RTE3</code>, which contains data from the <a
 href="http://www.pascal-network.org/Challenges/RTE3/">Third Pascal
 Textual Entailment Challenge</a>. 
 </blockquote>
@@ -274,7 +274,7 @@ Textual Entailment Challenge</a>.
 <div class="indent">
 
 <p>Can be used to overrule the default pipeline specified
-in <code>code/settings.txt</code>. A pipeline is a comma-separated string of
+in <code>settings.txt</code>. A pipeline is a comma-separated string of
 component names. Allowed component names are <code>PREPROCESSOR, TOKENIZER,
 TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER, CLASSIFIER</code> and
 <code>LINK_MERGER</code>. The order of the components in the pipeline
@@ -330,7 +330,7 @@ links to all modules. For each module the documentation strings for classes and
 functions are printed. Documentation of the code is uneven: some modules are
 well-documented, other have spotty and underwhelming documentation or are not
 documented at all. The pages are generated with the
-<code>code/utilities/make_documentation.py</code> script, which was created
+<code>utilities/make_documentation.py</code> script, which was created
 because the <code>pydoc</code> command used to crash on many of the toolkit
 modules.</td>
 </tr>
@@ -513,7 +513,7 @@ href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a>.</p>
 <p>The Tempex module is copyright of The MITRE corporation and is distributed
 under the license in <a href="tempex-license.pdf">tempex-license.pdf</a>.</p>
 
-<p>The data in <code>code/data/in/TimeBank</code> are copyrighted by the
+<p>The data in <code>data/in/TimeBank</code> are copyrighted by the
 various content providers and can be used for academic purposes only.</p>
 
 </body>

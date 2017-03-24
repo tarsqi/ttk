@@ -154,7 +154,7 @@ class MetadataParserDB(MetadataParser):
     database. It is identical to MetadataParser except for how it gets the
     DCT. This is done by lookup in a database. This here is the simplest
     possible case, and it is quite inefficient. It assumes there is an sqlite
-    database at 'TTK_ROOT/code/data/in/va/dct.sqlite' which was created as
+    database at 'TTK_ROOT/data/in/va/dct.sqlite' which was created as
     follows:
 
        $ sqlite3 dct.sqlite

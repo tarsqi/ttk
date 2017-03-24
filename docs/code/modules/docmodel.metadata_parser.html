@@ -92,7 +92,7 @@ A minimal example parser for cases where the DCT is retrieved from a
 database. It is identical to MetadataParser except for how it gets the
 DCT. This is done by lookup in a database. This here is the simplest
 possible case, and it is quite inefficient. It assumes there is an sqlite
-database at 'TTK_ROOT/code/data/in/va/dct.sqlite' which was created as
+database at 'TTK_ROOT/data/in/va/dct.sqlite' which was created as
 follows:
 
    $ sqlite3 dct.sqlite
@@ -104,7 +104,7 @@ specified in the settings.txt file. The first use case for this were VA
 documents where the DCT was stored externally. To see this class in action
 run
 
-   $ python tarsqi.py --source=va data/in/va/test.xml out.xml</pre>
+   $ python tarsqi.py --source=db data/in/va/test.xml out.xml</pre>
 
 <blockquote>
 <h3>Public Functions</h3>

@@ -1,0 +1,52 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module utilities.stemmer</div>
+
+<pre>
+<a href=#Stemmer>Stemmer</a>
+</pre>
+
+<pre>
+stemmer.py
+
+Contains an utterly simplistic stemmer.
+
+Originally we used a stripped down version of the Porter stemmer, but the
+version in here performed at the same level. Note that this stemmer is only used
+for those cases when a token does not have a lemma.</pre>
+
+
+<a name="Stemmer"/><div class="section">class Stemmer</div>
+<pre>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>stem(self, key)</div>
+Look up key in stem exceptions file. Use the porter stemmer
+if key is not in exceptions file.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>strip_plural(token)</div>
+Strip away what looks like a plural s.</pre>

@@ -1,3 +1,6 @@
+# We don't want to keep track of any models created here, especially if they are
+# big. If you really have to, do this in components/classifier/models.
+
 vectors.ee
 vectors.et
 tb-vectors.ee
