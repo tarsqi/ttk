@@ -12,7 +12,7 @@ recognition.
 from types import ListType, InstanceType
 from pprint import pprint
 
-import utilities.porterstemmer as porterstemmer
+import utilities.stemmer as stemmer
 import utilities.logger as logger
 from utilities.file import open_pickle_file
 
@@ -31,7 +31,7 @@ DEBUG = False
 DictVerbStems = open_pickle_file(forms.DictVerbStemPickleFileName)
 
 # initialize a stemmer
-stemmer = porterstemmer.Stemmer()
+stemmer = stemmer.Stemmer()
 
 
 def getWordList(constituents):

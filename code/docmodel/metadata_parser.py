@@ -166,7 +166,7 @@ class MetadataParserDB(MetadataParser):
     documents where the DCT was stored externally. To see this class in action
     run
 
-       $ python tarsqi.py --source=va data/in/va/test.xml out.xml
+       $ python tarsqi.py --source=db data/in/va/test.xml out.xml
 
     """
 
