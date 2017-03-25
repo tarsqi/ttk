@@ -2,8 +2,8 @@
 
 Code to create Slinket unit test cases. Runs by taking all SLINKs from a
 Timebank parse and put them in files, one for each SLINK relType, as potential
-test case. Files are named slink-cases-RELTYPE.txt, where RELTYPE stands for one
-of the relation types.
+test cases. Files are named slink-cases-RELTYPE.txt, where RELTYPE stands for
+one of the relation types.
 
 The output files have lines like
 
@@ -11,6 +11,9 @@ The output files have lines like
  "Fidel Castro invited John Paul to come for a reason.")
 
 which can be inserted directly as unit tests in SlinketTest.
+
+Running this script will actually report a lot of errors and warnings, but
+useful output is created and fixing the errors is low priority.
 
 """
 
@@ -25,7 +28,8 @@ SLINK_CASES = {}
 
 
 def parse_directory(dname):
-    for (counter, fname) in os.listdir(dname):
+    #for (counter, fname) in os.listdir(dname):
+    for fname in os.listdir(dname):
         # if counter > 10: break
         sys.stderr.write("%s\n" % fname)
         try:
@@ -37,7 +41,11 @@ def parse_file(fname):
     dom = parse(fname)
     text = dom.getElementsByTagName('text')[0]
     source_tags = dom.getElementsByTagName('source_tags')[0]
-    tarsqi_tags = dom.getElementsByTagName('tarsqi_tags')[0]
+    try:
+        tarsqi_tags = dom.getElementsByTagName('tarsqi_tags')[0]
+    except IndexError:
+        # some older parsed files still have ttk_tags, allow for that
+        tarsqi_tags = dom.getElementsByTagName('ttk_tags')[0]
     sentences = tarsqi_tags.getElementsByTagName('s')
     events = tarsqi_tags.getElementsByTagName('EVENT')
     slinks = tarsqi_tags.getElementsByTagName('SLINK')

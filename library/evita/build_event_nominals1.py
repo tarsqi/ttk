@@ -1,6 +1,5 @@
-#!/usr/bin/python
-
 """
+
 Take all WordNet 2.0 nouns and create text files and dbm dictionaries
 with words grouped in three bins: (i) those whose primary sense is an
 event, (ii) those where all senses are events and (iii) those where
@@ -13,6 +12,9 @@ this script as part of the Evita installation. The txt files are
 already in the Dicts directory and the dbm files can be created or
 updated for your Python distribution by running the script
 buildEventNominals2.py.
+
+TODO: this does not work at the moment.
+
 """
 
 import os

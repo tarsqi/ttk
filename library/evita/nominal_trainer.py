@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 
 Very old code to build the conditional event probablities for the bayesian

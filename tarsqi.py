@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """tarsqi.py
 
 Main script that drives all tarsqi toolkit processing.
@@ -71,6 +69,7 @@ USAGE
 
 VARIABLES:
 
+   TTK_ROOT - the TTK directory
    SETTINGS - file with user settings
    COMPONENTS - dictionary with all Tarsqi components
    USE_PROFILER - a boolean determining whether the profiler is used
