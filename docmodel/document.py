@@ -93,7 +93,7 @@ class TarsqiDocument:
         """Add an EVENT tag to the tarsqi_tags tag repository."""
         self.tags.add_tag('EVENT', begin, end, attrs)
 
-    def pp(self, source_tags=True, tarsqi_tags=True, tags=True):
+    def pp(self, source_tags=True, tarsqi_tags=True):
         print "\n", self, "\n"
         for key, value in self.metadata.items():
             print "   metadata.%-14s  -->  %s" % (key, value)
@@ -104,9 +104,6 @@ class TarsqiDocument:
             self.sourcedoc.tags.pp()
         if tarsqi_tags:
             print "\nTARSQI_TAGS:"
-            self.tags.pp()
-        if tags:
-            print "\nTAGS:"
             self.tags.pp()
         print
 

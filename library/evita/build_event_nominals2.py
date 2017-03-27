@@ -1,6 +1,5 @@
-#!/usr/bin/python
-
 """
+
 Create three anydbm dictionaries with words from wordnet that can be events: (1)
 whose primary sense in WordNet is an event, those where all senses are events
 and (3) those where some senses are events.

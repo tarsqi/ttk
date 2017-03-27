@@ -1,8 +1,10 @@
-#!/usr/bin/python
+"""
 
-""" Based on compileAxioms5.py. The main difference is that Allen
+Based on compileAxioms5.py. The main difference is that Allen
 basic relations are used instead of TimeML relations. Also produces an
-extra short output for consumption of Perl scripts. """
+extra short output for consumption of Perl scripts.
+
+"""
 
 import sys
 

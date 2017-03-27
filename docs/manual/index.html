@@ -11,7 +11,7 @@
 
 <p class="subtitle">Release Notes and Manual for TTK Version 2.0.0.rc1.
 
-<p class="subtitle">Marc Verhagen, January 2017.
+<p class="subtitle">Marc Verhagen, March 2017.
 
 <p class="navigation">
 [ <a href="#intro">introduction</a>
@@ -35,8 +35,8 @@ extracts time expressions, events, subordination links and temporal links; in
 addition, it can ensure consistency of temporal information.</p>
 
 <p>The first version of the toolkit, version 1.0, was released in 2007,
-accompanied by many promises and threats that there would be a new version
-soon... it took a decade. Version 2.0.0 differs from version 1.0 in many
+accompanied by many promises and threats that there would be a new version soon,
+this happened to take a decade. Version 2.0.0 differs from version 1.0 in many
 respects: code was simplified and debugged, documentation was updated, the
 Mallet toolkit was used, stand-off annotation was adopted, libraries were
 redesigned, and test and evaluation code was added. However, version 2.0.0 does
@@ -92,20 +92,21 @@ toolkit.</p>
   </li>
 
   <li>
-    <p>Create the settings file. The toolkit comes with an example settings file
-      in <code>settings.sample.txt</code>. Copy that file into
-      <code>settings.txt</code> and edit as needed. In most cases, the only
-      settings you will need to change are the <code>treetagger</code>
-      and <code>mallet</code> options, with the values depending on where you
-      installed the TreeTagger and MALLET. If you use the same installation
-      directories as the two example scripts mentioned above then you will not
-      have to make any changes to the settings file.</p>
+    <p>Create the configuration file. The toolkit comes with an example configuration file
+      in <code>config.sample.txt</code>. Copy that file into
+      <code>config.txt</code> and edit as needed. In most cases, the only
+      settings in the configuration file that you will need to change are
+      the <code>treetagger</code> and <code>mallet</code> options, with the
+      values depending on where you installed the TreeTagger and MALLET. If you
+      use the same installation directories as the two example scripts mentioned
+      above then you will not have to make any changes to the configuration
+      file.</p>
   </li>
 
 </ol>
 
 <p>To test the toolkit open a terminal window and make sure your working
-directory is in the <code>code</code> directory of the distribution, then type
+directory is in the top-level directory of the distribution, then type
 the following at the prompt (we use the dollar sign as the prompt in all
 examples):</p>
 
@@ -171,8 +172,8 @@ top level directory of the c: drive).</p>
 <h2>3. Using the TARSQI Toolkit</h2>
 
 <p>To run the TARSQI Toolkit, open a terminal and change the working directory
-to the <code>code</code> directory of the distribution. You can run Tarsqi on a
-file or a directory and the general format of the command is as follows:</p>
+to the top-level directory of the distribution. You can run Tarsqi on a file or
+a directory and the general format of the command is as follows:</p>
 
 <pre class="example">
 $ python tarsqi.py [OPTIONS] INFILE OUTFILE
@@ -187,8 +188,8 @@ OUTDIR, if not, the program will exit. All files in INDIR will be processed
 except for hidden files (starting with '.') and backup files (ending in '~').</p>
 
 <p>There are several options you can use, none of them are mandatory. Options
-can be set in the settings file (<code>settings.txt</code>) or overruled on
-the command line. For a full list see the settings file and the module
+can be set in the configuration file (<code>config.txt</code>) or overruled on
+the command line. For a full list see the configuration file and the module
 documentation string in <code>tarsqi</code> (which can be browsed
 at <a href="../code/modules/tarsqi.html">docs/code/modules/tarsqi.html</a>). Here
 we just present the two options you are most likely to use, these options also
@@ -274,7 +275,7 @@ Textual Entailment Challenge</a>.
 <div class="indent">
 
 <p>Can be used to overrule the default pipeline specified
-in <code>settings.txt</code>. A pipeline is a comma-separated string of
+in <code>config.txt</code>. A pipeline is a comma-separated string of
 component names. Allowed component names are <code>PREPROCESSOR, TOKENIZER,
 TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER, CLASSIFIER</code> and
 <code>LINK_MERGER</code>. The order of the components in the pipeline
@@ -512,6 +513,13 @@ href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a>.</p>
 
 <p>The Tempex module is copyright of The MITRE corporation and is distributed
 under the license in <a href="tempex-license.pdf">tempex-license.pdf</a>.</p>
+
+<p>The Toolkit contains two Python Wordnet modules in utilities/wordnet.py and
+utilities/wntools.py, which were developed by Oliver Steele. Use of that code is
+permitted under the Artistic License. See the PyWordNet project page
+at <a href="http://sourceforge.net/projects/pywordnet">http://sourceforge.net/projects/pywordnet</a>
+and the license
+at <a href="http://www.opensource.org/licenses/artistic-license.html">http://www.opensource.org/licenses/artistic-license.html</a>.</p>
 
 <p>The data in <code>data/in/TimeBank</code> are copyrighted by the
 various content providers and can be used for academic purposes only.</p>
