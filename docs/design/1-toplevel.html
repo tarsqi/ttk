@@ -43,7 +43,7 @@ the Tarsqi instance does the following:</p>
 
 <li>Store processing parameters on the instance. They were originally read by
 run_tarsqi() which hands them into the Tarsqi initialization. Parameters are
-defined in settings.txt, but values in there can be overridden on the command
+defined in config.txt, but values in there can be overridden on the command
 line invocation.</li>
 
 <li>Read the Tarsqi library. This library currently contains only elements from
@@ -345,7 +345,7 @@ inserted in the parse() method and the DCT can be extracted using a full
 document parse or a database lookup if needed. Note that the metadata parser has
 access to the TarsqiDocument and its embedded SourceDoc, metadata and processing
 options. As for the options, the processing options are taken from the command
-line options and the settings.txt file. Therefore, any settings there are
+line options and the config.txt file. Therefore, any settings there are
 available to the metadata parser simpy by using something like the following:</p>
 
 <pre class="example indent">
@@ -356,7 +356,7 @@ def parse(self, tarsqidoc):
 
 <p>This piece of code assumes that 'dct-database' was given as a command line
 option (for example, "--dct-database=/home/databases/dct.sqlite") or was added
-to settings.txt, it also requires that lookup() is defined appropriately.</p>
+to config.txt, it also requires that lookup() is defined appropriately.</p>
 
 <p><span class="header">DocumentStructureParser</span>. The third and last part
 of step 1 is to apply the document parser. We again print the relevant code,

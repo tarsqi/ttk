@@ -43,13 +43,13 @@ def open_pickle_file(fname):
         return pickle.load(fh)
 
 
-def read_settings(filename):
+def read_config(filename):
     """Read the content of filename and put flags and values in a
     dictionary. Each line in the file is either an empty line, a line starting
     with '#' or an attribute-value pair separated by a '=' sign. Returns the
     dictionary."""
     file = open(filename, 'r')
-    settings = {}
+    config = {}
     for line in file:
         line = line.strip()
         if not line:
@@ -57,16 +57,6 @@ def read_settings(filename):
         if line.startswith('#'):
             continue
         (flag, value) = [s.strip() for s in line.split('=')]
-        settings[flag] = value
+        config[flag] = value
     file.close()
-    return settings
-
-
-def write_settings(settings, filename):
-    """Write a dictionary to a file, with one line per entry and with the
-    key and value separated by an '=' sign."""
-    os.rename(filename, filename + '.org')
-    file = open(filename, 'w')
-    for (flag, value) in settings.items():
-        file.write("%s=%s\n" % (flag, value))
-    file.close()
+    return config

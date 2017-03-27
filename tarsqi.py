@@ -64,13 +64,13 @@ USAGE
           more messages will be written to the log, see utilities.logger for
           more details.
 
-      All these options can also be set in the settings.txt file.
+      All these options can also be set in the config.txt file.
 
 
 VARIABLES:
 
    TTK_ROOT - the TTK directory
-   SETTINGS - file with user settings
+   CONFIG - file with user settings
    COMPONENTS - dictionary with all Tarsqi components
    USE_PROFILER - a boolean determining whether the profiler is used
    PROFILER_OUTPUT - file that profiler statistics are written to
@@ -86,10 +86,10 @@ from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
 from utilities import logger
-from utilities.file import read_settings
+from utilities.file import read_config
 
 TTK_ROOT = os.environ['TTK_ROOT']
-SETTINGS = os.path.join(TTK_ROOT, 'settings.txt')
+CONFIG = os.path.join(TTK_ROOT, 'config.txt')
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
@@ -222,15 +222,15 @@ class Options():
     getopt() method, but standard options are also accessable directly through
     the following instance variables: source, pipeline, loglevel, trap_errors,
     perl, treetagger, mallet, classifier, ee_model and et_model. There is no
-    instance variable access for user-defined options in the settings.txt file."""
+    instance variable access for user-defined options in the config.txt file."""
 
     def __init__(self, options):
-        """Initialize options from the settings file and the options handed in to the
+        """Initialize options from the config file and the options handed in to the
         tarsqi script."""
-        self._read_options(SETTINGS, options)
+        self._read_options(CONFIG, options)
         self._massage_options()
         # put options in instance variables for convenience, this is not done
-        # for those options from settings.txt that are user-specific
+        # for those options from config.txt that are user-specific
         self.source = self.getopt('source')
         self.pipeline = self.getopt('pipeline')
         self.loglevel = self.getopt('loglevel')
@@ -242,9 +242,9 @@ class Options():
         self.ee_model = self.getopt('ee-model')
         self.et_model = self.getopt('et-model')
 
-    def _read_options(self, SETTINGS, options):
-        """Read options from settings file and command line options."""
-        self._options = read_settings(SETTINGS)
+    def _read_options(self, CONFIG, options):
+        """Read options from config file and command line options."""
+        self._options = read_config(CONFIG)
         for (option, value) in options:
             self._options[option[2:]] = value
 
