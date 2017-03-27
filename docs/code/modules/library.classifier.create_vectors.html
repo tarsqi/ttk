@@ -1,0 +1,130 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module library.classifier.create_vectors</div>
+
+<pre>
+Module to create vectors that can be used to train a mallet model.
+
+
+PRELIMARIES
+
+To run this script you need a gold standard that meets the following
+requirements:
+
+- It contains EVENT, TIMEX3 and TLINK tags. The EVENT tags need to have pos,
+  tense and aspect attributes
+
+- It contains preprocessor tags s, lex, ng and vg. The lex tags should have pos,
+  text and lemma attributes.
+
+- It should have docelement tags.
+
+- It should be in the TTK format.
+
+Here is a minimal example of what an input file should look like:
+
+   &lt;ttk&gt;
+   &lt;text&gt;Fido slept on Tuesday.
+   &lt;/text&gt;
+   &lt;metadata&gt;
+     &lt;dct value="20160428"/&gt;
+   &lt;/metadata&gt;
+   &lt;source_tags&gt;
+     &lt;TEXT id="1" begin="0" end="22" /&gt;
+   &lt;/source_tags&gt;
+   &lt;tarsqi_tags&gt;
+     &lt;docelement begin="0" end="23" type="paragraph" /&gt;
+     &lt;s id="s1" begin="0" end="22" /&gt;
+     &lt;lex id="l1" begin="0" end="4" lemma="Fido" pos="NNP" text="Fido" /&gt;
+     &lt;ng id="c1" begin="0" end="4" /&gt;
+     &lt;lex id="l2" begin="5" end="10" lemma="sleep" pos="VBD" text="slept" /&gt;
+     &lt;vg id="c2" begin="5" end="10" /&gt;
+     &lt;EVENT begin="5" end="10" aspect="NONE" class="OCCURRENCE" eid="e1" eiid="ei1" pos="VERB" tense="PAST" /&gt;
+     &lt;lex id="l3" begin="11" end="13" lemma="on" pos="IN" text="on" /&gt;
+     &lt;lex id="l4" begin="14" end="21" lemma="Tuesday" pos="NNP" text="Tuesday" /&gt;
+     &lt;ng id="c3" begin="14" end="21" /&gt;
+     &lt;TIMEX3 begin="14" end="21" origin="GUTIME" tid="t1" type="DATE" value="20160426" /&gt;
+     &lt;lex id="l5" begin="21" end="22" lemma="." pos="." text="." /&gt;
+     &lt;TLINK eventInstanceID="ei1" relType="IS_INCLUDED" relatedToTime="t1" /&gt;
+   &lt;/tarsqi_tags&gt;
+   &lt;/ttk&gt;
+
+One way to get gold standard data is to take the TimeBank 1.2 corpus as released
+by the LDC. This corpus is not in the TTK formta and it contains MAKEINSTANCE
+tags, but it can be converted by using the utilities/convert.py script.
+
+Then you can run tarsqi.py on the result and create a version with preprocessor
+information added:
+
+   $ python tarsqi.py --source=ttk --pipeline=PREPROCESSOR &lt;CONVERTED_TB&gt; &lt;OUT_DIR&gt;
+
+
+USAGE
+
+To create the vectors, run this script in one of two ways:
+
+   $ python create_vectors.py
+   $ python create_vectors.py --gold &lt;OUT_DIR&gt;
+
+In the first invocation, the files in data/gold are used as input. Both
+invocations will create two files in the current directory:
+
+   vectors.ee
+   vectors.et
+
+Here are two example vectors, one from vectors.ee and one from vectors.et (each
+vector is just one line, but below they are spread out over multiple lines for
+readability):
+
+   wsj_0006.tml-ei80-ei81 BEFORE e1-asp=NONE e1-cls=ASPECTUAL e1-epos=None
+   e1-mod=NONE e1-pol=POS e1-stem=None e1-str=complete e1-tag=EVENT
+   e1-ten=PRESENT e2-asp=NONE e2-cls=OCCURRENCE e2-epos=None e2-mod=NONE
+   e2-pol=POS e2-stem=None e2-str=transaction e2-tag=EVENT e2-ten=NONE shAsp=0
+   shTen=1
+
+   NYT19980402.0453.tml-ei2264-t61 IS_INCLUDED e-asp=NONE e-cls=OCCURRENCE
+   e-epos=None e-mod=NONE e-pol=POS e-stem=None e-str=created e-tag=EVENT
+   e-ten=PAST t-str=Tuesday t-tag=TIMEX3 t-type=DATE t-value=1998-03-31 order=et
+   sig=on
+
+When you run create_vectors.py on TimeBank you will notice a lot of warnings
+that tags cannot be inserted. This is a known issue with integrating GUTIME tags
+and pre-processor tags which does come at the expense of missing some training
+instances for long time expressions.
+
+In any case, as of late April 2016 running this script resulted in 1515 vectors
+in vectors.ee and 1029 vectors in vectors.et. These vectors were used to build
+the model that ships with the Tarsqi Toolkit.</pre>
+
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>add_reltype_to_vectors(tlinks, ee_vectors, et_vectors)</div>
+</pre>
+<pre>
+<div class=function>collect_tlinks(tarsqidoc)</div>
+</pre>
+<pre>
+<div class=function>process_dir(gold_dir)</div>
+</pre>
+<pre>
+<div class=function>process_file(gold_dir, fname)</div>
+</pre>
+<pre>
+<div class=function>write_vectors(ee_vectors, et_vectors)</div>
+Write those vectors that have a relType that is not None.</pre>

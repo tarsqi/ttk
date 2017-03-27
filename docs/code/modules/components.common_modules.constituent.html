@@ -1,0 +1,251 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.common_modules.constituent</div>
+
+<pre>
+<a href=#Constituent>Constituent</a>
+</pre>
+
+
+<a name="Constituent"/><div class="section">class Constituent</div>
+<pre>
+
+An abstract class that contains some methods that are identical for Chunks
+and Tokens plus a couple of default methods.
+
+Instance variables:
+   tree     - the TarsqiTree instance that the consituent is an element of
+   parent   - the parent, could be any non-token constituent
+   position - index in the parent's daughters list
+   dtrs     - a list of Tokens, EventTags and TimexTags
+   begin    - beginning offset in the SourceDoc
+   end      - ending offset in the SourceDoc
+
+On initialization these are all set to None or the empty list (for the dtrs
+variabe). All values are filled in when the TarsqiTree is created from a
+docelement Tag.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__cmp__(self, other)</div>
+</pre>
+<pre>
+<div class=function>__getitem__(self, index)</div>
+Returns an element from the dtrs variable.</pre>
+<pre>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>__iter__(self)</div>
+</pre>
+<pre>
+<div class=function>__len__(self)</div>
+Returns the lenght of the dtrs variable.</pre>
+<pre>
+<div class=function>__nonzero__(self)</div>
+</pre>
+<pre>
+<div class=function>__reversed__(self)</div>
+</pre>
+<pre>
+<div class=function>__setitem__(self, index, val)</div>
+Sets a value on the dtrs variable.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>all_nodes(self, result=None)</div>
+Returns all nodes through a pre-order tree search.</pre>
+<pre>
+<div class=function>createEvent(self)</div>
+Does nothing except for logging a warning. If this happens something
+unexpected is going on. Event creation is only attempted on some sub
+classes.</pre>
+<pre>
+<div class=function>events(self)</div>
+Return all events in the constituent.</pre>
+<pre>
+<div class=function>feature_value(self, name)</div>
+Used by matchConstituent. Needs cases for all instance variables used
+in the pattern matching phase.</pre>
+<pre>
+<div class=function>find_backward_alink(self, fsa_reltype_groups)</div>
+Search for an alink to the left of the event. Return True is event
+was found, False otherwise. Note that the context includes the event
+itself and the token to its immediate right. It is not quite clear why
+but it has tro do with how the patterns are defined.
+
+Backward Alinks also check for the adequacy (e.g., in terms of TENSE or
+ASPECT) of the Subordinating Event. For cases such as 'the
+&lt;EVENT&gt;transaction&lt;/EVENT&gt; has been &lt;EVENT&gt;completed&lt;/EVENT&gt;'</pre>
+<pre>
+<div class=function>find_backward_slink(self, fsa_reltype_groups)</div>
+Tries to create backward Slinks, using a group of FSAs.  Backward
+Slinks should check for the adequacy (e.g., in terms of TENSE or ASPECT)
+of the Subordinating Event. For cases such as 'the
+&lt;EVENT&gt;transaction&lt;/EVENT&gt; has been &lt;EVENT&gt;approved&lt;/EVENT&gt;'
+
+Arguments:
+   fsa_reltype_groups - see createForwardSlinks</pre>
+<pre>
+<div class=function>find_forward_alink(self, fsa_reltype_groups)</div>
+Search for an alink to the right of the event. Return True
+is event was found, False otherwise.</pre>
+<pre>
+<div class=function>find_forward_slink(self, fsa_reltype_groups)</div>
+Tries to create forward Slinks, using a group of FSAs.
+
+Arguments:
+   fsa_reltype_groups -
+       a list of two lists, the first list is a list of fsa
+       lists, the second list is a list of relation types
+       [ [ [fsa, fsa, ...], [fsa, fsa, ...], ...],
+         [ reltype, reltype, ... ] ]</pre>
+<pre>
+<div class=function>find_reporting_slink(self, fsa_reltype_groups)</div>
+Reporting Slinks are applied to reporting predicates ('say', 'told',
+etc) that link an event in a preceeding quoted sentence which is
+separated from the clause of the reporting event by a comma; e.g.,
+
+    ``I &lt;EVENT&gt;want&lt;/EVENT&gt; a referendum,'' Howard
+    &lt;EVENT class='REPORTING'&gt;said&lt;/EVENT&gt;.
+
+Slinket assumes that these quoted clauses always initiate the main
+sentence. Therefore, the first item in the sentence are quotation
+marks.</pre>
+<pre>
+<div class=function>first_leaf_node(self)</div>
+Return the first leaf node in the constituent.</pre>
+<pre>
+<div class=function>getText(self)</div>
+</pre>
+<pre>
+<div class=function>get_event(self)</div>
+Return None or the EventTag that is contained in the constituent.</pre>
+<pre>
+<div class=function>get_timex(self)</div>
+Return None or the TimexTag that is contained in the constituent.</pre>
+<pre>
+<div class=function>isAdjToken(self)</div>
+</pre>
+<pre>
+<div class=function>isChunk(self)</div>
+</pre>
+<pre>
+<div class=function>isEvent(self)</div>
+</pre>
+<pre>
+<div class=function>isNounChunk(self)</div>
+</pre>
+<pre>
+<div class=function>isPreposition(self)</div>
+</pre>
+<pre>
+<div class=function>isTimex(self)</div>
+</pre>
+<pre>
+<div class=function>isToken(self)</div>
+</pre>
+<pre>
+<div class=function>isVerbChunk(self)</div>
+</pre>
+<pre>
+<div class=function>leaf_nodes(self, result=None)</div>
+Returns the leaf nodes of the constituent.</pre>
+<pre>
+<div class=function>matchConstituent(self, description)</div>
+Match the chunk instance to the patterns in description, which is a
+dictionary with keys-values pairs that match instance variables and
+their values on the constituent.
+
+The value in key-value pairs can be:
+- an atomic value. E.g., {..., 'headForm':'is', ...}
+- a list of possible values. E.g., {..., headForm': forms.have, ...}
+  In this case, matchConstituent checks whether the chunk feature is
+  included within this list.
+- a negated value. It is done by introducing it as
+  a second constituent of a 2-position tuple whose initial position
+  is the caret symbol: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
+
+This is a specialized version of the matchDict method in utilities/FSA.py
+and it is intended to deal with Chunks and Tokens.</pre>
+<pre>
+<div class=function>next_node(self)</div>
+Return the next sibling in the tree or None if there is none. If this
+is called on the last dtr in a constituent, then it returns the next
+sibling of the parent. Returns None if self is a rightmost
+constituent.</pre>
+<pre>
+<div class=function>path_to_top(self)</div>
+Return the path to the top, but do not include the top and the node
+itself.</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>pretty_print(self)</div>
+</pre>
+<pre>
+<div class=function>print_vars(self)</div>
+</pre>
+<pre>
+<div class=function>setCheckedEvents(self)</div>
+</pre>
+<pre>
+<div class=function>syntax(self)</div>
+Return a string that contains the category names of all intermediate
+elements from the constituent to the top.</pre>
+<pre>
+<div class=function>timexes(self)</div>
+Return all timexes in the constituent.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_extract_quotation(self, fragment)</div>
+</pre>
+<pre>
+<div class=function>_find_alink(self, event_context, fsa_lists, reltype_list)</div>
+Try to create an alink using the context and patterns from the
+dictionary. Alinks are created as a side effect. Returns True if an
+alink was created, False otherwise.</pre>
+<pre>
+<div class=function>_find_slink(self, event_context, fsa_lists, reltype_list)</div>
+Try to find an slink in the given event_context using lists of
+FSAs. If the context matches an FSA, then create an slink and insert it
+in the tree.</pre>
+<pre>
+<div class=function>_identify_substring(self, sentence_slice, fsa_list)</div>
+Checks whether sentence_slice, a sequence of chunks and tokens,
+matches one of the FSAs in fsa_list. Returns a tuple of the sub sequence
+length that matched the pattern (where a zero length indicates no match)
+and the index of the FSA that returned the match.</pre>
+<pre>
+<div class=function>_look_for_link(self, sentence_slice, fsa_list)</div>
+Given a slice of a sentence and a list of FSAs, return a tuple of the
+size of the matching slize and the number of the FSA that featured in
+the match. Return False if there is no match.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>get_reltype(reltype_list, i)</div>
+Returns the reltype in reltype_list at index i. Returns the last element of
+reltype list if i is out of bounds (which happens when patterns have a list
+of reltypes that is shorter than the list of FSAs.</pre>

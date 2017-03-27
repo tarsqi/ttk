@@ -1,0 +1,204 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module docmodel.source_parser</div>
+
+<pre>
+<a href=#SourceParser>SourceParser</a>
+<a href=#SourceParserTTK>SourceParserTTK</a>
+<a href=#SourceParserText>SourceParserText</a>
+<a href=#SourceParserXML>SourceParserXML</a>
+</pre>
+
+<pre>
+Source parsers for Toolkit input
+
+Module that contains classes to parse and represent the input document. All
+parsers have a parse_file() and a parse_string() method and these methods return
+an instance of TarsqiDocument. Of that instance, all the parsers in this file do
+is to instantiate the source instance variable, which contains an instance of
+SourceDoc.
+
+What parser is used is defined in main.py, which has a mapping form source types
+(handed in by the --source command line option) to source parsers.
+
+There are now three parsers:
+
+SourceParserXML
+
+   A simple XML parser that splits inline XML into a source string and a list of
+   tags. The source string and the tags are stored in the SourceDoc instance,
+   which is intended to provide just enough functionality to deal with the input
+   in a read-only fashion, that is, additional annotations should not be in this
+   instance.
+
+SourceParserText
+
+   Simply puts the entire text in the DocSource instance and leaves the
+   TagsRepository empty.
+
+SourceParserTTK
+
+   This parser deals with the ttk format. In the TTK format there are two main
+   sources for tags: source_tags and tarsqi_tags. The first are added to the
+   tags repository on the SourceDoc (which is considered read-only after that),
+   the second are added to the tags repository on the TarsqiDocument.</pre>
+
+
+<a name="SourceParser"/><div class="section">class SourceParser</div>
+<pre>
+</pre>
+
+
+<a name="SourceParserTTK"/><div class="section">class SourceParserTTK</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.source_parser.html#SourceParser>SourceParser</a></strong></strong>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+Initialize the three variables dom, topnodes and sourcedoc.</pre>
+<pre>
+<div class=function>parse_file(self, filename, tarsqidoc)</div>
+Parse the TTK file and put the contents in the appropriate parts of
+the SourceDoc.</pre>
+<pre>
+<div class=function>parse_string(self, text)</div>
+</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_comments(self)</div>
+</pre>
+<pre>
+<div class=function>_add_metadata(self)</div>
+</pre>
+<pre>
+<div class=function>_add_source_tags(self)</div>
+Add the source_tags in the TTK document to the tags repository
+on the SourceDoc.</pre>
+<pre>
+<div class=function>_add_tarsqi_tags(self)</div>
+Add the tarsqi_tags in the TTK document to the tags repository
+on the TarsqiDocument.</pre>
+<pre>
+<div class=function>_add_to_source_tags(self, node)</div>
+</pre>
+<pre>
+<div class=function>_add_to_tag_repository(self, node, tag_repository)</div>
+</pre>
+<pre>
+<div class=function>_add_to_tarsqi_tags(self, node)</div>
+</pre>
+<pre>
+<div class=function>_load_dom(self, filename)</div>
+Loads the DOM object in the file into the dom variable and fills the
+topnodes dictionary with text, metadata, source_tags and tarsqi_tags and
+comment keys.</pre>
+</blockquote>
+
+<a name="SourceParserText"/><div class="section">class SourceParserText</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.source_parser.html#SourceParser>SourceParser</a></strong></strong>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>parse_file(self, filename, tarsqidoc)</div>
+Parses filename and returns a SourceDoc. Simply dumps the full file
+content into the text variable of the SourceDoc.</pre>
+<pre>
+<div class=function>parse_string(self, text, tarsqidoc)</div>
+Parses a text string and returns a SourceDoc. Simply dumps the full
+string into the text variable of the SourceDoc.</pre>
+</blockquote>
+
+<a name="SourceParserXML"/><div class="section">class SourceParserXML</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.source_parser.html#SourceParser>SourceParser</a></strong></strong>
+
+Simple XML parser, using the Expat parser.
+
+Instance variables
+   encoding - a string
+   sourcedoc - an instance of SourceDoc
+   parser - an Expat parser</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, encoding='utf-8')</div>
+Set up the Expat parser.</pre>
+<pre>
+<div class=function>parse_file(self, filename, tarsqidoc)</div>
+Parses filename and returns a SourceDoc. Uses the ParseFile routine
+of the expat parser, where all the handlers are set up to fill in the
+text and tags in SourceDoc.</pre>
+<pre>
+<div class=function>parse_string(self, text, tarsqidoc)</div>
+Parses a text string and returns a SourceDoc. Uses the ParseFile routine of
+the expat parser, where all the handlers are set up to fill in the text
+and tags in SourceDoc.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_debug(self, *rest)</div>
+</pre>
+<pre>
+<div class=function>_handle_characters(self, string)</div>
+Handle character data by asking the SourceDocument to add the
+data. This will not necesarily add a contiguous string of character data
+as one data element. This should include ingnorable whtespace, but see
+the comment in the method below, I apparantly had reason t think
+otherwise.</pre>
+<pre>
+<div class=function>_handle_comment(self, data)</div>
+Store comments.</pre>
+<pre>
+<div class=function>_handle_default(self, string)</div>
+Handle default data by asking the SourceDoc to add it as
+characters. This is here to get the 'ignoreable' whitespace, which I do
+not want to ignore.</pre>
+<pre>
+<div class=function>_handle_end(self, name)</div>
+Add closing tags to the SourceDoc.</pre>
+<pre>
+<div class=function>_handle_processing_instruction(self, target, data)</div>
+Store processing instructions</pre>
+<pre>
+<div class=function>_handle_start(self, name, attrs)</div>
+Handle opening tags. Takes two arguments: a tag name and a dictionary
+of attributes. Asks the SourceDoc instance in the sourcedoc variable to
+add an opening tag.</pre>
+<pre>
+<div class=function>_handle_xmldecl(self, version, encoding, standalone)</div>
+Store the XML declaration.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>print_dom(node, indent=0)</div>
+</pre>
+<pre>
+<div class=function>replace_newline(text)</div>
+Just used for debugging, make sure to not use this elsewhere because it
+is dangerous since it turns unicode into non-unicode.</pre>

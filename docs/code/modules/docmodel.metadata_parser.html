@@ -1,0 +1,184 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module docmodel.metadata_parser</div>
+
+<pre>
+<a href=#MetadataParser>MetadataParser</a>
+<a href=#MetadataParserATEE>MetadataParserATEE</a>
+<a href=#MetadataParserDB>MetadataParserDB</a>
+<a href=#MetadataParserRTE3>MetadataParserRTE3</a>
+<a href=#MetadataParserTTK>MetadataParserTTK</a>
+<a href=#MetadataParserText>MetadataParserText</a>
+<a href=#MetadataParserTimebank>MetadataParserTimebank</a>
+</pre>
+
+<pre>
+Metadata Parsers.
+
+This module contains metadata parsers, that is, parsers that pull out the
+metadata and add it to a TarsqiDocument. The only requirements on each parser is
+that it defines an __init__() method that takes a dictionary of options and a
+parse() method that takes a TarsqiDocument instance.
+
+Current parsers only deal with the DCT.</pre>
+
+
+<a name="MetadataParser"/><div class="section">class MetadataParser</div>
+<pre>
+
+This is the minimal metadata parser that is used as a default. It sets the
+DCT to today's date and provides some common functionality to subclasses.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, options)</div>
+At the moment, initialization does not use any of the options,
+but this could change.</pre>
+<pre>
+<div class=function>get_dct(self)</div>
+Return today's date in YYYYMMDD format.</pre>
+<pre>
+<div class=function>get_source(self)</div>
+A convenience method to lift the SourceDoc out of the tarsqi
+instance.</pre>
+<pre>
+<div class=function>parse(self, tarsqidoc)</div>
+Adds metadata to the TarsqiDocument. The only thing it adds to the
+metadata dictionary is the DCT, which is set to today.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_get_tag_content(self, tagname)</div>
+Return the text content of the first tag with name tagname, return
+None if there is no such tag.</pre>
+</blockquote>
+
+<a name="MetadataParserATEE"/><div class="section">class MetadataParserATEE</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
+
+The parser for ATEE document.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self)</div>
+All ATEE documents have a DATE tag with a value attribute, the value
+of that attribute is returned.</pre>
+</blockquote>
+
+<a name="MetadataParserDB"/><div class="section">class MetadataParserDB</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
+
+A minimal example parser for cases where the DCT is retrieved from a
+database. It is identical to MetadataParser except for how it gets the
+DCT. This is done by lookup in a database. This here is the simplest
+possible case, and it is quite inefficient. It assumes there is an sqlite
+database at 'TTK_ROOT/data/in/va/dct.sqlite' which was created as
+follows:
+
+   $ sqlite3 dct.sqlite
+   sqlite&gt; create table dct (filename TEXT, dct TEXT)
+   sqlite&gt; insert into dct values ("test.xml", "1999-12-31");
+
+The get_dct() method uses this database and the location of the database is
+specified in the settings.txt file. The first use case for this were VA
+documents where the DCT was stored externally. To see this class in action
+run
+
+   $ python tarsqi.py --source=db data/in/va/test.xml out.xml</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self)</div>
+</pre>
+</blockquote>
+
+<a name="MetadataParserRTE3"/><div class="section">class MetadataParserRTE3</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
+
+The parser for RTE3 documents, no differences with the default parser.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self)</div>
+</pre>
+</blockquote>
+
+<a name="MetadataParserTTK"/><div class="section">class MetadataParserTTK</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
+
+The metadata parser for the ttk format, simply copies the meta data.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self, sourcedoc)</div>
+</pre>
+<pre>
+<div class=function>parse(self, tarsqidoc)</div>
+Adds metadata to the TarsqiDocument. The only thing it adds to the
+metadata dictionary is the DCT, which is copied from the metadata in the
+SourceDoc.</pre>
+</blockquote>
+
+<a name="MetadataParserText"/><div class="section">class MetadataParserText</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
+
+For now this one adds nothing to the default metadata parser.</pre>
+
+
+<a name="MetadataParserTimebank"/><div class="section">class MetadataParserTimebank</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
+
+The parser for Timebank documents. All it does is overwriting the
+get_dct() method.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>get_dct(self)</div>
+Extracts the document creation time, and returns it as a string of
+the form YYYYMMDD. Depending on the source, the DCT can be found in one
+of the following tags: DOCNO, DATE_TIME, PUBDATE or FILEID.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_get_doc_source(self)</div>
+Return the name of the content provider as well as the content of the DOCNO
+tag that has that information.</pre>
+<pre>
+<div class=function>_parse_tag_content(self, regexpr, tagname)</div>
+Return the DCT part of the tag content of tagname, requires a reqular
+expression as one of the arguments.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>get_today()</div>
+Return today's date in YYYYMMDD format.</pre>

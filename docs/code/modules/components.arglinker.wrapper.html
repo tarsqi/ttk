@@ -1,0 +1,48 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.arglinker.wrapper</div>
+
+<pre>
+<a href=#ArgLinkerWrapper>ArgLinkerWrapper</a>
+</pre>
+
+<pre>
+Contains the ArgLinker wrapper.</pre>
+
+
+<a name="ArgLinkerWrapper"/><div class="section">class ArgLinkerWrapper</div>
+<pre>
+
+Wrapper for ArgLinker.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tag, xmldoc, tarsqi_instance)</div>
+Calls __init__ of the base class and sets component_name, parser, CREATION_EXTENSION
+and RETRIEVAL_EXTENSION.</pre>
+<pre>
+<div class=function>create_arglinker_input(self, tmp1file)</div>
+Take the xmldoc variable and create the input needed for the arglinker.</pre>
+<pre>
+<div class=function>import_arglinker_output(self, tmp2file, outfile)</div>
+Takes a file with the results of the dependency parse (tmp2file), finds the arguments
+in there, adds them to the xmldoc, and saves the xmldoc (to outfile).</pre>
+<pre>
+<div class=function>process_fragments(self)</div>
+Apply the Slinket parser to each fragment. No arguments and no return value.</pre>
+</blockquote>

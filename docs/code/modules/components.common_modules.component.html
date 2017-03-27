@@ -1,0 +1,44 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.common_modules.component</div>
+
+<pre>
+<a href=#TarsqiComponent>TarsqiComponent</a>
+</pre>
+
+<pre>
+Base class for Tarsqi components implemented in Python.</pre>
+
+
+<a name="TarsqiComponent"/><div class="section">class TarsqiComponent</div>
+<pre>
+
+Abstract class for the python components.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>pp_doctree(self, componentName)</div>
+Print the document tree. Assumes there is a doctree instance variable that
+contains a TarsqiTree object.</pre>
+<pre>
+<div class=function>process(self, infile, outfile)</div>
+Ask the component to process a file fragment. This is the method that is called
+from the component wrappers and it should be overwritten on all subclasses. An
+error is written to the log file if this method is ever executed.</pre>
+</blockquote>

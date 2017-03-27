@@ -1,41 +1,57 @@
 
 body {
-   background-color: #f9f9f9;
-   margin-top: 10pt;
-   margin-left: 15pt;
-   margin-right: 10pt;
-   margin-bottom: 10pt;
-   font-size: 12pt;
-   line-height: 13pt
+    max-width: 900pt;
+    background-color: #fff;
+    margin: 10pt;
+}
+
+body, p, td {
+    font-size: 14pt;
+    line-height: 18pt
+}
+
+h1 {
+    background: linear-gradient(rgba(128,207,216,0.6), rgba(127,202,147,0.45));
+    border: thin solid gray;
+    margin-top: 10pt;
+    padding: 15pt;
+    padding-left: 10pt;
+    margin-left: -2pt;
+    font-size: 24pt
 }
 
 h2 {
-   background-color: lightyellow;
-   border-style: solid;
-   border-width: thin;
-   margin-top: 10pt;
-   margin-left: -5pt;
-   padding: 15pt;
-   padding-left: 10pt;
-   font-size: 24pt
-}
-
-h3 {
-   background-color: lightyellow;
-   border-style: solid;
-   border-width: thin;
-   margin-top: 30pt;
-   margin-bottom: 15pt;
-   margin-left: -5pt;
-   padding: 10pt;
-   font-size: 16pt
+    border-bottom: medium solid gray;
+    margin-top: 20pt;
+    margin-bottom: 15pt;
+    padding-bottom: 6pt;
+    margin-left: -2pt;
+    font-size: 16pt
 }
 
 code {
-   font-size: 12pt
+    font-size: 14pt;
 }
 
-table {
-   font-size: 12pt;
-   line-height: 13pt
+.example {
+    font-size: 12pt;
+    margin-left: 30pt;
+    margin-right: 30pt;
+    padding: 10pt;
+    border: thin dotted gray;
+    font-family: monospace;
+    background-color: #eee;
+}
+
+.navigation {
+    font-size: 120%;
+    margin-bottom: 30pt;
+}
+
+.subtitle {
+    font-size: 110%;
+}
+
+.indent {
+    margin-left: 10pt;
 }

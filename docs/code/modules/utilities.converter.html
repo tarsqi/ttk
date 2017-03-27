@@ -1,0 +1,206 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module utilities.converter</div>
+
+<pre>
+<a href=#Converter>Converter</a>
+<a href=#FragmentConverter>FragmentConverter</a>
+</pre>
+
+<pre>
+Contains converters that map between representations.
+
+Currently contains two converters. ChunkerOutrputConverter takes the
+one-sentence-per-line output of the chunker and adds lex tags and s
+tags. FragmentConverter takes an XmlDocument and creates an instance
+of the Document class.</pre>
+
+
+<a name="Converter"/><div class="section">class Converter</div>
+<pre>
+
+New Converter class to take the place of FragmentConverter. It
+takes an XmldDocument and creates a Document, using a much simpler
+approach than the one in FragmentConverter. This should probably
+be implemented in document.py as a class named DocumentCreator or
+perhaps on Document itself.
+
+However, before all this happens some things must be in place:
+
+Test cases for Evita and Slinket (the two consumers of Converter)
+
+Token and AdjectiveToken redesign:
+- __init__ takes doc and the xmldocelement (the lex, and therefore
+  also lid, pos, lemma)
+- getText does not go to the doc.nodeList
+
+All Constituents have a method add_child, which appends to the
+dtrs list (or whatever variable they have).
+
+Check whether links need to be accounted for. FragmentConverter
+deals with those but perhaps only because of S2T.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, xmldoc, filename=None)</div>
+Initializes xmldoc and doc, using two arguments: xmldoc (an
+XmlDocument) and filename (a string). Also sets instance
+variables currentSentence, currentChunk, currentToken,
+currentEvent and currentTimex to None.</pre>
+<pre>
+<div class=function>convert(self)</div>
+Loops through the XmlDocument and builds a tree.</pre>
+<pre>
+<div class=function>tag_as_constituent(self, opening_element)</div>
+This method determines what kind of object is added to the
+tree. All objects need to have a parent instance variable. And
+all objects, with the possible exception of Token, need to
+have an add_child method.</pre>
+</blockquote>
+
+<a name="FragmentConverter"/><div class="section">class FragmentConverter</div>
+<pre>
+
+Takes a fragment formatted as a simple list of xml elements (an
+XmlDocument object) and converts it into a shallow tree implemented
+as a Document object. Also maintains lists and dictionaries of
+events, instances, and links.
+
+Instance variables:
+   xmldoc - an XmlDocument
+   doc - a Document
+   currentSentence - None or a Sentence
+   currentChunk - None or a NounChunk or VerbChunk
+   currentToken - None or a Token or AdjectiveToken
+   currentTimex - None or a TimexTag
+   currentEvent - None or an EventTag
+   tree_tags - a list of tags that can be internal nodes
+   tag_stack - a stack that keeps track of tag embedding
+
+The Document instance in doc contains a list of Sentences where
+each Sentence is a list of Tokens and Chunks (and in some cases
+Timexes). Chunks can contain TimexTags and EventTags. EventTags
+are embedded in Chunks or Sentences (the latter for adjectival
+events) and Tokens are embedded in Events, TimexTags, Chunks or
+Sentences.
+
+Sentence tags, chunk tags, event tags and timex tags are the only
+tags that can form internal constituents. Lex tags are always
+leaves. All other tags are ignored for the tree, but link tags and
+instance tags are used to add data outside the tree.
+
+Here is an example pretty print of a short Sentence:
+
+  &lt;NG&gt;
+    &lt;lex pos="PP" text="He"&gt;
+  &lt;VG&gt;
+     &lt;EVENT eid=e6 eiid=ei6 class=OCCURRENCE&gt;
+        &lt;lex pos="VBD" text="slept"&gt;
+  &lt;lex pos="IN" text="on"&gt;
+  &lt;NG&gt;
+     &lt;TIMEX3 tid=t2 TYPE=DATE VAL=20070525TNI&gt;
+        &lt;lex pos="NNP" text="Friday"&gt;
+        &lt;lex pos="NN" text="night"&gt;
+  &lt;lex pos="." text="."&gt;</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, xmldoc, filename=None)</div>
+Initializes xmldoc and doc, using two arguments: xmldoc (an
+XmlDocument) and filename (a string). Also sets instance
+variables currentSentence, currentChunk, currentToken,
+currentEvent and currentTimex to None.</pre>
+<pre>
+<div class=function>convert(self)</div>
+Convert the flat list of XML elements in xmldoc into a Document and
+store it in self.doc. Returns the value of self.doc.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_current_node(self)</div>
+Return the category of the currently open constituent, return None
+if there is no open constituent. The open consituent is the
+one on top of the stack.</pre>
+<pre>
+<div class=function>_current_node_is_chunk(self)</div>
+Return True if the current node is a noun chunk or verb chunk and
+self.currentChunk is not None, return False otherwise</pre>
+<pre>
+<div class=function>_current_node_is_sentence(self)</div>
+Return True if the current node is a sentence and
+self.currentSentence is not None, return False otherwise</pre>
+<pre>
+<div class=function>_current_node_is_timex(self)</div>
+Return True if the current node is a timex and self.currentTimex is
+not None, return False otherwise</pre>
+<pre>
+<div class=function>_process_alink(self, element)</div>
+Add an AlinkTag to the Alinks list on the Document.</pre>
+<pre>
+<div class=function>_process_closing_tag(self, element)</div>
+Resets currentSentence or other currently open constituent to None,
+depending on the closing tag.</pre>
+<pre>
+<div class=function>_process_element(self, element)</div>
+Non-tags are treated as text nodes and added to the current token
+if there is one.</pre>
+<pre>
+<div class=function>_process_opening_chunk(self, chunk_class, element)</div>
+Create a VerbChunk or NounChunk and add it to the current sentence
+or the current timex.</pre>
+<pre>
+<div class=function>_process_opening_event(self, element)</div>
+Creates an EventTag and add it to the event dictionary on the
+Document instance. Also sets the contains_event flag on the
+current token to indicate that the token has an event embedded
+in it (due to an Evita peculiarity of embedding events inside
+of tokens). The EventTag is not added to any constituent,
+_massage_doc takes care of that.</pre>
+<pre>
+<div class=function>_process_opening_lex(self, element)</div>
+Creates a Token or AdjectviveToken and adds it to the current timex,
+current chunk, or to the current sentence.</pre>
+<pre>
+<div class=function>_process_opening_make_instance(self, element)</div>
+Creates an InstanceTag and adds it to the instance dictionary on
+the Document. Also copies all attributes on the instance to
+the event. The InstanceTag is not added to a Chunk or Sentence
+or any other element of the shallow tree.</pre>
+<pre>
+<div class=function>_process_opening_sentence(self, element)</div>
+Create a Sentence and add it to the document.</pre>
+<pre>
+<div class=function>_process_opening_tag(self, element)</div>
+Process an opening tag, calling the appropriate handler depending
+on the tag.</pre>
+<pre>
+<div class=function>_process_opening_timex(self, element)</div>
+Creates a TimeTag and embed it in the current chunk if there is
+one, otherwise add it to the sentence.</pre>
+<pre>
+<div class=function>_process_slink(self, element)</div>
+Add an SlinkTag to the Slinks list on the Document.</pre>
+<pre>
+<div class=function>_process_tlink(self, element)</div>
+Add an TlinkTag to the Tlinks list on the Document.</pre>
+<pre>
+<div class=function>_tag_stack_as_string(self)</div>
+Return self.tag_stack as a pretty string.</pre>
+</blockquote>

@@ -1,0 +1,102 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.blinker.main</div>
+
+<pre>
+<a href=#Blinker>Blinker</a>
+</pre>
+
+<pre>
+Main module for Blinker, the rule-based Tlink generation component.
+
+Responsible for loading the libraries and other top-level processing.</pre>
+
+
+<a name="Blinker"/><div class="section">class Blinker</div>
+<pre>
+<strong>Inherits from: <a href=components.common_modules.component.html#TarsqiComponent>TarsqiComponent</a></strong></strong>
+
+Implements the Blinker component of Tarsqi. Blinker takes the shallow
+tree implemented in the TarsqiTree object and applies rules that capture
+regularities between events and times as well as between events.
+
+Instance variables:
+   NAME         -  a string
+   dct          -  document creation time: a string of the form YYYYMMDD
+   rules        -  a BlinkerRuleDictionary
+   rule2_index  -  a dictionary, quick access to type 2 rules
+   tarsqidoc    -  a TarsqiDOcument
+   doctree      -  a TarsqiTree</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidoc)</div>
+Set component name and load rules into a BlinkerRuleDictionary
+object, this object knows where the rules are stored.</pre>
+<pre>
+<div class=function>process_element(self, element)</div>
+Apply the Blinker rules to the element. Creates a TarsqiTree instance
+and then applies the Blinker rules.</pre>
+<pre>
+<div class=function>run_timex_linking(self)</div>
+Apply the rules that govern relations between TIMEX3 tags. Only
+applies to TIMEX3 tags with type=DATE.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_tlink(self, reltype, id1, id2, source)</div>
+Add a TLINK to self.tarsqidoc.</pre>
+<pre>
+<div class=function>_apply_event_anchoring_rules(self, sentence, timex, i)</div>
+Anchor events to a given timex that occurs in the sentence at index
+i. The method proceeds by looking for some simple syntactic patterns
+with and without prepositions. If a pattern with a preposition occurs,
+then the preposition is looked up in self.rule2_index. If no signal is
+found, then the default INCLUDES rule will apply (rule 1), this is not
+yet implemented.</pre>
+<pre>
+<div class=function>_apply_event_ordering_with_signal_rules(self)</div>
+Some more rules without using any rules, basically a placeholder
+for event ordering rules that use a signal.</pre>
+<pre>
+<div class=function>_apply_type3_rules(self, event1, event2)</div>
+Creates a TLINK between two main events</pre>
+<pre>
+<div class=function>_apply_type5_rules(self, sentence, event1, position)</div>
+Creates TLINKs between the reporting event and reported events
+
+Takes as arguments sentence, reporting event constituent, and
+position of that constituent within the sentence list</pre>
+<pre>
+<div class=function>_create_timex_link(self, timex1, timex2)</div>
+Try to create a TLINK between two timexes.</pre>
+<pre>
+<div class=function>_index_rules(self)</div>
+Rules of type 2 (timex-signal-event) can be simply put in a hash
+keyed on the signals.</pre>
+<pre>
+<div class=function>_run_blinker(self)</div>
+Apply BLinker rules to the sentences in the doctree variable. This
+currently only deals with rule type 2, anchoring an event to a timex in
+those cases where there is a signal (that is, a preposition). New
+Tlinks are added just before the closing tag of the fragment.</pre>
+</blockquote>
+
+<div class="section">module functions</div>

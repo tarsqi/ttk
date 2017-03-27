@@ -1,0 +1,75 @@
+# This is an example file with configuration options. You should make a copy of
+# this file and name it settings.txt and make changes to the copy as needed.
+
+# Option can be changed here or in some cases on the command line when calling
+# the tarsqy.py script. Command line options will overwrite options specified
+# here.
+
+
+# The default pipeline, can be overridden with the --pipeline command line
+# option
+
+pipeline = PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER,LINK_MERGER
+
+
+# Location of perl. Change this into an absolute path if perl cannot be accesed
+# by the system by simply using 'perl'
+
+perl = perl
+
+
+# Location of the IMS TreeTagger, can be overridden with the --treetagger
+# command line option. The default is the directory where the example build
+# script build/install-treetagger-osx.sh puts the TreeTagger.
+
+treetagger = build/treetagger
+
+
+# Location of Mallet, this should be the directory that contains the bin
+# directory. This option can be overridden by the --mallet command line
+# option. The default is the directory where the example build script
+# build/install-mallet-osx.sh puts Mallet.
+
+
+mallet = build/mallet/mallet-2.0.8
+
+
+# Other options used for the classifier, where ee-model and et-model should
+# refer to a model in components/classifier/models. These options can be
+# overridden by the --classifier, --ee-model and --et-model command line
+# options.
+# TODO: allow absolute paths
+
+classifier = MaxEnt
+ee-model = tb-vectors.ee.model
+et-model = tb-vectors.et.model
+
+
+# The source type of the document which allows components to be sensitive to
+# idiosyncratic properties of the text. It is xml by default, other source
+# types are text and ttk. This would typically be set with the --source command
+# line option.
+
+source = xml
+
+
+# Set log level to an integer from 0 to 4, the higher the level the more
+# messages will be written to the log. The default prints info, errors and
+# warnings, but no debugging statements. See utilities.logger for more
+# details. Can be overridden with --loglevel.
+
+loglevel = 3
+
+
+# Error trapping, errors are trapped by default. Override with --trap-errors.
+
+trap-errors = True
+
+
+# User settings. Arbitray parameters can be added here and will then be
+# accessible to user-specific code. Below is just one parameter that is used by
+# example code that finds the DCT in a database (see MetadataParserDB in
+# docmodel.metadata_parser). These parameters cannot be overruled by command
+# line options.
+
+dct-database = data/in/va/dct.sqlite

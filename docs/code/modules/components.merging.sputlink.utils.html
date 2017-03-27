@@ -1,0 +1,63 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.merging.sputlink.utils</div>
+
+<pre>
+<a href=#CompositionTable>CompositionTable</a>
+</pre>
+
+
+<a name="CompositionTable"/><div class="section">class CompositionTable</div>
+<pre>
+
+Implements the 28 by 28 composition table. Takes care of loading
+the table from file and retrieving compositions from the table.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, compositions_file)</div>
+Read the compositions file and load all compositions into the
+data instance variable.</pre>
+<pre>
+<div class=function>compose_rels(self, rel1, rel2)</div>
+Looks up the composition of rel1 and rel2 and returns it.</pre>
+<pre>
+<div class=function>pp(self, filename)</div>
+Print an html table to filename.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>compare_id(a, b)</div>
+</pre>
+<pre>
+<div class=function>html_graph_prefix(fh)</div>
+</pre>
+<pre>
+<div class=function>intersect_lists(l1, l2)</div>
+Returns the intersection of two lists. The result will not contain
+duplicate elements and list order is not preserved.</pre>
+<pre>
+<div class=function>intersect_relations(rels1, rels2)</div>
+Returns the intersection of two relation sets. Returns None if both
+of the two sets are None.</pre>
+<pre>
+<div class=function>massage(str)</div>
+Prepare the string representation of a relation set for printing in
+html.</pre>

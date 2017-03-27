@@ -1,0 +1,220 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.preprocessing.wrapper</div>
+
+<pre>
+<a href=#TreeTagger>TreeTagger</a>
+<a href=#ChunkerWrapper>ChunkerWrapper</a>
+<a href=#PreprocessorWrapper>PreprocessorWrapper</a>
+<a href=#TagId>TagId</a>
+<a href=#TaggerWrapper>TaggerWrapper</a>
+<a href=#TokenizerWrapper>TokenizerWrapper</a>
+</pre>
+
+<pre>
+Contains the wrapper for all preprocessing components.</pre>
+
+
+<a name="TreeTagger"/><div class="section">class TreeTagger</div>
+<pre>
+<strong>Inherits from: object</strong>
+
+Class that wraps the TreeTagger.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__del__(self)</div>
+When deleting the wrapper, close the TreeTagger process pipes.</pre>
+<pre>
+<div class=function>__init__(self, treetagger_dir)</div>
+Set up the pipe to the TreeTagger.</pre>
+<pre>
+<div class=function>tag_text(self, text)</div>
+Open a thread to the TreeTagger, pipe in the text and return the results.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_get_executable(self)</div>
+Get the TreeTagger executable for the platform.</pre>
+</blockquote>
+
+<a name="ChunkerWrapper"/><div class="section">class ChunkerWrapper</div>
+<pre>
+
+Wrapper for the chunker.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidocument)</div>
+Set component_name and add the TarsqiDocument.</pre>
+<pre>
+<div class=function>process(self)</div>
+Generate input for the chunker from the lex and s tags in the document, run
+the chunker, and insert the new ng and vg chunks into the TagRepository
+on the TarsqiDocument.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_chunk_text(self, text)</div>
+Takes a list of sentences and return the same sentences with chunk
+tags inserted. May need to do something with things like &, &lt;, &gt;, and
+others.</pre>
+<pre>
+<div class=function>_export_chunks(self, text)</div>
+Export ng and vg tags to the TagRepository on the TarsqiDocument.</pre>
+</blockquote>
+
+<a name="PreprocessorWrapper"/><div class="section">class PreprocessorWrapper</div>
+<pre>
+
+Wrapper for the preprocessing components.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidocument)</div>
+Set component_name, add the TarsqiDocument and initialize the
+TreeTagger.</pre>
+<pre>
+<div class=function>process(self)</div>
+Retrieve the element tags from the TarsqiDocument and hand the text
+for the elements as strings to the preprocessing chain. The result is a
+shallow tree with sentences and tokens. These are inserted into the
+TarsqiDocument's tags TagRepositories.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_chunk_text(self, text)</div>
+Takes a list of sentences and return the same sentences with chunk
+tags inserted. May need to do something with things like &, &lt;, &gt;, and
+others.</pre>
+<pre>
+<div class=function>_create_text_from_tokens_and_tags(self, tokens, taggedItems)</div>
+</pre>
+<pre>
+<div class=function>_export(self, text)</div>
+Export preprocessing information to the tag repository. Updates the
+TagRepository using the preprocessing result.</pre>
+<pre>
+<div class=function>_tag_text(self, tokens)</div>
+Takes a string and returns a list of sentences. Each sentence is a
+list of tuples of token, part-of-speech and lemma.</pre>
+<pre>
+<div class=function>_tokenize_text(self, string)</div>
+Takes a unicode string and returns a list of objects, where each
+object is either the pair ('&lt;s&gt;', None) or a pair of a tokenized string
+and a TokenizedLex instance.</pre>
+</blockquote>
+
+<a name="TagId"/><div class="section">class TagId</div>
+<pre>
+
+Class to provide fresh identifiers for lex, ng, vg and s tags.</pre>
+
+
+<a name="TaggerWrapper"/><div class="section">class TaggerWrapper</div>
+<pre>
+
+Wrapper for the tagger.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidocument)</div>
+Set component_name, add the TarsqiDocument and initialize the
+TreeTagger.</pre>
+<pre>
+<div class=function>process(self)</div>
+Generate input for the tagger from the lex and s tags in the document, run
+the tagger, and insert the new information (pos and lemma) into the
+TagRepository on the TarsqiDocument.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_export_tags(self, tagged_tokens)</div>
+Take the token tuples and add their pos and lemma information to the
+TagRepository in the TarsqiDocument.</pre>
+<pre>
+<div class=function>_merge(self, tokens, taggedItems)</div>
+Merge the tags and lemmas into the tokens. Result is a list of tokens
+where each token is a 5-tuple of text, tag, lemma, begin offset and end
+offset. Sentence information is not kept in this list.</pre>
+<pre>
+<div class=function>_tag_text(self, tokens)</div>
+Takes a string and returns a list of sentences. Each sentence is a
+list of tuples of token, part-of-speech and lemma.</pre>
+</blockquote>
+
+<a name="TokenizerWrapper"/><div class="section">class TokenizerWrapper</div>
+<pre>
+
+Wrapper for the tokenizer.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidocument)</div>
+Set component_name and add the TarsqiDocument.</pre>
+<pre>
+<div class=function>process(self)</div>
+Retrieve the element tags from the TarsqiDocument and hand the text for
+the elements as strings to the tokenizer. The result is a list of pairs,
+where the pair is either (&lt;s&gt;, None) or (SomeString, TokenizedLex). In
+the first case an s tag is inserted in the TarsqiDocument's tags
+TagRepository and in the second a lex tag.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_export_sentence(self, s_begin, s_end)</div>
+Add an s tag to the TagRepository of the TarsqiDocument.</pre>
+<pre>
+<div class=function>_export_tokens(self, tokens)</div>
+Add s tags and lex tags to the TagRepository of the TarsqiDocument.</pre>
+<pre>
+<div class=function>_tokenize_text(self, string)</div>
+Takes a unicode string and returns a list of objects, where each
+object is either the pair ('&lt;s&gt;', None) or a pair of a tokenized string
+and a TokenizedLex instance.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>adjust_lex_offsets(tokens, offset)</div>
+The tokenizer works on isolated strings, adding offsets relative to the
+beginning of the string. But for the lex tags we need to relate the offset
+to the beginning of the file, not to the beginning of some random
+string. This procedure is used to increment offsets on instances of
+TokenizedLex.</pre>
+<pre>
+<div class=function>filter_tokens(tokens)</div>
+The tokens list is a list of pairs, where the first element is '&lt;s&gt;' or the
+text of the token and the second element either None if the first element is
+'&lt;s&gt;' or a TokenizedLex instance, just keep the '&lt;s&gt;' or the TokenizedLex.</pre>
+<pre>
+<div class=function>initialize_treetagger(treetagger_dir)</div>
+</pre>
+<pre>
+<div class=function>normalize_POS(pos)</div>
+Some simple modifications of the TreeTagger POS tags.</pre>

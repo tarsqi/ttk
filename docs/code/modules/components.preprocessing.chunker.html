@@ -1,0 +1,98 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.preprocessing.chunker</div>
+
+<pre>
+<a href=#Sentence>Sentence</a>
+</pre>
+
+<pre>
+Simple Python Chunker
+
+Usage
+
+   from chunker import chunk_sentences
+   chunked_sentences = chunk_sentences(sentences)</pre>
+
+
+<a name="Sentence"/><div class="section">class Sentence</div>
+<pre>
+
+The work horse for the chunker.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, sentence)</div>
+Set sentence variable and initialize chunk_tags dictionary.</pre>
+<pre>
+<div class=function>chunk(self)</div>
+Chunk self.sentence. Updates the variable and returns it. Scans
+through the sentence, advancing the index if a chunk is found.</pre>
+<pre>
+<div class=function>consume_chunk(self, chunk_type, idx)</div>
+Read constituent of class chunk_type, starting at index
+idx. Returns idx if no constituent could be read, returns the
+index after the end of the consitutent otherwise.</pre>
+<pre>
+<div class=function>fix_VBGs(self)</div>
+The TreeTagger tends to tag some adjectives as gerunds, as a result
+we get
+
+   [see/VBP sleeping/VBG] [men/NNS]
+
+This method finds these occurrences and moves the VBG in to the noun
+group:
+
+   [see/VBP] [sleeping/VBG men/NNS]
+
+In order to do this, it finds all occurrences of VGs followed by NGs
+where: (i) the VG ends in VBG, (ii) the NG starts with one of NN, NNS,
+NNP, NNPS, and (iii) the verb before the VBG is not a form of "be".</pre>
+<pre>
+<div class=function>fix_common_errors(self)</div>
+Phase 2 of processing. Fix some common errors.</pre>
+<pre>
+<div class=function>import_chunks(self)</div>
+Add chunk tags to the sentence variable.</pre>
+<pre>
+<div class=function>is_VB_VBG_NN(self, idx)</div>
+Return True if starting at idx, we have the pattern "NOT_BE VBG
+&lt;/VG&gt; &lt;NG&gt; NN", return False otherwise.</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>set_tags(self, chunk_type, begin_idx, end_idx)</div>
+Store beginning and ending position of the hunk in the chunk_tags
+dictionary.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>chunk_sentences(sentences)</div>
+Return a list of sentences with chunk tags added.</pre>
+<pre>
+<div class=function>is_final_tag(cat, tag)</div>
+Returns True if tag can be cat-final, False otherwise.</pre>
+<pre>
+<div class=function>is_initial_tag(cat, tag)</div>
+Returns True if tag can be cat-initial, False otherwise.</pre>
+<pre>
+<div class=function>is_internal_tag(cat, tag)</div>
+Returns True if tag can be cat-internal, False otherwise.</pre>

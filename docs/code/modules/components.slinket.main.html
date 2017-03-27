@@ -1,0 +1,147 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.slinket.main</div>
+
+<pre>
+<a href=#EventExpression>EventExpression</a>
+<a href=#Slinket>Slinket</a>
+</pre>
+
+<pre>
+Main module for the Slinket component.
+
+Responsible for the top-level processing of Slinket. Most functionality is in
+the Chunk class.</pre>
+
+
+<a name="EventExpression"/><div class="section">class EventExpression</div>
+<pre>
+
+Class that wraps an event in a way that's convenient for Slinket.
+
+Instance variables:
+   dict        -  dictionary of event attributes
+   eid
+   eiid
+   tense
+   aspect
+   nf_morph    -  VERB, NOUN or ADJECTIVE, sometimes called epos
+   polarity    -  optional attribute (that is, it can be None)
+   modality    -  optional attribute (that is, it can be None)
+   evClass     -  the event class
+   pos         -  the part-of-speech of the event token
+   form        -  the actual string
+   locInSent   -  idx of node bearing event tag in the document, wrt to its
+                  sentence parent node.
+   eventNum    -  position of event in sentence.eventList (needed for
+                  potential slinking with previous or next events in list)</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, eid, locInSent, eventNum, event_attributes)</div>
+Set all attributes, using default values if appropriate. The arguments are:
+an identifier string, an integer reflecting the location of the event in
+the sentence, an integer reflecting the position of the event on the
+eventList on the sentence and a dictionary with event attributes.</pre>
+<pre>
+<div class=function>alinkingContexts(self, key)</div>
+Returns the list of alink patterns from the dictionary.</pre>
+<pre>
+<div class=function>as_verbose_string(self)</div>
+</pre>
+<pre>
+<div class=function>can_introduce_alink(self)</div>
+Returns True if the EventExpression instance can introduce an Alink, False
+otherwise. This ability is determined by dictionary lookup.</pre>
+<pre>
+<div class=function>can_introduce_slink(self)</div>
+Returns True if the EventExpression instance can introduce an Slink, False
+otherwise. This ability is determined by dictionary lookup.</pre>
+<pre>
+<div class=function>get_event_attribute(self, attr, optional=False)</div>
+Return the value of an attribute 'attr' from self.dict. If the attribute is
+not in the dictionary, then (i) return a default value if there is one,
+and (ii) write an error if the attribute is not optional.</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>pretty_print(self)</div>
+</pre>
+<pre>
+<div class=function>slinkingContexts(self, key)</div>
+Returns the list of slink patterns from the dictionary.</pre>
+</blockquote>
+
+<a name="Slinket"/><div class="section">class Slinket</div>
+<pre>
+<strong>Inherits from: <a href=components.common_modules.component.html#TarsqiComponent>TarsqiComponent</a></strong></strong>
+
+Class that implements the Slinket SLINK and ALINK parser. Only lexical alinks
+and slinks are found.
+
+Purpose clause are not yet implemented. But note that some purpose clause
+SLINKS are already introduced in the lexically-triggered process. This is so
+for those events that discoursively tend to appear modified by a Purpose
+Clause (e.g., 'address'). The data are based on TimeBank. Conditionals are
+not implemented either.
+
+Instance variables:
+   NAME - a string
+   doctree - a TarsqiTree
+   docelement - a docelement Tag</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+Initialize Slinket. Sets doctree and docelement to None, these are added by
+process_doctree().</pre>
+<pre>
+<div class=function>process_doctree(self, doctree)</div>
+Find alinks and slinks in doctree and export them to self.docelement.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_link(self, tagname, attrs)</div>
+Add the link to the TagRepository instance on the TarsqiDocument.</pre>
+<pre>
+<div class=function>_add_links_to_document(self)</div>
+</pre>
+<pre>
+<div class=function>_build_event_dictionary(self)</div>
+Creates a dictionary with events on the self.doctree variable and adds
+event lists (which consist of pairs of event location and event id) to
+all sentences in self.doctree.</pre>
+<pre>
+<div class=function>_find_alink(self, sentence, event_expr)</div>
+Try to find an alink with event_expr as the trigger, alinks are created as a side
+effect.</pre>
+<pre>
+<div class=function>_find_lexically_based_slink(self, sentence, event_expr)</div>
+Try to find lexically based Slinks for an instance of EventExpression using
+forward, backward and reporting FSA paterns. No return value, if an
+Slink is found, it will be created by the chunk that embeds the Slink
+triggering event.</pre>
+<pre>
+<div class=function>_find_links(self, doc, sentence)</div>
+For each event in the sentence, check whether an Alink or Slink can be
+created for it.</pre>
+</blockquote>

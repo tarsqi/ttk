@@ -1,0 +1,43 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.slinket.wrapper</div>
+
+<pre>
+<a href=#SlinketWrapper>SlinketWrapper</a>
+</pre>
+
+<pre>
+Contains the Slinket wrapper.</pre>
+
+
+<a name="SlinketWrapper"/><div class="section">class SlinketWrapper</div>
+<pre>
+
+Wrapper for Slinket.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqi_document)</div>
+</pre>
+<pre>
+<div class=function>process(self)</div>
+Create a TarsqiTree instance for each docelement slice of the TarsqiDocument
+and hand them to Slinket for processing. Slinket processing will update
+the tags in the TarsqiDocument when slinks are added.</pre>
+</blockquote>

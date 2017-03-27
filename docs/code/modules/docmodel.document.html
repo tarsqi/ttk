@@ -1,0 +1,391 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module docmodel.document</div>
+
+<pre>
+<a href=#TarsqiInputError>TarsqiInputError</a>
+<a href=#ClosingTag>ClosingTag</a>
+<a href=#OpeningTag>OpeningTag</a>
+<a href=#SourceDoc>SourceDoc</a>
+<a href=#Tag>Tag</a>
+<a href=#TagRepository>TagRepository</a>
+<a href=#TarsqiDocument>TarsqiDocument</a>
+</pre>
+
+<pre>
+TarsqiDocument and friends.
+
+This module contains TarsqiDocument and some of the classes used by it.</pre>
+
+
+<a name="TarsqiInputError"/><div class="section">class TarsqiInputError</div>
+<pre>
+<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
+</pre>
+
+
+<a name="ClosingTag"/><div class="section">class ClosingTag</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.document.html#Tag>Tag</a></strong></strong>
+
+Like Tag, but self.begin and self.attrs are always None.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, id, name, offset)</div>
+</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>is_closing_tag(self)</div>
+</pre>
+</blockquote>
+
+<a name="OpeningTag"/><div class="section">class OpeningTag</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.document.html#Tag>Tag</a></strong></strong>
+
+Like Tag, but self.end is always None.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, id, name, offset, attrs)</div>
+</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>is_opening_tag(self)</div>
+</pre>
+</blockquote>
+
+<a name="SourceDoc"/><div class="section">class SourceDoc</div>
+<pre>
+
+A SourceDoc is created by a SourceParser and contains source data and
+annotations of those data. The source data are put in the text variable as a
+unicode string, tags are in the source_tags and tarsqi_tags variables and
+contain begin and end positions in the source. In addition, metadata,
+comments, and any other data from the input is stored here.
+
+Note that the SourceDoc is the input to further Tarsqi processing and it
+stores everything that was given as input to the pipeline. This could be a
+text document or a TimeBank document without any TimeML annotations. But it
+could also be a TTK document that was the result of prior application of
+another pipeline and that document can contain Tarsqi tags. The metadata and
+tarsqi_tags will be exported to the relevant places in the TarsqiDocument
+when the metadata parse and the document structure parsers apply to the
+TarsqiDocument.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__getitem__(self, i)</div>
+</pre>
+<pre>
+<div class=function>__init__(self, filename='<STRING>')</div>
+Initialize a SourceDoc on a filename or a string.</pre>
+<pre>
+<div class=function>add_characters(self, string)</div>
+Add a character string to the source and increment the current
+offset. Used by the CharacterDataHandler of the Expat parser in
+SourceParserXML.</pre>
+<pre>
+<div class=function>add_closing_tag(self, name)</div>
+Add a closing tag to source_tags. This is used by the
+EndElementHandler of the Expat parser in SourceParserXML.</pre>
+<pre>
+<div class=function>add_comment(self, string)</div>
+</pre>
+<pre>
+<div class=function>add_opening_tag(self, name, attrs)</div>
+Add an opening tag to source_tags. This is used by the
+StartElementHandler of the Expat parser in SourceParserXML.</pre>
+<pre>
+<div class=function>add_processing_instruction(self, target, data)</div>
+</pre>
+<pre>
+<div class=function>finish(self)</div>
+Transform the source text list into a string, merge the begin and end
+tags, and index the tags on offsets. This should be called by
+SourceParserXML which uses the Expat parser and looks for individual
+elements, it is not needed by SourceParserTTK since it uses a DOM
+object, it is also not needed by SourceParserText since it does not deal
+with tags.</pre>
+<pre>
+<div class=function>pp(self)</div>
+Print source and tags.</pre>
+<pre>
+<div class=function>print_source(self, filename)</div>
+Print the source string to a file, using the utf-8 encoding.</pre>
+</blockquote>
+
+<a name="Tag"/><div class="section">class Tag</div>
+<pre>
+
+A Tag has a name, an id, a begin offset, an end offset and a dictionary
+of attributes. The id is handed in by the code that creates the Tag which
+could be: (1) the code that parses the source document, in which case
+identifiers are numbered depending on text position, (2) the preprocessor
+code, which assigns identifiers for lex, ng, vg and s tags, or (3) one of
+the components that creates tarsqi tags, in which case the identifier is
+None because special identifiers like eid, eiid, tid and lid are used.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__cmp__(self, other)</div>
+Order two Tags based on their begin offset and end offsets. Tags with
+an earlier begin will be ranked before tags with a later begin, with
+equal begins the tag with the higher end will be ranked first. Tags with
+no begin (that is, it is set to -1) will be ordered at the end. The
+order of two tags with the same begin and end is undefined.</pre>
+<pre>
+<div class=function>__init__(self, identifier, name, o1, o2, attrs)</div>
+Initialize id, name, begin, end and attrs instance variables.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>as_lex_xml_string(self, text)</div>
+Return an opening and closing tag wrapped around text.</pre>
+<pre>
+<div class=function>as_ttk_tag(self)</div>
+Return the tag as a tag in the Tarsqi output format.</pre>
+<pre>
+<div class=function>attributes_as_string(self)</div>
+Return a string representation of the attributes dictionary.</pre>
+<pre>
+<div class=function>is_closing_tag(self)</div>
+</pre>
+<pre>
+<div class=function>is_opening_tag(self)</div>
+</pre>
+</blockquote>
+
+<a name="TagRepository"/><div class="section">class TagRepository</div>
+<pre>
+
+Class that provides access to the tags for a document. An instance of
+this class is used for the DocSource instance, other instances will be used
+for the elements in a TarsqiDocument. For now, the repository has the
+following structure:
+
+self.tmp
+   A list of OpeningTag and ClosingTag elements, used only to build the tags
+   list.
+
+self.tags
+   A list with Tag instances.
+
+self.opening_tags
+   A dictionary of tags indexed on begin offset, the values are lists of Tag
+   instances, again ordered on id (thereby reflecting text order, but only
+   for tags in the original input).
+
+self.closing_tags
+   A dictionary indexed on end offset and begin offset, the values are
+   dictionary of tagnames. For example,
+      closing_tags[547][543] = {'lex':True, 'NG':True }
+   indicates that there is both a lex tag and an NG tag from 543-547. The
+   opening tags dictionary will have encoded that the opening NG occurs
+   before the opening lex:
+      opening_tags[543] = [&lt;Tag 204 NG 543-547 {}&gt;, &lt;Tag 205 lex 543-547 {...}]</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>add_tag(self, name, begin, end, attrs)</div>
+Add a tag to the tags list and the opening_tags and closing_tags
+dictionaries.</pre>
+<pre>
+<div class=function>add_tag_with_id(self, name, identifier, begin, end, attrs)</div>
+Add a tag to the tags list and the opening_tags and closing_tags
+dictionaries.</pre>
+<pre>
+<div class=function>add_tmp_tag(self, tagInstance)</div>
+Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
+handlers.</pre>
+<pre>
+<div class=function>all_tags(self)</div>
+</pre>
+<pre>
+<div class=function>append(self, tag)</div>
+Appends an instance of Tag to the tags list.</pre>
+<pre>
+<div class=function>find_linktags(self, name, o1, o2)</div>
+Return all the link tages with type name. Only include the ones that
+fall between offsets o1 and o2.</pre>
+<pre>
+<div class=function>find_tag(self, name)</div>
+Return the first Tag object with name=name, return None if no such
+tag exists.</pre>
+<pre>
+<div class=function>find_tags(self, name, begin=None, end=None)</div>
+Return all tags of this name. If the optional begin and end are given
+only return the tags that fall within those boundaries.</pre>
+<pre>
+<div class=function>find_tags_at(self, begin_offset)</div>
+Return the list of tags which start at begin_offset.</pre>
+<pre>
+<div class=function>import_tags(self, tag_repository, tagname)</div>
+Import all tags with name=tagname from tag_repository into self. This
+is moslty used when we want to take tags from the SourceDoc and add them
+to the tags on the TarsqiDocument.</pre>
+<pre>
+<div class=function>index(self)</div>
+Index tags on position.</pre>
+<pre>
+<div class=function>index_events(self)</div>
+</pre>
+<pre>
+<div class=function>index_timexes(self)</div>
+</pre>
+<pre>
+<div class=function>merge(self)</div>
+Take the OpeningTags and ClosingTags in self.tmp and merge them into
+Tags. Raise errors if tags do not match.</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>pp_closing_tags(self)</div>
+</pre>
+<pre>
+<div class=function>pp_opening_tags(self)</div>
+</pre>
+<pre>
+<div class=function>pp_tags(self, indent='')</div>
+</pre>
+<pre>
+<div class=function>remove_tags(self, tagname)</div>
+Remove all tags with name=tagname. Rebuilds the indexes after
+removing the tags.</pre>
+<pre>
+<div class=function>reset(self)</div>
+</pre>
+</blockquote>
+
+<a name="TarsqiDocument"/><div class="section">class TarsqiDocument</div>
+<pre>
+
+An instance of TarsqiDocument should contain all information that may be
+needed by the wrappers to do their work. It includes the source, metadata,
+processing options, a set of identifier counters and a TagRepository.
+
+Instance Variables:
+   source    -  an instance of DocSource
+   metadata  -  a dictionary
+   options   -  the Options instance from the Tarsqi instance
+   tags      -  an instance of TagRepository
+   counters  -  a set of counters used to create unique identifiers
+
+Note that he processing options are available to the wrappers only through
+this class by accessing the options variable.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>add_event(self, begin, end, attrs)</div>
+Add an EVENT tag to the tarsqi_tags tag repository.</pre>
+<pre>
+<div class=function>add_options(self, options)</div>
+</pre>
+<pre>
+<div class=function>add_timex(self, begin, end, attrs)</div>
+Add a TIMEX3 tag to the tag repository.</pre>
+<pre>
+<div class=function>elements(self)</div>
+Method that returns the tags that contain paragraphs, that is, the
+tags of type docelement.</pre>
+<pre>
+<div class=function>events(self)</div>
+Convenience method for easy access to events.</pre>
+<pre>
+<div class=function>get_dct(self)</div>
+</pre>
+<pre>
+<div class=function>has_event(self, begin, end)</div>
+Return True if there is already an event at the given begin and
+end.</pre>
+<pre>
+<div class=function>list_of_sentences(self)</div>
+</pre>
+<pre>
+<div class=function>next_event_id(self)</div>
+</pre>
+<pre>
+<div class=function>next_link_id(self, link_type)</div>
+Return a unique lid. The link_type argument is one of {ALINK, SLINK,
+TLINK} and determines what link counter is incremented. The lid itself
+is the sum of all the link counts. Assumes that all links are added
+using the link counters in the document. Breaks down if there are
+already links added without using those counters.</pre>
+<pre>
+<div class=function>next_timex_id(self)</div>
+</pre>
+<pre>
+<div class=function>pp(self, source_tags=True, tarsqi_tags=True, tags=True)</div>
+</pre>
+<pre>
+<div class=function>print_all(self, fname)</div>
+Write source string, metadata, comments, source tags and tarsqi tags
+all to one file.</pre>
+<pre>
+<div class=function>print_sentences(self, fname=None)</div>
+Write to file (or stadard output if no filename was given) a Python
+variable assignment where the content of the variable the list of
+sentences as a list of lists of token strings.</pre>
+<pre>
+<div class=function>print_source(self, fname)</div>
+Print the original source of the document, without the tags to file
+fname.</pre>
+<pre>
+<div class=function>remove_tlinks(self)</div>
+Remove all TLINK tags from the tags repository.</pre>
+<pre>
+<div class=function>text(self, p1, p2)</div>
+</pre>
+<pre>
+<div class=function>timexes(self)</div>
+Convenience method for easy access to timexes.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_print_comments(self, fh)</div>
+</pre>
+<pre>
+<div class=function>_print_metadata(self, fh)</div>
+</pre>
+<pre>
+<div class=function>_print_tags(self, fh, tag_group, tags)</div>
+</pre>
+</blockquote>

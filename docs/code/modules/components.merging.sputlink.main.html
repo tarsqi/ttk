@@ -1,0 +1,80 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module components.merging.sputlink.main</div>
+
+<pre>
+<a href=#ConstraintPropagator>ConstraintPropagator</a>
+</pre>
+
+
+<a name="ConstraintPropagator"/><div class="section">class ConstraintPropagator</div>
+<pre>
+
+Main SputLink class. Instance variables:
+
+filename      -  a string
+graph         -  a Graph
+pending       -  a queue of links to be added
+compositions  -  a CompositionTable</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidoc=None, constraints=None)</div>
+Read the compositions table, export the compositions to the graph,
+and add nodes to the graph. Either tarsqidoc or constraints has to be
+not None.</pre>
+<pre>
+<div class=function>close_cycle_debug_file(self)</div>
+This is useful if you run the tests while debugging is on. Without it
+the cycles file may contain partially overwritten older cycles.</pre>
+<pre>
+<div class=function>collect_edges(self)</div>
+</pre>
+<pre>
+<div class=function>propagate_constraints(self)</div>
+Get all constraints from the pending queue and ask the graph to propagate
+them one by one.</pre>
+<pre>
+<div class=function>queue_constraints(self, tlinks)</div>
+Take a list of tlinks, encoded as Tag elements, and add them to the
+pending queue as instances of Constraint.</pre>
+<pre>
+<div class=function>queue_test_constraints(self, constraints)</div>
+Take a list of test constrains, encoded as tuples, and add them to
+the pending queue as instances of Constraint. Same as above, but now
+used for testing.</pre>
+<pre>
+<div class=function>reduce_graph(self)</div>
+Ask the graph to reduce itself.</pre>
+<pre>
+<div class=function>reset(self)</div>
+Reset the graph and pending instance variables.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_debug_init_cycles_file(self)</div>
+</pre>
+<pre>
+<div class=function>_debug_print_compositions_file(self)</div>
+</pre>
+<pre>
+<div class=function>_debug_print_cycle(self, constraint=None)</div>
+</pre>
+</blockquote>

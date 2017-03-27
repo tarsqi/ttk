@@ -1,0 +1,249 @@
+<html>
+<head>
+<link href="../css/module.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function view_code(id) {
+  var newurl = "../functions/" + id + ".html";
+  var w = window.open(newurl,"source code","width=770,height=600,
+                      scrollbars=yes,resizable=yes");
+  w.xopener = window;
+}
+//-->
+</script>
+</head>
+<body>
+<a href=../index.html>index</a>
+
+<div class="title">module tarsqi</div>
+
+<pre>
+<a href=#TarsqiError>TarsqiError</a>
+<a href=#Options>Options</a>
+<a href=#Tarsqi>Tarsqi</a>
+</pre>
+
+<pre>
+tarsqi.py
+
+Main script that drives all tarsqi toolkit processing.
+
+Source-specific processing is delegated to the docmodel package, which has
+access to source parsers and metadata parsers. This script also calls on
+various tarsqi modules to do the rest of the real work.
+
+
+USAGE
+
+   % python tarsqy.py [OPTIONS] INPUT OUTPUT
+
+   INPUT/OUTPUT
+
+      Input and output files or directories. If the input is a directory than
+      the output directory needs to exist.
+
+   OPTIONS
+
+      --source SOURCE_NAME
+          The source of the file; this reflects the source type of the document
+          and allows components, especially the source parser and the metadata
+          parser, to be sensitive to idiosyncratic properties of the text (for
+          example, the location of the DCT and the format of the text). The
+          source type is xml by default, other general source types are text and
+          ttk. There are four more types that can be used to process the more
+          specific sample data in data/in: timebank for data/in/TimeBank, atee
+          for data/in/ATEE, rte3 for data/in/RTE3 and db for data/in/db.
+
+      --pipeline LIST
+          Comma-separated list of Tarsqi components, defaults to the full
+          pipeline.
+
+      --perl PATH
+          Path to the Perl executable. Typically the operating system default is
+          fine here and this options does not need to be used.
+
+      --treetagger PATH
+          Path to the TreeTagger.
+
+      --mallet PATH
+          Location of Mallet, this should be the directory that contains the
+          bin directory.
+
+      --classifier STRING
+          The classifier used by the Mallet classifier, the default is MaxEnt.
+
+      --ee-model FILENAME
+          The model used for classifying event-event tlinks, this is a model
+          file in components/classifier/models, the default is set to
+          tb-vectors.ee.model.
+
+      --et-model FILENAME
+          The model used for classifying event-timex tlinks, this is a model
+          file in components/classifier/models, the default is set to
+          tb-vectors.et.model.
+
+      --trap-errors True|False
+          Set error trapping, errors are trapped by default.
+
+      --loglevel INTEGER
+          Set log level to an integer from 0 to 4, the higher the level the
+          more messages will be written to the log, see utilities.logger for
+          more details.
+
+      All these options can also be set in the settings.txt file.
+
+
+VARIABLES:
+
+   SETTINGS - file with user settings
+   COMPONENTS - dictionary with all Tarsqi components
+   USE_PROFILER - a boolean determining whether the profiler is used
+   PROFILER_OUTPUT - file that profiler statistics are written to</pre>
+
+
+<a name="TarsqiError"/><div class="section">class TarsqiError</div>
+<pre>
+<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
+
+Tarsqi Exception class, so far only used in this file.</pre>
+
+
+<a name="Options"/><div class="section">class Options</div>
+<pre>
+
+A class to keep track of all the options. Options can be accessed with the
+getopt() method, but standard options are also accessable directly through
+the following instance variables: source, pipeline, loglevel, trap_errors,
+perl, treetagger, mallet, classifier, ee_model and et_model. There is no
+instance variable access for user-defined options in the settings.txt file.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__getitem__(self, key)</div>
+</pre>
+<pre>
+<div class=function>__init__(self, options)</div>
+Initialize options from the settings file and the options handed in to the
+tarsqi script.</pre>
+<pre>
+<div class=function>__str__(self)</div>
+</pre>
+<pre>
+<div class=function>getopt(self, option_name, default=None)</div>
+Return the option, use None as default.</pre>
+<pre>
+<div class=function>items(self)</div>
+Simplistic way to do dictionary emulation.</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_massage_options(self)</div>
+Loop through the options dictionary and replace some of the strings
+with other objects: replace 'True' with True, 'False' with False, and
+strings indicating an integer with that integer. Also, for the --mallet
+and --treetagger options, which are known to be paths, replace the value
+with the absolute path.</pre>
+<pre>
+<div class=function>_read_options(self, SETTINGS, options)</div>
+Read options from settings file and command line options.</pre>
+</blockquote>
+
+<a name="Tarsqi"/><div class="section">class Tarsqi</div>
+<pre>
+
+Main Tarsqi class that drives all processing.
+
+Instance variables:
+
+   input                -  absolute path
+   output               -  absolute path
+   basename             -  basename of input file
+   options              -  an instance of Options with processing options
+   tarsqidoc            -  an instance of TarsqiDocument
+   source_parser        -  a source-specific parser for the source
+   metadata_parser      -  a source-specific metadata parser
+   docstructure_parser  -  a document structure parser
+   pipeline             -  list of name-wrapper pairs
+   components           -  dictionary of Tarsqi components
+   document             -  instance of TarsqiDocument
+   tmp_data             -  path to directory for temporary files
+
+The first nine instance variables are initialized using the arguments
+provided by the user, the document variable is initialized and changed
+during processing.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, opts, infile, outfile)</div>
+Initialize Tarsqi object conform the data source identifier and the
+processing options. Does not set the instance variables related to the
+document model and the meta data. The opts argument has a list of
+command line options and the infile and outfile arguments are typically
+absolute paths, but they can be None when we are processing strings.</pre>
+<pre>
+<div class=function>pretty_print(self)</div>
+</pre>
+<pre>
+<div class=function>process_document(self)</div>
+Parse the source with the source parser, the metadata parser and the
+document structure parser, apply all components and write the results to
+a file. The actual processing itself is driven using the processing
+options set at initialization. Components are given the TarsqiDocument
+and update it.</pre>
+<pre>
+<div class=function>process_string(self, input_string)</div>
+Similar to process(), except that it runs on an input string and not
+on a file, it does not write the output to a file and it returns the
+TarsqiDocument.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_apply_component(self, name, wrapper, tarsqidocument)</div>
+Apply a component by taking the TarsqDocument, which includes the
+options from the Tarsqi instance, and passing it to the component
+wrapper. Component-level errors are trapped here if --trap-errors is
+True. If errors are trapped, it is still possible that partial results
+were written to the TagRepositories in the TarsqiDocument.</pre>
+<pre>
+<div class=function>_cleanup_directories(self)</div>
+Remove all fragments from the temporary data directory.</pre>
+<pre>
+<div class=function>_create_pipeline(self)</div>
+Return the pipeline as a list of pairs with the component name and
+wrapper.</pre>
+<pre>
+<div class=function>_write_output(self)</div>
+Write the TarsqiDocument to the output file.</pre>
+</blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>load_ttk_document(fname, loglevel=2, trap_errors=False)</div>
+Load a TTK document with all its Tarsqi tags and return the Tarsqi instance
+and the TarsqiDocument instance. Do not run the pipeline, but run the source
+parser, metadata parser and the document structure parser. Used by the
+evaluation code.</pre>
+<pre>
+<div class=function>process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False)</div>
+Run tarsqi on a bare string without any XML tags, handing in pipeline,
+loglevel and error trapping options.</pre>
+<pre>
+<div class=function>run_profiler(args)</div>
+Wrap running Tarsqi in the profiler.</pre>
+<pre>
+<div class=function>run_tarsqi(args)</div>
+Main method that is called when the script is executed from the command
+line. It creates a Tarsqi instance and lets it process the input. If the
+input is a directory, this method will iterate over the contents, setting up
+Tarsqi instances for all files in the directory. The arguments are the list
+of arguments given by the user on the command line.</pre>
+<pre>
+<div class=function>test()</div>
+</pre>
