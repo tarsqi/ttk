@@ -71,6 +71,9 @@ class GUTimeWrapper:
         os.chdir(self.DIR_GUTIME)
         string_buffer = _create_gutime_input(self.document)
         result = _run_gutime_on_string(string_buffer.getvalue())
+        # apparently, parseString cannot deal with unicode
+        # TODO: check whether this has unforeseen consequences
+        result = u'{0}'.format(result).encode('utf-8')
         dom = parseString(result)
         _export_timex_tags(self.document, dom)
 
@@ -112,10 +115,13 @@ def _run_gutime_on_string(input_string):
     close_fds = False if sys.platform == 'win32' else True
     p = subprocess.Popen(command, stdin=pipe, stdout=pipe, stderr=pipe,
                          close_fds=close_fds)
-    (result, error) = p.communicate(input_string)
-    if error:
-        logger.error(error)
-    return result
+    try:
+        (result, error) = p.communicate(input_string)
+        if error:
+            logger.error(error)
+        return result
+    except UnicodeError:
+        return input_string
 
 
 def _run_gutime_on_file(fin, fout):
