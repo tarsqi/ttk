@@ -226,9 +226,7 @@ partInVChunks = ['RB', 'WDT', 'DT', 'JJ', 'PRP']
 partInVChunks2 = ['RB', 'RBR', 'RBS', 'WDT', 'DT', 'PRP', 'RP', 'IN']
 
 verbsPresent = ['VBZ', 'VBP']
-
 verbsPast = ['VBD']
-
 verbsPart = ['VBD', 'VBN']
 
 # Bad POS tagging may assign VBP instead of VB
@@ -239,14 +237,15 @@ verbsNoFin = ['VB', 'VBG', 'VBN']
 vChunksNoFin = ['VG-INF', 'VG-VBG', 'VG-VBN']
 
 nounsProper = ['NNP', 'NNPS']
-
-# nounsCommon = ['NN ', 'NNS','NN']
 nounsCommon = ['NN', 'NNS']
 
 quotations = ["''", "``"]
 
 
 RE_nounsCommon = re.compile('NNS|NN$')
+RE_nounsProper = re.compile('NNPS|NNP$')
+RE_nouns = re.compile('^NN')
+
 
 # this one does not seem to be used
 # contentPos = re.compile('(NN|JJ|VB)')

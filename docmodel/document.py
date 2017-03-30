@@ -78,6 +78,12 @@ class TarsqiDocument:
         """Convenience method for easy access to timexes."""
         return self.tags.find_tags(TIMEX)
 
+    def slinks(self):
+        return self.tags.find_tags(SLINK)
+
+    def tlinks(self):
+        return self.tags.find_tags(TLINK)
+
     def has_event(self, begin, end):
         """Return True if there is already an event at the given begin and
         end."""

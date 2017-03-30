@@ -56,6 +56,10 @@ USAGE
           file in components/classifier/models, the default is set to
           tb-vectors.et.model.
 
+      --import-event-tags TAGNAME
+          With this option the Evita component will try to import existing
+          events by lifting tags with name TAGNAME from the source tags.
+
       --trap-errors True|False
           Set error trapping, errors are trapped by default.
 
@@ -235,6 +239,7 @@ class Options():
         self.pipeline = self.getopt('pipeline')
         self.loglevel = self.getopt('loglevel')
         self.trap_errors = self.getopt('trap-errors', True)
+        self.import_event_tags = self.getopt('import-event-tags')
         self.perl = self.getopt('perl', 'perl')
         self.mallet = self.getopt('mallet')
         self.treetagger = self.getopt('treetagger')
@@ -278,7 +283,7 @@ class Options():
     def pp(self):
         print "OPTIONS:"
         for option in sorted(self._options.keys()):
-            print "   %-12s  -->  %s" % (option, self._options[option])
+            print "   %-18s  -->  %s" % (option, self._options[option])
 
 
 class TarsqiError(Exception):
@@ -291,8 +296,8 @@ def _read_arguments(args, check=True):
     """ Read the list of arguments given to the tarsqi.py script.  Return a
     tuple with three elements: processing options dictionary, input path and
     output path."""
-    options = ['source=', 'pipeline=', 'trap-errors=',
-               'perl=', 'loglevel=', 'treetagger=',
+    options = ['source=', 'pipeline=', 'trap-errors=', 'loglevel=',
+               'perl=', 'treetagger=', 'import-event-tags=',
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)

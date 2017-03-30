@@ -21,6 +21,7 @@ from components.evita.features import NChunkFeatures, VChunkFeaturesList
 from components.evita import wordnet
 from components.evita import bayes
 
+from components.evita.settings import INCLUDE_PROPERNAMES
 from components.evita.settings import EVITA_NOM_DISAMB
 from components.evita.settings import EVITA_NOM_CONTEXT
 from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
@@ -49,8 +50,8 @@ def update_event_checked_marker(constituent_list):
 
 class Chunk(Constituent):
 
-    """Implements the common behaviour of chunks. Chunks are embedded in sentences and
-    contain event tags, timex tags and tokens.
+    """Implements the common behaviour of chunks. Chunks are embedded in sentences
+    and contain event tags, timex tags and tokens.
 
     Instance variables (in addition to the ones defined on Constituent)
        phraseType         - string indicating the chunk type, either 'vg' or 'ng'
@@ -119,19 +120,26 @@ class Chunk(Constituent):
         """Return the head of the chunk (by default the last element)."""
         return self.dtrs[self.head]
 
+    def _conditionally_add_imported_event(self, imported_event):
+        # TODO: this needs to be specialized, it includes keeping the class of the event
+        self._conditionallyAddEvent()
+
     def _conditionallyAddEvent(self, features=None):
         """Perform a few little checks on the head and check whether there is
         an event class, then add the event to the tree. When this is called on
         a NounChunk, then there is no GramChunk handed in and it will be
         retrieved from the features instance variable, when it is called from
         VerbChunk, then the GramChunk will be handed in."""
-        gchunk = self.features if features is None else features
-        text = gchunk.head.getText()
+        logger.debug("Conditionally adding nominal")
+        chunk_features = self.features if features is None else features
+        #print chunk_features
+        text = chunk_features.head.getText()
         # the second and third tests seem relevant for verbs only, but we keep
         # them anyway for all chunks
-        if (gchunk.evClass and text not in forms.be and
-            text not in forms.spuriousVerb):
-            self.tree.addEvent(Event(gchunk))
+        if (chunk_features.evClass
+            and text not in forms.be
+            and text not in forms.spuriousVerb):
+            self.tree.addEvent(Event(chunk_features))
 
     def _getHeadText(self):
         """Get the text string of the head of the chunk. Used by
@@ -186,7 +194,7 @@ class NounChunk(Chunk):
         """Return True if the chunk is empty, False otherwise."""
         return False if self.dtrs else True
 
-    def createEvent(self, verbfeatures=None):
+    def createEvent(self, verbfeatures=None, imported_events=None):
         """Try to create an event in the NounChunk. Checks whether the nominal is an
         event candidate, then conditionally adds it. The verbfeatures dictionary
         is used when a governing verb hands in its features to a nominal in a
@@ -204,25 +212,28 @@ class NounChunk(Chunk):
                 logger.debug("Nominal already contains an event")
             # Even if preceded by a BE or a HAVE form, only tagging NounChunks
             # headed by an eventive noun, so "was an intern" will NOT be tagged
-            elif self.isEventCandidate():
-                logger.debug("Nominal is an event candidate")
-                self._conditionallyAddEvent()
+            elif self._passes_syntax_test():
+                imported_event = self._get_imported_event_for_chunk(imported_events)
+                #print imported_event
+                if imported_event is not None:
+                    self._conditionally_add_imported_event(imported_event)
+                elif self._passes_semantics_test():
+                    self._conditionallyAddEvent()
 
-    def isEventCandidate(self):
-        """Return True if the nominal is syntactically and semantically an
-        event, return False otherwise."""
-        return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
-
-    def isEventCandidate_Syn(self):
+    def _passes_syntax_test(self):
         """Return True if the nominal is syntactically able to be an event,
         return False otherwise. An event candidate syntactically has to have a
-        head which cannot be a timex and the head has to be a common noun."""
-        # using the regular expression is a bit faster then lookup in the short
-        # list of common noun parts of speech (forms.nounsCommon)
-        return (not self.features.head.isTimex() and
-                forms.RE_nounsCommon.match(self.features.head.pos))
+        head which cannot be a timex and the head has to be a either a noun or a
+        common noun, depending on the value of INCLUDE_PROPERNAMES."""
+        if self.features.head.isTimex():
+            return False
+        if INCLUDE_PROPERNAMES:
+            return self.head_is_noun()
+        else:
+            return self.head_is_common_noun()
+        #return (not self.features.head.isTimex() and self.head_is_common_noun())
 
-    def isEventCandidate_Sem(self):
+    def _passes_semantics_test(self):
         """Return True if the nominal can be an event semantically. Depending
         on user settings this is done by a mixture of wordnet lookup and using a
         simple classifier."""
@@ -250,6 +261,45 @@ class NounChunk(Chunk):
             is_event = wordnet.someSensesAreEvents(lemma)
             logger.debug("  some WordNet sense is event ==> %s" % is_event)
         return is_event
+
+    def _get_imported_event_for_chunk(self, imported_events):
+        """Return None or a Tag from the imported_events dictionary, only return
+        this tag is its span is head final to the chunk and it span is at least
+        including the chunk head."""
+        # TODO: we now miss multiple events in a chunk
+        if imported_events is None:
+            imported_events = {}
+        offsets = range(self.begin, self.end)
+        # Get the tags for all characters in the entire span and then get the
+        # head of the list, that is, the contiguous sequence of Tags at the end
+        # of the range.
+        tags = [imported_events.get(off) for off in offsets]
+        imported_head = self._consume_head(tags)
+        chunk_head = self.dtrs[self.head]
+        chunk_head_length = chunk_head.end - chunk_head.begin
+        if 0 < len(imported_head) >= chunk_head_length:
+            return imported_head[0]
+        else:
+            return None
+
+    @staticmethod
+    def _consume_head(tags):
+        head = []
+        for t in reversed(tags):
+            if t is None:
+                return list(reversed(head))
+            head.append(t)
+        return list(reversed(head))
+
+    def head_is_noun(self):
+        """Returns True if the head of the chunk is a noun."""
+        return forms.RE_nouns.match(self.features.head.pos)
+
+    def head_is_common_noun(self):
+        """Returns True if the head of the chunk is a common noun."""
+        # using the regular expression is a bit faster then lookup in the short
+        # list of common noun parts of speech (forms.nounsCommon)
+        return forms.RE_nounsCommon.match(self.features.head.pos)
 
     def _run_classifier(self, lemma):
         """Run the classifier on lemma, using features from the GramNChunk."""
@@ -293,7 +343,7 @@ class VerbChunk(Chunk):
         return ((features.headForm == 'including' and features.tense == 'NONE')
                 or features.headForm == '_')
 
-    def createEvent(self):
+    def createEvent(self, imported_events=None):
         """Try to create one or more events in the VerbChunk. How this works
         depends on how many instances of VChunkFeatures can be created for
         the chunk. For all non-final and non-axiliary elements in the list,

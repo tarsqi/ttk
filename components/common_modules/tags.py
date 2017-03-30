@@ -35,7 +35,7 @@ class Tag(Constituent):
 
     """Abstract class for all TimeML non-link tags."""
 
-    def createEvent(self):
+    def createEvent(self, imported_events=None):
         """Do nothing when an EventTag or TimexTag is asked to create an
         event. Without this method the method with the same name on Constituent
         would log a warning."""
