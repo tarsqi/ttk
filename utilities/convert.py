@@ -1,4 +1,6 @@
-"""Some conversion utilities.
+"""convert.py
+
+Some format conversion utilities.
 
 1. Convert LDC TimeBank into a modern TimeBank in the TTK format.
 
@@ -9,7 +11,7 @@
    LDC distribution because those have the metadata that allow the TimeBank meta
    data parser to find the DCT.
 
-2. Convert Thyme format into TTK format.
+2. Convert Thyme format into TTK.
 
    $ python convert.py --convert-thyme THYME_TEXT_DIR THYME_ANNO_DIR TTK_DIR
 
@@ -21,14 +23,27 @@
 3. Convert the TTK format into HTML.
 
    $ python convert.py --convert-ttk-into-html TTK_DIR HTML_DIR
+   $ python convert.py --convert-ttk-into-html TTK_FILE HTML_FILE
    $ python convert.py --convert-ttk-into-html --show-links TTK_DIR HTML_DIR
+   $ python convert.py --convert-ttk-into-html --show-links TTK_FILE HTML_FILE
 
    Converts TTK files in TTK_DIR into HTML files in HTML_DIR, if --show-links is
    used links are shown in addition to the timexes and events.
 
+4. Convert Knowtator format into TTK.
+
+   $ python convert.py --convert-knowtator KNOWTATOR_DIR TTK_DIR
+   $ python convert.py --convert-knowtator --tarsqi KNOWTATOR_DIR TTK_DIR
+
+   This is not a general conversion from any Knowtator output, it assumes that
+   the input annotations are all events. If the --tarsqi option is used then the
+   event tags are put in the tarsqi_tags repository, by default they are put in
+   the source_tags repository (that is, they are not considered Tarsqi results),
+   using the --tarsqi option can be useful for evaluation.
+
 """
 
-import os, sys, getopt
+import os, sys, getopt, codecs
 from xml.dom import minidom, Node
 
 import path
@@ -36,7 +51,7 @@ import tarsqi
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
-from docmodel.document import TarsqiDocument
+from docmodel.document import TarsqiDocument, Tag
 from library.main import TarsqiLibrary
 
 DEBUG = True
@@ -268,13 +283,82 @@ class Relation(object):
 def get_value(entity, attr):
     return entity.getElementsByTagName(attr)[0]
 
+
 def get_simple_value(entity, attr):
     return entity.getElementsByTagName(attr)[0].firstChild.data
 
 
+### CONVERTING KNOWTATOR INTO TTK
+
+def convert_knowtator(knowtator_dir, ttk_dir, limit, tarsqi_tags=False):
+    """Convert pairs of Knowtator files (source plus annotations) with event
+    information into single TTK files. This assumes that the information needed
+    is in annotation and classMention tags and that all those tags have event
+    information. The event tags are added to the source tags, not to the tarsqi
+    tags, but if tarsqi_tags option is True then they will be added to the
+    tarsqi tags repository"""
+    knowtator_dir = os.path.abspath(knowtator_dir)
+    ttk_dir = os.path.abspath(ttk_dir)
+    _makedir(ttk_dir)
+    count = 0
+    fnames = _read_knowtator_filenames(knowtator_dir)
+    for fname in fnames:
+        count += 1
+        if count > limit:
+            break
+        print fname
+        source_file = os.path.join(knowtator_dir, fname)
+        anno_file = os.path.join(knowtator_dir, fname + '.knowtator.xml')
+        # this assumes the .txt extension and replaces it with .ttk
+        ttk_fname = fname[:-3] + 'ttk'
+        ttk_file = os.path.join(ttk_dir, ttk_fname)
+        _convert_knowtator_file(source_file, anno_file, ttk_file, tarsqi_tags)
+
+
+def _read_knowtator_filenames(knowtator_dir):
+    """Read the list of file names. Note that with Knowtator we have a separate
+    annotation file in addition to the source file: for each source file named
+    'file.txt' we also have an annotations file named 'file.txt.knowtator.xml'."""
+    fnames = os.listdir(knowtator_dir)
+    return [f for f in fnames if not f.endswith('knowtator.xml')]
+
+
+def _convert_knowtator_file(source_file, anno_file, ttk_file, tarsqi_tags):
+    dom = minidom.parse(anno_file)
+    annotations = dom.getElementsByTagName('annotation')
+    class_mentions = dom.getElementsByTagName('classMention')
+    events = {}
+    for ann in annotations:
+        mention_id = ann.getElementsByTagName('mention')[0].getAttribute('id')
+        start = ann.getElementsByTagName('span')[0].getAttribute('start')
+        end = ann.getElementsByTagName('span')[0].getAttribute('end')
+        events[mention_id] = { 'start': start, 'end': end }
+    for cm in class_mentions:
+        cm_id = cm.getAttribute('id')
+        mention_class = cm.getElementsByTagName('mentionClass')[0]
+        class_name = mention_class.firstChild.data
+        events[cm_id]['class'] = class_name
+    tarsqidoc = _get_tarsqidoc(source_file, "text")
+    tags = []
+    for event_id, event in events.items():
+        tag = _create_event_tag(event_id, event)
+        if tarsqi_tags:
+            tarsqidoc.tags.append(tag)
+        else:
+            tarsqidoc.sourcedoc.tags.append(tag)
+    tarsqidoc.print_all(ttk_file)
+
+
+def _create_event_tag(event_id, event):
+    feats = { 'class': event['class'],
+              'eid': 'e' + event_id,
+              'eiid': 'ei' + event_id }
+    return Tag(None, 'EVENT', event['start'], event['end'], feats)
+
+
 ### CONVERTING TTK INTO HTML
 
-def convert_ttk_into_html(ttk_dir, html_dir, showlinks, limit):
+def convert_ttk_dir_into_html(ttk_dir, html_dir, showlinks, limit):
     ttk_dir = os.path.abspath(ttk_dir)
     html_dir = os.path.abspath(html_dir)
     _makedir(html_dir)
@@ -289,11 +373,13 @@ def convert_ttk_into_html(ttk_dir, html_dir, showlinks, limit):
         ttk_file = os.path.join(ttk_dir, fname)
         html_file = os.path.join(html_dir, fname + '.html')
         index.write("<li><a href=%s.html>%s.html</a></li>\n" % (fname, fname))
-        _convert_ttk_into_html(ttk_file, html_file, showlinks)
+        convert_ttk_file_into_html(ttk_file, html_file, showlinks)
 
 
-def _convert_ttk_into_html(ttk_file, html_file, showlinks):
+def convert_ttk_file_into_html(ttk_file, html_file, showlinks):
     print "creating", html_file
+    ttk_file = os.path.abspath(ttk_file)
+    html_file = os.path.abspath(html_file)
     tarsqidoc = _get_tarsqidoc(ttk_file, "ttk")
     event_idx = _get_events(tarsqidoc)
     timex_idx = _get_timexes(tarsqidoc)
@@ -362,22 +448,22 @@ def _get_entities(event_idx, timex_idx):
 
 
 def _get_links(tarsqidoc):
-    slinks = tarsqidoc.tags.find_tags('SLINK')
-    tlinks = tarsqidoc.tags.find_tags('TLINK')
     links = {}
-    for link in slinks + tlinks:
-        source = link.attrs['eventInstanceID']
-        target = link.attrs.get('relatedToEventInstanceID')
-        if target is None:
-            target = link.attrs.get('relatedToTime')
-        if target is None:
-            print "WARNING, no target for", link
-        links.setdefault(source, []).append([link.id, source, link.attrs['relType'], target])
+    for link in tarsqidoc.slinks() + tarsqidoc.tlinks():
+        source = link.attrs.get('timeID') \
+                 or link.attrs.get('eventInstanceID')
+        target = link.attrs.get('relatedToTime') \
+                 or link.attrs.get('relatedToEventInstance') \
+                 or link.attrs.get('subordinatedEventInstance')
+        if source is None: print "WARNING, no source for", link
+        if target is None: print "WARNING, no target for", link
+        links.setdefault(source, []).append([link.id, source,
+                                             link.attrs['relType'], target])
     return links
 
 
 def _open_html_file(html_file):
-    fh = open(html_file, 'w')
+    fh = codecs.open(html_file, 'w', encoding="utf8")
     fh.write("<html>\n<body>\n" +
              "<style>\n" +
              "body { font-size: 14pt; }\n" +
@@ -394,18 +480,20 @@ def _open_html_file(html_file):
 
 def _write_event_close(event, fh, showlinks):
     if showlinks:
-        fh.write("<sup>%s:%s</sup></event>" % (event.id, event.begin))
+        fh.write("<sup>%s:%s</sup></event>" % (event.eid, event.begin))
     else:
-        fh.write("<sup>%s</sup></event>" % event.id)
+        fh.write("<sup>%s</sup></event>" % event.eid)
 
 
 def _write_closing_tags(idx, count, tagname, fh, showlinks):
     entities = idx['close'][count]
     for entity in reversed(entities):
+        # events often have no id defined, try the eid
+        identifier = entity.id or entity.attrs.get('eid')
         if showlinks:
-            fh.write("<sup>%s:%s</sup></%s>]" % (entity.id, entity.begin, tagname))
+            fh.write("<sup>%s:%s</sup></%s>]" % (identifier, entity.begin, tagname))
         else:
-            fh.write("<sup>%s</sup></%s>]" % (entity.id, tagname))
+            fh.write("<sup>%s</sup></%s>]" % (identifier, tagname))
 
 
 def _write_opening_tags(idx, count, tagname, fh):
@@ -443,6 +531,7 @@ def _get_tarsqidoc(infile, source, metadata=True):
     """Return an instance of TarsqiDocument for infile"""
     opts = [("--source", source), ("--trap-errors", "False")]
     t = tarsqi.Tarsqi(opts, infile, None)
+    print t.input
     t.source_parser.parse_file(t.input, t.tarsqidoc)
     t.metadata_parser.parse(t.tarsqidoc)
     return t.tarsqidoc
@@ -450,16 +539,26 @@ def _get_tarsqidoc(infile, source, metadata=True):
 
 if __name__ == '__main__':
 
-    long_options = ['convert-timebank', 'convert-thyme',
-                    'convert-ttk-into-html', 'show-links']
+    long_options = ['convert-timebank', 'convert-thyme', 'convert-knowtator',
+                    'tarsqi', 'convert-ttk-into-html', 'show-links']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
+    limit = 10 if DEBUG else sys.maxint
     if '--convert-timebank' in opts:
         convert_timebank(args[0], args[1])
     elif '--convert-thyme' in opts:
-        limit = 10 if DEBUG else sys.maxint
         convert_thyme(args[0], args[1], args[2], limit)
+    elif '--convert-knowtator' in opts:
+        print opts
+        tarsqi_tags = True if '--tarsqi' in opts else False
+        convert_knowtator(args[0], args[1], limit, tarsqi_tags)
     elif '--convert-ttk-into-html' in opts:
-        limit = 10 if DEBUG else sys.maxint
         showlinks = True if '--show-links' in opts else False
-        convert_ttk_into_html(args[0], args[1], showlinks, limit)
+        if os.path.exists(args[1]):
+            exit("ERROR: output '%s' already exists" % args[1])
+        elif os.path.isdir(args[0]):
+            convert_ttk_dir_into_html(args[0], args[1], showlinks, limit)
+        elif os.path.isfile(args[0]):
+            convert_ttk_file_into_html(args[0], args[1], showlinks)
+        else:
+            exit("ERROR: incorrect input")
