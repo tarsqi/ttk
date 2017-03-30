@@ -12,7 +12,7 @@ The Tarsqi toolkit profile in 'profile' can be created as follows:
     >>> import tarsqi, profile
     >>> infile = 'data/in/simple-xml/test.xml'
     >>> infile = 'out.xml'
-    >>> command = "tarsqi.run_tarsqi(['simple-xml', '%s' , '%s'])" % (infile, outfile)
+    >>> command = "tarsqi.TarsqiWrapper(['simple-xml', '%s' , '%s']).run()" % (infile, outfile)
     profile.run(command, 'profile')
 
 """

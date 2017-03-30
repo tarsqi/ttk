@@ -152,10 +152,13 @@ class TarsqiDocument:
         fh.write(str(self.list_of_sentences()))
         fh.write("\n")
 
-    def print_all(self, fname):
+    def print_all(self, fname=None):
         """Write source string, metadata, comments, source tags and tarsqi tags
-        all to one file."""
-        fh = codecs.open(fname, mode='w', encoding='UTF-8')
+        all to one file or to the standard output."""
+        if fname is None:
+            fh = sys.stdout
+        else:
+            fh = codecs.open(fname, mode='w', encoding='UTF-8')
         fh.write("<ttk>\n")
         fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
         self._print_comments(fh)
