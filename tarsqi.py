@@ -405,10 +405,8 @@ def load_ttk_document(fname, loglevel=2, trap_errors=False):
     # For now, we are skipping the link merger because it is too slow on some of
     # the timebank documents
     pipeline = "PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"
-    (opts, args) = _read_arguments(["--source=ttk",
-                                    "--pipeline=%s" % pipeline,
-                                    "--loglevel=%s" % loglevel,
-                                    "--trap-errors=%s" % trap_errors])
+    opts = [('--source', 'ttk'), ('--pipeline', pipeline),
+            ('--loglevel',  str(loglevel)), ('--trap-errors', str(trap_errors))]
     tarsqi = Tarsqi(opts, fname, None)
     tarsqi.source_parser.parse_file(tarsqi.input, tarsqi.tarsqidoc)
     tarsqi.metadata_parser.parse(tarsqi.tarsqidoc)
