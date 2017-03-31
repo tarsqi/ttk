@@ -28,6 +28,15 @@ from components.merging.sputlink.mappings import translate_interval_relation
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
+TLINK = LIBRARY.timeml.TLINK
+LID = LIBRARY.timeml.LID
+RELTYPE = LIBRARY.timeml.RELTYPE
+ORIGIN = LIBRARY.timeml.ORIGIN
+EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
+TIME_ID = LIBRARY.timeml.TIME_ID
+RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
+
 
 class MergerWrapper:
 
@@ -63,31 +72,26 @@ class MergerWrapper:
         id2 = edge.node2
         origin = edge.constraint.source
         tag_or_constraints = edge.constraint.history
-        attrs = {}
         if isinstance(edge.constraint.history, Tag):
             tag = edge.constraint.history
             attrs = tag.attrs
         else:
-            attrs[LIBRARY.timeml.RELTYPE] = translate_interval_relation(edge.constraint.relset)
-            attrs[LIBRARY.timeml.ORIGIN] = LINK_MERGER
-            attrs[tlink_arg1_attr(id1)] = id1
-            attrs[tlink_arg2_attr(id2)] = id2
-        self.tarsqidoc.tags.add_tag(LIBRARY.timeml.TLINK, -1, -1, attrs)
+            attrs = {
+                LID: self.tarsqidoc.next_link_id(TLINK),
+                RELTYPE: translate_interval_relation(edge.constraint.relset),
+                ORIGIN: LINK_MERGER,
+                tlink_arg1_attr(id1): id1,
+                tlink_arg2_attr(id2): id2}
+        self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 
 def tlink_arg1_attr(identifier):
     """Return the TLINK attribute for the element linked given the identifier."""
-    return _arg_attr(identifier,
-                     LIBRARY.timeml.TIME_ID,
-                     LIBRARY.timeml.EVENT_INSTANCE_ID)
-
+    return _arg_attr(identifier, TIME_ID, EVENT_INSTANCE_ID)
 
 def tlink_arg2_attr(identifier):
     """Return the TLINK attribute for the element linked given the identifier."""
-    return _arg_attr(identifier,
-                     LIBRARY.timeml.RELATED_TO_TIME,
-                     LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE)
-
+    return _arg_attr(identifier, RELATED_TO_TIME, RELATED_TO_EVENT_INSTANCE)
 
 def _arg_attr(identifier, attr1, attr2):
     """Helper method for tlink_arg{1,2}_attr that checks the identifier."""

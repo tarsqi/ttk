@@ -122,9 +122,7 @@ class TarsqiDocument:
          using the link counters in the document. Breaks down if there are
          already links added without using those counters."""
         self.counters[link_type] += 1
-        return "l%d" % (self.counters[ALINK] +
-                        self.counters[SLINK] +
-                        self.counters[TLINK])
+        return "l%d" % sum([self.counters[lt] for lt in (ALINK, SLINK, TLINK)])
 
     def remove_tlinks(self):
         """Remove all TLINK tags from the tags repository."""
