@@ -516,9 +516,10 @@ class Tag:
                 self.attrs[self.new_attr(attr, self.attrs)] = self.attrs.pop(attr)
 
     def __str__(self):
+        id_string = "id=%s " % self.id if self.id is not None else ''
         attrs = ''.join([" %s='%s'" % (k, v) for k, v in self.attrs.items()])
-        return "<Tag %s id=%s %s:%s {%s }>" % \
-               (self.name, self.id, self.begin, self.end, attrs)
+        return "<Tag %s %s%s:%s {%s }>" % \
+               (self.name, id_string, self.begin, self.end, attrs)
 
     def __cmp__(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with
