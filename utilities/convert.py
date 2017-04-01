@@ -404,8 +404,9 @@ def convert_ttk_file_into_html(ttk_file, html_file, showlinks):
         if char == "\n":
             if previous_was_space and showlinks and current_sources:
                 fh.write("<tr><td width=40%>\n")
-                for event in current_sources:
-                    for link in link_idx.get(event.id, []):
+                for entity in current_sources:
+                    identifier = 'tid' if  entity.name == 'TIMEX3' else 'eiid'
+                    for link in link_idx.get(entity.attrs[identifier], []):
                         _write_link(link, entity_idx, fh)
                 fh.write("\n<tr valign=top>\n<td>\n")
                 previous_was_space = False
@@ -443,7 +444,8 @@ def _get_entities(event_idx, timex_idx):
     entity_idx = {}
     for elist in event_idx['open'].values() + timex_idx['open'].values():
         entity = elist[0]
-        entity_idx[entity.id] = entity
+        identifier = 'tid' if  entity.name == 'TIMEX3' else 'eiid'
+        entity_idx[entity.attrs[identifier]] = entity
     return entity_idx
 
 
@@ -531,7 +533,6 @@ def _get_tarsqidoc(infile, source, metadata=True):
     """Return an instance of TarsqiDocument for infile"""
     opts = [("--source", source), ("--trap-errors", "False")]
     t = tarsqi.Tarsqi(opts, infile, None)
-    print t.input
     t.source_parser.parse_file(t.input, t.tarsqidoc)
     t.metadata_parser.parse(t.tarsqidoc)
     return t.tarsqidoc
@@ -549,7 +550,6 @@ if __name__ == '__main__':
     elif '--convert-thyme' in opts:
         convert_thyme(args[0], args[1], args[2], limit)
     elif '--convert-knowtator' in opts:
-        print opts
         tarsqi_tags = True if '--tarsqi' in opts else False
         convert_knowtator(args[0], args[1], limit, tarsqi_tags)
     elif '--convert-ttk-into-html' in opts:
