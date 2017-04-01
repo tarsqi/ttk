@@ -16,6 +16,7 @@ TTK_ROOT = os.environ['TTK_ROOT']
 TLINK = LIBRARY.timeml.TLINK
 EIID = LIBRARY.timeml.EIID
 TID = LIBRARY.timeml.TID
+LID = LIBRARY.timeml.LID
 RELTYPE = LIBRARY.timeml.RELTYPE
 ORIGIN = LIBRARY.timeml.ORIGIN
 EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
@@ -25,15 +26,16 @@ RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
 class ClassifierWrapper:
+
     """Wraps the maxent link classifier."""
 
     def __init__(self, document):
         self.component_name = CLASSIFIER
-        self.document = document
+        self.tarsqidoc = document             # instance of TarsqiDocument
         self.models = os.path.join(TTK_ROOT,
                                    'components', 'classifier', 'models')
         self.data = os.path.join(TTK_ROOT, 'data', 'tmp')
-        options = self.document.options
+        options = self.tarsqidoc.options
         self.mallet = options.mallet
         self.classifier = options.classifier
         self.ee_model = os.path.join(self.models, options.ee_model)
@@ -48,7 +50,7 @@ class ClassifierWrapper:
         et_vectors = os.path.join(self.data, "vectors.ET")
         ee_results = ee_vectors + '.out'
         et_results = et_vectors + '.out'
-        vectors.create_tarsqidoc_vectors(self.document, ee_vectors, et_vectors)
+        vectors.create_tarsqidoc_vectors(self.tarsqidoc, ee_vectors, et_vectors)
         commands = [
             mallet.classify_command(self.mallet, ee_vectors, self.ee_model),
             mallet.classify_command(self.mallet, et_vectors, self.et_model)]
@@ -65,7 +67,7 @@ class ClassifierWrapper:
         identifier is missing from the output."""
         # TODO: when this is tested enough let it replace process()
         (ee_vectors, et_vectors) \
-            = vectors.collect_tarsqidoc_vectors(self.document)
+            = vectors.collect_tarsqidoc_vectors(self.tarsqidoc)
         mc = mallet.MalletClassifier(self.mallet)
         mc.add_classifiers(self.ee_model, self.et_model)
         ee_in = [str(v) for v in ee_vectors]
@@ -89,11 +91,12 @@ class ClassifierWrapper:
                     continue
                 id1 = result_id.split('-')[-2]
                 id2 = result_id.split('-')[-1]
-                attrs = { RELTYPE: scores[0][1],
+                attrs = { LID: self.tarsqidoc.next_link_id(TLINK),
+                          RELTYPE: scores[0][1],
                           ORIGIN: "%s-%.4f" % (CLASSIFIER, scores[0][0]),
                           _arg1_attr(id1): id1,
                           _arg2_attr(id2): id2 }
-                self.document.tags.add_tag(TLINK, -1, -1, attrs)
+                self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
     def _add_links_future(self, ee_results, et_results):
         """Insert new tlinks into the document using the results from the
@@ -106,9 +109,11 @@ class ClassifierWrapper:
                 id2 = result_id.split('-')[-1]
                 reltype = scores[0][1]
                 origin = "%s-%.4f" % (CLASSIFIER, scores[0][0])
-                attrs = { RELTYPE: reltype, ORIGIN: origin,
+                attrs = { LID: self.tarsqidoc.next_link_id(TLINK),
+                          RELTYPE: reltype, ORIGIN: origin,
                           _arg1_attr(id1): id1, _arg2_attr(id2): id2 }
-                self.document.tags.add_tag(TLINK, -1, -1, attrs)
+                print attrs
+                self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 
 def _get_vector_identifier(line):

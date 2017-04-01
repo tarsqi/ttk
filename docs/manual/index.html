@@ -275,10 +275,11 @@ Textual Entailment Challenge</a>.
 
 <div class="indent">
 
-<p>Can be used to overrule the default pipeline specified
-in <code>config.txt</code>. A pipeline is a comma-separated string of
-component names. Allowed component names are <code>PREPROCESSOR, TOKENIZER,
-TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER, CLASSIFIER</code> and
+<p>Can be used to overrule the default pipeline specified in
+the <code>config.txt</code> settings file. A pipeline is a comma-separated
+string of component names. Allowed component names are <code>PREPROCESSOR,
+TOKENIZER, TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER,
+CLASSIFIER</code> and
 <code>LINK_MERGER</code>. The order of the components in the pipeline
 specification is significant. Some examples are:</p>
 
@@ -291,12 +292,15 @@ specification is significant. Some examples are:</p>
 
 <p>The first example instructs TTK to take a file, preprocess it and add time
 expressions and events. The second example is identical except that individual
-preprocessing modules are used instead of the PREPROCESSOR shorthand. For the
-third example, preprocessing, times and events are taken for granted and only
-links are added. In this case the input needs to be a ttk file which has the
-needed information. The fourth example is almost like the default except that
-the link merger component is left out, this is useful for large files since the
-merger component slows down on large file.</p>
+preprocessing modules are used instead of the PREPROCESSOR shorthand. It is
+worth noting that you should not combine PREPROCESSOR and TOKENIZER in one
+pipeline since you would then run the tokenizer twice and this will cause errors
+later in the processing chain. For the third example, preprocessing, times and
+events are taken for granted and only links are added. In this case the input
+needs to be a ttk file which has the needed information. The fourth example is
+almost like the default except that the link merger component is left out, this
+is useful for large files since the merger component slows down on large
+file.</p>
 
 </div>
 
