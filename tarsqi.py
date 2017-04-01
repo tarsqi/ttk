@@ -14,8 +14,9 @@ USAGE
    INPUT/OUTPUT
 
       Input and output files or directories. If the input is a directory then
-      the output directory needs to exist. If one of the options -s --pipe then
-      input and output are not required and are ignored if they are there.
+      the output directory needs to exist. If '--pipe=True' is one of the
+      options then input and output are not required and they are ignored if
+      they are there.
 
    OPTIONS
 
@@ -31,7 +32,7 @@ USAGE
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
-          pipeline.
+          pipeline minus the link merger.
 
       --pipe True|False
           With this option set to True the script reads input from the standard
@@ -39,7 +40,7 @@ USAGE
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
-          fine here and this options does not need to be used.
+          fine here and this option does not need to be used.
 
       --treetagger PATH
           Path to the TreeTagger.
@@ -52,18 +53,15 @@ USAGE
           The classifier used by the Mallet classifier, the default is MaxEnt.
 
       --ee-model FILENAME
-          The model used for classifying event-event tlinks, this is a model
-          file in components/classifier/models, the default is set to
-          tb-vectors.ee.model.
-
       --et-model FILENAME
-          The model used for classifying event-timex tlinks, this is a model
-          file in components/classifier/models, the default is set to
-          tb-vectors.et.model.
+          The models used for classifying event-event and event-timex tlinks,
+          these are model files in components/classifier/models, the defaults
+          are set to tb-vectors.ee.model and tb-vectors.et.model.
 
       --import-event-tags TAGNAME
           With this option the Evita component will try to import existing
-          events by lifting tags with name TAGNAME from the source tags.
+          events by lifting tags with name TAGNAME from the source tags. It is
+          assumed that thhose tags have 'begin', 'end' and 'class' attributes.
 
       --trap-errors True|False
           Set error trapping, errors are trapped by default.
@@ -199,8 +197,11 @@ class Tarsqi:
         logger.info(name + '............')
         t1 = time.time()
         if self.options.trap_errors:
-            try: wrapper(tarsqidocument).process()
-            except: _log_error(name)
+            try:
+                wrapper(tarsqidocument).process()
+            except:
+                logger.error("%s error:\n\t%s\n\t%s\n"
+                             % (name, sys.exc_type, sys.exc_value))
         else:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
@@ -323,10 +324,6 @@ def _usage_string():
            "See tarsqy.py and docs/manual for more details"
 
 
-def _log_error(name):
-    logger.error("%s error:\n\t%s\n\t%s\n" % (name, sys.exc_type, sys.exc_value))
-
-
 def _basename(path):
     basename = os.path.basename(path)
     if basename.endswith('.xml'):
@@ -420,7 +417,7 @@ class TarsqiWrapper(object):
 
     def _run_tarsqi_on_file(self):
         if os.path.exists(self.outpath):
-            raise TarsqiError("output file %s already exists" & self.outpath)
+            raise TarsqiError("output file %s already exists" % self.outpath)
         Tarsqi(self.options, self.inpath, self.outpath).process_document()
 
 
@@ -435,11 +432,12 @@ def run_profiler(args):
 def process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False):
     """Run tarsqi on a bare string without any XML tags, handing in pipeline,
     loglevel and error trapping options."""
-    (opts, args) = _read_arguments(["--pipeline=%s" % pipeline,
+    (opts, args) = _read_arguments(["--source=text",
+                                    "--pipeline=%s" % pipeline,
                                     "--loglevel=%s" % loglevel,
                                     "--trap-errors=%s" % trap_errors])
     tarsqi = Tarsqi(opts, None, None)
-    return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
+    return tarsqi.process_string(text)
 
 
 def load_ttk_document(fname, loglevel=2, trap_errors=False):

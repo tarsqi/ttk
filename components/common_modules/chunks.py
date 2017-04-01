@@ -8,6 +8,7 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 """
 
 import types
+from xml.sax.saxutils import quoteattr
 
 import library.forms as forms
 import library.patterns as patterns
@@ -38,6 +39,20 @@ DRIBBLE = False
 
 # Local throw-away debugging
 DEBUG = False
+
+
+EVENTID = LIBRARY.timeml.EVENTID
+EIID = LIBRARY.timeml.EIID
+CLASS = LIBRARY.timeml.CLASS
+FORM = LIBRARY.timeml.FORM
+STEM = LIBRARY.timeml.STEM
+POS = LIBRARY.timeml.POS
+TENSE = LIBRARY.timeml.TENSE
+ASPECT = LIBRARY.timeml.ASPECT
+EPOS = LIBRARY.timeml.EPOS
+MOD = LIBRARY.timeml.MOD
+POL = LIBRARY.timeml.POL
+ORIGIN = LIBRARY.timeml.ORIGIN
 
 
 def update_event_checked_marker(constituent_list):
@@ -96,22 +111,20 @@ class Chunk(Constituent):
             return None
         if name == 'pos':
             return None
-        if name in ['eventStatus', 'text', LIBRARY.timeml.FORM, LIBRARY.timeml.STEM,
-                    LIBRARY.timeml.POS, LIBRARY.timeml.TENSE, LIBRARY.timeml.ASPECT,
-                    LIBRARY.timeml.EPOS, LIBRARY.timeml.MOD, LIBRARY.timeml.POL,
-                    LIBRARY.timeml.EVENTID, LIBRARY.timeml.EIID, LIBRARY.timeml.CLASS]:
+        if name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
+                    EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
             if name == 'eventStatus':
                 return '1'
-            if name == 'text' or name == LIBRARY.timeml.FORM:
-                return self.tree.events[self.eid][LIBRARY.timeml.FORM]
-            if name == LIBRARY.timeml.MOD:
-                return self.tree.events[self.eid].get(LIBRARY.timeml.MOD, 'NONE')
-            if name == LIBRARY.timeml.POL:
-                return self.tree.events[self.eid].get(LIBRARY.timeml.POL, 'POS')
-            if name == LIBRARY.timeml.POS:
-                return self.tree.events[self.eid].get(LIBRARY.timeml.POS, 'NONE')
+            if name == 'text' or name == FORM:
+                return self.tree.events[self.eid][FORM]
+            if name == MOD:
+                return self.tree.events[self.eid].get(MOD, 'NONE')
+            if name == POL:
+                return self.tree.events[self.eid].get(POL, 'POS')
+            if name == POS:
+                return self.tree.events[self.eid].get(POS, 'NONE')
             return self.tree.events[self.eid][name]
         else:
             raise AttributeError(name)
@@ -121,25 +134,43 @@ class Chunk(Constituent):
         return self.dtrs[self.head]
 
     def _conditionally_add_imported_event(self, imported_event):
-        # TODO: this needs to be specialized, it includes keeping the class of the event
-        self._conditionallyAddEvent()
+        """Create an event from the imported event, mixing information found in
+        the chunk and in the imported event. Added from the imported event is
+        the class (which means we potentially move away from the TimeML event
+        classes) and the begin and end of the imported event which we store in
+        the new 'full-range' feature, which is needed because Evita assumes
+        events are all one-token."""
+        # TODO: this is ad hoc and should be a bit more principled
+        event = Event(self.features)
+        event.attrs[CLASS] = imported_event.attrs['class']
+        event.attrs[ORIGIN] += '-import'
+        begin, end = imported_event.begin, imported_event.end
+        full_text = self.tree.tarsqidoc.sourcedoc.text[begin:end]
+        event.attrs['full-range'] = "%s-%s" % (begin, end)
+        event.attrs['full-event'] = "%s" % quoteattr(full_text)
+        self.tree.addEvent(event)
 
     def _conditionallyAddEvent(self, features=None):
         """Perform a few little checks on the head and check whether there is
         an event class, then add the event to the tree. When this is called on
         a NounChunk, then there is no GramChunk handed in and it will be
         retrieved from the features instance variable, when it is called from
-        VerbChunk, then the GramChunk will be handed in."""
+        VerbChunk, then the verb's features will be handed in."""
+        # TODO: split those cases to make for two simpler methods
         logger.debug("Conditionally adding nominal")
         chunk_features = self.features if features is None else features
-        #print chunk_features
-        text = chunk_features.head.getText()
-        # the second and third tests seem relevant for verbs only, but we keep
-        # them anyway for all chunks
-        if (chunk_features.evClass
-            and text not in forms.be
-            and text not in forms.spuriousVerb):
+        if self._acceptable_chunk_features(chunk_features):
             self.tree.addEvent(Event(chunk_features))
+
+    @staticmethod
+    def _acceptable_chunk_features(chunk_features):
+        """Preform some simple tests to check whether the chunk features are acceptable
+        for an event. The second and third tests seem relevant for verbs only, but we
+        keep # them anyway for all chunks."""
+        text = chunk_features.head.getText()
+        return (chunk_features.evClass
+                and text not in forms.be
+                and text not in forms.spuriousVerb)
 
     def _getHeadText(self):
         """Get the text string of the head of the chunk. Used by
@@ -195,11 +226,12 @@ class NounChunk(Chunk):
         return False if self.dtrs else True
 
     def createEvent(self, verbfeatures=None, imported_events=None):
-        """Try to create an event in the NounChunk. Checks whether the nominal is an
-        event candidate, then conditionally adds it. The verbfeatures dictionary
-        is used when a governing verb hands in its features to a nominal in a
-        predicative complement."""
-        logger.debug("NounChunk.createEvent(verbfeatures=%s)")
+        """Try to create an event in the NounChunk. Checks whether the nominal
+        is an event candidate, then conditionally adds it. The verbfeatures
+        dictionary is used when a governing verb hands in its features to a
+        nominal in a predicative complement. The imported_events is handed in
+        when Tarsqi tries to import events from a previous annotation."""
+        logger.debug("NounChunk.createEvent(verbfeatures=%s)" % verbfeatures)
         if self.isEmpty():
             # this happened at some point due to a crazy bug in some old code
             # that does not exist anymore, log a warning in case this returns
