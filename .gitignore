@@ -4,7 +4,7 @@
 
 # The settings file will be different for everyone so don't keep it in revision
 # control
-/settings.txt
+/config.txt
 
 # Python anydbm files created from versioned text files, code runs without these
 # files (but should speed up with them)

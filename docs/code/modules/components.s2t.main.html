@@ -110,9 +110,9 @@ Apply all S2T rules to doctree.</pre>
 <blockquote>
 <h3>Private Functions</h3>
 <pre>
-<div class=function>_add_link(self, tagname, attrs)</div>
-Add the link to the TagRepository instance on the TarsqiDocument.</pre>
-<pre>
-<div class=function>_add_links_to_docelement(self)</div>
-</pre>
+<div class=function>_add_links_to_tarsqidoc(self)</div>
+Export the links from the TarsqiTree to the TagRepository instance on
+the TarsqiDocument. We do this because the match code inserts into the
+tarsqi tree, but we may want to revisit this and do it the same way as
+Blinker, which adds directly to the TarsqiDocument.</pre>
 </blockquote>

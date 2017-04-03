@@ -30,28 +30,28 @@ class Slink2Tlink (TarsqiComponent):
         """Apply all S2T rules to doctree."""
         self.doctree = doctree
         # For sanity we clean out the tlinks since we are adding new tlinks to
-        # the document.
+        # the document, if we don't do this we might add some links twice.
         self.doctree.tlinks = []
         self.docelement = self.doctree.docelement
         events = self.doctree.tarsqidoc.tags.find_tags(LIBRARY.timeml.EVENT)
         eventsIdx = dict([(e.attrs['eiid'], e) for e in events])
         for slinktag in self.doctree.slinks:
             slink = Slink(self.doctree, eventsIdx, slinktag)
-            slink.match_rules(self.rules)
             try:
                 slink.match_rules(self.rules)
             except:
                 logger.error("S2T Error when processing Slink instance")
-        self._add_links_to_docelement()
+        self._add_links_to_tarsqidoc()
 
-    def _add_links_to_docelement(self):
+    def _add_links_to_tarsqidoc(self):
+        """Export the links from the TarsqiTree to the TagRepository instance on
+        the TarsqiDocument. We do this because the match code inserts into the
+        tarsqi tree, but we may want to revisit this and do it the same way as
+        Blinker, which adds directly to the TarsqiDocument."""
         for tlink in self.doctree.tlinks:
-            self._add_link(LIBRARY.timeml.TLINK, tlink.attrs)
-
-    def _add_link(self, tagname, attrs):
-        """Add the link to the TagRepository instance on the TarsqiDocument."""
-        logger.debug("Adding %s: %s" % (tagname, attrs))
-        self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, attrs)
+            tagname = LIBRARY.timeml.TLINK
+            logger.debug("Adding %s: %s" % (tagname, tlink.attrs))
+            self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, tlink.attrs)
 
 
 class Slink:

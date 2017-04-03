@@ -5,7 +5,7 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 """
 
-import sys, codecs, StringIO
+import sys, codecs, StringIO, itertools
 from xml.sax.saxutils import escape, quoteattr
 
 from library.main import LIBRARY
@@ -122,9 +122,7 @@ class TarsqiDocument:
          using the link counters in the document. Breaks down if there are
          already links added without using those counters."""
         self.counters[link_type] += 1
-        return "l%d" % (self.counters[ALINK] +
-                        self.counters[SLINK] +
-                        self.counters[TLINK])
+        return "l%d" % sum([self.counters[lt] for lt in (ALINK, SLINK, TLINK)])
 
     def remove_tlinks(self):
         """Remove all TLINK tags from the tags repository."""
@@ -496,22 +494,32 @@ class Tag:
     None because special identifiers like eid, eiid, tid and lid are used."""
 
     def __init__(self, identifier, name, o1, o2, attrs):
-        """Initialize id, name, begin, end and attrs instance variables."""
+        """Initialize id, name, begin, end and attrs instance variables and make
+        sure that what we have can be turned into valid XML by removing duplicate
+        attribute names."""
         self.id = identifier
         self.name = name
         self.begin = o1
         self.end = o2
-        self.attrs = attrs
-        # TODO: should investigate tag initialization since there is an
-        # impression that it is not consistent
-        if self.id is None and 'id' in attrs:
-            self.id = attrs.get('id')
+        # Sometimes attrs is None, use an empty dictionary in that case
+        self.attrs = attrs or {}
+        # If there already was an 'id' attribute, use it to set or overwrite the
+        # identifier that was handed in.
+        if 'id' in self.attrs:
+            self.id = self.attrs.get('id')
             del(self.attrs['id'])
+        # In case existing tags have a begin or end attribute, replace it with a
+        # generated new attribute name (if we have 'end', then the new attribute
+        # name will be 'end-N' where N is 1 or a higher number if needed).
+        for attr in ('begin', 'end'):
+            if attr in self.attrs:
+                self.attrs[self.new_attr(attr, self.attrs)] = self.attrs.pop(attr)
 
     def __str__(self):
+        id_string = "id=%s " % self.id if self.id is not None else ''
         attrs = ''.join([" %s='%s'" % (k, v) for k, v in self.attrs.items()])
-        return "<Tag %s id=%s %s:%s {%s }>" % \
-               (self.name, self.id, self.begin, self.end, attrs)
+        return "<Tag %s %s%s:%s {%s }>" % \
+               (self.name, id_string, self.begin, self.end, attrs)
 
     def __cmp__(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with
@@ -526,6 +534,14 @@ class Tag:
         begin_cmp = cmp(self.begin, other.begin)
         end_cmp = cmp(other.end, self.end)
         return end_cmp if begin_cmp == 0 else begin_cmp
+
+    @staticmethod
+    def new_attr(attr, attrs):
+        counter = itertools.count(1, step=1)
+        for c in counter:
+            new_attr = "%s_%d" % (attr, c)
+            if new_attr not in attrs:
+                return new_attr
 
     def is_opening_tag(self):
         return False
@@ -547,7 +563,9 @@ class Tag:
             (self.name, identifier, begin, end, self.attributes_as_string())
 
     def as_lex_xml_string(self, text):
-        """Return an opening and closing tag wrapped around text."""
+        """Return an opening and closing tag wrapped around text. This is used only by
+        the GUTime wrapper to create input for GUTime, and it therefore has a narrow
+        focus and does not get all information from the tag."""
         return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \
             (self.id, self.begin, self.end, str(self.attrs['pos']), escape(text))
 

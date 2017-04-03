@@ -20,6 +20,7 @@ TYPE = LIBRARY.timeml.TYPE
 VALUE = LIBRARY.timeml.VALUE
 EIID = LIBRARY.timeml.EIID
 TID = LIBRARY.timeml.TID
+LID = LIBRARY.timeml.LID
 POL = LIBRARY.timeml.POL
 TLINK = LIBRARY.timeml.TLINK
 RELTYPE = LIBRARY.timeml.RELTYPE
@@ -362,16 +363,6 @@ class Blinker (TarsqiComponent):
                     return
 
 
-    def _add_tlink(self, reltype, id1, id2, source):
-        """Add a TLINK to self.tarsqidoc."""
-        id1_attr = TIME_ID if id1.startswith('t') else EVENT_INSTANCE_ID
-        id2_attr = RELATED_TO_TIME if id2.startswith('t') else RELATED_TO_EVENT_INSTANCE
-        attrs = {id1_attr: id1,
-                 id2_attr: id2,
-                 RELTYPE: reltype,
-                 ORIGIN: source}
-        self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
-
     def _apply_event_ordering_with_signal_rules(self):
 
         """Some more rules without using any rules, basically a placeholder
@@ -408,6 +399,16 @@ class Blinker (TarsqiComponent):
                                             "%s-Event:Signal:Event" % BLINKER)
                 except:
                     pass
+
+
+    def _add_tlink(self, reltype, id1, id2, source):
+        """Add a TLINK to self.tarsqidoc."""
+        id1_attr = TIME_ID if id1.startswith('t') else EVENT_INSTANCE_ID
+        id2_attr = RELATED_TO_TIME if id2.startswith('t') else RELATED_TO_EVENT_INSTANCE
+        attrs = { LID: self.tarsqidoc.next_link_id(TLINK),
+                  id1_attr: id1, id2_attr: id2,
+                  RELTYPE: reltype, ORIGIN: source }
+        self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 
 def _timex_pairs(timexes):
