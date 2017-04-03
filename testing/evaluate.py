@@ -5,8 +5,6 @@ the system response to that gold standard.
 
 USAGE:
 
-There are two invocations:
-
 $ python evaluate.py --run-system --gold DIR1 --system DIR2 (--limit INT)
 $ python evaluate.py --compare --gold DIR1 --system DIR2 (--limit INT)
 
@@ -24,7 +22,8 @@ the code in utilities.convert for how to convert to the TTK format.
 
 import os, sys, copy, getopt
 
-import path
+sys.path.insert(0, '..')
+
 import tarsqi
 from library.main import LIBRARY
 
@@ -345,8 +344,8 @@ if __name__ == '__main__':
     (opts, args) = getopt.getopt(sys.argv[1:], '', options)
     opts = { k:v for k,v in opts }
 
-    gold = opts.get('--gold')
-    system = opts.get('--system')
+    gold = os.path.abspath(opts.get('--gold'))
+    system = os.path.abspath(opts.get('--system'))
     limit = int(opts.get('--limit', sys.maxint))
 
     if '--run-system' in opts:

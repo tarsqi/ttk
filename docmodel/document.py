@@ -9,6 +9,7 @@ import sys, codecs, StringIO, itertools
 from xml.sax.saxutils import escape, quoteattr
 
 from library.main import LIBRARY
+from utilities import logger
 
 
 TIMEX = LIBRARY.timeml.TIMEX
@@ -77,6 +78,12 @@ class TarsqiDocument:
         """Convenience method for easy access to timexes."""
         return self.tags.find_tags(TIMEX)
 
+    def slinks(self):
+        return self.tags.find_tags(SLINK)
+
+    def tlinks(self):
+        return self.tags.find_tags(TLINK)
+
     def has_event(self, begin, end):
         """Return True if there is already an event at the given begin and
         end."""
@@ -143,10 +150,13 @@ class TarsqiDocument:
         fh.write(str(self.list_of_sentences()))
         fh.write("\n")
 
-    def print_all(self, fname):
+    def print_all(self, fname=None):
         """Write source string, metadata, comments, source tags and tarsqi tags
-        all to one file."""
-        fh = codecs.open(fname, mode='w', encoding='UTF-8')
+        all to one file or to the standard output."""
+        if fname is None:
+            fh = sys.stdout
+        else:
+            fh = codecs.open(fname, mode='w', encoding='UTF-8')
         fh.write("<ttk>\n")
         fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
         self._print_comments(fh)
@@ -174,7 +184,13 @@ class TarsqiDocument:
     def _print_tags(self, fh, tag_group, tags):
         fh.write("<%s>\n" % tag_group)
         for tag in sorted(tags):
-            fh.write("  %s\n" % tag.as_ttk_tag())
+            try:
+                fh.write("  %s\n" % tag.as_ttk_tag())
+            except UnicodeDecodeError:
+                # TODO: no idea why this happens, fh should be able to deal with
+                # unicode and the one case I have seen where this go wrong does
+                # not have non-ascii characters
+                logger.error("UnicodeDecodeError on printing a tag.")
         fh.write("</%s>\n" % tag_group)
 
     def list_of_sentences(self):

@@ -180,7 +180,7 @@ class Constituent:
                 node = node.parent
         return None
 
-    def createEvent(self):
+    def createEvent(self, imported_events=None):
         """Does nothing except for logging a warning. If this happens something
         unexpected is going on. Event creation is only attempted on some sub
         classes."""

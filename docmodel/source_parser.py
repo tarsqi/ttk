@@ -75,8 +75,27 @@ class SourceParserTTK(SourceParser):
     def parse_file(self, filename, tarsqidoc):
         """Parse the TTK file and put the contents in the appropriate parts of
         the SourceDoc."""
-        self._load_dom(filename)
-        self.sourcedoc = SourceDoc(filename)
+        # TODO: does this do the right thing for non-ascii?
+        self.dom = minidom.parse(open(filename))
+        self._load_topnodes()
+        self._parse(tarsqidoc)
+
+    def parse_string(self, text, tarsqidoc):
+        """Parse the TTK string and put the contents in the appropriate parts of the
+        SourceDoc."""
+        self.dom = minidom.parseString(text)
+        self._load_topnodes()
+        self._parse(tarsqidoc)
+
+    def _load_topnodes(self):
+        """Fills the topnodes dictionary with text, metadata, source_tags and
+        tarsqi_tags and comment keys."""
+        for node in self.dom.documentElement.childNodes:
+            if node.nodeType == minidom.Node.ELEMENT_NODE:
+                self.topnodes[node.tagName] = node
+
+    def _parse(self, tarsqidoc):
+        self.sourcedoc = SourceDoc(None)
         self.tarsqidoc = tarsqidoc
         self.tarsqidoc.sourcedoc = self.sourcedoc
         self.sourcedoc.text = self.topnodes['text'].firstChild.data
@@ -84,21 +103,6 @@ class SourceParserTTK(SourceParser):
         self._add_tarsqi_tags()
         self._add_comments()
         self._add_metadata()
-
-    def parse_string(self, text):
-        # TODO: not used yet, finish when needed
-        dom = minidom.parseString(text)
-        exit('Not Implemented: SourceParserTTK.parse_string()')
-
-    def _load_dom(self, filename):
-        """Loads the DOM object in the file into the dom variable and fills the
-        topnodes dictionary with text, metadata, source_tags and tarsqi_tags and
-        comment keys."""
-        # TODO: does this do the right thing for non-ascii?
-        self.dom = minidom.parse(open(filename))
-        for node in self.dom.firstChild.childNodes:
-            if node.nodeType == minidom.Node.ELEMENT_NODE:
-                self.topnodes[node.tagName] = node
 
     def _add_source_tags(self):
         """Add the source_tags in the TTK document to the tags repository

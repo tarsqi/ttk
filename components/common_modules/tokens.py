@@ -92,7 +92,7 @@ class Token(Constituent):
         method returns False for the preposition in 'to the barn'."""
         return self.pos == POS_PREP
 
-    def createEvent(self):
+    def createEvent(self, imported_events=None):
         """Do nothing when an AdjectiveToken or Token is asked to create an
         event. Potential adjectival events are processed from the VerbChunk
         using the createAdjEvent() method. Do not log a warning since it is

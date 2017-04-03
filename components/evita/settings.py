@@ -7,6 +7,10 @@ Settings that determine the behaviour of Evita components.
 DEBUG = False
 
 
+# Proper names are allowed to be nominal events, set to False disallow events
+# where the head has a NNP or NNPS tag
+INCLUDE_PROPERNAMES = True
+
 # Determines whether we try to disambiguate nominals with training data
 EVITA_NOM_DISAMB = True
 

@@ -9,12 +9,14 @@ various tarsqi modules to do the rest of the real work.
 
 USAGE
 
-   % python tarsqy.py [OPTIONS] INPUT OUTPUT
+   % python tarsqy.py [OPTIONS] [INPUT OUTPUT]
 
    INPUT/OUTPUT
 
-      Input and output files or directories. If the input is a directory than
-      the output directory needs to exist.
+      Input and output files or directories. If the input is a directory then
+      the output directory needs to exist. If '--pipe=True' is one of the
+      options then input and output are not required and they are ignored if
+      they are there.
 
    OPTIONS
 
@@ -30,11 +32,15 @@ USAGE
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
-          pipeline.
+          pipeline minus the link merger.
+
+      --pipe True|False
+          With this option set to True the script reads input from the standard
+          input and writes output to standard output. The default is False.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
-          fine here and this options does not need to be used.
+          fine here and this option does not need to be used.
 
       --treetagger PATH
           Path to the TreeTagger.
@@ -47,14 +53,15 @@ USAGE
           The classifier used by the Mallet classifier, the default is MaxEnt.
 
       --ee-model FILENAME
-          The model used for classifying event-event tlinks, this is a model
-          file in components/classifier/models, the default is set to
-          tb-vectors.ee.model.
-
       --et-model FILENAME
-          The model used for classifying event-timex tlinks, this is a model
-          file in components/classifier/models, the default is set to
-          tb-vectors.et.model.
+          The models used for classifying event-event and event-timex tlinks,
+          these are model files in components/classifier/models, the defaults
+          are set to tb-vectors.ee.model and tb-vectors.et.model.
+
+      --import-event-tags TAGNAME
+          With this option the Evita component will try to import existing
+          events by lifting tags with name TAGNAME from the source tags. It is
+          assumed that thhose tags have 'begin', 'end' and 'class' attributes.
 
       --trap-errors True|False
           Set error trapping, errors are trapped by default.
@@ -130,7 +137,10 @@ class Tarsqi:
         self.input = infile
         self.output = outfile
         self.basename = _basename(infile) if infile else None
-        self.options = Options(opts)
+        if isinstance(opts, Options):
+            self.options = opts
+        else:
+            self.options = Options(opts)
         self.tarsqidoc = TarsqiDocument()
         self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
@@ -161,7 +171,7 @@ class Tarsqi:
         """Similar to process(), except that it runs on an input string and not
         on a file, it does not write the output to a file and it returns the
         TarsqiDocument."""
-        logger.info(input_string)
+        logger.info(input_string[:75].replace('\n', ' '))
         self.source_parser.parse_string(input_string, self.tarsqidoc)
         self.metadata_parser.parse(self.tarsqidoc)
         self.docstructure_parser.parse(self.tarsqidoc)
@@ -187,8 +197,11 @@ class Tarsqi:
         logger.info(name + '............')
         t1 = time.time()
         if self.options.trap_errors:
-            try: wrapper(tarsqidocument).process()
-            except: _log_error(name)
+            try:
+                wrapper(tarsqidocument).process()
+            except:
+                logger.error("%s error:\n\t%s\n\t%s\n"
+                             % (name, sys.exc_type, sys.exc_value))
         else:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
@@ -216,7 +229,7 @@ class Tarsqi:
         print '   document    ', self.xml_document
 
 
-class Options():
+class Options(object):
 
     """A class to keep track of all the options. Options can be accessed with the
     getopt() method, but standard options are also accessable directly through
@@ -233,8 +246,10 @@ class Options():
         # for those options from config.txt that are user-specific
         self.source = self.getopt('source')
         self.pipeline = self.getopt('pipeline')
+        self.pipe = self.getopt('pipe', False)
         self.loglevel = self.getopt('loglevel')
         self.trap_errors = self.getopt('trap-errors', True)
+        self.import_event_tags = self.getopt('import-event-tags')
         self.perl = self.getopt('perl', 'perl')
         self.mallet = self.getopt('mallet')
         self.treetagger = self.getopt('treetagger')
@@ -278,7 +293,7 @@ class Options():
     def pp(self):
         print "OPTIONS:"
         for option in sorted(self._options.keys()):
-            print "   %-12s  -->  %s" % (option, self._options[option])
+            print "   %-18s  -->  %s" % (option, self._options[option])
 
 
 class TarsqiError(Exception):
@@ -287,31 +302,26 @@ class TarsqiError(Exception):
     pass
 
 
-def _read_arguments(args, check=True):
-    """ Read the list of arguments given to the tarsqi.py script.  Return a
-    tuple with three elements: processing options dictionary, input path and
-    output path."""
-    options = ['source=', 'pipeline=', 'trap-errors=',
-               'perl=', 'loglevel=', 'treetagger=',
+def _read_arguments(args):
+    """Read the list of arguments given to the tarsqi.py script.  Return a tuple
+    with two elements: processing options dictionary, and remaining arguments
+    (input path and output path)."""
+    options = ['source=', 'pipeline=', 'trap-errors=', 'loglevel=',
+               'pipe=', 'perl=', 'treetagger=', 'import-event-tags=',
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
-        if check and len(args) < 2:
-            raise TarsqiError("missing input or output arguments\n%s"
-                              % _usage_string())
         return (opts, args)
     except getopt.GetoptError:
-        print "ERROR: %s" % sys.exc_value
+        sys.stderr.write("ERROR: %s\n" % sys.exc_value)
         sys.exit(_usage_string())
 
 
 def _usage_string():
-    return "Usage: % python tarsqi.py [OPTIONS] INPUT OUTPUT\n" + \
+    return "Usage:\n" + \
+        "   % python tarsqi.py [OPTIONS] --pipe\n" + \
+        "   % python tarsqi.py [OPTIONS] INPUT OUTPUT\n" + \
            "See tarsqy.py and docs/manual for more details"
-
-
-def _log_error(name):
-    logger.error("%s error:\n\t%s\n\t%s\n" % (name, sys.exc_type, sys.exc_value))
 
 
 def _basename(path):
@@ -329,24 +339,66 @@ def _set_working_directory():
     os.chdir(TTK_ROOT)
 
 
-def run_tarsqi(args):
-    """Main method that is called when the script is executed from the command
-    line. It creates a Tarsqi instance and lets it process the input. If the
-    input is a directory, this method will iterate over the contents, setting up
-    Tarsqi instances for all files in the directory. The arguments are the list
-    of arguments given by the user on the command line."""
-    (opts, args) = _read_arguments(args)
-    # Using absolute paths here because some components change the working
-    # directory and when some component fails the cwd command may not reset to
-    # the root directory
-    inpath = os.path.abspath(args[0])
-    outpath = os.path.abspath(args[1])
-    t0 = time.time()
-    if os.path.isdir(inpath):
-        if os.path.exists(outpath) and not os.path.isdir(outpath):
-            raise TarsqiError(outpath + ' already exists and it is not a directory')
-        if not os.path.isdir(outpath):
-            os.makedirs(outpath)
+class TarsqiWrapper(object):
+
+    """Class that wraps the Tarsqi class, taking care of some of the IO aspects."""
+
+    def __init__(self, args):
+        (opts, args) = _read_arguments(args)
+        self.options = Options(opts)
+        self.args = args
+        # Set the input path and the output path, these are both set to None
+        # when input and output are piped."""
+        if self.options.pipe:
+            self.inpath = None
+            self.outpath = None
+        elif len(args) >= 2:
+            # Using absolute paths here because some components change the working
+            # directory and when some component fails the cwd command may not reset
+            # to the root directory
+            self.inpath = os.path.abspath(args[0])
+            self.outpath = os.path.abspath(args[1])
+        else:
+            raise TarsqiError("missing --pipe option or missing " +
+                              "input or output arguments\n%s" % _usage_string())
+
+    def pp(self):
+        print "\n<TarsqiWrapper>"
+        print "   inpath  =", self.inpath
+        print "   outpath =", self.outpath, "\n"
+        self.options.pp()
+
+    def run(self):
+        """Main method that is called when the script is executed from the command
+        line. It creates a Tarsqi instance and lets it process the input. If the
+        input is a directory, this method will iterate over the contents, setting up
+        Tarsqi instances for all files in the directory. The arguments are the list
+        of arguments given by the user on the command line."""
+        t0 = time.time()
+        if self.inpath is None and self.outpath is None:
+            self._run_tarsqi_on_pipe()
+        elif os.path.isdir(self.inpath):
+            self._run_tarsqi_on_directory()
+        elif os.path.isfile(self.inpath):
+            self._run_tarsqi_on_file()
+        else:
+            raise TarsqiError('Invalid input')
+        logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
+
+    def _run_tarsqi_on_pipe(self):
+        """Read text from standard input and run tarsqi over it, then print the result
+        to standard out."""
+        text = sys.stdin.read()
+        tarsqi = Tarsqi(self.options, None, None)
+        tarsqidoc = tarsqi.process_string(text)
+        tarsqidoc.print_all()
+
+    def _run_tarsqi_on_directory(self):
+        """Run Tarsqi on all files in a directory."""
+        if os.path.exists(self.outpath) and not os.path.isdir(self.outpath):
+            raise TarsqiError(self.outpath + ' already exists and it is not a directory')
+        if not os.path.isdir(self.outpath):
+            os.makedirs(self.outpath)
         else:
             print "WARNING: Directory %s already exists" % outpath
             print "WARNING: Existing files in %s will be overwritten" % outpath
@@ -354,47 +406,38 @@ def run_tarsqi(args):
             answer = raw_input()
             if answer != 'y':
                 exit()
-        for file in os.listdir(inpath):
-            infile = inpath + os.sep + file
-            outfile = outpath + os.sep + file
+        for file in os.listdir(self.inpath):
+            infile = self.inpath + os.sep + file
+            outfile = self.outpath + os.sep + file
             if (os.path.isfile(infile)
                 and os.path.basename(infile)[0] != '.'
                 and os.path.basename(infile)[-1] != '~'):
                 print infile
-                Tarsqi(opts, infile, outfile).process_document()
-    elif os.path.isfile(inpath):
-        if os.path.exists(outpath):
-            raise TarsqiError('output file ' + outpath + ' already exists')
-        Tarsqi(opts, inpath, outpath).process_document()
-    else:
-        raise TarsqiError('Invalid input and/or output options')
-    logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
+                Tarsqi(self.options, infile, outfile).process_document()
+
+    def _run_tarsqi_on_file(self):
+        if os.path.exists(self.outpath):
+            raise TarsqiError("output file %s already exists" % self.outpath)
+        Tarsqi(self.options, self.inpath, self.outpath).process_document()
 
 
 def run_profiler(args):
     """Wrap running Tarsqi in the profiler."""
     import profile
-    command = "run_tarsqi([%s])" % ','.join(['"'+x+'"' for x in args])
+    command = "TarsqiWrapper([%s]).run()" % ','.join(['"'+x+'"' for x in args])
     print 'Running profiler on:', command
-    profile.run(command, PROFILER_OUTPUT)
-
-
-def test():
-    os.remove('out.xml')
-    run_tarsqi(['--pipeline=PREPROCESSOR,GUTIME,EVITA',
-                'data/in/simple-xml/tiny.xml',
-                'out.xml'])
+    profile.run(command, os.path.abspath(PROFILER_OUTPUT))
 
 
 def process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False):
     """Run tarsqi on a bare string without any XML tags, handing in pipeline,
     loglevel and error trapping options."""
-    (opts, args) = _read_arguments(["--pipeline=%s" % pipeline,
+    (opts, args) = _read_arguments(["--source=text",
+                                    "--pipeline=%s" % pipeline,
                                     "--loglevel=%s" % loglevel,
-                                    "--trap-errors=%s" % trap_errors],
-                                   check=False)
+                                    "--trap-errors=%s" % trap_errors])
     tarsqi = Tarsqi(opts, None, None)
-    return tarsqi.process_string("<TEXT>%s</TEXT>" % text)
+    return tarsqi.process_string(text)
 
 
 def load_ttk_document(fname, loglevel=2, trap_errors=False):
@@ -405,10 +448,8 @@ def load_ttk_document(fname, loglevel=2, trap_errors=False):
     # For now, we are skipping the link merger because it is too slow on some of
     # the timebank documents
     pipeline = "PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"
-    (opts, args) = _read_arguments(["--source=ttk",
-                                    "--pipeline=%s" % pipeline,
-                                    "--loglevel=%s" % loglevel,
-                                    "--trap-errors=%s" % trap_errors])
+    opts = [('--source', 'ttk'), ('--pipeline', pipeline),
+            ('--loglevel',  str(loglevel)), ('--trap-errors', str(trap_errors))]
     tarsqi = Tarsqi(opts, fname, None)
     tarsqi.source_parser.parse_file(tarsqi.input, tarsqi.tarsqidoc)
     tarsqi.metadata_parser.parse(tarsqi.tarsqidoc)
@@ -416,12 +457,12 @@ def load_ttk_document(fname, loglevel=2, trap_errors=False):
     return (tarsqi, tarsqi.tarsqidoc)
 
 
-
 if __name__ == '__main__':
+
     try:
         if USE_PROFILER:
             run_profiler(sys.argv[1:])
         else:
-            run_tarsqi(sys.argv[1:])
+            TarsqiWrapper(sys.argv[1:]).run()
     except TarsqiError:
         sys.exit('ERROR: ' + str(sys.exc_value))
