@@ -180,12 +180,13 @@ class PreprocessorWrapper:
         TagRepository using the preprocessing result."""
         ctag = None
         for sentence in text:
-            stag = Tag(TagId.next('s'), 's', None, None, {'origin': PREPROCESSOR})
+            sentence_attrs = { 'id': TagId.next('s'), 'origin': PREPROCESSOR }
+            stag = Tag('s', None, None, sentence_attrs)
             for token in sentence:
                 if _is_tag(token):
                     if not token.startswith('</'):
-                        ctag = Tag(TagId.next('c'), token[1:-1], None, None,
-                                   {'origin': PREPROCESSOR})
+                        ctag = Tag(token[1:-1], None, None,
+                                   { 'id': TagId.next('c'), 'origin': PREPROCESSOR })
                     else:
                         ctag.end = last_ltag.end
                         self.document.tags.append(ctag)
@@ -216,9 +217,9 @@ def _is_tag(token):
 
 def _make_ltag(token):
     """Return an instance of Tag for the token."""
-    return Tag(TagId.next('l'), 'lex', token[3], token[4],
-               { 'lemma': token[2], 'pos': token[1], 'text': token[0],
-                 'origin': PREPROCESSOR })
+    return Tag('lex', token[3], token[4],
+               { 'id': TagId.next('l'), 'lemma': token[2], 'pos': token[1],
+                  'text': token[0], 'origin': PREPROCESSOR })
 
 
 class TokenizerWrapper:
@@ -266,8 +267,9 @@ class TokenizerWrapper:
                 s_begin, s_end = None, None
             else:
                 begin, end = t.begin, t.end
-                attrs = { 'text': t.text, 'origin': TOKENIZER }
-                ltag = Tag(TagId.next('l'), 'lex', begin, end, attrs)
+                lid = TagId.next('l')
+                ltag = Tag('lex', begin, end,
+                           { 'id': lid, 'text': t.text, 'origin': TOKENIZER })
                 self.document.tags.append(ltag)
                 if s_begin is None:
                     s_begin = begin
@@ -278,7 +280,8 @@ class TokenizerWrapper:
     def _export_sentence(self, s_begin, s_end):
         """Add an s tag to the TagRepository of the TarsqiDocument."""
         if s_begin is not None:
-            stag = Tag(TagId.next('s'), 's', s_begin, s_end, {'origin': TOKENIZER})
+            stag = Tag('s', s_begin, s_end,
+                       { 'id': TagId.next('s'), 'origin': TOKENIZER })
             self.document.tags.append(stag)
 
 
@@ -429,7 +432,8 @@ class ChunkerWrapper:
                 elif token in ('</ng>', '</vg>'):
                     in_chunk = False
                     chunk_tag = token[2:-1]
-                    ctag = Tag(TagId.next('c'), chunk_tag, chunk_begin, chunk_end, {'origin': CHUNKER})
+                    ctag = Tag(chunk_tag, chunk_begin, chunk_end,
+                               { 'id': TagId.next('c'), 'origin': CHUNKER })
                     self.document.tags.append(ctag)
                 elif in_chunk:
                     if chunk_begin is None:

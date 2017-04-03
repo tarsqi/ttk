@@ -238,7 +238,6 @@ class SourceDoc:
         self.metadata = {}
         self.tags = TagRepository()
         self.offset = 0
-        self.tag_number = 0
 
     def __getitem__(self, i):
         return self.text[i]
@@ -246,15 +245,13 @@ class SourceDoc:
     def add_opening_tag(self, name, attrs):
         """Add an opening tag to source_tags. This is used by the
         StartElementHandler of the Expat parser in SourceParserXML."""
-        self.tag_number += 1
-        opening_tag = OpeningTag(self.tag_number, name, self.offset, attrs)
+        opening_tag = OpeningTag(name, self.offset, attrs)
         self.tags.add_tmp_tag(opening_tag)
 
     def add_closing_tag(self, name):
         """Add a closing tag to source_tags. This is used by the
         EndElementHandler of the Expat parser in SourceParserXML."""
-        self.tag_number += 1
-        closing_tag = ClosingTag(self.tag_number, name, self.offset)
+        closing_tag = ClosingTag(name, self.offset)
         self.tags.add_tmp_tag(closing_tag)
 
     def add_characters(self, string):
@@ -304,10 +301,10 @@ class SourceDoc:
 
 class TagRepository:
 
-    """Class that provides access to the tags for a document. An instance of
-    this class is used for the DocSource instance, other instances will be used
-    for the elements in a TarsqiDocument. For now, the repository has the
-    following structure:
+    """Class that provides access to the tags for a document. An instance of this
+    class is used for the DocSource instance, other instances will be used for
+    the elements in a TarsqiDocument. For now, the repository has the following
+    structure:
 
     self.tmp
        A list of OpeningTag and ClosingTag elements, used only to build the tags
@@ -360,15 +357,7 @@ class TagRepository:
     def add_tag(self, name, begin, end, attrs):
         """Add a tag to the tags list and the opening_tags and closing_tags
         dictionaries."""
-        tag = Tag(None, name, begin, end, attrs)
-        self.tags.append(tag)
-        self.opening_tags.setdefault(begin, []).append(tag)
-        self.closing_tags.setdefault(end, {}).setdefault(begin, {})[tag.name] = True
-
-    def add_tag_with_id(self, name, identifier, begin, end, attrs):
-        """Add a tag to the tags list and the opening_tags and closing_tags
-        dictionaries."""
-        tag = Tag(identifier, name, begin, end, attrs)
+        tag = Tag(name, begin, end, attrs)
         self.tags.append(tag)
         self.opening_tags.setdefault(begin, []).append(tag)
         self.closing_tags.setdefault(end, {}).setdefault(begin, {})[tag.name] = True
@@ -392,7 +381,9 @@ class TagRepository:
                 stack.append(t)
             elif t.name == stack[-1].name:
                 t1 = stack.pop()
-                tag = Tag(t1.id, t1.name, t1.begin, t.end, t1.attrs)
+                tag = Tag(t1.name, t1.begin, t.end, t1.attrs)
+                # We are not bothering to use add_tag since we will be building
+                # the index right after the merge.
                 self.tags.append(tag)
             else:
                 raise TarsqiInputError("non-matching tag %s" % t)
@@ -473,7 +464,7 @@ class TagRepository:
 
     def import_tags(self, tag_repository, tagname):
         """Import all tags with name=tagname from tag_repository into self. This
-        is moslty used when we want to take tags from the SourceDoc and add them
+        is mostly used when we want to take tags from the SourceDoc and add them
         to the tags on the TarsqiDocument."""
         for tag in tag_repository.find_tags(tagname):
             self.add_tag(tagname, tag.begin, tag.end, tag.attrs)
@@ -501,29 +492,23 @@ class TagRepository:
 
 class Tag:
 
-    """A Tag has a name, an id, a begin offset, an end offset and a dictionary
-    of attributes. The id is handed in by the code that creates the Tag which
-    could be: (1) the code that parses the source document, in which case
-    identifiers are numbered depending on text position, (2) the preprocessor
-    code, which assigns identifiers for lex, ng, vg and s tags, or (3) one of
-    the components that creates tarsqi tags, in which case the identifier is
-    None because special identifiers like eid, eiid, tid and lid are used."""
+    """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
+    attributes. The id is handed in by the code that creates the Tag which could
+    be: (1) the code that parses the source document, which will only assign an
+    identifier if the source had an id attribute, (2) the preprocessor code,
+    which assigns identifiers for lex, ng, vg and s tags, or (3) one of the
+    components that creates tarsqi tags, in which case the identifier is None,
+    but special identifiers like eid, eiid, tid and lid are used."""
 
-    def __init__(self, identifier, name, o1, o2, attrs):
-        """Initialize id, name, begin, end and attrs instance variables and make
-        sure that what we have can be turned into valid XML by removing duplicate
+    def __init__(self, name, o1, o2, attrs):
+        """Initialize name, begin, end and attrs instance variables and make sure
+        that what we have can be turned into valid XML by removing duplicate
         attribute names."""
-        self.id = identifier
         self.name = name
         self.begin = o1
         self.end = o2
-        # Sometimes attrs is None, use an empty dictionary in that case
+        # Sometimes attrs is None
         self.attrs = attrs or {}
-        # If there already was an 'id' attribute, use it to set or overwrite the
-        # identifier that was handed in.
-        if 'id' in self.attrs:
-            self.id = self.attrs.get('id')
-            del(self.attrs['id'])
         # In case existing tags have a begin or end attribute, replace it with a
         # generated new attribute name (if we have 'end', then the new attribute
         # name will be 'end-N' where N is 1 or a higher number if needed).
@@ -532,10 +517,9 @@ class Tag:
                 self.attrs[self.new_attr(attr, self.attrs)] = self.attrs.pop(attr)
 
     def __str__(self):
-        id_string = "id=%s " % self.id if self.id is not None else ''
         attrs = ''.join([" %s='%s'" % (k, v) for k, v in self.attrs.items()])
-        return "<Tag %s %s%s:%s {%s }>" % \
-               (self.name, id_string, self.begin, self.end, attrs)
+        return "<Tag %s %s:%s {%s }>" % \
+               (self.name, self.begin, self.end, attrs)
 
     def __cmp__(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with
@@ -567,23 +551,16 @@ class Tag:
 
     def as_ttk_tag(self):
         """Return the tag as a tag in the Tarsqi output format."""
-        # move id tag from attrs to toplevel if needed
-        # TODO: maybe this should happen elsewhere
-        if self.id is None and self.attrs.get('id'):
-            self.id = self.attrs.get('id')
-            del(self.attrs['id'])
         begin = " begin=\"%s\"" % self.begin if self.begin >= 0 else ''
         end = " end=\"%s\"" % self.end if self.end >= 0 else ''
-        identifier = "" if self.id is None else " id=" + quoteattr(str(self.id))
-        return "<%s%s%s%s%s />" % \
-            (self.name, identifier, begin, end, self.attributes_as_string())
+        return "<%s%s%s%s />" % (self.name, begin, end, self.attributes_as_string())
 
     def as_lex_xml_string(self, text):
         """Return an opening and closing tag wrapped around text. This is used only by
         the GUTime wrapper to create input for GUTime, and it therefore has a narrow
         focus and does not get all information from the tag."""
         return "<lex id=\"%s\" begin=\"%d\" end=\"%d\" pos=\"%s\">%s</lex>" % \
-            (self.id, self.begin, self.end, str(self.attrs['pos']), escape(text))
+            (None, self.begin, self.end, str(self.attrs['pos']), escape(text))
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
@@ -597,12 +574,12 @@ class OpeningTag(Tag):
 
     "Like Tag, but self.end is always None."""
 
-    def __init__(self, id, name, offset, attrs):
-        Tag.__init__(self, id, name, offset, None, attrs)
+    def __init__(self, name, offset, attrs):
+        Tag.__init__(self, name, offset, None, attrs)
 
     def __str__(self):
-        return "<OpeningTag %d %s %d %s>" % \
-            (self.id, self.name, self.begin, str(self.attrs))
+        return "<OpeningTag %s %d %s>" % \
+            (self.name, self.begin, str(self.attrs))
 
     def is_opening_tag(self):
         return True
@@ -612,12 +589,12 @@ class ClosingTag(Tag):
 
     "Like Tag, but self.begin and self.attrs are always None."""
 
-    def __init__(self, id, name, offset):
-        Tag.__init__(self, id, name, None, offset, None)
+    def __init__(self, name, offset):
+        Tag.__init__(self, name, None, offset, None)
 
     def __str__(self):
-        return "<ClosingTag %d %s %d>" % \
-            (self.id, self.name, self.end)
+        return "<ClosingTag %s %d>" % \
+            (self.name, self.end)
 
     def is_closing_tag(self):
         return True
