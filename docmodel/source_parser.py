@@ -145,12 +145,11 @@ class SourceParserTTK(SourceParser):
         name = node.tagName
         o1 = node.getAttribute('begin')
         o2 = node.getAttribute('end')
-        o1 = int(o1) if o1 else -1
-        o2 = int(o2) if o2 else -1
+        o1 = int(o1) if o1 is not None else -1
+        o2 = int(o2) if o2 is not None else -1
         attrs = dict(node.attributes.items())
         attrs = dict([(k, v) for (k, v) in attrs.items()
                       if k not in ('begin', 'end')])
-        # print name, o1, o2, attrs
         tag_repository.add_tag(name, o1, o2, attrs)
 
 
@@ -238,6 +237,7 @@ class SourceParserXML(SourceParser):
         of attributes. Asks the SourceDoc instance in the sourcedoc variable to
         add an opening tag."""
         self._debug('start', name, attrs)
+        #print ',,,', name, attrs
         self.sourcedoc.add_opening_tag(name, attrs)
 
     def _handle_end(self, name):
