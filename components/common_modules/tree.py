@@ -39,7 +39,7 @@ def create_tarsqi_tree(tarsqidoc, element, links=False):
     tree = TarsqiTree(tarsqidoc, element)
     o1 = element.begin
     o2 = element.end
-    top_tag = Tag(None, None, o1, o2, {})
+    top_tag = Tag(None, o1, o2, {})
     top_node = Node(top_tag, None, tree)
     for tag in (tarsqidoc.tags.find_tags(SENTENCE, o1, o2) +
                 tarsqidoc.tags.find_tags(NOUNCHUNK, o1, o2) +

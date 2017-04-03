@@ -2,7 +2,7 @@
 
 1. Convert LDC TimeBank into a modern TimeBank in the TTK format.
 
-   $ python convert.py --convert-timebank TIMEBANK_DIR TTK_DIR
+   $ python convert.py --timebank2ttk TIMEBANK_DIR TTK_DIR
 
    Converts TimeBank 1.2 as released by LDC into a version without makeinstance
    tags using the TTK format. This should be run on the data/extra files in the
@@ -11,7 +11,7 @@
 
 2. Convert Thyme format into TTK format.
 
-   $ python convert.py --convert-thyme THYME_TEXT_DIR THYME_ANNO_DIR TTK_DIR
+   $ python convert.py --thyme2ttk THYME_TEXT_DIR THYME_ANNO_DIR TTK_DIR
 
    Note that in the Thyme corpus we have annotation directories like
    AnnotationData/coloncancer/Dev, whereas in the text directories we find
@@ -20,8 +20,8 @@
 
 3. Convert the TTK format into HTML.
 
-   $ python convert.py --convert-ttk-into-html TTK_DIR HTML_DIR
-   $ python convert.py --convert-ttk-into-html --show-links TTK_DIR HTML_DIR
+   $ python convert.py --ttk2html TTK_DIR HTML_DIR
+   $ python convert.py --ttk2html --show-links TTK_DIR HTML_DIR
 
    Converts TTK files in TTK_DIR into HTML files in HTML_DIR, if --show-links is
    used links are shown in addition to the timexes and events.
@@ -51,6 +51,8 @@ ALINK = LIBRARY.timeml.ALINK
 SLINK = LIBRARY.timeml.SLINK
 TLINK = LIBRARY.timeml.TLINK
 
+LID = LIBRARY.timeml.LID
+TID = LIBRARY.timeml.TID
 EID = LIBRARY.timeml.EID
 EIID = LIBRARY.timeml.EIID
 EVENTID = LIBRARY.timeml.EVENTID
@@ -124,6 +126,7 @@ def convert_thyme(thyme_text_dir, thyme_anno_dir, out_dir, limit=sys.maxint):
 
 
 def _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file):
+    LinkID.reset()
     tarsqidoc = _get_tarsqidoc(thyme_text_file, "text")
     dom = minidom.parse(thyme_anno_file)
     entities = [Entity(e) for e in dom.getElementsByTagName('entity')]
@@ -151,7 +154,7 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
             if timex_idx.has_key(timex.id):
                 print "WARNING: timex %s already exists" % timex.id
             timex_idx[timex.id] = begin
-            attrs = {'tid': timex.id}
+            attrs = { TID: timex.id }
             if timex.type == 'DOCTIME':
                 metadata['dct'] = timex
                 attrs['functionInDocument'] = 'DOCTIME'
@@ -161,13 +164,14 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
                 tarsqidoc.metadata['dct'] = dct_value
             elif timex.type == 'SECTIONTIME':
                 attrs['functionInDocument'] = 'SECTIONTIME'
-            # TODO: see comment above
-            tarsqidoc.tags.add_tag_with_id('TIMEX3', timex.id, begin, end, attrs)
+            tarsqidoc.tags.add_tag('TIMEX3', begin, end, attrs)
         except ValueError:
             print "Skipping discontinuous timex"
 
 
 def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
+    """Add an event from the Thyme file. Also includes adding a TLINK to the DCT,
+    for this link we generate a new link identifier."""
     dct_rel_id = 0
     for event in events:
         try:
@@ -176,28 +180,31 @@ def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
                 print "WARNING: event %s already exists" % event.id
             event_idx[event.id] = begin
             # TODO: is it okay for these to be the same?
-            attrs = {'eid': event.id, 'eiid': event.id}
-            # TODO: could I just use add_tag()?
-            tarsqidoc.tags.add_tag_with_id('EVENT', event.id, begin, end, attrs)
+            attrs = { EID: event.id, EIID: event.id}
+            tarsqidoc.tags.add_tag('EVENT', begin, end, attrs)
             dct_rel_id += 1
-            attrs = {RELTYPE: event.DocTimeRel,
-                     EVENT_INSTANCE_ID: event.id,
-                     RELATED_TO_TIME: dct.id}
-            tarsqidoc.tags.add_tag_with_id('TLINK', "d%s" % dct_rel_id, None, None, attrs)
+            attrs = { LID: LinkID.next(),
+                      RELTYPE: event.DocTimeRel,
+                      EVENT_INSTANCE_ID: event.id,
+                      RELATED_TO_TIME: dct.id }
+            tarsqidoc.tags.add_tag('TLINK', None, None, attrs)
         except ValueError:
             print "Skipping discontinuous event"
 
 
 def _add_links_to_tarsqidoc(links, timex_idx, event_idx, tarsqidoc):
+    """Add a link from the Thyme file. Inherit the identifier on the Thyme
+    relation, even though it does not adhere to TimeML id formatting."""
     for rel in links:
         linkid = "r%s" % rel.id.split('@')[0]
         sourceid = "%s%s" % (rel.Source.split('@')[1], rel.Source.split('@')[0])
         targetid = "%s%s" % (rel.Target.split('@')[1], rel.Target.split('@')[0])
         attrs = {
+            LID: linkid,
             _source_attr_name(rel.type, sourceid, timex_idx, event_idx): sourceid,
             _target_attr_name(rel.type, targetid, timex_idx, event_idx): targetid,
             RELTYPE: rel.RelType}
-        tarsqidoc.tags.add_tag_with_id(rel.type, linkid, None, None, attrs)
+        tarsqidoc.tags.add_tag(rel.type, None, None, attrs)
 
 
 def _source_attr_name(link_type, source_id, timex_idx, event_idx):
@@ -224,7 +231,8 @@ def _target_attr_name(link_type, target_id, timex_idx, event_idx):
 
 class Entity(object):
 
-    """An entity from a Thyme annotation, either an event or a timex."""
+    """An entity from a Thyme annotation, either an event or a timex (note that
+    a timex can be a DOCTIME or SECTIONTIME type)."""
 
     def __init__(self, dom_element):
         self.id = get_simple_value(dom_element, 'id')
@@ -263,6 +271,24 @@ class Relation(object):
     def __str__(self):
         return "<%s id=%s %s(%s,%s)>" % \
             (self.type, self.id, self.RelType, self.Source, self.Target)
+
+
+class LinkID(object):
+
+    """Class to provide fresh identifiers for TLINK tags."""
+
+    # TODO: should probably combine this with TagID in the preprocessor wrapper
+
+    IDENTIFIER = 0
+
+    @classmethod
+    def next(cls):
+        cls.IDENTIFIER += 1
+        return "l%d" % cls.IDENTIFIER
+
+    @classmethod
+    def reset(cls):
+        cls.IDENTIFIER = 0
 
 
 def get_value(entity, attr):
@@ -450,16 +476,15 @@ def _get_tarsqidoc(infile, source, metadata=True):
 
 if __name__ == '__main__':
 
-    long_options = ['convert-timebank', 'convert-thyme',
-                    'convert-ttk-into-html', 'show-links']
+    long_options = ['timebank2ttk', 'thyme2ttk', 'ttk2html', 'show-links']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
-    if '--convert-timebank' in opts:
+    if '--timebank2ttk' in opts:
         convert_timebank(args[0], args[1])
-    elif '--convert-thyme' in opts:
+    elif '--thyme2ttk' in opts:
         limit = 10 if DEBUG else sys.maxint
         convert_thyme(args[0], args[1], args[2], limit)
-    elif '--convert-ttk-into-html' in opts:
+    elif '--ttk2html' in opts:
         limit = 10 if DEBUG else sys.maxint
         showlinks = True if '--show-links' in opts else False
         convert_ttk_into_html(args[0], args[1], showlinks, limit)
