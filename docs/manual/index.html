@@ -37,12 +37,15 @@ addition, it can ensure consistency of temporal information.</p>
 
 <p>The first version of the toolkit, version 1.0, was released in 2007,
 accompanied by many promises and threats that there would be a new version soon,
-this happened to take a decade. Version 2.0.0 differs from version 1.0 in many
+but the release of the next version happened to take a decade. Version 2.0.0 was
+finally released in March 2017 and it differed from version 1.0 in many
 respects: code was simplified and debugged, documentation was updated, the
 Mallet toolkit was used, stand-off annotation was adopted, libraries were
-redesigned, and test and evaluation code was added. However, version 2.0.0 does
+redesigned, and test and evaluation code was added. However, version 2.0.0 did
 not significantly change the toolkit's performance in terms of speed or
-precision and recall.</p>
+precision and recall. A list of changes is maintained in
+the <a href="https://github.com/tarsqi/ttk/blob/master/CHANGELOG.md">changelog</a>
+on GitHub.</p>
 
 
 <a name="prereq"></a>
@@ -134,16 +137,13 @@ Fido sleeps today.
 &lt;tarsqi_tags>
   &lt;docelement id="d1" begin="2" end="20" origin="DOCSTRUCTURE" type="paragraph" />
   &lt;s id="s1" begin="2" end="20" origin="PREPROCESSOR" />
-  &lt;lex id="l1" begin="2" end="6" lemma="Fido" origin="PREPROCESSOR"
-       pos="NNP" text="Fido" />
+  &lt;lex id="l1" begin="2" end="6" lemma="Fido" origin="PREPROCESSOR" pos="NNP" text="Fido" />
   &lt;ng id="c1" begin="2" end="6" origin="PREPROCESSOR" />
-  &lt;lex id="l2" begin="7" end="13" lemma="sleep" origin="PREPROCESSOR"
-       pos="VBZ" text="sleeps" />
+  &lt;lex id="l2" begin="7" end="13" lemma="sleep" origin="PREPROCESSOR" pos="VBZ" text="sleeps" />
   &lt;vg id="c2" begin="7" end="13" origin="PREPROCESSOR" />
   &lt;EVENT begin="7" end="13" aspect="NONE" class="OCCURRENCE" eid="e1" eiid="ei1"
          epos="VERB" form="sleeps" origin="EVITA" pos="VBZ" tense="PRESENT" />
-  &lt;lex id="l3" begin="14" end="19" lemma="today" origin="PREPROCESSOR"
-       pos="NN" text="today" />
+  &lt;lex id="l3" begin="14" end="19" lemma="today" origin="PREPROCESSOR" pos="NN" text="today" />
   &lt;ng id="c3" begin="14" end="19" origin="PREPROCESSOR" />
   &lt;TIMEX3 begin="14" end="19" origin="GUTIME" tid="t1" type="DATE" value="20170113" />
   &lt;lex id="l4" begin="19" end="20" lemma="." origin="PREPROCESSOR" pos="." text="." />
@@ -162,10 +162,8 @@ purposes (TTK output has each tag on one line).</p>
 
 <p><u>A note for Windows users</u>. TTK 1.0 depended on some software that did
 not run on Windows. The current version does not have that problem and the code
-should run on Windows. However, this has not been tested properly yet for TTK
-version 2.0.0 and the above instructions may not be entirely correct for Windows
-(for example, it may be the case that MALLET has to be installed in the top
-level directory of the c: drive).</p>
+should run on Windows. However, this has not been tested properly yet and the
+above instructions may not be entirely correct for Windows.</p>
 
 
 <a name="using"></a>
@@ -440,68 +438,26 @@ relevant.</p>
 
 <h2>7. Future Releases</h2>
 
-<p>The next release of the TTK will most likely not take a decade. First, there
-will be several more minor releases (2.0.1, 2.0.2, etcetera), lopping off
-elements from our short-term wish list, which changes all the time but which
-currently contains:</p>
+<p>To get an idea of what will be in the next release of the Tarsqi Toolkit it
+is best to start with the list of issues
+at <a href="https://github.com/tarsqi/ttk/issues">https://github.com/tarsqi/ttk/issues</a>. Some
+bigger items at the back of our minds include the following:</p>
 
 <ul>
-
-<li>Test code on Windows and update manual accordingly if needed.</li>
-
-<li>Any serious or less serious issues that may pop up, including the following
-already listed on the github repository:
-
-<ul>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/15">
-    issue 15: confirm correctness of character offsets</a>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/19">
-    issue 19: various documentation updates</a></li>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/21">issue 21:
-    test removal of GUTime tmp files</a></li>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/23">
-    issue 23: use confidence scores in merger component</a></li>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/29">
-    issue 29: update old TimeML library in Slinket</a></li>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/32">
-    issue 32: fix bug with duplicate attribute</a></li>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/37">
-    issue 37: clarify preprocessor modules</a></li>
-<li>
-  <a href="https://github.com/tarsqi/ttk/issues/38">
-    issue 38: fix missing link identifiers</a></li>
-</ul>
-</li>
-
-<li>Add a --dct command line option</li>
-
-<li>Add documentation on how to test and evaluate components</li>
-
-</ul>
-
-<p>For the longer run, the following items are on the agenda:</P>
-
-<ul>
-
-<li>Any other issue listed
-on <a href="https://github.com/tarsqi/ttk/issues">https://github.com/tarsqi/ttk/issues</a></li>
 
 <li>Add reference intervals to the temporal closure code, which should reduce
 time complexity. Consider implementing parts in C or Java.</li>
 
-<li>Finish implementation of BTime.</li>
+<li>Finish implementation of BTime, the new Tarsqi component for recognizing
+temporal expressions (not included in this repository). BTime use an Early
+algorith for recognizing time expressions. Currently its recall is too low due
+to having a small grammar. It will not replace GUTime untill it outperforms
+GUTime.</li>
 
 <li>Revisit the rules in Blinker. May include revisiting old GutenLink rules.</li>
 
-<li>Hook up the toolkit to other pre-processing components (for example the NLTK
-toolkit and HeidelTime).</li>
+<li>Hook up the toolkit to other processing components (most notably
+HeidelTime).</li>
 
 <li>Add browsers and editors for the dictionaries and pattern sets.</li>
 

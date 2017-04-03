@@ -24,7 +24,7 @@ function view_code(id) {
 <pre>
 Python wrapper around the merging code.
 
-Calls SputLink's ConstraintPropagator do do all the work. For now does not do
+Calls SputLink's ConstraintPropagator to do all the work. For now does not do
 any graph reduction at the end.
 
 TODO:
@@ -33,9 +33,10 @@ TODO:
   links. We could add the disjunctive links as well. Or we could not take
   inverse relations. Or we could reduce the graph to a minimal graph.
 
-- We now give all links, but they are not ordered. For the merging routine to be
-  fully effective we should rank the TLINKs in terms of how likely they are to
-  be correct.</pre>
+- We now put all links on the queue and order them in a rather simplistic way,
+  where we have S2T &lt; Blinker &lt; Classifier, and classifier are ordered use the
+  classifier-assigned confidence scores. For the merging routine to be better we
+  should let the ranking be informed by hard evaluation data.</pre>
 
 
 <a name="MergerWrapper"/><div class="section">class MergerWrapper</div>
@@ -65,6 +66,12 @@ the final constraints in the graph used by the constraint propagator.</pre>
 </blockquote>
 
 <div class="section">module functions</div>
+<pre>
+<div class=function>compare_links(link1, link2)</div>
+Compare the two links and decide which one of them is more likely to be
+correct. Rather primitive for now. We consider S2T links the best, then links
+derived by Blinker, then links derived by the classifier. Classifier links
+themselves are ordered using their classifier-assigned confidence scores.</pre>
 <pre>
 <div class=function>tlink_arg1_attr(identifier)</div>
 Return the TLINK attribute for the element linked given the identifier.</pre>

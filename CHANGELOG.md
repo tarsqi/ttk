@@ -1,0 +1,34 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+
+The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). Loosely because we do not keep separate sections within a version for additions and fixes etcetera, instead each logged change will start with one of Added, Changed, Deprecated, Removed, Fixed, or Security.
+
+This project tries to adhere to [Semantic Versioning](http://semver.org/).
+
+
+## Version 2.0.1 - 2017-04-02
+
+- Added links to Tarsqi publications to the manual.
+- Added use of confidence scores to LinkMerger (issue #23).
+- Fixed bug where TTK created output with duplicate attributes (issue #32).
+- Fixed issue with missing link identifiers (issue #38).
+- Fixed bug where duplicate links were created by S2T component.
+- Removed some completely out-of-date or irrelevant documentation and notes.
+
+
+## Version 2.0.0 - 2017-03-27
+
+A complete reset of the Tarsqi code. The most significant changes are:
+
+- Massive simplification of many components.
+- New and updated documentation.
+- Use Mallet toolkit instead of the old classifier.
+- Uses stand-off annotation thoughout instead of inleine XML.
+- Redesigned libraries.
+- New test and evaluation code.
+
+
+## Version 1.0 - 2007-11-15
+
+First released version. Basically a wrapper around a series of components that were not released before individually.
