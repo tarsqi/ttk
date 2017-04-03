@@ -2,12 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). Loosely because we do not keep separate sections within a version for additions and fixes etcetera, instead each logged change will start with one of Added, Changed, Deprecated, Removed, Fixed, or Security.
+The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). Loosely because we do not keep separate sections within a version for additions and fixes etcetera, instead most logged changes will start with one of Added, Changed, Deprecated, Removed, Fixed, or Security.
 
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
-## Version 2.0.1 - 2017-04-02
+## Version 2.0.1 - 2017-04-03
 
 - Added links to Tarsqi publications to the manual.
 - Added use of confidence scores to LinkMerger (issue #23).
@@ -24,7 +24,7 @@ A complete reset of the Tarsqi code. The most significant changes are:
 - Massive simplification of many components.
 - New and updated documentation.
 - Use Mallet toolkit instead of the old classifier.
-- Uses stand-off annotation thoughout instead of inleine XML.
+- Uses stand-off annotation thoughout instead of inline XML.
 - Redesigned libraries.
 - New test and evaluation code.
 
