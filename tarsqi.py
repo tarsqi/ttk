@@ -34,6 +34,12 @@ USAGE
           Comma-separated list of Tarsqi components, defaults to the full
           pipeline minus the link merger.
 
+      --dct VALUE
+          Use this to hand a document creation time (DCT) to the main
+          script. The value is a normalized date expression like 20120830 for
+          August 30th 2012. If this option is not used then the DCT will be
+          determined by metadata parser that is defined for the input source.
+
       --pipe True|False
           With this option set to True the script reads input from the standard
           input and writes output to standard output. The default is False.
@@ -137,10 +143,7 @@ class Tarsqi:
         self.input = infile
         self.output = outfile
         self.basename = _basename(infile) if infile else None
-        if isinstance(opts, Options):
-            self.options = opts
-        else:
-            self.options = Options(opts)
+        self.options = opts if isinstance(opts, Options) else Options(opts)
         self.tarsqidoc = TarsqiDocument()
         self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
@@ -245,6 +248,7 @@ class Options(object):
         # put options in instance variables for convenience, this is not done
         # for those options from config.txt that are user-specific
         self.source = self.getopt('source')
+        self.dct = self.getopt('dct')
         self.pipeline = self.getopt('pipeline')
         self.pipe = self.getopt('pipe', False)
         self.loglevel = self.getopt('loglevel')
@@ -306,7 +310,7 @@ def _read_arguments(args):
     """Read the list of arguments given to the tarsqi.py script.  Return a tuple
     with two elements: processing options dictionary, and remaining arguments
     (input path and output path)."""
-    options = ['source=', 'pipeline=', 'trap-errors=', 'loglevel=',
+    options = ['source=', 'dct=', 'pipeline=', 'trap-errors=', 'loglevel=',
                'pipe=', 'perl=', 'treetagger=', 'import-event-tags=',
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
