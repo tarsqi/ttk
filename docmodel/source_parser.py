@@ -145,8 +145,8 @@ class SourceParserTTK(SourceParser):
         name = node.tagName
         o1 = node.getAttribute('begin')
         o2 = node.getAttribute('end')
-        o1 = int(o1) if o1 is not None else -1
-        o2 = int(o2) if o2 is not None else -1
+        o1 = int(o1) if o1 else -1
+        o2 = int(o2) if o2 else -1
         attrs = dict(node.attributes.items())
         attrs = dict([(k, v) for (k, v) in attrs.items()
                       if k not in ('begin', 'end')])
