@@ -377,7 +377,7 @@ def _create_event_tag(event_id, event):
     feats = { 'class': event['class'],
               'eid': 'e' + event_id,
               'eiid': 'ei' + event_id }
-    return Tag(None, 'EVENT', event['start'], event['end'], feats)
+    return Tag('EVENT', event['start'], event['end'], feats)
 
 
 ### CONVERTING TTK INTO HTML
@@ -483,7 +483,7 @@ def _get_links(tarsqidoc):
                  or link.attrs.get('subordinatedEventInstance')
         if source is None: print "WARNING, no source for", link
         if target is None: print "WARNING, no target for", link
-        links.setdefault(source, []).append([link.id, source,
+        links.setdefault(source, []).append([link.attrs['lid'], source,
                                              link.attrs['relType'], target])
     return links
 
@@ -514,12 +514,13 @@ def _write_event_close(event, fh, showlinks):
 def _write_closing_tags(idx, count, tagname, fh, showlinks):
     entities = idx['close'][count]
     for entity in reversed(entities):
-        # events often have no id defined, try the eid
-        identifier = entity.id or entity.attrs.get('eid')
+        # for an identifier try the eid or tid
+        identifier = entity.attrs.get('eid') or entity.attrs.get('tid')
         if showlinks:
             fh.write("<sup>%s:%s</sup></%s>]" % (identifier, entity.begin, tagname))
         else:
-            fh.write("<sup>%s</sup></%s>]" % (identifier, tagname))
+            #fh.write("<sup>%s</sup></%s>]" % (identifier, tagname))
+            fh.write("<sup>%s</sup></%s>]" % (entity.begin, tagname))
 
 
 def _write_opening_tags(idx, count, tagname, fh):
@@ -565,13 +566,13 @@ def _get_tarsqidoc(infile, source, metadata=True):
 if __name__ == '__main__':
 
     long_options = ['timebank2ttk', 'thyme2ttk', 'ttk2html',
-                    'knowtator2ttk', 'show-links']
+                    'knowtator2ttk', 'tarsqi', 'show-links']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
+    limit = 10 if DEBUG else sys.maxint
     if '--timebank2ttk' in opts:
         convert_timebank(args[0], args[1])
     elif '--thyme2ttk' in opts:
-        limit = 10 if DEBUG else sys.maxint
         convert_thyme(args[0], args[1], args[2], limit)
     elif '--knowtator2ttk' in opts:
         tarsqi_tags = True if '--tarsqi' in opts else False
