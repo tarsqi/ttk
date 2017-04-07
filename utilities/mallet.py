@@ -80,11 +80,11 @@ def classify_command(mallet, vectors, model):
     regexp = "--line-regex \"^(\S*)[\s,]*(\S*)[\s]*(.*)$\""
     regexp = "--line-regex \"^(\S*)[\s]*(\S*)[\s]*(.*)$\""
     name_and_data = "--name 1 --data 3"
-    vectors_in = "--input %s" % vectors
-    classifier = "--classifier %s" % model
+    vectors_in = "--input '%s'" % vectors
+    classifier = "--classifier '%s'" % model
     output = '--output -'
-    stdout = "%s.out" % vectors
-    stderr = "%s.err" % vectors
+    stdout = "'%s.out'" % vectors
+    stderr = "'%s.err'" % vectors
     scriptname = os.path.join(mallet, 'bin', mallet_script)
     if not os.path.isfile(scriptname):
         logger.error("Cannot find %s" % scriptname)
@@ -183,6 +183,7 @@ class MalletClassifier(object):
 
     def _pipe_command(self, classifier):
         """Assemble the classifier command for use in a pipe."""
+        # TODO: when testing this make sure you allow spaces in the classifier path
         return "sh %s classify-file --input - --output - --classifier %s" \
             % (self.mallet, classifier)
 
