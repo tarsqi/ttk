@@ -7,6 +7,14 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). L
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
+## Version 2.0.2 - 2017-04-09
+
+- Fixed bug where id attributes were added to source tags (issue #56)
+- Fixed bug where directory names could not have spaces in them (issue #42)
+- Added explanation on unintuitive character offsets of docelement (issue #15)
+- Changed how Tag instances are created, which used to be somewhat inconsistent.
+
+
 ## Version 2.0.1 - 2017-04-03
 
 - Added links to Tarsqi publications to the manual.

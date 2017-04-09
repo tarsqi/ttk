@@ -48,7 +48,7 @@ Like Tag, but self.begin and self.attrs are always None.</pre>
 <blockquote>
 <h3>Public Functions</h3>
 <pre>
-<div class=function>__init__(self, id, name, offset)</div>
+<div class=function>__init__(self, name, offset)</div>
 </pre>
 <pre>
 <div class=function>__str__(self)</div>
@@ -67,7 +67,7 @@ Like Tag, but self.end is always None.</pre>
 <blockquote>
 <h3>Public Functions</h3>
 <pre>
-<div class=function>__init__(self, id, name, offset, attrs)</div>
+<div class=function>__init__(self, name, offset, attrs)</div>
 </pre>
 <pre>
 <div class=function>__str__(self)</div>
@@ -141,13 +141,13 @@ Print the source string to a file, using the utf-8 encoding.</pre>
 <a name="Tag"/><div class="section">class Tag</div>
 <pre>
 
-A Tag has a name, an id, a begin offset, an end offset and a dictionary
-of attributes. The id is handed in by the code that creates the Tag which
-could be: (1) the code that parses the source document, in which case
-identifiers are numbered depending on text position, (2) the preprocessor
-code, which assigns identifiers for lex, ng, vg and s tags, or (3) one of
-the components that creates tarsqi tags, in which case the identifier is
-None because special identifiers like eid, eiid, tid and lid are used.</pre>
+A Tag has a name, an id, a begin offset, an end offset and a dictionary of
+attributes. The id is handed in by the code that creates the Tag which could
+be: (1) the code that parses the source document, which will only assign an
+identifier if the source had an id attribute, (2) the preprocessor code,
+which assigns identifiers for lex, ng, vg and s tags, or (3) one of the
+components that creates tarsqi tags, in which case the identifier is None,
+but special identifiers like eid, eiid, tid and lid are used.</pre>
 
 <blockquote>
 <h3>Public Functions</h3>
@@ -159,9 +159,9 @@ equal begins the tag with the higher end will be ranked first. Tags with
 no begin (that is, it is set to -1) will be ordered at the end. The
 order of two tags with the same begin and end is undefined.</pre>
 <pre>
-<div class=function>__init__(self, identifier, name, o1, o2, attrs)</div>
-Initialize id, name, begin, end and attrs instance variables and make
-sure that what we have can be turned into valid XML by removing duplicate
+<div class=function>__init__(self, name, o1, o2, attrs)</div>
+Initialize name, begin, end and attrs instance variables and make sure
+that what we have can be turned into valid XML by removing duplicate
 attribute names.</pre>
 <pre>
 <div class=function>__str__(self)</div>
@@ -188,10 +188,10 @@ Return a string representation of the attributes dictionary.</pre>
 <a name="TagRepository"/><div class="section">class TagRepository</div>
 <pre>
 
-Class that provides access to the tags for a document. An instance of
-this class is used for the DocSource instance, other instances will be used
-for the elements in a TarsqiDocument. For now, the repository has the
-following structure:
+Class that provides access to the tags for a document. An instance of this
+class is used for the DocSource instance, other instances will be used for
+the elements in a TarsqiDocument. For now, the repository has the following
+structure:
 
 self.tmp
    A list of OpeningTag and ClosingTag elements, used only to build the tags
@@ -224,10 +224,6 @@ self.closing_tags
 Add a tag to the tags list and the opening_tags and closing_tags
 dictionaries.</pre>
 <pre>
-<div class=function>add_tag_with_id(self, name, identifier, begin, end, attrs)</div>
-Add a tag to the tags list and the opening_tags and closing_tags
-dictionaries.</pre>
-<pre>
 <div class=function>add_tmp_tag(self, tagInstance)</div>
 Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
 handlers.</pre>
@@ -255,7 +251,7 @@ Return the list of tags which start at begin_offset.</pre>
 <pre>
 <div class=function>import_tags(self, tag_repository, tagname)</div>
 Import all tags with name=tagname from tag_repository into self. This
-is moslty used when we want to take tags from the SourceDoc and add them
+is mostly used when we want to take tags from the SourceDoc and add them
 to the tags on the TarsqiDocument.</pre>
 <pre>
 <div class=function>index(self)</div>
