@@ -389,14 +389,14 @@ class VerbChunk(Chunk):
                 if not vcf.isAuxVerb():
                     self._conditionallyAddEvent(vcf)
             if not self.isNotEventCandidate(vcf_list[-1]):
-                self._createEventOnRightmostVerb(vcf_list[-1])
+                self._createEventOnRightmostVerb(vcf_list[-1], imported_events)
 
-    def _createEventOnRightmostVerb(self, features):
+    def _createEventOnRightmostVerb(self, features, imported_events=None):
         next_node = self.next_node()
         if features.is_modal() and next_node:
             self._createEventOnModal()
         elif features.is_be() and next_node:
-            self._createEventOnBe(features)
+            self._createEventOnBe(features, imported_events)
         elif features.is_have():
             self._createEventOnHave(features)
         elif features.is_future_going_to():
@@ -427,12 +427,12 @@ class VerbChunk(Chunk):
             self.dribble("MODAL", self.getText())
             self._processEventInMultiVChunk(substring)
 
-    def _createEventOnBe(self, features):
+    def _createEventOnBe(self, features, imported_events=None):
         logger.debug("Checking for BE + NOM Predicative Complement...")
         substring = self._lookForMultiChunk(patterns.BE_N_FSAs, 'chunked')
         if substring:
             self.dribble("BE-NOM", self.getText())
-            self._processEventInMultiNChunk(features, substring)
+            self._processEventInMultiNChunk(features, substring, imported_events)
         else:
             logger.debug("Checking for BE + ADJ Predicative Complement...")
             substring = self._lookForMultiChunk(patterns.BE_A_FSAs, 'chunked')
@@ -596,9 +596,9 @@ class VerbChunk(Chunk):
         self._conditionallyAddEvent(GramMultiVChunk)
         map(update_event_checked_marker, substring)
 
-    def _processEventInMultiNChunk(self, features, substring):
+    def _processEventInMultiNChunk(self, features, substring, imported_events):
         nounChunk = substring[-1]
-        nounChunk.createEvent(features)
+        nounChunk.createEvent(features, imported_events)
         map(update_event_checked_marker, substring)
 
     def _processEventInMultiAChunk(self, features, substring):

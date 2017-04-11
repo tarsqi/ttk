@@ -158,7 +158,6 @@ class Sentence:
                 break
             tag = self.sentence[idx]
         final_tag = self.sentence[idx-1]
-        print final_tag
         if (end_idx > -1) and (final_tag[4] == term.end):
             # constituent found, set tags and return index after end
             pos = final_tag[1]
@@ -247,6 +246,10 @@ class Sentence:
         self._fix_VBGs()
 
         # other candidates:
+        #
+        #   [JJ NN VBG NNS] ==> [JJ NN] [VBG NNS]
+        #   eg: early pneumonia pending cultures
+        #   this would also be fixed when using NG_ORDER
         #
         #   [DT NN DT NN] ==> [DT NN] [DT NN]
         #   (not needed any more, DT is never inside an NG)

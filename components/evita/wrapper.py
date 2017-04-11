@@ -10,11 +10,12 @@ from components.evita.main import Evita
 
 # Set this to True if you want to do a simplistic evaluation of how many of the
 # events that should be imported actually are imported.
-EVALUATE_EVENT_IMPORT = True
+EVALUATE_EVENT_IMPORT = False
 
 
 class EvitaWrapper:
-    """Wrapper for Evita. """
+
+    """Wrapper for Evita."""
 
     def __init__(self, document):
         """Sets instance variables."""
@@ -27,6 +28,7 @@ class EvitaWrapper:
         approach that assumes that all document elements are processed the same
         way."""
         imported_events = self._import_events()
+        _pp_imported_events(imported_events)
         for element in self.document.elements():
             Evita(self.document, element, imported_events).process_element()
         if self.document.options.import_event_tags and EVALUATE_EVENT_IMPORT:
@@ -74,3 +76,12 @@ class EvitaWrapper:
             percentage = imported * 100 / len(events_key)
             print "\n\nEVENTS TO BE IMPORTED:  %3s" % len(events_key)
             print "FOUND BY SYSTEM:        %3s (%s%%)\n" % (imported, percentage)
+
+
+def _pp_imported_events(imported_events):
+    fh = open("tmp-imported-events.txt", 'w')
+    fh.write("LENGTH: %s\n\n" % len(imported_events))
+    for offset in sorted(imported_events.keys()):
+        fh.write("%s %s-%s\n" % (offset,
+                                 imported_events[offset].begin,
+                                 imported_events[offset].end))
