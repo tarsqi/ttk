@@ -507,8 +507,9 @@ class Viewer(object):
         counterpart on the other side then it will be in a pair with None."""
         gold = [EntityAnnotation(k, v) for k, v in self.gold_tags.items()]
         system = [EntityAnnotation(k, v) for k, v in self.system_tags.items()]
-        gold.sort()
-        system.sort()
+        # Removing duplicates also sorts the annotations
+        gold = self._remove_duplicates(gold)
+        system = self._remove_duplicates(system)
         self.alignments = []
         while gold or system:
             if not gold:
@@ -523,6 +524,18 @@ class Viewer(object):
                 self.alignments.append(Alignment(self, None, system.pop(0)))
             else:
                 exit("ERROR: no option available, infinite loop starting...")
+
+    @staticmethod
+    def _remove_duplicates(annotations):
+        """This is to remove duplicates from the annotations. The reason why
+        this was put in is that with tag import there are cases when an imported
+        tag spans two chunks and it will be imported into each chunk. This needs
+        to be fixed in the tag import of course, but in th emean time we do not
+        want it dilute results here. The result is sorted on text position."""
+        tmp = {}
+        for annotation in sorted(annotations):
+            tmp[annotation.offsets()] = annotation
+        return sorted(tmp.values())
 
     def _display_aligned_tags(self):
         # NOTE: when we run this we are in the ttk directory, even though we
@@ -582,12 +595,16 @@ class Viewer(object):
     def _display_legend(self, fh):
         def img(src): return '<img src="icons/%s.png" height=20>' % src
         fh.write("<table class=scores cellpadding=8 cellspacing=0 border=1>\n")
-        HTML.row(fh, [img("check-green"), 'exact match'])
-        HTML.row(fh, [img("check-orange"), 'partial match'])
+        em = len([a for a in self.alignments if a.status == EXACT_MATCH])
+        pm = len([a for a in self.alignments if a.status == PARTIAL_MATCH])
+        fp = len([a for a in self.alignments if a.status == NO_MATCH_FP])
+        fn = len([a for a in self.alignments if a.status == NO_MATCH_FN])
+        HTML.row(fh, [img("check-green"), 'exact match', em])
+        HTML.row(fh, [img("check-orange"), 'partial match', pm])
         HTML.row(fh, [img('cross-red') + 'p',
-                      'mismatch, false positive (precision error)'])
+                      'mismatch, false positive (precision error)', fp])
         HTML.row(fh, [img('cross-red') + 'r',
-                      'mismatch, false negative (recall error)'])
+                      'mismatch, false negative (recall error)', fn])
         fh.write("</table>\n")
         icons = { EXACT_MATCH: img('check-green'),
                   PARTIAL_MATCH: img('check-orange'),
@@ -607,6 +624,9 @@ class EntityAnnotation(object):
     def __init__(self, offsets, attrs):
         self.begin = offsets[0]
         self.end = offsets[1]
+        # we keep these around so we can use them for sorting
+        self.begin_head = self.begin
+        self.end_head = self.end
         self.attrs = attrs
         full_range = self.attrs.get('full-range')
         if full_range is not None:
@@ -620,13 +640,21 @@ class EntityAnnotation(object):
 
     def __cmp__(self, other):
         begin_cmp = cmp(self.begin, other.begin)
-        return cmp(self.end, other.end) if begin_cmp == 0 else begin_cmp
+        if begin_cmp != 0:
+            return begin_cmp
+        end_cmp = cmp(self.end, other.end)
+        if end_cmp != 0:
+            return end_cmp
+        return cmp(self.begin_head, other.begin_head)
 
     def overlaps_with(self, other):
         return not (self.end <= other.begin or other.end <= self.begin)
 
     def has_same_span(self, other):
         return self.begin == other.begin and self.end == other.end
+
+    def offsets(self):
+        return (self.begin, self.end)
 
 
 class Alignment(object):
@@ -745,7 +773,8 @@ class HTML(object):
     def row(self, fh, elements):
         fh.write("<tr>\n")
         for e in elements:
-            fh.write("   <td>%s\n" % e)
+            align = ' align=right' if isinstance(e, int) else ''
+            fh.write("   <td%s>%s\n" % (align, e))
         fh.write("</tr>\n")
 
 
