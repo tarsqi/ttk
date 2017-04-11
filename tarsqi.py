@@ -450,7 +450,8 @@ def load_ttk_document(fname, loglevel=2, trap_errors=False):
     parser, metadata parser and the document structure parser. Used by the
     evaluation code."""
     # For now, we are skipping the link merger because it is too slow on some of
-    # the timebank documents
+    # the timebank documents, note that we want to define a pipeline because we
+    # may want to use the Tarsqi instance to run the pipeline.
     pipeline = "PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"
     opts = [('--source', 'ttk'), ('--pipeline', pipeline),
             ('--loglevel',  str(loglevel)), ('--trap-errors', str(trap_errors))]
