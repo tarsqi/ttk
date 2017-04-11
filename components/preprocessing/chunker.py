@@ -13,6 +13,17 @@ docmodel.document.Tag.
 
 """
 
+# TODO
+#
+# For the chunks derived from terms We might want to consider adding all terms
+# from all offsets and then merging them afterwards. So if we have an NG chunk
+# from 1-3 and there is a term from 2-4, then we add 1-4 (now we only add
+# 1-3). This would be a more global change that is not restricted to the
+# _consume_term() method.
+#
+# For more details see https://github.com/tarsqi/ttk/issues/63.
+
+
 from types import StringType
 
 from utilities import logger
@@ -93,11 +104,12 @@ class Sentence:
         self.chunk_tags = {'b': {}, 'e': {}}
 
     def chunk(self, terms=None):
-        """Chunk self.sentence. Updates the variable and returns it. Scans through
-        the sentence and advances the index if a chunk is found. The optional
-        terms argument contains a dictionary of terms indexed on start offset. If
-        a terms dictionary is handed in then use it to make sure that terms on it
-        are considered chunks (as long as they are headed by a noun or verb)."""
+        """Chunk self.sentence. Updates the variable and returns it. Scans
+        through the sentence and advances the index if a chunk is found. The
+        optional terms argument contains a dictionary of terms indexed on start
+        offset. If a terms dictionary is handed in then use it to make sure that
+        terms on it are considered chunks (as long as they are headed by a noun
+        or verb)."""
         idx = 0
         while idx < len(self.sentence) - 1:
             tag = self.sentence[idx][1]
@@ -133,15 +145,12 @@ class Sentence:
 
 
     def _consume_term(self, term, idx):
-        """Now that we now that a term starts at index idx, read the whole term and, if
-        it matches a few requirements, add it to the chunk_tags dictionary."""
-        # TODO: We might want to consider adding all terms from all offsets and
-        # then merging them afterwards, so if we have a term found by lookup from
-        # 1-3 and another by ng from 2-4, then we add 1-4 (now we only add 1-3).
+        """Now that we now that a term starts at index idx, read the whole term
+        and, if it matches a few requirements, add it to the chunk_tags
+        dictionary. A term is an instance of docmodel.document.Tag."""
         begin_idx = idx
         end_idx = -1
         tag = self.sentence[idx]
-        # a term is an instance of docmodel.document.Tag
         while term.begin <= tag[3] < term.end:
             end_idx = idx
             idx += 1
@@ -149,6 +158,7 @@ class Sentence:
                 break
             tag = self.sentence[idx]
         final_tag = self.sentence[idx-1]
+        print final_tag
         if (end_idx > -1) and (final_tag[4] == term.end):
             # constituent found, set tags and return index after end
             pos = final_tag[1]
@@ -278,13 +288,18 @@ class Sentence:
                 return token[2] != 'be'
             else:
                 return token[0] not in ('is', 'am', 'are')
-        # TODO: this seems a bit brittle, but it does not appear to break
-        return (not_be(self.sentence[idx])
-                and self.sentence[idx][1] in ('VBP', 'VBZ', 'VBD', 'VB')
-                and self.sentence[idx+1][1] == 'VBG'
-                and self.sentence[idx+2] == '</vg>'
-                and self.sentence[idx+3] == '<ng>'
-                and self.sentence[idx+4][1] in ('NN', 'NNS', 'NNP', 'NNPS'))
+        try:
+            # this should not throw errors due to the test done before calling
+            # this method, but check anyway
+            return (not_be(self.sentence[idx])
+                    and self.sentence[idx][1] in ('VBP', 'VBZ', 'VBD', 'VB')
+                    and self.sentence[idx+1][1] == 'VBG'
+                    and self.sentence[idx+2] == '</vg>'
+                    and self.sentence[idx+3] == '<ng>'
+                    and self.sentence[idx+4][1] in ('NN', 'NNS', 'NNP', 'NNPS'))
+        except IndexError:
+            logger.warn("Unexpected index error")
+            return False
 
     def pp_tokens(self):
         for e in self.sentence:
