@@ -67,6 +67,8 @@ class Logger:
     def __init__(self, filename, level=2):
         """Set logging level and the log file."""
         self.level = level
+        self.errors = 0
+        self.warnings = 0
         self.html_file = open(filename + '.html', 'w')
         self.html_file.write("<html>\n")
         self.html_file.write("<head>\n<style>\n")
@@ -104,12 +106,14 @@ def info(string):
 def warn(string):
     """Print a warning to the log file."""
     if logger.level > 1:
+        logger.warnings += 1
         _log('WARNING', string)
 
 
 def error(string):
     """Print an error to the log file, also print it to standard error."""
     if logger.level > 0:
+        logger.errors += 1
         sys.stderr.write('ERROR: ' + string + "\n")
         _log('ERROR', string)
 
@@ -118,6 +122,14 @@ def write(string):
     """Print a string to the log file, no matter what the logging
     level. This will be printed as an INFO string"""
     _log('INFO', string)
+
+
+def report():
+    if logger.warnings or logger.errors:
+        print "\nWARNING"
+        print "   %s errors and %s warnings were reported" \
+            % (logger.errors, logger.warnings)
+        print "   see data/logs/ttk_log.html for details\n"
 
 
 def _log(message_type, log_string):
@@ -155,8 +167,8 @@ def _log(message_type, log_string):
 
 
 def set_stdout_printing(Boolean):
-    """When this function is called, the out and outnl methods will
-    not print to the output. """
+    """When this function is called, the out and outnl methods will print or not
+    print to the standard output, depending on the boolean value."""
     global STDOUT_PRINTING
     STDOUT_PRINTING = Boolean
 

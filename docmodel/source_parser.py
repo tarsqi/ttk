@@ -249,7 +249,7 @@ class SourceParserXML(SourceParser):
         """Handle character data by asking the SourceDocument to add the
         data. This will not necesarily add a contiguous string of character data
         as one data element. This should include ingnorable whtespace, but see
-        the comment in the method below, I apparantly had reason t think
+        the comment in the method below, I apparently had reason to think
         otherwise."""
         self._debug('chars', len(string), string)
         self.sourcedoc.add_characters(string)

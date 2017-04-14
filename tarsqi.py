@@ -24,11 +24,13 @@ USAGE
           The source of the file; this reflects the source type of the document
           and allows components, especially the source parser and the metadata
           parser, to be sensitive to idiosyncratic properties of the text (for
-          example, the location of the DCT and the format of the text). The
-          source type is xml by default, other general source types are text and
-          ttk. There are four more types that can be used to process the more
-          specific sample data in data/in: timebank for data/in/TimeBank, atee
-          for data/in/ATEE, rte3 for data/in/RTE3 and db for data/in/db.
+          example, the location of the DCT and the format of the text). If this
+          option is not specified then the system will try to guess one of
+          'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
+          for the first two cases. There are four more types that can be used to
+          process the more specific sample data in data/in: timebank for
+          data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
+          for data/in/db.
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
@@ -82,11 +84,11 @@ USAGE
 
 VARIABLES:
 
-   TTK_ROOT - the TTK directory
-   CONFIG - file with user settings
-   COMPONENTS - dictionary with all Tarsqi components
-   USE_PROFILER - a boolean determining whether the profiler is used
-   PROFILER_OUTPUT - file that profiler statistics are written to
+   TTK_ROOT         -  the TTK directory
+   CONFIG_FILE      -  file with user settings
+   COMPONENTS       -  dictionary with all Tarsqi components
+   USE_PROFILER     -  a boolean determining whether the profiler is used
+   PROFILER_OUTPUT  -  file that profiler statistics are written to
 
 """
 
@@ -95,6 +97,7 @@ import sys, os, time, types, getopt
 import root
 from components import COMPONENTS
 from docmodel.document import TarsqiDocument
+from docmodel.main import guess_source
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
@@ -102,7 +105,7 @@ from utilities import logger
 from utilities.file import read_config
 
 TTK_ROOT = os.environ['TTK_ROOT']
-CONFIG = os.path.join(TTK_ROOT, 'config.txt')
+CONFIG_FILE = os.path.join(TTK_ROOT, 'config.txt')
 USE_PROFILER = False
 PROFILER_OUTPUT = 'profile.txt'
 
@@ -144,16 +147,21 @@ class Tarsqi:
         self.output = outfile
         self.basename = _basename(infile) if infile else None
         self.options = opts if isinstance(opts, Options) else Options(opts)
+        if self.options.source is None:
+            self.options.set_source(guess_source(self.input))
         self.tarsqidoc = TarsqiDocument()
         self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
         self.tmp_data = os.path.join(TTK_ROOT, 'data', 'tmp')
         self.components = COMPONENTS
+        self._initialize_parsers()
+        self.pipeline = self._create_pipeline()
+
+    def _initialize_parsers(self):
         self.source_parser = create_source_parser(self.options)
         self.metadata_parser = create_metadata_parser(self.options)
         self.docstructure_parser = create_docstructure_parser()
-        self.pipeline = self._create_pipeline()
 
     def process_document(self):
         """Parse the source with the source parser, the metadata parser and the
@@ -236,17 +244,26 @@ class Options(object):
 
     """A class to keep track of all the options. Options can be accessed with the
     getopt() method, but standard options are also accessable directly through
-    the following instance variables: source, pipeline, loglevel, trap_errors,
-    perl, treetagger, mallet, classifier, ee_model and et_model. There is no
-    instance variable access for user-defined options in the config.txt file."""
+    the following instance variables: source, dct, pipeline, pipe, loglevel,
+    trap_errors, import_event_tags, perl, mallet, treetagger, classifier,
+    ee_model and et_model. There is no instance variable access for user-defined
+    options in the config.txt file."""
+
+    # NOTE. This class is intended to be mostly read-only where values are
+    # typically not changed after initialization. The only current exception is
+    # the source attribute, which is set later if the value is None. We use the
+    # set_source() method for setting it so that the value is updated in both
+    # places.
 
     def __init__(self, options):
-        """Initialize options from the config file and the options handed in to the
-        tarsqi script."""
-        self._read_options(CONFIG, options)
-        self._massage_options()
-        # put options in instance variables for convenience, this is not done
-        # for those options from config.txt that are user-specific
+        """Initialize options from the config file and the options handed in to
+        the tarsqi script. Put known options in instance variables."""
+        self._initialize_options(options)
+        # Put options in instance variables for convenience, this is not done
+        # for those options from config.txt that are user-specific. Note that
+        # due to naming rules for attributes options with a hyphen (like
+        # trap-errors) are spelled with an underscore instead when they are
+        # instance variables.
         self.source = self.getopt('source')
         self.dct = self.getopt('dct')
         self.pipeline = self.getopt('pipeline')
@@ -261,20 +278,21 @@ class Options(object):
         self.ee_model = self.getopt('ee-model')
         self.et_model = self.getopt('et-model')
 
-    def _read_options(self, CONFIG, options):
-        """Read options from config file and command line options."""
-        self._options = read_config(CONFIG)
-        for (option, value) in options:
+    def _initialize_options(self, command_line_options):
+        """Read options from the config file and the command line. Also loops
+        through the options dictionary and replace some of the strings with other
+        objects: replace 'True' with True, 'False' with False, 'None' with None
+        and strings indicating an integer with that integer. Also, for the
+        --mallet and --treetagger options, which are known to be paths, replace
+        the value with the absolute path."""
+        self._options = {}
+        config_file_options = read_config(CONFIG_FILE)
+        for opt, val in config_file_options.items():
+            self._options[opt] = val
+        for (option, value) in command_line_options:
             self._options[option[2:]] = value
-
-    def _massage_options(self):
-        """Loop through the options dictionary and replace some of the strings
-        with other objects: replace 'True' with True, 'False' with False, and
-        strings indicating an integer with that integer. Also, for the --mallet
-        and --treetagger options, which are known to be paths, replace the value
-        with the absolute path."""
         for (attr, value) in self._options.items():
-            if value in ('True', 'False') or value.isdigit():
+            if value in ('True', 'False', 'None') or value.isdigit():
                 self._options[attr] = eval(value)
             elif attr in ('mallet', 'treetagger'):
                 if os.path.isdir(value):
@@ -294,7 +312,21 @@ class Options(object):
         """Return the option, use None as default."""
         return self._options.get(option_name, default)
 
+    def set_source(self, value):
+        """Sets the source value, both in the dictionary and the instance
+        variable."""
+        self.set_option('source', value)
+
+    def set_option(self, opt, value):
+        """Sets the value of opt in self._options to value. If opt is also
+        expressed as an instance variable then change that one as well."""
+        self._options[opt] = value
+        adjusted_opt = opt.replace('-', '_')
+        if hasattr(self, adjusted_opt):
+            setattr(self, adjusted_opt, value)
+
     def pp(self):
+        # TODO: this fails to print pipe and trap-errors
         print "OPTIONS:"
         for option in sorted(self._options.keys()):
             print "   %-18s  -->  %s" % (option, self._options[option])
@@ -323,7 +355,7 @@ def _read_arguments(args):
 
 def _usage_string():
     return "Usage:\n" + \
-        "   % python tarsqi.py [OPTIONS] --pipe\n" + \
+        "   % python tarsqi.py [OPTIONS] --pipe True\n" + \
         "   % python tarsqi.py [OPTIONS] INPUT OUTPUT\n" + \
            "See tarsqy.py and docs/manual for more details"
 
@@ -388,6 +420,7 @@ class TarsqiWrapper(object):
         else:
             raise TarsqiError('Invalid input')
         logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
+        logger.report()
 
     def _run_tarsqi_on_pipe(self):
         """Read text from standard input and run tarsqi over it, then print the result
