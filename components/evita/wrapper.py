@@ -28,7 +28,6 @@ class EvitaWrapper:
         approach that assumes that all document elements are processed the same
         way."""
         imported_events = self._import_events()
-        _pp_imported_events(imported_events)
         for element in self.document.elements():
             Evita(self.document, element, imported_events).process_element()
         if self.document.options.import_event_tags and EVALUATE_EVENT_IMPORT:

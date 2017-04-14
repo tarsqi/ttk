@@ -59,13 +59,16 @@ def create_docstructure_parser():
 
 
 def guess_source(filename_or_string):
-    """Returns whether the source type of the content of the file or string is xml,
-    ttk or text. This is a guess because the heuristics used are an approximation,
-    just searching the first 100 characters of the input for some clues."""
-    content = filename_or_string[:100]
+    """Returns whether the source type of the content of the file or string is
+    xml, ttk or text. This is a guess because the heuristics used are simple and
+    just searching the first N characters of the input."""
+    # this needs to be large enough so that you are very likely to at least
+    # capture the first tag
+    chars_to_read = 1000
+    content = filename_or_string[:chars_to_read]
     if os.path.exists(filename_or_string):
         fh = codecs.open(filename_or_string, encoding='utf8')
-        content = fh.read(100)
+        content = fh.read(chars_to_read)
         fh.close()
     content = content.strip()
     first_tag = Xml(content).get_first_tag()

@@ -22,9 +22,9 @@ class MetadataParser:
     DCT to today's date and provides some common functionality to subclasses."""
 
     def __init__(self, options):
-        """At the moment, initialization does not use any of the options, but
-        this could change. Note that the TarsqiDocument does not exist yet when
-        the MetadataParser is initialized."""
+        """At the moment, initialization only uses the --dct option if it is
+        present, but this could change. Note that the TarsqiDocument does not
+        exist yet when the MetadataParser is initialized."""
         self.options = options
         self.tarsqidoc = None  # added in by the parse() method
 
@@ -33,16 +33,39 @@ class MetadataParser:
         metadata dictionary is the DCT, which is set to today."""
         self.tarsqidoc = tarsqidoc
         self.tarsqidoc.metadata['dct'] = self.get_dct()
+        self._moderate_dct_vals()
+
+    def _moderate_dct_vals(self):
+        """There are five places where a DCT can be expressed: the DCT handed in
+        with the --dct option or defined in the config file, the DCT from the
+        metadata on the TarsqiDocument, the DCT from the metadata on the
+        SourceDoc, DCTs from the TagRepository on the TarsqiDocument and DCTs
+        from the TagRepository on the SourceDoc. The first three are single
+        values or None, the other two are lists of any length. The order of
+        these five is significant in that a DCT earlier on the list if given
+        precedence over a DCT later on the list. Collects all the DCT values and
+        picks the very first one, or today's date if no DCTs are available. Logs
+        a warning if the DCTs do not all have the same value."""
+        dcts = []
+        for dct_val in [self.tarsqidoc.options.dct,
+                        self.tarsqidoc.metadata.get('dct'),
+                        self.tarsqidoc.sourcedoc.metadata.get('dct'),
+                        _get_dct_values(self.tarsqidoc.sourcedoc.tags),
+                        _get_dct_values(self.tarsqidoc.tags)]:
+            if dct_val is None:
+                # the case where there is no DCT in the options or metadata
+                continue
+            elif isinstance(dct_val, list):
+                dcts.extend(dct_val)
+            else:
+                dcts.append(dct_val)
+        if len(set(dcts)) > 1:
+            logger.warn("WARNING: more than one DCT value available")
+        dct = dcts[0] if dcts else _get_today()
+        self.tarsqidoc.metadata['dct'] = dct
 
     def get_dct(self):
-        """Returns the DCT. Looks for the DCT in four places: command line option,
-        metadata, tarsqi tags and source tags and then returns the first one
-        found on that list, or today's date if no DCT was available."""
-        return _moderate_dct_vals(
-            self.tarsqidoc.options.dct,
-            self.tarsqidoc.sourcedoc.metadata.get('dct'),
-            _get_dct_values(self.tarsqidoc.sourcedoc.tags),
-            _get_dct_values(self.tarsqidoc.tags))
+        return None
 
     def _get_source(self):
         """A convenience method to lift the SourceDoc out of the tarsqi
@@ -69,12 +92,13 @@ class MetadataParserTTK(MetadataParser):
 
 class MetadataParserText(MetadataParser):
 
-    """The metadata parser for the raw text format. For now this one adds
+    """The metadata parser for the text format. For now this one adds
     nothing to the default metadata parser."""
 
 
 class MetadataParserTimebank(MetadataParser):
-    """The parser for Timebank documents. All it does is overwriting the
+
+    """The parser for Timebank documents. All it does is to overwrite the
     get_dct() method."""
 
     def get_dct(self):
@@ -105,8 +129,8 @@ class MetadataParserTimebank(MetadataParser):
             return '19' + content[2:8]
 
     def _get_doc_source(self):
-        """Return the name of the content provider as well as the content of the DOCNO
-        tag that has that information."""
+        """Return the name of the content provider as well as the content of the
+        DOCNO tag that has that information."""
         content = self._get_tag_content('DOCNO')
         content = str(content)  # in case the above returned None
         for source_identifier in ('ABC', 'APW', 'AP', 'CNN', 'NYT', 'PRI',
@@ -160,8 +184,7 @@ class MetadataParserDB(MetadataParser):
 
     The get_dct() method uses this database and the location of the database is
     specified in the config.txt file. The first use case for this were VA
-    documents where the DCT was stored externally. To see this class in action
-    run
+    documents where the DCT was stored externally. To see this in action run
 
        $ python tarsqi.py --source=db data/in/va/test.xml out.xml
 
@@ -190,21 +213,3 @@ def _get_dct_values(tag_repository):
                if t.attrs.get('functionInDocument') == 'CREATION_TIME']
     values = [t.attrs.get(LIBRARY.timeml.VALUE) for t in timexes]
     return values
-
-
-def _moderate_dct_vals(dct_option, dct_metadata, dct_tarsqi_tags, dct_source_tags):
-    """Detemine what the DCT is given four inputs: the DCT handed in with the
-    --dct option, the DCT from the metadata, DCTs from the TagRepository on the
-    TarsqiDocument and DCTs from the TagRepository on the SourceDoc. The first
-    two are single values or None, the other two are lists of any length. This
-    method concatenates the lists (after turning the first two into lists) and
-    returns the very first element or today's date if the list is empty. This
-    means we have the following precedence onver DCTs: DCT option > metadata DCT
-    > DCT taken from a Tarsqi tag > DCT taken from a source tag. Log a warning
-    if the DCTs do not all have the same value."""
-    dct_option_list = [] if dct_option is None else [dct_option]
-    dct_metadata_list = [] if dct_metadata is None else [dct_metadata]
-    dct_list = dct_option_list + dct_metadata_list + dct_tarsqi_tags + dct_source_tags
-    if len(set(dct_list)) > 1:
-        logger.warn("WARNING: more than one DCT value available")
-    return dct_list[0] if dct_list else _get_today()

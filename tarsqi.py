@@ -37,10 +37,12 @@ USAGE
           pipeline minus the link merger.
 
       --dct VALUE
-          Use this to hand a document creation time (DCT) to the main
-          script. The value is a normalized date expression like 20120830 for
-          August 30th 2012. If this option is not used then the DCT will be
-          determined by metadata parser that is defined for the input source.
+          Use this to pass a document creation time (DCT) to the main script.
+          The value is a normalized date expression like 20120830 for August
+          30th 2012. If this option is not used then the DCT will be determined
+          by the metadata parser that is defined for the input source. Note that
+          the value of --dct will overrule any value calculated by the metadata
+          parser.
 
       --pipe True|False
           With this option set to True the script reads input from the standard
@@ -171,6 +173,7 @@ class Tarsqi:
         and update it."""
         self._cleanup_directories()
         logger.info(self.input)
+        logger.info("Source type is '%s'" % self.options.source)
         self.source_parser.parse_file(self.input, self.tarsqidoc)
         self.metadata_parser.parse(self.tarsqidoc)
         self.docstructure_parser.parse(self.tarsqidoc)
@@ -282,9 +285,9 @@ class Options(object):
         """Read options from the config file and the command line. Also loops
         through the options dictionary and replace some of the strings with other
         objects: replace 'True' with True, 'False' with False, 'None' with None
-        and strings indicating an integer with that integer. Also, for the
-        --mallet and --treetagger options, which are known to be paths, replace
-        the value with the absolute path."""
+        and strings indicating an integer with that integer (but not for the
+        dct). Also, for the --mallet and --treetagger options, which are known
+        to be paths, replace the value with the absolute path."""
         self._options = {}
         config_file_options = read_config(CONFIG_FILE)
         for opt, val in config_file_options.items():
@@ -292,7 +295,9 @@ class Options(object):
         for (option, value) in command_line_options:
             self._options[option[2:]] = value
         for (attr, value) in self._options.items():
-            if value in ('True', 'False', 'None') or value.isdigit():
+            if value in ('True', 'False', 'None'):
+                self._options[attr] = eval(value)
+            if value.isdigit() and attr != 'dct':
                 self._options[attr] = eval(value)
             elif attr in ('mallet', 'treetagger'):
                 if os.path.isdir(value):
