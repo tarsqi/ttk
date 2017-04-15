@@ -6,13 +6,12 @@ an instance of TarsqiDocument. Of that instance, all the parsers in this file do
 is to instantiate the source instance variable, which contains an instance of
 SourceDoc.
 
-What parser is used is defined in main.py, which has a mapping form source types
+What parser is used is defined in main.py, which has a mapping from source types
 (handed in by the --source command line option) to source parsers.
 
 There are now three parsers:
 
 SourceParserXML
-
    A simple XML parser that splits inline XML into a source string and a list of
    tags. The source string and the tags are stored in the SourceDoc instance,
    which is intended to provide just enough functionality to deal with the input
@@ -20,12 +19,10 @@ SourceParserXML
    instance.
 
 SourceParserText
-
    Simply puts the entire text in the DocSource instance and leaves the
    TagsRepository empty.
 
 SourceParserTTK
-
    This parser deals with the ttk format. In the TTK format there are two main
    sources for tags: source_tags and tarsqi_tags. The first are added to the
    tags repository on the SourceDoc (which is considered read-only after that),
@@ -38,7 +35,7 @@ import xml.parsers.expat
 from xml.sax.saxutils import escape, quoteattr
 from xml.dom import minidom
 
-from docmodel.document import TarsqiDocument, SourceDoc
+from docmodel.document import TarsqiDocument, SourceDoc, ProcessingStep
 from docmodel.document import OpeningTag, ClosingTag
 
 
@@ -131,7 +128,14 @@ class SourceParserTTK(SourceParser):
     def _add_metadata(self):
         for node in self.topnodes['metadata'].childNodes:
             if node.nodeType == minidom.Node.ELEMENT_NODE:
-                self.sourcedoc.metadata[node.nodeName] = node.getAttribute('value')
+                if node.nodeName == 'processing_steps':
+                    self.sourcedoc.metadata[node.nodeName] = []
+                    for subnode in node.getElementsByTagName('processing_step'):
+                        step = ProcessingStep(dom_node=subnode)
+                        self.sourcedoc.metadata[node.nodeName].append(step)
+                else:
+                    value = node.getAttribute('value')
+                    self.sourcedoc.metadata[node.nodeName] = value
 
     def _add_to_source_tags(self, node):
         tag_repository = self.sourcedoc.tags

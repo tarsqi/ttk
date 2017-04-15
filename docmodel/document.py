@@ -5,8 +5,9 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 """
 
-import sys, codecs, StringIO, itertools
+import os, sys, codecs, StringIO, itertools, time
 from xml.sax.saxutils import escape, quoteattr
+from subprocess import Popen, PIPE
 
 from library.main import LIBRARY
 from utilities import logger
@@ -28,6 +29,8 @@ RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
 RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 
+TTK_ROOT = os.environ['TTK_ROOT']
+
 
 class TarsqiDocument:
 
@@ -47,7 +50,7 @@ class TarsqiDocument:
 
     def __init__(self):
         self.sourcedoc = None
-        self.metadata = {}
+        self.metadata = { 'dct': None, 'processing_steps': [] }
         self.options = {}
         self.tags = TagRepository()
         self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
@@ -135,6 +138,9 @@ class TarsqiDocument:
         """Remove all TLINK tags from the tags repository."""
         self.tags.remove_tags(TLINK)
 
+    def update_processing_history(self, pipeline):
+        self.metadata['processing_steps'].append(ProcessingStep(pipeline))
+
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file
         fname."""
@@ -178,7 +184,13 @@ class TarsqiDocument:
     def _print_metadata(self, fh):
         fh.write("<metadata>\n")
         for k, v in self.metadata.items():
-            fh.write("  <%s value=\"%s\"/>\n" % (k, v))
+            if k == 'processing_steps':
+                fh.write("  <processing_steps>\n")
+                for step in self.metadata[k]:
+                    fh.write("    %s\n" % step.as_xml())
+                fh.write("  </processing_steps>\n")
+            else:
+                fh.write("  <%s value=\"%s\"/>\n" % (k, v))
         fh.write("</metadata>\n")
 
     def _print_tags(self, fh, tag_group, tags):
@@ -598,6 +610,55 @@ class ClosingTag(Tag):
 
     def is_closing_tag(self):
         return True
+
+
+class ProcessingStep(object):
+
+    """Implements an element of the processing history in the metadata. The core
+    of the ProcessingStep is the pipeline that was exectued, in addition there
+    is some bookkeeping and the following are included: the TTK version, the git
+    commit if available and a timestamp. Note that the git commit does not
+    uniquely define the state of the code when the toolkti ran because there
+    could have been uncommitted changes."""
+
+    def __init__(self, pipeline=None, dom_node=None):
+        """Initialize from a pipeline or a DOM node."""
+        if pipeline is not None:
+            self._initialize_from_pipeline(pipeline)
+        elif dom_node is not None:
+            self._initialize_from_dom_node(dom_node)
+        else:
+            logger.error("ProcessingStep cannot be initialized")
+
+    def _initialize_from_pipeline(self, pipeline):
+        self.components = ','.join([c[0] for c in pipeline])
+        self.timestamp = time.strftime('%Y%m%d-%H%M%S')
+        self.commit = self._get_git_commit()
+        self.version = open(os.path.join(TTK_ROOT, 'VERSION')).read().strip()
+
+    def _initialize_from_dom_node(self, dom_node):
+        self.components = dom_node.getAttribute('components')
+        self.timestamp = dom_node.getAttribute('timestamp')
+        self.commit = dom_node.getAttribute('git_commit')
+        self.version = dom_node.getAttribute('ttk_version')
+
+    def __str__(self):
+        return "<ProcessingStep version='%s' commit='%s' timestamp='%s' %s>" \
+            % (self.version, self.commit, self.timestamp, self.components)
+
+    @staticmethod
+    def _get_git_commit():
+        command = 'git rev-parse --short HEAD'
+        close_fds = False if sys.platform == 'win32' else True
+        return Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
+                     close_fds=close_fds).stdout.read().strip()
+
+    def as_xml(self):
+        return "<processing_step %s%s%s%s/>" \
+            % (' ttk_version="%s"' % self.version,
+               ' git_commit="%s"' % self.commit if self.commit else '',
+               ' timestamp="%s"' % self.timestamp,
+               ' components="%s"' % self.components)
 
 
 class TarsqiInputError(Exception):
