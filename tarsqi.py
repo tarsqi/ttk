@@ -14,9 +14,9 @@ USAGE
    INPUT/OUTPUT
 
       Input and output files or directories. If the input is a directory then
-      the output directory needs to exist. If '--pipe=True' is one of the
-      options then input and output are not required and they are ignored if
-      they are there.
+      the output directory needs to exist. If '--pipe' is one of the options
+      then input and output are not required and they are ignored if they are
+      there.
 
    OPTIONS
 
@@ -44,9 +44,10 @@ USAGE
           the value of --dct will overrule any value calculated by the metadata
           parser.
 
-      --pipe True|False
-          With this option set to True the script reads input from the standard
-          input and writes output to standard output. The default is False.
+      --pipe
+          With this option the script reads input from the standard input and
+          writes output to standard output. Without it the script expects the
+          INPUT and OUTPUT arguments to be there.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
@@ -68,10 +69,10 @@ USAGE
           these are model files in components/classifier/models, the defaults
           are set to tb-vectors.ee.model and tb-vectors.et.model.
 
-      --import-event-tags TAGNAME
+      --import-events
           With this option the Evita component will try to import existing
-          events by lifting tags with name TAGNAME from the source tags. It is
-          assumed that thhose tags have 'begin', 'end' and 'class' attributes.
+          events by lifting EVENT tags from the source tags. It is assumed that
+          those tags have 'begin', 'end' and 'class' attributes.
 
       --trap-errors True|False
           Set error trapping, errors are trapped by default.
@@ -245,12 +246,12 @@ class Tarsqi:
 
 class Options(object):
 
-    """A class to keep track of all the options. Options can be accessed with the
-    getopt() method, but standard options are also accessable directly through
-    the following instance variables: source, dct, pipeline, pipe, loglevel,
-    trap_errors, import_event_tags, perl, mallet, treetagger, classifier,
-    ee_model and et_model. There is no instance variable access for user-defined
-    options in the config.txt file."""
+    """A class to keep track of all the options. Options can be accessed with
+    the getopt() method, but standard options are also accessable directly
+    through the following instance variables: source, dct, pipeline, pipe,
+    loglevel, trap_errors, import_event_tags, perl, mallet, treetagger,
+    classifier, ee_model and et_model. There is no instance variable access for
+    user-defined options in the config.txt file."""
 
     # NOTE. This class is intended to be mostly read-only where values are
     # typically not changed after initialization. The only current exception is
@@ -262,32 +263,17 @@ class Options(object):
         """Initialize options from the config file and the options handed in to
         the tarsqi script. Put known options in instance variables."""
         self._initialize_options(options)
-        # Put options in instance variables for convenience, this is not done
-        # for those options from config.txt that are user-specific. Note that
-        # due to naming rules for attributes options with a hyphen (like
-        # trap-errors) are spelled with an underscore instead when they are
-        # instance variables.
-        self.source = self.getopt('source')
-        self.dct = self.getopt('dct')
-        self.pipeline = self.getopt('pipeline')
-        self.pipe = self.getopt('pipe', False)
-        self.loglevel = self.getopt('loglevel')
-        self.trap_errors = self.getopt('trap-errors', True)
-        self.import_event_tags = self.getopt('import-event-tags')
-        self.perl = self.getopt('perl', 'perl')
-        self.mallet = self.getopt('mallet')
-        self.treetagger = self.getopt('treetagger')
-        self.classifier = self.getopt('classifier')
-        self.ee_model = self.getopt('ee-model')
-        self.et_model = self.getopt('et-model')
+        self._initialize_properties()
 
     def _initialize_options(self, command_line_options):
-        """Read options from the config file and the command line. Also loops
-        through the options dictionary and replace some of the strings with other
-        objects: replace 'True' with True, 'False' with False, 'None' with None
-        and strings indicating an integer with that integer (but not for the
-        dct). Also, for the --mallet and --treetagger options, which are known
-        to be paths, replace the value with the absolute path."""
+        """Reads options from the config file and the command line. Also loops
+        through the options dictionary and replaces some of the strings with
+        other objects: (1) replaces 'True', 'False' and 'None', with True, False
+        and None respectively, (2) replaces strings indicating an integer with
+        that integer (but not for the dct), (3) replaces the empty string with
+        True for the --pipe and --import-events options, and (4) replaces the
+        value of the --mallet and --treetagger options, which are known to be
+        paths, with the absolute path."""
         self._options = {}
         config_file_options = read_config(CONFIG_FILE)
         for opt, val in config_file_options.items():
@@ -297,11 +283,34 @@ class Options(object):
         for (attr, value) in self._options.items():
             if value in ('True', 'False', 'None'):
                 self._options[attr] = eval(value)
-            if value.isdigit() and attr != 'dct':
+            elif value.isdigit() and attr != 'dct':
                 self._options[attr] = eval(value)
+            elif attr in ('pipe', 'import-events') and value == '':
+                self._options[attr] = True
             elif attr in ('mallet', 'treetagger'):
                 if os.path.isdir(value):
                     self._options[attr] = os.path.abspath(value)
+
+    def _initialize_properties(self):
+        """Put options in instance variables for convenience. This is done for
+        those options that are defined for the command line and not for options
+        from config.txt that are user-specific. Note that due to naming rules
+        for attributes (no dashes allowed), options with a dash are spelled with
+        an underscore when they are instance variables."""
+        self.source = self.getopt('source')
+        self.dct = self.getopt('dct')
+        self.pipeline = self.getopt('pipeline')
+        self.pipe = self.getopt('pipe', False)
+        self.loglevel = self.getopt('loglevel')
+        self.trap_errors = self.getopt('trap-errors', True)
+        self.import_event_tags = self.getopt('import-event-tags')
+        self.import_events = self.getopt('import-events')
+        self.perl = self.getopt('perl', 'perl')
+        self.mallet = self.getopt('mallet')
+        self.treetagger = self.getopt('treetagger')
+        self.classifier = self.getopt('classifier')
+        self.ee_model = self.getopt('ee-model')
+        self.et_model = self.getopt('et-model')
 
     def __str__(self):
         return str(self._options)
@@ -331,7 +340,6 @@ class Options(object):
             setattr(self, adjusted_opt, value)
 
     def pp(self):
-        # TODO: this fails to print pipe and trap-errors
         print "OPTIONS:"
         for option in sorted(self._options.keys()):
             print "   %-18s  -->  %s" % (option, self._options[option])
@@ -348,7 +356,7 @@ def _read_arguments(args):
     with two elements: processing options dictionary, and remaining arguments
     (input path and output path)."""
     options = ['source=', 'dct=', 'pipeline=', 'trap-errors=', 'loglevel=',
-               'pipe=', 'perl=', 'treetagger=', 'import-event-tags=',
+               'pipe', 'perl=', 'treetagger=', 'import-events',
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)

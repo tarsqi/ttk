@@ -9,7 +9,7 @@ required they should be added to source_parser.py and metadata_parser.py.
 
 """
 
-import os, codecs, xml
+import os, xml
 
 from docmodel.source_parser import SourceParserXML, SourceParserText
 from docmodel.source_parser import SourceParserTTK
@@ -67,7 +67,8 @@ def guess_source(filename_or_string):
     chars_to_read = 1000
     content = filename_or_string[:chars_to_read]
     if os.path.exists(filename_or_string):
-        fh = codecs.open(filename_or_string, encoding='utf8')
+        # using codecs.open gives unicode error
+        fh = open(filename_or_string)
         content = fh.read(chars_to_read)
         fh.close()
     content = content.strip()

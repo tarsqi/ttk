@@ -5,12 +5,16 @@ Contains the Evita wrapper.
 """
 
 from library.tarsqi_constants import EVITA
+from library.main import LIBRARY
 from components.evita.main import Evita
 
 
 # Set this to True if you want to do a simplistic evaluation of how many of the
 # events that should be imported actually are imported.
 EVALUATE_EVENT_IMPORT = False
+
+
+EVENT = LIBRARY.timeml.EVENT
 
 
 class EvitaWrapper:
@@ -30,7 +34,7 @@ class EvitaWrapper:
         imported_events = self._import_events()
         for element in self.document.elements():
             Evita(self.document, element, imported_events).process_element()
-        if self.document.options.import_event_tags and EVALUATE_EVENT_IMPORT:
+        if self.document.options.import_events and EVALUATE_EVENT_IMPORT:
             self._evaluate_results(imported_events)
 
     def _import_events(self):
@@ -39,18 +43,17 @@ class EvitaWrapper:
         span of an event. This is to import events from tags that were available
         in the source_tags repository prior to the TTK pipeline application."""
         imported_events = {}
-        event_tag = self.document.options.import_event_tags
-        if event_tag is not None:
-            tags = self.document.sourcedoc.tags.find_tags(event_tag)
-            for tag in tags:
+        if self.document.options.import_events:
+            events = self.document.sourcedoc.tags.find_tags(EVENT)
+            for event in events:
                 # Use character offsets of all characters in the event, so if we
                 # have "He sleeps." with sleep from 3 to 9, then the offsets are
                 # [3,4,5,6,7,8] since offset 9 points to the period.
-                offsets = range(tag.begin, tag.end)
+                offsets = range(event.begin, event.end)
                 for off in offsets:
                     if imported_events.has_key(off):
                         logger.warning("Overlapping imported events")
-                    imported_events[off] = tag
+                    imported_events[off] = event
         return imported_events
 
     def _evaluate_results(self, imported_events):
@@ -58,12 +61,12 @@ class EvitaWrapper:
         up as events. Loops through all the events that should be imported and
         checks whether one of its offsets is actually part of a event found by
         the system."""
-        events_key = self.document.sourcedoc.tags.find_tags('EVENT')
+        events_key = self.document.sourcedoc.tags.find_tags(EVENT)
         if not events_key:
             print  "Nothing to evaluate"
         else:
             events_system = {}
-            for e in self.document.tags.find_tags('EVENT'):
+            for e in self.document.tags.find_tags(EVENT):
                 for i in range(e.begin, e.end):
                     events_system[i] = True
             imported = 0

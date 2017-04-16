@@ -23,6 +23,7 @@ from xml.sax.saxutils import escape, quoteattr
 from utilities import logger
 from docmodel.document import Tag
 from library.tarsqi_constants import PREPROCESSOR, TOKENIZER, TAGGER, CHUNKER
+from library.main import LIBRARY
 
 from components.preprocessing.tokenizer import Tokenizer, TokenizedLex
 from components.preprocessing.chunker import chunk_sentences
@@ -111,12 +112,11 @@ class Wrapper(object):
 
     def _init_chunker(self):
         self.chunk_time = 0
-        tag = self.document.options.import_event_tags
-        if tag is not None:
+        if self.document.options.import_events:
             self.terms = {}
-            tags = self.document.sourcedoc.tags.find_tags(tag)
-            for tag in tags:
-                self.terms[tag.begin] = tag
+            events = self.document.sourcedoc.tags.find_tags(LIBRARY.timeml.EVENT)
+            for event in events:
+                self.terms[event.begin] = event
 
     def _tokenize_text(self, string):
         """Takes a unicode string and returns a list of objects, where each

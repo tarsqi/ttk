@@ -185,11 +185,17 @@ class TarsqiDocument:
         fh.write("<%s>\n" % tag_group)
         for tag in sorted(tags):
             try:
-                fh.write("  %s\n" % tag.as_ttk_tag())
+                ttk_tag = tag.as_ttk_tag()
+                # This became needed after allowing any text in the value of the
+                # form and lemma attribute.
+                if isinstance(ttk_tag, str):
+                    ttk_tag = unicode(ttk_tag, errors='ignore')
+                fh.write("  %s\n" % ttk_tag)
             except UnicodeDecodeError:
-                # TODO: no idea why this happens, fh should be able to deal with
-                # unicode and the one case I have seen where this go wrong does
-                # not have non-ascii characters
+                # Not sure why this happened, but there were cases where the
+                # result of as_ttk_tag() was a byte string with a non-ascii
+                # character. The code in the try clause was changed to prevent
+                # the error, but leave the except here just in case.
                 logger.error("UnicodeDecodeError on printing a tag.")
         fh.write("</%s>\n" % tag_group)
 
@@ -564,9 +570,11 @@ class Tag:
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
-        # NOTE: in rare cases the attribute can be None, which breaks quoteattr,
-        # so coerce the attribute into a unicode string
-        attrs = ["%s=%s" % (k, quoteattr(unicode(v))) for (k, v) in self.attrs.items()]
+        # In rare cases the attribute can be None, which breaks quoteattr, so
+        # coerce the attribute into a string
+        def protect(text): return 'None' if text is None else text
+        attrs = ["%s=%s" % (k, quoteattr(protect(v)))
+                 for (k, v) in self.attrs.items()]
         return '' if not attrs else ' ' + ' '.join(sorted(attrs))
 
 
