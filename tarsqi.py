@@ -27,8 +27,9 @@ USAGE
           example, the location of the DCT and the format of the text). If this
           option is not specified then the system will try to guess one of
           'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
-          for the first two cases. There are four more types that can be used to
-          process the more specific sample data in data/in: timebank for
+          for the first two cases. Note that currently this guess will fail if
+          the --pipe option is used. There are four more types that can be used
+          to process the more specific sample data in data/in: timebank for
           data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
           for data/in/db.
 

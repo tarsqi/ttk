@@ -18,8 +18,10 @@ from library.main import LIBRARY
 
 class MetadataParser:
 
-    """This is the minimal metadata parser that is used as a default. It sets the
-    DCT to today's date and provides some common functionality to subclasses."""
+    """This is the minimal metadata parser that is used as a default. It selects
+    the DCT from all available sources and picks one of them, or it uses today's
+    date if no DCT's are available. Subclasses should override the get_dct()
+    method to define specific DCT extraction methods for the document source."""
 
     def __init__(self, options):
         """At the moment, initialization only uses the --dct option if it is

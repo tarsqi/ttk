@@ -216,7 +216,9 @@ option. In that case the toolkit will make an educated guess as to whether the
 input is <code>xml</code>, <code>text</code> or <code>ttk</code>. The system can
 be tricked, for example by giving it a file where the beginning really lookes
 like XML, but in those cases an error will usually follow and only then it would
-be prudent to use the <code>--source</code> option after all.</p>
+be prudent to use the <code>--source</code> option after all. In addition, not
+using the <code>--source</code> option is known to break when you have used
+the <code>--pipe</code> option.</p>
 
 <p>The option should always be used when one of the special formats are
 used. When the input is vanilla text or XML then the toolkit has no good way to
