@@ -108,13 +108,18 @@ class Node(object):
         self.tree = tree
 
     def __str__(self):
-        lemma = self.tag.attrs.get('lemma')
-        lemma = " %s" % lemma if lemma else ''
-        return "<Node %s %d-%d%s>" % (self.name, self.begin, self.end, lemma)
+        attrs = ''
+        if self.name == 'lex':
+            lemma = self.tag.attrs.get('lemma')
+            lemma = " lemma=%s" % lemma if lemma else ''
+            text = ' text=' + self.tree.tarsqidoc.sourcedoc.text[self.begin:self.end]
+            pos = ' pos=' + self.tag.attrs.get('pos')
+            attrs = pos + lemma + text
+        return "<Node %s %d-%d%s>" % (self.name, self.begin, self.end, attrs)
 
     def insert(self, tag):
         """Insert a Tag in the node. This could be insertion in one of the node's
-        daughters, or insertion in the node's daughters list. Print a warning if
+        daughters, or insertion in the node's daughters list. Log a warning if
         the tag cannot be inserted."""
         # first check if tag offsets fit in self offsets
         if tag.begin < self.begin or tag.end > self.end:
@@ -142,9 +147,10 @@ class Node(object):
                     if span:
                         self._replace_span_with_tag(tag, span)
                     else:
-                        # print warning if the tag cannot be inserted
-                        print "WARNING: cannot insert tag because " \
-                            + "it overlaps with other tags."
+                        # log warning if the tag cannot be inserted
+                        print tag
+                        self.pp()
+                        logger.warn("Cannot insert %s" % tag)
 
     def _insert_tag_into_dtr(self, tag, idx):
         """Insert the tag into the dtr at self.dtrs[idx]. But take care of the

@@ -9,9 +9,7 @@
 
 <h1>The TARSQI Toolkit Manual</h1>
 
-<p class="subtitle">Release Notes and Manual for TTK Version 2.0.2.
-
-<p class="subtitle">Marc Verhagen, April 2017.
+<p class="subtitle">Release Notes and Manual for TTK Version 2.0.2. May 2017.
 
 <p class="navigation">
 [ <a href="#intro">introduction</a>
@@ -65,7 +63,9 @@ toolkit.</p>
   <li>
     <p>Install the toolkit code. This is simply a matter of unpacking the
     downloaded archive or cloning the TTK Git repository
-    at <a href="https://github.com/tarsqi/ttk.git">https://github.com/tarsqi/ttk.git</a>.</p>
+    at <a href="https://github.com/tarsqi/ttk.git">https://github.com/tarsqi/ttk.git</a>. Due
+    to a <a href="https://github.com/tarsqi/ttk/issues/42">bug</a> on Windows,
+    you should aim to install the toolkit on a path without spaces.</p>
   </li>
 
   <li>
@@ -92,7 +92,9 @@ toolkit.</p>
       2.0.7 will work as well. You can put MALLET wherever you want, but as with
       the TreeTagger you may need to tell the Toolkit where to find it. There is
       an <a href="../../build/install-mallet-osx.sh"> example script</a> in the
-      <code>build</code> directory which shows how to install MALLET on Mac OSX.</p>
+      <code>build</code> directory which shows how to install MALLET on Mac
+      OSX. For Windows, you need to set the MALLET_HOME environment variable in
+      addition to editing the configuration file.</p>
   </li>
 
   <li>
@@ -162,8 +164,9 @@ purposes (TTK output has each tag on one line).</p>
 
 <p><u>A note for Windows users</u>. TTK 1.0 depended on some software that did
 not run on Windows. The current version does not have that problem and the code
-should run on Windows. However, this has not been tested properly yet and the
-above instructions may not be entirely correct for Windows.</p>
+should run on Windows and we know it does actually run on Windows. However, we
+have not done extensive testing on Windows and some of the above instructions
+may not be entirely correct for Windows.</p>
 
 
 <a name="using"></a>
@@ -216,9 +219,7 @@ option. In that case the toolkit will make an educated guess as to whether the
 input is <code>xml</code>, <code>text</code> or <code>ttk</code>. The system can
 be tricked, for example by giving it a file where the beginning really lookes
 like XML, but in those cases an error will usually follow and only then it would
-be prudent to use the <code>--source</code> option after all. In addition, not
-using the <code>--source</code> option is known to break when you have used
-the <code>--pipe</code> option.</p>
+be prudent to use the <code>--source</code> option after all.</p>
 
 <p>The option should always be used when one of the special formats are
 used. When the input is vanilla text or XML then the toolkit has no good way to
