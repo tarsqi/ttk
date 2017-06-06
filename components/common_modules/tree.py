@@ -148,8 +148,8 @@ class Node(object):
                         self._replace_span_with_tag(tag, span)
                     else:
                         # log warning if the tag cannot be inserted
-                        print tag
-                        self.pp()
+                        #print tag
+                        #self.pp()
                         logger.warn("Cannot insert %s" % tag)
 
     def _insert_tag_into_dtr(self, tag, idx):
