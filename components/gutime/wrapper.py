@@ -28,6 +28,7 @@ on temporal functions in postTempEx.pl.
 import os, sys, subprocess, codecs, StringIO
 from xml.dom.minidom import parse, parseString
 
+from components.preprocessing import chunker
 from library.tarsqi_constants import GUTIME
 from utilities import logger
 
@@ -64,6 +65,7 @@ class GUTimeWrapper:
         _run_gutime_on_file(fin, fout)
         dom = parse(fout)
         _export_timex_tags(self.document, dom)
+        _update_chunks(self.document)
 
     def process_using_string(self):
         """Create the input required by TimeTag.pl, call the Perl script and
@@ -76,6 +78,7 @@ class GUTimeWrapper:
         result = u'{0}'.format(result).encode('utf-8')
         dom = parseString(result)
         _export_timex_tags(self.document, dom)
+        _update_chunks(self.document)
 
 
 def _create_gutime_input(tarsqidoc, fname=None):
@@ -152,3 +155,10 @@ def _export_timex_tags(tarsqidoc, dom):
                      'value': timex.getAttribute('VAL'),
                      'origin': GUTIME}
             tarsqidoc.add_timex(p1, p2, attrs)
+
+
+def _update_chunks(tarsqi_document):
+    """There are many cases where timexes do not fit into existing chunks, which
+    means that they are ignored in later processing. We update the chunks to
+    take this into account."""
+    chunker.ChunkUpdater(tarsqi_document).update()

@@ -54,6 +54,9 @@ MOD = LIBRARY.timeml.MOD
 POL = LIBRARY.timeml.POL
 ORIGIN = LIBRARY.timeml.ORIGIN
 
+NOUNCHUNK = LIBRARY.timeml.NOUNCHUNK
+VERBCHUNK = LIBRARY.timeml.VERBCHUNK
+
 
 def update_event_checked_marker(constituent_list):
     """Update Position in sentence, by marking as already checked for EVENT the
@@ -203,6 +206,10 @@ class NounChunk(Chunk):
     """Behaviour specific to noun chunks, most notably the NounChunk specific
     code to create events."""
 
+    def __init__(self):
+        # the constituent sets tree, parent, position, dtrs, begin, and end
+        Chunk.__init__(self, NOUNCHUNK)
+
     def isNounChunk(self):
         """Returns True"""
         return True
@@ -348,6 +355,10 @@ class VerbChunk(Chunk):
 
     if DRIBBLE:
         DRIBBLE_FH = open("dribble-VerbChunk.txt", 'w')
+
+    def __init__(self):
+        # the constituent sets tree, parent, position, dtrs, begin, and end
+        Chunk.__init__(self, VERBCHUNK)
 
     def dribble(self, header, text):
         """Write information on the sentence that an event was added to."""

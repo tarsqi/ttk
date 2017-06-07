@@ -27,6 +27,9 @@ docmodel.document.Tag.
 from types import StringType
 
 from utilities import logger
+from components.common_modules.tree import create_tarsqi_tree
+
+from library.tarsqi_constants import GUTIME
 
 
 # CHUNK TYPES
@@ -336,6 +339,83 @@ def _is_final_tag(cat, tag):
 def _is_term_initial_offset(begin, terms):
     """Returns True if begin is a key in terms."""
     return terms is not None and begin in terms
+
+
+class ChunkUpdater(object):
+
+    """Class that allows you to take a TarsqiDocument and then update the chunks
+    in it given tags that were unsuccesfully added to the TarsqiTrees in the
+    document. Currently only done for Timex tags."""
+
+    def __init__(self, tarsqidoc):
+        self.tarsqidoc = tarsqidoc
+
+    @staticmethod
+    def _get_containing_sentence(doctree, orphan):
+        """Returns the sentence that contains the orphan tag, or None if no such
+        unique sentence exists."""
+        sentences = [s for s in doctree.dtrs if s.includes(orphan)]
+        return sentences[0] if len(sentences) == 1 else None
+
+    def update(self):
+        """Uses the orphans in the TarsqiTrees in the document to update chunks."""
+        for element in self.tarsqidoc.elements():
+            self._update_element(element)
+
+    def _update_element(self, element):
+        """Uses the orphans in the TarsqiTree of the element to update chunks."""
+        # NOTE: this is generic sounding, but is really only meant for timexes
+        # TODO: maybe rename while the above is the case
+        doctree = create_tarsqi_tree(self.tarsqidoc, element)
+        for orphan in doctree.orphans:
+            sentence = self._get_containing_sentence(doctree, orphan)
+            if sentence is None:
+                logger.warn("No sentence contains %s" % orphan)
+                continue
+            nodes = [n for n in sentence.all_nodes() if n.overlaps(orphan)]
+            nodes = [n for n in nodes if n is not sentence and not n.isToken()]
+            #self._debug(orphan, sentence, nodes)
+            self._remove_overlapping_chunks(nodes)
+        self._add_chunks_for_timexes(element)
+
+    def _remove_overlapping_chunks(self, nodes):
+        """Remove all the noun chunk nodes that were found to be overlapping."""
+        for node in nodes:
+            if node.isChunk():
+                self.tarsqidoc.tags.remove_tag(node.tag)
+
+    def _add_chunks_for_timexes(self, element):
+        # At this point we have removed chunks that overlap with timexes. The
+        # TarsqiTree used in the calling method did not know that (because
+        # changes were made to the TagRepository. So we create a new tree.
+        doctree = create_tarsqi_tree(self.tarsqidoc, element)
+        # Note that it is perhaps not enough to just create a chunk for the
+        # orphan because removing an overlapping chunk could remove a chunk that
+        # also embed another timex, which will then have no chunk around it. A
+        # more primary question by the way is, do we need timexes to be inside
+        # chunks or can they stand by themselves for later processing?
+        # TODO: check whether we can go without chunks or whether we need
+        # timexes to be inside chunks.
+        for sentence in doctree.get_sentences():
+            nodes = sentence.all_nodes()
+            timexes = [n for n in nodes if n.isTimex()]
+            nounchunks = [n for n in nodes if n.isNounChunk()]
+            for t in timexes:
+                # if the timexes parent is a sentence, then add a Tag with
+                # tagname ng to the TagRepository
+                if t.parent.isSentence():
+                    # for now we will credit GUTIME with this chunk
+                    attrs = { 'origin':  GUTIME }
+                    self.tarsqidoc.tags.add_tag(NG, t.begin, t.end, attrs)
+
+    @staticmethod
+    def _debug(orphan, sentence, nodes):
+        if True:
+            print orphan
+            print '  ', sentence
+            for n in nodes:
+                print '  ', n
+                print '  ', n.tag
 
 
 

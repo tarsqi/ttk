@@ -378,6 +378,13 @@ class TagRepository:
         self.tags = [t for t in self.tags if t.name != tagname]
         self.index()
 
+    def remove_tag(self, tag):
+        """Remove the tag from the list of tags. This is rather inefficient since the
+        whole list is traversed. Also note that this method does not remove the
+        tag from the opening_tags and closing_tags dictionaries, so depending on
+        when this is done these may need to be re-indexed."""
+        self.tags = [t for t in self.tags if t is not tag]
+
     def merge(self):
         """Take the OpeningTags and ClosingTags in self.tmp and merge them into
         Tags. Raise errors if tags do not match."""

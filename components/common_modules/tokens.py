@@ -10,6 +10,7 @@ from utilities import logger
 FORM = LIBRARY.timeml.FORM
 STEM = LIBRARY.timeml.STEM
 POS = LIBRARY.timeml.POS
+POS_ADJ = LIBRARY.timeml.POS_ADJ
 TENSE = LIBRARY.timeml.TENSE
 ASPECT = LIBRARY.timeml.ASPECT
 EPOS = LIBRARY.timeml.EPOS
@@ -19,6 +20,11 @@ POL = LIBRARY.timeml.POL
 EVENTID = LIBRARY.timeml.EVENTID
 EIID = LIBRARY.timeml.EIID
 CLASS = LIBRARY.timeml.CLASS
+
+
+def token_class(pos):
+    """Returns the class that is appropriate for the part-of-speech."""
+    return AdjectiveToken if pos.startswith(POS_ADJ) else Token
 
 
 class Token(Constituent):
