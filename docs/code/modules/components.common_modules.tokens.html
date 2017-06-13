@@ -81,7 +81,7 @@ the other variables.</pre>
 <div class=function>__str__(self)</div>
 </pre>
 <pre>
-<div class=function>createEvent(self)</div>
+<div class=function>createEvent(self, imported_events=None)</div>
 Do nothing when an AdjectiveToken or Token is asked to create an
 event. Potential adjectival events are processed from the VerbChunk
 using the createAdjEvent() method. Do not log a warning since it is
@@ -114,3 +114,8 @@ Returns True</pre>
 <div class=function>pretty_print(self, indent=0)</div>
 </pre>
 </blockquote>
+
+<div class="section">module functions</div>
+<pre>
+<div class=function>token_class(pos)</div>
+Returns the class that is appropriate for the part-of-speech.</pre>

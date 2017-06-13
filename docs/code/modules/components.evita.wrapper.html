@@ -42,3 +42,20 @@ elements are instances of Tag with name=docelement. This is a simple
 approach that assumes that all document elements are processed the same
 way.</pre>
 </blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_evaluate_results(self, imported_events)</div>
+Simplistic evaluation of how many of the imported events actually end
+up as events. Loops through all the events that should be imported and
+checks whether one of its offsets is actually part of a event found by
+the system.</pre>
+<pre>
+<div class=function>_import_events(self)</div>
+Returns a dictionary of events. The dictionary is indexed on character
+offsets where a character occurs in the keys if it is included in the
+span of an event. This is to import events from tags that were available
+in the source_tags repository prior to the TTK pipeline application.</pre>
+</blockquote>
+
+<div class="section">module functions</div>

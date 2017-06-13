@@ -8,6 +8,16 @@ Chunk._processEventInChunk() or AdjectiveToken._processEventInToken().
 from library.main import LIBRARY
 from library.tarsqi_constants import EVITA
 
+EID = LIBRARY.timeml.EID
+EIID = LIBRARY.timeml.EIID
+ORIGIN = LIBRARY.timeml.ORIGIN
+CLASS = LIBRARY.timeml.CLASS
+TENSE = LIBRARY.timeml.TENSE
+ASPECT = LIBRARY.timeml.ASPECT
+POS = LIBRARY.timeml.POS
+MODALITY = LIBRARY.timeml.MODALITY
+POLARITY = LIBRARY.timeml.POLARITY
+
 
 class Event:
 
@@ -33,13 +43,17 @@ class Event:
         later. Modality and polarity are not added if they have the default
         values."""
         self.tokens = [feats.head]
-        self.attrs = { LIBRARY.timeml.EID: None, LIBRARY.timeml.EIID: None }
-        self.attrs[LIBRARY.timeml.ORIGIN] = EVITA
-        self.attrs[LIBRARY.timeml.CLASS] = feats.evClass
-        self.attrs[LIBRARY.timeml.TENSE] = feats.tense
-        self.attrs[LIBRARY.timeml.ASPECT] = feats.aspect
-        self.attrs[LIBRARY.timeml.POS] = feats.nf_morph
+        self.attrs = { #EID: None, EIID: None,
+                       ORIGIN: EVITA,
+                       CLASS: feats.evClass,
+                       TENSE: feats.tense,
+                       ASPECT: feats.aspect,
+                       POS: feats.nf_morph }
         if feats.modality != 'NONE':
-            self.attrs[LIBRARY.timeml.MODALITY] = feats.modality
+            self.attrs[MODALITY] = feats.modality
         if feats.polarity != 'POS':
-            self.attrs[LIBRARY.timeml.POLARITY] = "NEG"
+            self.attrs[POLARITY] = "NEG"
+
+    def __str__(self):
+        feats = ' '.join(["%s=%s" % (f, v) for (f, v) in self.attrs.items()])
+        return "<Event %s>" % feats

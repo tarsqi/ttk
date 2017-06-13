@@ -79,8 +79,9 @@ Initialize the three variables dom, topnodes and sourcedoc.</pre>
 Parse the TTK file and put the contents in the appropriate parts of
 the SourceDoc.</pre>
 <pre>
-<div class=function>parse_string(self, text)</div>
-</pre>
+<div class=function>parse_string(self, text, tarsqidoc)</div>
+Parse the TTK string and put the contents in the appropriate parts of the
+SourceDoc.</pre>
 </blockquote>
 <blockquote>
 <h3>Private Functions</h3>
@@ -108,10 +109,12 @@ on the TarsqiDocument.</pre>
 <div class=function>_add_to_tarsqi_tags(self, node)</div>
 </pre>
 <pre>
-<div class=function>_load_dom(self, filename)</div>
-Loads the DOM object in the file into the dom variable and fills the
-topnodes dictionary with text, metadata, source_tags and tarsqi_tags and
-comment keys.</pre>
+<div class=function>_load_topnodes(self)</div>
+Fills the topnodes dictionary with text, metadata, source_tags and
+tarsqi_tags and comment keys.</pre>
+<pre>
+<div class=function>_parse(self, tarsqidoc)</div>
+</pre>
 </blockquote>
 
 <a name="SourceParserText"/><div class="section">class SourceParserText</div>
@@ -168,7 +171,7 @@ and tags in SourceDoc.</pre>
 Handle character data by asking the SourceDocument to add the
 data. This will not necesarily add a contiguous string of character data
 as one data element. This should include ingnorable whtespace, but see
-the comment in the method below, I apparantly had reason t think
+the comment in the method below, I apparently had reason to think
 otherwise.</pre>
 <pre>
 <div class=function>_handle_comment(self, data)</div>

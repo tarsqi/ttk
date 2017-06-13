@@ -8,6 +8,7 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 """
 
 import types
+from xml.sax.saxutils import quoteattr
 
 import library.forms as forms
 import library.patterns as patterns
@@ -21,6 +22,7 @@ from components.evita.features import NChunkFeatures, VChunkFeaturesList
 from components.evita import wordnet
 from components.evita import bayes
 
+from components.evita.settings import INCLUDE_PROPERNAMES
 from components.evita.settings import EVITA_NOM_DISAMB
 from components.evita.settings import EVITA_NOM_CONTEXT
 from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
@@ -39,6 +41,23 @@ DRIBBLE = False
 DEBUG = False
 
 
+EVENTID = LIBRARY.timeml.EVENTID
+EIID = LIBRARY.timeml.EIID
+CLASS = LIBRARY.timeml.CLASS
+FORM = LIBRARY.timeml.FORM
+STEM = LIBRARY.timeml.STEM
+POS = LIBRARY.timeml.POS
+TENSE = LIBRARY.timeml.TENSE
+ASPECT = LIBRARY.timeml.ASPECT
+EPOS = LIBRARY.timeml.EPOS
+MOD = LIBRARY.timeml.MOD
+POL = LIBRARY.timeml.POL
+ORIGIN = LIBRARY.timeml.ORIGIN
+
+NOUNCHUNK = LIBRARY.timeml.NOUNCHUNK
+VERBCHUNK = LIBRARY.timeml.VERBCHUNK
+
+
 def update_event_checked_marker(constituent_list):
     """Update Position in sentence, by marking as already checked for EVENT the
     Tokens and Chunks in constituent_list. These are constituents that are
@@ -49,8 +68,8 @@ def update_event_checked_marker(constituent_list):
 
 class Chunk(Constituent):
 
-    """Implements the common behaviour of chunks. Chunks are embedded in sentences and
-    contain event tags, timex tags and tokens.
+    """Implements the common behaviour of chunks. Chunks are embedded in sentences
+    and contain event tags, timex tags and tokens.
 
     Instance variables (in addition to the ones defined on Constituent)
        phraseType         - string indicating the chunk type, either 'vg' or 'ng'
@@ -95,22 +114,20 @@ class Chunk(Constituent):
             return None
         if name == 'pos':
             return None
-        if name in ['eventStatus', 'text', LIBRARY.timeml.FORM, LIBRARY.timeml.STEM,
-                    LIBRARY.timeml.POS, LIBRARY.timeml.TENSE, LIBRARY.timeml.ASPECT,
-                    LIBRARY.timeml.EPOS, LIBRARY.timeml.MOD, LIBRARY.timeml.POL,
-                    LIBRARY.timeml.EVENTID, LIBRARY.timeml.EIID, LIBRARY.timeml.CLASS]:
+        if name in ['eventStatus', 'text', FORM, STEM, POS, TENSE, ASPECT,
+                    EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             if not self.event:
                 return None
             if name == 'eventStatus':
                 return '1'
-            if name == 'text' or name == LIBRARY.timeml.FORM:
-                return self.tree.events[self.eid][LIBRARY.timeml.FORM]
-            if name == LIBRARY.timeml.MOD:
-                return self.tree.events[self.eid].get(LIBRARY.timeml.MOD, 'NONE')
-            if name == LIBRARY.timeml.POL:
-                return self.tree.events[self.eid].get(LIBRARY.timeml.POL, 'POS')
-            if name == LIBRARY.timeml.POS:
-                return self.tree.events[self.eid].get(LIBRARY.timeml.POS, 'NONE')
+            if name == 'text' or name == FORM:
+                return self.tree.events[self.eid][FORM]
+            if name == MOD:
+                return self.tree.events[self.eid].get(MOD, 'NONE')
+            if name == POL:
+                return self.tree.events[self.eid].get(POL, 'POS')
+            if name == POS:
+                return self.tree.events[self.eid].get(POS, 'NONE')
             return self.tree.events[self.eid][name]
         else:
             raise AttributeError(name)
@@ -119,19 +136,44 @@ class Chunk(Constituent):
         """Return the head of the chunk (by default the last element)."""
         return self.dtrs[self.head]
 
+    def _conditionally_add_imported_event(self, imported_event):
+        """Create an event from the imported event, mixing information found in
+        the chunk and in the imported event. Added from the imported event is
+        the class (which means we potentially move away from the TimeML event
+        classes) and the begin and end of the imported event which we store in
+        the new 'full-range' feature, which is needed because Evita assumes
+        events are all one-token."""
+        # TODO: this is ad hoc and should be a bit more principled
+        event = Event(self.features)
+        event.attrs[CLASS] = imported_event.attrs['class']
+        event.attrs[ORIGIN] += '-import'
+        begin, end = imported_event.begin, imported_event.end
+        full_text = self.tree.tarsqidoc.sourcedoc.text[begin:end]
+        event.attrs['full-range'] = "%s-%s" % (begin, end)
+        event.attrs['full-event'] = "%s" % quoteattr(full_text)
+        self.tree.addEvent(event)
+
     def _conditionallyAddEvent(self, features=None):
         """Perform a few little checks on the head and check whether there is
         an event class, then add the event to the tree. When this is called on
         a NounChunk, then there is no GramChunk handed in and it will be
         retrieved from the features instance variable, when it is called from
-        VerbChunk, then the GramChunk will be handed in."""
-        gchunk = self.features if features is None else features
-        text = gchunk.head.getText()
-        # the second and third tests seem relevant for verbs only, but we keep
-        # them anyway for all chunks
-        if (gchunk.evClass and text not in forms.be and
-            text not in forms.spuriousVerb):
-            self.tree.addEvent(Event(gchunk))
+        VerbChunk, then the verb's features will be handed in."""
+        # TODO: split those cases to make for two simpler methods
+        logger.debug("Conditionally adding nominal")
+        chunk_features = self.features if features is None else features
+        if self._acceptable_chunk_features(chunk_features):
+            self.tree.addEvent(Event(chunk_features))
+
+    @staticmethod
+    def _acceptable_chunk_features(chunk_features):
+        """Preform some simple tests to check whether the chunk features are acceptable
+        for an event. The second and third tests seem relevant for verbs only, but we
+        keep # them anyway for all chunks."""
+        text = chunk_features.head.getText()
+        return (chunk_features.evClass
+                and text not in forms.be
+                and text not in forms.spuriousVerb)
 
     def _getHeadText(self):
         """Get the text string of the head of the chunk. Used by
@@ -164,6 +206,10 @@ class NounChunk(Chunk):
     """Behaviour specific to noun chunks, most notably the NounChunk specific
     code to create events."""
 
+    def __init__(self):
+        # the constituent sets tree, parent, position, dtrs, begin, and end
+        Chunk.__init__(self, NOUNCHUNK)
+
     def isNounChunk(self):
         """Returns True"""
         return True
@@ -186,12 +232,13 @@ class NounChunk(Chunk):
         """Return True if the chunk is empty, False otherwise."""
         return False if self.dtrs else True
 
-    def createEvent(self, verbfeatures=None):
-        """Try to create an event in the NounChunk. Checks whether the nominal is an
-        event candidate, then conditionally adds it. The verbfeatures dictionary
-        is used when a governing verb hands in its features to a nominal in a
-        predicative complement."""
-        logger.debug("NounChunk.createEvent(verbfeatures=%s)")
+    def createEvent(self, verbfeatures=None, imported_events=None):
+        """Try to create an event in the NounChunk. Checks whether the nominal
+        is an event candidate, then conditionally adds it. The verbfeatures
+        dictionary is used when a governing verb hands in its features to a
+        nominal in a predicative complement. The imported_events is handed in
+        when Tarsqi tries to import events from a previous annotation."""
+        logger.debug("NounChunk.createEvent(verbfeatures=%s)" % verbfeatures)
         if self.isEmpty():
             # this happened at some point due to a crazy bug in some old code
             # that does not exist anymore, log a warning in case this returns
@@ -204,25 +251,28 @@ class NounChunk(Chunk):
                 logger.debug("Nominal already contains an event")
             # Even if preceded by a BE or a HAVE form, only tagging NounChunks
             # headed by an eventive noun, so "was an intern" will NOT be tagged
-            elif self.isEventCandidate():
-                logger.debug("Nominal is an event candidate")
-                self._conditionallyAddEvent()
+            elif self._passes_syntax_test():
+                imported_event = self._get_imported_event_for_chunk(imported_events)
+                #print imported_event
+                if imported_event is not None:
+                    self._conditionally_add_imported_event(imported_event)
+                elif self._passes_semantics_test():
+                    self._conditionallyAddEvent()
 
-    def isEventCandidate(self):
-        """Return True if the nominal is syntactically and semantically an
-        event, return False otherwise."""
-        return self.isEventCandidate_Syn() and self.isEventCandidate_Sem()
-
-    def isEventCandidate_Syn(self):
+    def _passes_syntax_test(self):
         """Return True if the nominal is syntactically able to be an event,
         return False otherwise. An event candidate syntactically has to have a
-        head which cannot be a timex and the head has to be a common noun."""
-        # using the regular expression is a bit faster then lookup in the short
-        # list of common noun parts of speech (forms.nounsCommon)
-        return (not self.features.head.isTimex() and
-                forms.RE_nounsCommon.match(self.features.head.pos))
+        head which cannot be a timex and the head has to be a either a noun or a
+        common noun, depending on the value of INCLUDE_PROPERNAMES."""
+        if self.features.head.isTimex():
+            return False
+        if INCLUDE_PROPERNAMES:
+            return self.head_is_noun()
+        else:
+            return self.head_is_common_noun()
+        #return (not self.features.head.isTimex() and self.head_is_common_noun())
 
-    def isEventCandidate_Sem(self):
+    def _passes_semantics_test(self):
         """Return True if the nominal can be an event semantically. Depending
         on user settings this is done by a mixture of wordnet lookup and using a
         simple classifier."""
@@ -251,6 +301,45 @@ class NounChunk(Chunk):
             logger.debug("  some WordNet sense is event ==> %s" % is_event)
         return is_event
 
+    def _get_imported_event_for_chunk(self, imported_events):
+        """Return None or a Tag from the imported_events dictionary, only return
+        this tag is its span is head final to the chunk and it span is at least
+        including the chunk head."""
+        # TODO: we now miss multiple events in a chunk
+        if imported_events is None:
+            imported_events = {}
+        offsets = range(self.begin, self.end)
+        # Get the tags for all characters in the entire span and then get the
+        # head of the list, that is, the contiguous sequence of Tags at the end
+        # of the range.
+        tags = [imported_events.get(off) for off in offsets]
+        imported_head = self._consume_head(tags)
+        chunk_head = self.dtrs[self.head]
+        chunk_head_length = chunk_head.end - chunk_head.begin
+        if 0 < len(imported_head) >= chunk_head_length:
+            return imported_head[0]
+        else:
+            return None
+
+    @staticmethod
+    def _consume_head(tags):
+        head = []
+        for t in reversed(tags):
+            if t is None:
+                return list(reversed(head))
+            head.append(t)
+        return list(reversed(head))
+
+    def head_is_noun(self):
+        """Returns True if the head of the chunk is a noun."""
+        return forms.RE_nouns.match(self.features.head.pos)
+
+    def head_is_common_noun(self):
+        """Returns True if the head of the chunk is a common noun."""
+        # using the regular expression is a bit faster then lookup in the short
+        # list of common noun parts of speech (forms.nounsCommon)
+        return forms.RE_nounsCommon.match(self.features.head.pos)
+
     def _run_classifier(self, lemma):
         """Run the classifier on lemma, using features from the GramNChunk."""
         features = []
@@ -266,6 +355,10 @@ class VerbChunk(Chunk):
 
     if DRIBBLE:
         DRIBBLE_FH = open("dribble-VerbChunk.txt", 'w')
+
+    def __init__(self):
+        # the constituent sets tree, parent, position, dtrs, begin, and end
+        Chunk.__init__(self, VERBCHUNK)
 
     def dribble(self, header, text):
         """Write information on the sentence that an event was added to."""
@@ -293,7 +386,7 @@ class VerbChunk(Chunk):
         return ((features.headForm == 'including' and features.tense == 'NONE')
                 or features.headForm == '_')
 
-    def createEvent(self):
+    def createEvent(self, imported_events=None):
         """Try to create one or more events in the VerbChunk. How this works
         depends on how many instances of VChunkFeatures can be created for
         the chunk. For all non-final and non-axiliary elements in the list,
@@ -307,14 +400,14 @@ class VerbChunk(Chunk):
                 if not vcf.isAuxVerb():
                     self._conditionallyAddEvent(vcf)
             if not self.isNotEventCandidate(vcf_list[-1]):
-                self._createEventOnRightmostVerb(vcf_list[-1])
+                self._createEventOnRightmostVerb(vcf_list[-1], imported_events)
 
-    def _createEventOnRightmostVerb(self, features):
+    def _createEventOnRightmostVerb(self, features, imported_events=None):
         next_node = self.next_node()
         if features.is_modal() and next_node:
             self._createEventOnModal()
         elif features.is_be() and next_node:
-            self._createEventOnBe(features)
+            self._createEventOnBe(features, imported_events)
         elif features.is_have():
             self._createEventOnHave(features)
         elif features.is_future_going_to():
@@ -345,12 +438,12 @@ class VerbChunk(Chunk):
             self.dribble("MODAL", self.getText())
             self._processEventInMultiVChunk(substring)
 
-    def _createEventOnBe(self, features):
+    def _createEventOnBe(self, features, imported_events=None):
         logger.debug("Checking for BE + NOM Predicative Complement...")
         substring = self._lookForMultiChunk(patterns.BE_N_FSAs, 'chunked')
         if substring:
             self.dribble("BE-NOM", self.getText())
-            self._processEventInMultiNChunk(features, substring)
+            self._processEventInMultiNChunk(features, substring, imported_events)
         else:
             logger.debug("Checking for BE + ADJ Predicative Complement...")
             substring = self._lookForMultiChunk(patterns.BE_A_FSAs, 'chunked')
@@ -514,9 +607,9 @@ class VerbChunk(Chunk):
         self._conditionallyAddEvent(GramMultiVChunk)
         map(update_event_checked_marker, substring)
 
-    def _processEventInMultiNChunk(self, features, substring):
+    def _processEventInMultiNChunk(self, features, substring, imported_events):
         nounChunk = substring[-1]
-        nounChunk.createEvent(features)
+        nounChunk.createEvent(features, imported_events)
         map(update_event_checked_marker, substring)
 
     def _processEventInMultiAChunk(self, features, substring):

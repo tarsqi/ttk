@@ -13,6 +13,12 @@
 pipeline = PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER
 
 
+# Determines whether the tarsqi.py script uses files for IO or standard input
+# and standard output, the latter is used when pipe is set to True.
+
+pipe = False
+
+
 # Location of perl. Change this into an absolute path if perl cannot be accesed
 # by the system by simply using 'perl'
 
@@ -46,11 +52,12 @@ et-model = tb-vectors.et.model
 
 
 # The source type of the document which allows components to be sensitive to
-# idiosyncratic properties of the text. It is xml by default, other source
-# types are text and ttk. This would typically be set with the --source command
-# line option.
+# idiosyncratic properties of the text. By default, if the value is set to None,
+# the system tries to guess what the source type is (guessing 'xml', 'ttk' or
+# 'text'). The guess can be overruled here or by using the --source command line
+# option.
 
-source = xml
+source = None
 
 
 # Set log level to an integer from 0 to 4, the higher the level the more

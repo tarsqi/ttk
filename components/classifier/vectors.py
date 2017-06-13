@@ -257,9 +257,14 @@ class PairVector(Vector):
                              super(PairVector, self).__str__())
 
     def _set_identifier(self):
+        if self.tarsqidoc.sourcedoc.filename is not None:
+            fname = os.path.basename(self.tarsqidoc.sourcedoc.filename)
+        else:
+            # file name is not always available, for example when running Tarsqi
+            # in a pipe or running it on a string
+            fname = 'PIPE'
         self.identifier = "%s-%s-%s" \
-            % (os.path.basename(self.tarsqidoc.sourcedoc.filename),
-               self.v1.identifier, self.v2.identifier)
+                          % (fname, self.v1.identifier, self.v2.identifier)
 
     def _inherit_object_features(self):
         """Copy the features from the object vectors."""

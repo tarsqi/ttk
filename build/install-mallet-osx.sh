@@ -2,8 +2,8 @@
 
 # Example script on how to install MALLET on OSX. The download, install and test
 # variables let you determine what steps need to be taken. With the current
-# defaults the only thing that happens is that the bin/mallet is run to print a
-# list of commands. See http://mallet.cs.umass.edu/quick-start.php.
+# defaults the only thing that happens is that bin/mallet is run to print a list
+# of commands. See http://mallet.cs.umass.edu/quick-start.php.
 
 download=false
 install=false

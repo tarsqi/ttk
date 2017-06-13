@@ -9,9 +9,7 @@
 
 <h1>The TARSQI Toolkit Manual</h1>
 
-<p class="subtitle">Release Notes and Manual for TTK Version 2.0.2.
-
-<p class="subtitle">Marc Verhagen, April 2017.
+<p class="subtitle">Release Notes and Manual for TTK Version 2.1.0. June 2017.
 
 <p class="navigation">
 [ <a href="#intro">introduction</a>
@@ -43,7 +41,8 @@ respects: code was simplified and debugged, documentation was updated, the
 Mallet toolkit was used, stand-off annotation was adopted, libraries were
 redesigned, and test and evaluation code was added. However, version 2.0.0 did
 not significantly change the toolkit's performance in terms of speed or
-precision and recall. A list of changes is maintained in
+precision and recall. After version 2.0.0 there have been more regular
+updates. A list of changes is maintained in
 the <a href="https://github.com/tarsqi/ttk/blob/master/CHANGELOG.md">changelog</a>
 on GitHub.</p>
 
@@ -65,7 +64,9 @@ toolkit.</p>
   <li>
     <p>Install the toolkit code. This is simply a matter of unpacking the
     downloaded archive or cloning the TTK Git repository
-    at <a href="https://github.com/tarsqi/ttk.git">https://github.com/tarsqi/ttk.git</a>.</p>
+    at <a href="https://github.com/tarsqi/ttk.git">https://github.com/tarsqi/ttk.git</a>. Due
+    to a <a href="https://github.com/tarsqi/ttk/issues/42">bug</a> on Windows,
+    you should aim to install the toolkit on a path without spaces.</p>
   </li>
 
   <li>
@@ -79,7 +80,7 @@ toolkit.</p>
       <a href="../../build/install-treetagger-osx.sh">example script</a> in the
       <code>build</code> directory which shows how to install the TreeTagger on
       Mac OSX. (Note: all directory and file names printed in this manual are
-      relative to the path where TTK is installed).
+      relative to the path where TTK is installed).</p>
   </li>
 
   <li>
@@ -92,7 +93,9 @@ toolkit.</p>
       2.0.7 will work as well. You can put MALLET wherever you want, but as with
       the TreeTagger you may need to tell the Toolkit where to find it. There is
       an <a href="../../build/install-mallet-osx.sh"> example script</a> in the
-      <code>build</code> directory which shows how to install MALLET on Mac OSX.</p>
+      <code>build</code> directory which shows how to install MALLET on Mac
+      OSX. For Windows, you need to set the MALLET_HOME environment variable in
+      addition to editing the configuration file.</p>
   </li>
 
   <li>
@@ -162,8 +165,9 @@ purposes (TTK output has each tag on one line).</p>
 
 <p><u>A note for Windows users</u>. TTK 1.0 depended on some software that did
 not run on Windows. The current version does not have that problem and the code
-should run on Windows. However, this has not been tested properly yet and the
-above instructions may not be entirely correct for Windows.</p>
+should run on Windows and we know it does actually run on Windows. However, we
+have not done extensive testing on Windows and some of the above instructions
+may not be entirely correct for Windows.</p>
 
 
 <a name="using"></a>
@@ -191,8 +195,7 @@ can be set in the configuration file (<code>config.txt</code>) or overruled on
 the command line. For a full list see the configuration file and the module
 documentation string in <code>tarsqi</code> (which can be browsed
 at <a href="../code/modules/tarsqi.html">docs/code/modules/tarsqi.html</a>). Here
-we just present the two options you are most likely to use, these options also
-happen to shed light on how the toolkit works.</p>
+we just present the three options you are most likely to use.</p>
 
 <p><code>--source xml|text|ttk|timebank|...</code></p>
 
@@ -201,51 +204,56 @@ happen to shed light on how the toolkit works.</p>
 <p>The source type of the document allows components, especially the source
 parser and the metadata parser, to be sensitive to idiosyncratic properties of
 the text. There are three main types: <code>xml</code>, <code>text</code>
-and <code>ttk</code>. The first type is the default, with it the toolkit will
-assume that the input is well-formed XML and apart from that it will assume
-nothing and just process any text it finds in the input file. With
-the <code>xml</code> input type the system has no good way to determine
-properties derived in an idiosyncratic way like the document creation time (DCT)
-and it will simply use today's date. A future version will allow the DCT to be
-handed in on the command line. This input type can be used for the files
-in <code>data/in/simple-xml</code>. The <code>text</code> type is similar
-to the <code>xml</code> type, except that it assumes that the entire content of
-the file is to be parsed. Since the toolkit does not try to recognize any tags
-this type should only be used for real raw text.</p>
+and <code>ttk</code>. With the <code>xml</code> type the toolkit will assume
+that the input is well-formed XML and it will separate the text and the
+tags. The text is input for Tarsqi processing and the XML tags will be put in a
+separate tag repository. This input type can be used for the files
+in <code>data/in/simple-xml</code>. The <code>text</code> type makes the toolkit
+assume that the entire content of the file is to be parsed. Since the toolkit
+does not try to recognize any tags this type should only be used for real raw
+text. The <code>ttk</code> source type tells the toolkit that the input is in
+the TTK format. Typically the input here would be a file previously processed
+but the toolkit or a file that was converted into the TTK format.</p>
 
-<p>With both <code>xml</code> and <code>text</code> the output of the processing
-will be in the TTK format, an example of which was given above for the result of
-processing <code>data/in/simple-xml/tiny.xml</code>. The TTK format is a
-standoff format which contains both the original unaltered text as well as the
-tags added and it contains four main elements:
+<p>The toolkit will usually run just fine without the <code>--source</code>
+option. In that case the toolkit will make an educated guess as to whether the
+input is <code>xml</code>, <code>text</code> or <code>ttk</code>. The system can
+be tricked, for example by giving it a file where the beginning really lookes
+like XML, but in those cases an error will usually follow and only then it would
+be prudent to use the <code>--source</code> option after all.</p>
+
+<p>The option should always be used when one of the special formats are
+used. When the input is vanilla text or XML then the toolkit has no good way to
+determine properties that are expressed in a very idiosyncratic way like the
+document creation time (DCT) and it will simply default to today's
+date. The <code>timebank</code> source type is an example of a specific source
+type. When using this for one of the files in <code>data/in/TimeBank</code> the
+toolkit will know where to find the DCT, which in the TimeBank case is in the
+file name or in some tag in the input.</p>
+
+<p>The output of the processing is always in the TTK format, an example of which
+was given above when we processed <code>data/in/simple-xml/tiny.xml</code>. The
+TTK format is a standoff format which contains both the original unaltered text
+as well as the tags added and it contains four main elements:</p>
 
 <ol>
 
-<li>The <code>text</code> tag with in it the primary data of the input. In the
+<li><p>The <code>text</code> tag with in it the primary data of the input. In the
 case of the <code>text</code> type this is simply the entire document, for
 the <code>xml</code> type it is the document with all tags stripped (note that
 this implies that for the <code>xml</code> type we consider the primary source
-the document without the XML tags).</li>
+the document without the XML tags).</p></li>
 
-<li>The <code>metadata</code> tag which has a dictionary with meta data, which
-at this point only contains the value of the DCT.</li>
+<li><p>The <code>metadata</code> tag which has a dictionary with meta data, which
+at this point only contains the value of the DCT.</p></li>
 
-<li>The <code>source_tags</code> tag which has all tags that were available in
-the input, this is empty for the <code>text</code> type.</li>
+<li><p>The <code>source_tags</code> tag which has all tags that were available in
+the input, this is by definition empty for the <code>text</code> type.</p></li>
 
-<li>The<code>tarsqi_tags</code> tag which has a list of all tags added by the
-toolkit.</li>
+<li><p>The <code>tarsqi_tags</code> tag which contains a flat list of all tags added by the
+toolkit.</p></li>
 
 </ol>
-
-<p>The <code>ttk</code> source type tells the toolkit that the input is in the
-TTK format. Typically the input here would be a file previously processed but
-the toolkit or a file that was converted into the TTK format.</p>
-
-<p>The <code>timebank</code> source type is an example of a specific source
-type. When using this for one of the files in <code>data/in/TimeBank</code>
-the toolkit will know where to find the DCT, which in the TimeBank case is in
-the file name or in some tag in the input.</p>
 
 </div>
 
@@ -268,6 +276,22 @@ href="http://www.pascal-network.org/Challenges/RTE3/">Third Pascal
 Textual Entailment Challenge</a>. 
 </blockquote>
 -->
+
+
+<p><code>--dct TIMEX_VALUE</code></p>
+
+<div class="indent">
+
+<p>This can be used to hand in a DCT so that you are not faced with a situation
+where all DCTs are set to today's date. You may have a series of documents that
+you want to parse and that have their own particular format where the DCT is
+expressed in some way. You could extend the toolkit and define new data types
+and write metadata parsers for that data type. Or you could do that processing
+off-line and simply feed it into the toolkit with this option. The value needs
+to be a normalized time value like 20170412 (for April 12th 2017).</p>
+
+</div>
+
 
 <p><code>--pipeline STRING</code></p>
 
@@ -296,11 +320,12 @@ pipeline since you would then run the tokenizer twice and this will cause errors
 later in the processing chain. For the third example, preprocessing, times and
 events are taken for granted and only links are added. In this case the input
 needs to be a ttk file which has the needed information. The fourth example is
-almost like the default except that the link merger component is left out, this
+th efull pipeline except that the link merger component is left out, this
 is useful for large files since the merger component slows down on large
-file.</p>
+file. This is in fact the default pipeline.</p>
 
 </div>
+
 
 <p>To end this section here is an example to illustrate the interaction of
 the <code>--source</code> and <code>--pipeline</code> options:</p>
@@ -311,7 +336,8 @@ $ python tarsqi.py --source ttk --pipeline TAGGER test.tokenized.xml test.tagged
 </pre>
 
 <p>Note how the second line uses the ttk source type because output is always in
-the TTK format.</p>
+the TTK format. You couldof course leave out the <code>--source</code> and let
+the toolkit determine the source from the input files.</p>
 
 
 <a name="docs"></a>
@@ -356,8 +382,12 @@ in <a href="../design/1-toplevel.html#tags">docs/design/1-toplevel.html#tags</a>
 
 <tr valign=top>
 <td>docs/notes</td>
-<td>Various random notes on the Tarsqi toolkit including descriptions of rules
-and algorithms. Some very much out-of-date, some recent.</td>
+<td>Various random notes on the Tarsqi toolkit including descriptions of parts
+of the system and how-to guides. Many are fairly recent, but some are very much
+out-of-date. The recent ones tend to be written in Github flavoured markdown and
+can best be viewed on Github
+at <a href="https://github.com/tarsqi/ttk/tree/master/docs/notes"
+>https://github.com/tarsqi/ttk/tree/master/docs/notes</a>.</td>
 </tr>
 
 <tr valign=top>

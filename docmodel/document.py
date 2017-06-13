@@ -9,6 +9,7 @@ import sys, codecs, StringIO, itertools
 from xml.sax.saxutils import escape, quoteattr
 
 from library.main import LIBRARY
+from utilities import logger
 
 
 TIMEX = LIBRARY.timeml.TIMEX
@@ -77,6 +78,12 @@ class TarsqiDocument:
         """Convenience method for easy access to timexes."""
         return self.tags.find_tags(TIMEX)
 
+    def slinks(self):
+        return self.tags.find_tags(SLINK)
+
+    def tlinks(self):
+        return self.tags.find_tags(TLINK)
+
     def has_event(self, begin, end):
         """Return True if there is already an event at the given begin and
         end."""
@@ -143,10 +150,13 @@ class TarsqiDocument:
         fh.write(str(self.list_of_sentences()))
         fh.write("\n")
 
-    def print_all(self, fname):
+    def print_all(self, fname=None):
         """Write source string, metadata, comments, source tags and tarsqi tags
-        all to one file."""
-        fh = codecs.open(fname, mode='w', encoding='UTF-8')
+        all to one file or to the standard output."""
+        if fname is None:
+            fh = sys.stdout
+        else:
+            fh = codecs.open(fname, mode='w', encoding='UTF-8')
         fh.write("<ttk>\n")
         fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
         self._print_comments(fh)
@@ -174,7 +184,19 @@ class TarsqiDocument:
     def _print_tags(self, fh, tag_group, tags):
         fh.write("<%s>\n" % tag_group)
         for tag in sorted(tags):
-            fh.write("  %s\n" % tag.as_ttk_tag())
+            try:
+                ttk_tag = tag.as_ttk_tag()
+                # This became needed after allowing any text in the value of the
+                # form and lemma attribute.
+                if isinstance(ttk_tag, str):
+                    ttk_tag = unicode(ttk_tag, errors='ignore')
+                fh.write("  %s\n" % ttk_tag)
+            except UnicodeDecodeError:
+                # Not sure why this happened, but there were cases where the
+                # result of as_ttk_tag() was a byte string with a non-ascii
+                # character. The code in the try clause was changed to prevent
+                # the error, but leave the except here just in case.
+                logger.error("UnicodeDecodeError on printing a tag.")
         fh.write("</%s>\n" % tag_group)
 
     def list_of_sentences(self):
@@ -355,6 +377,13 @@ class TagRepository:
         removing the tags."""
         self.tags = [t for t in self.tags if t.name != tagname]
         self.index()
+
+    def remove_tag(self, tag):
+        """Remove the tag from the list of tags. This is rather inefficient since the
+        whole list is traversed. Also note that this method does not remove the
+        tag from the opening_tags and closing_tags dictionaries, so depending on
+        when this is done these may need to be re-indexed."""
+        self.tags = [t for t in self.tags if t is not tag]
 
     def merge(self):
         """Take the OpeningTags and ClosingTags in self.tmp and merge them into
@@ -548,9 +577,11 @@ class Tag:
 
     def attributes_as_string(self):
         """Return a string representation of the attributes dictionary."""
-        # NOTE: in rare cases the attribute can be None, which breaks quoteattr,
-        # so coerce the attribute into a string
-        attrs = ["%s=%s" % (k, quoteattr(str(v))) for (k, v) in self.attrs.items()]
+        # In rare cases the attribute can be None, which breaks quoteattr, so
+        # coerce the attribute into a string
+        def protect(text): return 'None' if text is None else text
+        attrs = ["%s=%s" % (k, quoteattr(protect(v)))
+                 for (k, v) in self.attrs.items()]
         return '' if not attrs else ' ' + ' '.join(sorted(attrs))
 
 

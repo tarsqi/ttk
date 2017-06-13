@@ -18,13 +18,14 @@ class Evita (TarsqiComponent):
     TarsqiTree instance. The TarsqiTree instance in the doctree variable is the
     tree for just one element and not for the whole document or string."""
 
-    def __init__(self, tarsqidoc, docelement):
-        """Set the NAME instance variable. The doctree variables is filled in during
-        processing."""
+    def __init__(self, tarsqidoc, docelement, imported_events):
+        """Set the NAME instance variable. The doctree variables is filled in
+        during processing."""
         self.NAME = EVITA
-        self.tarsqidoc = tarsqidoc    # instance of TarsqiDocument
-        self.docelement = docelement  # instance of Tag
-        self.doctree = None           # will be an instance of TarsqiTree
+        self.tarsqidoc = tarsqidoc              # instance of TarsqiDocument
+        self.docelement = docelement            # instance of Tag
+        self.doctree = None                     # instance of TarsqiTree
+        self.imported_events = imported_events  # dict of int=>Tag
 
     def process_element(self):
         """Process the element slice of the TarsqiDocument. Loop through all
@@ -39,4 +40,4 @@ class Evita (TarsqiComponent):
                 if node.isEvent():
                     continue
                 if not node.checkedEvents:
-                    node.createEvent()
+                    node.createEvent(imported_events=self.imported_events)

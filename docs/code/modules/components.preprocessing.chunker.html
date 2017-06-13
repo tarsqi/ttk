@@ -18,6 +18,7 @@ function view_code(id) {
 <div class="title">module components.preprocessing.chunker</div>
 
 <pre>
+<a href=#ChunkUpdater>ChunkUpdater</a>
 <a href=#Sentence>Sentence</a>
 </pre>
 
@@ -27,8 +28,44 @@ Simple Python Chunker
 Usage
 
    from chunker import chunk_sentences
-   chunked_sentences = chunk_sentences(sentences)</pre>
+   chunked_sentences = chunk_sentences(sentences)
+   chunked_sentences = chunk_sentences(sentences, terms)
 
+The optional terms argument allows you to hand in a dictionary of terms indexed
+on their beginning offsets. With this dictionary, terms are always considered
+chunks as long as they are headed by a noun or verb. Terms are instances of
+docmodel.document.Tag.</pre>
+
+
+<a name="ChunkUpdater"/><div class="section">class ChunkUpdater</div>
+<pre>
+<strong>Inherits from: object</strong>
+
+Class that allows you to take a TarsqiDocument and then update the chunks
+in it given tags that were unsuccesfully added to the TarsqiTrees in the
+document. Currently only done for Timex tags.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, tarsqidoc)</div>
+</pre>
+<pre>
+<div class=function>update(self)</div>
+Uses the orphans in the TarsqiTrees in the document to update chunks.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_add_chunks_for_timexes(self, element)</div>
+</pre>
+<pre>
+<div class=function>_remove_overlapping_chunks(self, nodes)</div>
+Remove all the noun chunk nodes that were found to be overlapping.</pre>
+<pre>
+<div class=function>_update_element(self, element)</div>
+Uses the orphans in the TarsqiTree of the element to update chunks.</pre>
+</blockquote>
 
 <a name="Sentence"/><div class="section">class Sentence</div>
 <pre>
@@ -41,16 +78,34 @@ The work horse for the chunker.</pre>
 <div class=function>__init__(self, sentence)</div>
 Set sentence variable and initialize chunk_tags dictionary.</pre>
 <pre>
-<div class=function>chunk(self)</div>
+<div class=function>chunk(self, terms=None)</div>
 Chunk self.sentence. Updates the variable and returns it. Scans
-through the sentence, advancing the index if a chunk is found.</pre>
+through the sentence and advances the index if a chunk is found. The
+optional terms argument contains a dictionary of terms indexed on start
+offset. If a terms dictionary is handed in then use it to make sure that
+terms on it are considered chunks (as long as they are headed by a noun
+or verb).</pre>
 <pre>
-<div class=function>consume_chunk(self, chunk_type, idx)</div>
-Read constituent of class chunk_type, starting at index
-idx. Returns idx if no constituent could be read, returns the
-index after the end of the consitutent otherwise.</pre>
+<div class=function>pp(self)</div>
+</pre>
 <pre>
-<div class=function>fix_VBGs(self)</div>
+<div class=function>pp_tokens(self)</div>
+</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_consume_chunk(self, chunk_type, idx)</div>
+Read constituent of class chunk_type, starting at index idx. Returns
+idx if no constituent could be read, returns the index after the end of the
+consitutent otherwise.</pre>
+<pre>
+<div class=function>_consume_term(self, term, idx)</div>
+Now that we now that a term starts at index idx, read the whole term
+and, if it matches a few requirements, add it to the chunk_tags
+dictionary. A term is an instance of docmodel.document.Tag.</pre>
+<pre>
+<div class=function>_fix_VBGs(self)</div>
 The TreeTagger tends to tag some adjectives as gerunds, as a result
 we get
 
@@ -65,34 +120,22 @@ In order to do this, it finds all occurrences of VGs followed by NGs
 where: (i) the VG ends in VBG, (ii) the NG starts with one of NN, NNS,
 NNP, NNPS, and (iii) the verb before the VBG is not a form of "be".</pre>
 <pre>
-<div class=function>fix_common_errors(self)</div>
+<div class=function>_fix_common_errors(self)</div>
 Phase 2 of processing. Fix some common errors.</pre>
 <pre>
-<div class=function>import_chunks(self)</div>
+<div class=function>_import_chunks(self)</div>
 Add chunk tags to the sentence variable.</pre>
 <pre>
-<div class=function>is_VB_VBG_NN(self, idx)</div>
+<div class=function>_is_VB_VBG_NN(self, idx)</div>
 Return True if starting at idx, we have the pattern "NOT_BE VBG
 &lt;/VG&gt; &lt;NG&gt; NN", return False otherwise.</pre>
 <pre>
-<div class=function>pp(self)</div>
-</pre>
-<pre>
-<div class=function>set_tags(self, chunk_type, begin_idx, end_idx)</div>
+<div class=function>_set_tags(self, chunk_type, begin_idx, end_idx)</div>
 Store beginning and ending position of the hunk in the chunk_tags
 dictionary.</pre>
 </blockquote>
 
 <div class="section">module functions</div>
 <pre>
-<div class=function>chunk_sentences(sentences)</div>
+<div class=function>chunk_sentences(sentences, terms=None)</div>
 Return a list of sentences with chunk tags added.</pre>
-<pre>
-<div class=function>is_final_tag(cat, tag)</div>
-Returns True if tag can be cat-final, False otherwise.</pre>
-<pre>
-<div class=function>is_initial_tag(cat, tag)</div>
-Returns True if tag can be cat-initial, False otherwise.</pre>
-<pre>
-<div class=function>is_internal_tag(cat, tag)</div>
-Returns True if tag can be cat-internal, False otherwise.</pre>

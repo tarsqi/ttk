@@ -11,12 +11,13 @@ class Constituent:
     and Tokens plus a couple of default methods.
 
     Instance variables:
-       tree     - the TarsqiTree instance that the consituent is an element of
-       parent   - the parent, could be any non-token constituent
-       position - index in the parent's daughters list
-       dtrs     - a list of Tokens, EventTags and TimexTags
-       begin    - beginning offset in the SourceDoc
-       end      - ending offset in the SourceDoc
+       tree     -  the TarsqiTree instance that the constituent is an element of
+       parent   -  the parent, could be any non-token constituent
+       position -  index in the parent's daughters list
+       dtrs     -  a list of Tokens, EventTags and TimexTags
+       begin    -  beginning offset in the SourceDoc
+       end      -  ending offset in the SourceDoc
+       tag      -  the tag that the Constituent was created from
 
     On initialization these are all set to None or the empty list (for the dtrs
     variabe). All values are filled in when the TarsqiTree is created from a
@@ -31,6 +32,7 @@ class Constituent:
         self.dtrs = []
         self.begin = None
         self.end = None
+        self.tag = None
 
     def __setitem__(self, index, val):
         """Sets a value on the dtrs variable."""
@@ -69,6 +71,17 @@ class Constituent:
     def __str__(self):
         return "<%s %d:%d>" % (self.__class__.__name__, self.begin, self.end)
 
+    def includes(self, tag):
+        """Returns True if tag is positioned inside the consituent."""
+        return self.begin <= tag.begin and self.end >= tag.end
+
+    def overlaps(self, tag):
+        """Returns True if tag overlaps with the constituent."""
+        return (self.begin <= tag.begin <= self.end
+                or self.begin <= tag.end <= self.end
+                or tag.begin <= self.begin <= tag.end
+                or tag.begin <= self.end <= tag.end)
+
     def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used
         in the pattern matching phase."""
@@ -81,6 +94,9 @@ class Constituent:
             return None
         else:
             raise AttributeError(name)
+
+    def isSentence(self):
+        return False
 
     def isToken(self):
         return False
@@ -180,7 +196,7 @@ class Constituent:
                 node = node.parent
         return None
 
-    def createEvent(self):
+    def createEvent(self, imported_events=None):
         """Does nothing except for logging a warning. If this happens something
         unexpected is going on. Event creation is only attempted on some sub
         classes."""

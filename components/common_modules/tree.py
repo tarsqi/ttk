@@ -7,7 +7,7 @@ from xml.sax.saxutils import escape, quoteattr
 from docmodel.document import Tag
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
-from components.common_modules.tokens import Token, AdjectiveToken
+from components.common_modules.tokens import token_class
 from components.common_modules.tags import EventTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.main import LIBRARY
@@ -27,7 +27,6 @@ NOUNCHUNK = LIBRARY.timeml.NOUNCHUNK
 VERBCHUNK = LIBRARY.timeml.VERBCHUNK
 LEX = LIBRARY.timeml.LEX
 POS = LIBRARY.timeml.POS
-POS_ADJ = LIBRARY.timeml.POS_ADJ
 
 
 def create_tarsqi_tree(tarsqidoc, element, links=False):
@@ -47,7 +46,10 @@ def create_tarsqi_tree(tarsqidoc, element, links=False):
                 tarsqidoc.tags.find_tags(LEX, o1, o2) +
                 tarsqidoc.tags.find_tags(EVENT, o1, o2) +
                 tarsqidoc.tags.find_tags(TIMEX, o1, o2)):
-        top_node.insert(tag)
+        try:
+            top_node.insert(tag)
+        except NodeInsertionError:
+            tree.orphans.append(tag)
     top_node.set_positions()
     top_node.set_event_markers()
     # recursively import all nodes into the doc, but skip the topnode itself
@@ -79,7 +81,7 @@ class Node(object):
       dtrs       -  a list of Nodes
       event_dtr  -  None or the Node from dtrs that is an event
       tag        -  the Tag that the Node is created from
-      tree       -  the Tree that the Node will be inserted into as an element
+      tree       -  the TarsqiTree that the Node will be inserted into as an element
 
     """
 
@@ -108,13 +110,18 @@ class Node(object):
         self.tree = tree
 
     def __str__(self):
-        lemma = self.tag.attrs.get('lemma')
-        lemma = " %s" % lemma if lemma else ''
-        return "<Node %s %d-%d%s>" % (self.name, self.begin, self.end, lemma)
+        attrs = ''
+        if self.name == 'lex':
+            lemma = self.tag.attrs.get('lemma')
+            lemma = " lemma=%s" % lemma if lemma else ''
+            text = ' text=' + self.tree.tarsqidoc.sourcedoc.text[self.begin:self.end]
+            pos = ' pos=' + self.tag.attrs.get('pos')
+            attrs = pos + lemma + text
+        return "<Node %s %d-%d%s>" % (self.name, self.begin, self.end, attrs)
 
     def insert(self, tag):
         """Insert a Tag in the node. This could be insertion in one of the node's
-        daughters, or insertion in the node's daughters list. Print a warning if
+        daughters, or insertion in the node's daughters list. Log a warning if
         the tag cannot be inserted."""
         # first check if tag offsets fit in self offsets
         if tag.begin < self.begin or tag.end > self.end:
@@ -142,9 +149,10 @@ class Node(object):
                     if span:
                         self._replace_span_with_tag(tag, span)
                     else:
-                        # print warning if the tag cannot be inserted
-                        print "WARNING: cannot insert tag because " \
-                            + "it overlaps with other tags."
+                        # log warning if the tag cannot be inserted
+                        # TODO: maybe downgrade to debug statement
+                        logger.warn("Cannot insert %s" % tag)
+                        raise NodeInsertionError
 
     def _insert_tag_into_dtr(self, tag, idx):
         """Insert the tag into the dtr at self.dtrs[idx]. But take care of the
@@ -261,14 +269,13 @@ class Node(object):
         if self.name == SENTENCE:
             tree_element = Sentence()
         elif self.name == NOUNCHUNK:
-            tree_element = NounChunk(NOUNCHUNK)
+            tree_element = NounChunk()
         elif self.name == VERBCHUNK:
-            tree_element = VerbChunk(VERBCHUNK)
+            tree_element = VerbChunk()
         elif self.name == LEX:
             pos = self.tag.attrs[POS]
             word = self.tree.tarsqidoc.sourcedoc[self.begin:self.end]
-            token_class = AdjectiveToken if pos.startswith(POS_ADJ) else Token
-            tree_element = token_class(word, pos)
+            tree_element = token_class(pos)(word, pos)
         elif self.name == EVENT:
             tree_element = EventTag(self.tag.attrs)
         elif self.name == TIMEX:
@@ -282,12 +289,19 @@ class Node(object):
         tree_element.tree = self.tree
         tree_element.begin = self.begin
         tree_element.end = self.end
+        tree_element.tag = self.tag
         return tree_element
 
     def pp(self, indent=0):
         print "%s%s" % (indent * '  ', self)
         for dtr in self.dtrs:
             dtr.pp(indent + 1)
+
+
+class NodeInsertionError(Exception):
+
+    """An exception used to trap cases where you insert a node in the tree and there
+    is no place where it can go."""
 
 
 class TarsqiTree:
@@ -303,6 +317,7 @@ class TarsqiTree:
         alinks      -  a list of AlinkTags, filled in by Slinket
         slinks      -  a list of SlinkTags, filled in by Slinket
         tlinks      -  a list of TlinkTags
+        orphans     -  a list of tags that could not be inserted
 
     The events dictionary is used by Slinket and stores events from the tree
     indexed on event eids."""
@@ -318,6 +333,7 @@ class TarsqiTree:
         self.alinks = []
         self.slinks = []
         self.tlinks = []
+        self.orphans = []
 
     def __len__(self):
         """Length is determined by the length of the dtrs list."""
@@ -326,6 +342,17 @@ class TarsqiTree:
     def __getitem__(self, index):
         """Indexing occurs on the dtrs variable."""
         return self.dtrs[index]
+
+    def get_nodes(self):
+        """Returns a list of all nodes in the tree."""
+        nodes = []
+        for dtr in self.dtrs:
+            nodes.extend(dtr.all_nodes())
+        return nodes
+
+    def get_sentences(self):
+        """Returns a list of all sentences in the tree."""
+        return [s for s in self.dtrs if s.isSentence()]
 
     def initialize_alinks(self, alinks):
         for alink in alinks:

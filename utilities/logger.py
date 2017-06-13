@@ -1,5 +1,6 @@
-"""Simple logging code that write messages to a log file. It uses five
-levels:
+"""logger.py
+
+Simple logging code that write messages to a log file. It uses five levels:
 
    Level 0: no messages
    Level 1: errors
@@ -12,10 +13,10 @@ Initialize the logger, typically from the main script, as follows
    import utilities.logger as logger
    logger.initialize_logger(<filename>, <level>)
 
-This will open for writing a file <filename>.html. The <level>
-argument is optional, the default is to print info, errors and warnings
-(level 3). After initialization, the logger can be used from any
-module by importing it and using its methods:
+This will open for writing a file <filename>.html. The <level> argument is
+optional, the default is to print info, errors and warnings (level 3). After
+initialization, the logger can be used from any module by importing it and using
+its methods:
 
    from utilities import logger
    logger.info(<string>)
@@ -23,20 +24,20 @@ module by importing it and using its methods:
    logger.warn(<string>)
    logger.error(<string>)
 
-In addition, there is one method that writes to the log no matter what
-the level:
+In addition, there is one method that writes to the log no matter what the
+level:
 
    logger.write(<string>)
 
-Finally, it provides two convenience method that print directly to the
-standard output:
+Finally, it provides two convenience method that print directly to the standard
+output:
 
    logger.out(*args)
    logger.outnl()
 
-The first one writes the string representation of all arguments to the
-standard output and the second writes a white line. Printing to the
-standard output can be turned on and off with
+The first one writes the string representation of all arguments to the standard
+output and the second writes a white line. Printing to the standard output can
+be turned on and off with
 
    set_stdout_printing(Boolean)
 
@@ -67,6 +68,8 @@ class Logger:
     def __init__(self, filename, level=2):
         """Set logging level and the log file."""
         self.level = level
+        self.errors = 0
+        self.warnings = 0
         self.html_file = open(filename + '.html', 'w')
         self.html_file.write("<html>\n")
         self.html_file.write("<head>\n<style>\n")
@@ -104,12 +107,14 @@ def info(string):
 def warn(string):
     """Print a warning to the log file."""
     if logger.level > 1:
+        logger.warnings += 1
         _log('WARNING', string)
 
 
 def error(string):
     """Print an error to the log file, also print it to standard error."""
     if logger.level > 0:
+        logger.errors += 1
         sys.stderr.write('ERROR: ' + string + "\n")
         _log('ERROR', string)
 
@@ -118,6 +123,14 @@ def write(string):
     """Print a string to the log file, no matter what the logging
     level. This will be printed as an INFO string"""
     _log('INFO', string)
+
+
+def report():
+    if logger.warnings or logger.errors:
+        print "\nWARNING"
+        print "   %s errors and %s warnings were reported" \
+            % (logger.errors, logger.warnings)
+        print "   see data/logs/ttk_log.html for details\n"
 
 
 def _log(message_type, log_string):
@@ -155,37 +168,34 @@ def _log(message_type, log_string):
 
 
 def set_stdout_printing(Boolean):
-    """When this function is called, the out and outnl methods will
-    not print to the output. """
+    """When this function is called, the out and outnl methods will print or not
+    print to the standard output, depending on the boolean value."""
     global STDOUT_PRINTING
     STDOUT_PRINTING = Boolean
 
 
 def out(*args):
-    """Method to write to standard output rather than the html
-    file. Intended for quick and dirty debugging that should not be
-    left in the code. Using this method makes it easier to later
-    remove the debugging code (as opposed to using print statements
-    right in the text). Works well only for one-liners."""
-    if not STDOUT_PRINTING:
-        return
-    stack = inspect.stack()
-    depth = len(stack) - 3
-    frame = stack[1]
-    path = frame[1]
-    function = frame[3]
-    path_elements = path.split(os.sep)
-    file = path_elements[-1]
-    file = file.replace('.py', '')
-    # line = str(frame[2])
-    prefix = 'LOG (' + str(depth) + ') [' + file + '.' + function + ']'
-    print prefix + ' ',
-    for arg in args:
-        print arg,
-    print
+    """Method to write to standard output rather than the html file. Intended
+    for quick and dirty debugging that should not be left in the code. Using
+    this method makes it easier to later remove the debugging code (as opposed
+    to using print statements right in the text). Works well only for
+    one-liners."""
+    if STDOUT_PRINTING:
+        stack = inspect.stack()
+        depth = len(stack) - 3
+        frame = stack[1]
+        path = frame[1]
+        function = frame[3]
+        path_elements = path.split(os.sep)
+        file = path_elements[-1]
+        file = file.replace('.py', '')
+        prefix = 'LOG (' + str(depth) + ') [' + file + '.' + function + ']'
+        print prefix + ' ',
+        for arg in args:
+            print arg,
+        print
 
 
 def outnl():
-    if not STDOUT_PRINTING:
-        return
-    print
+    if STDOUT_PRINTING:
+        print

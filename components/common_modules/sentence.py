@@ -29,7 +29,10 @@ class Sentence(Constituent):
         self.eventList = [] 
         self.position = None
         self.parent = None
-        
+
+    def isSentence(self):
+        return True
+
     def set_event_list(self):
         """Set the value of self.eventList to the list of eLocation-eid tuples
         in the sentence. This is used by Slinket."""

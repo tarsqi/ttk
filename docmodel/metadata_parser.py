@@ -13,16 +13,20 @@ import re, time, os, sqlite3
 
 from docmodel.document import TarsqiDocument
 import utilities.logger as logger
+from library.main import LIBRARY
 
 
 class MetadataParser:
 
-    """This is the minimal metadata parser that is used as a default. It sets the
-    DCT to today's date and provides some common functionality to subclasses."""
+    """This is the minimal metadata parser that is used as a default. It selects
+    the DCT from all available sources and picks one of them, or it uses today's
+    date if no DCT's are available. Subclasses should override the get_dct()
+    method to define specific DCT extraction methods for the document source."""
 
     def __init__(self, options):
-        """At the moment, initialization does not use any of the options,
-        but this could change."""
+        """At the moment, initialization only uses the --dct option if it is
+        present, but this could change. Note that the TarsqiDocument does not
+        exist yet when the MetadataParser is initialized."""
         self.options = options
         self.tarsqidoc = None  # added in by the parse() method
 
@@ -31,12 +35,41 @@ class MetadataParser:
         metadata dictionary is the DCT, which is set to today."""
         self.tarsqidoc = tarsqidoc
         self.tarsqidoc.metadata['dct'] = self.get_dct()
+        self._moderate_dct_vals()
+
+    def _moderate_dct_vals(self):
+        """There are five places where a DCT can be expressed: the DCT handed in
+        with the --dct option or defined in the config file, the DCT from the
+        metadata on the TarsqiDocument, the DCT from the metadata on the
+        SourceDoc, DCTs from the TagRepository on the TarsqiDocument and DCTs
+        from the TagRepository on the SourceDoc. The first three are single
+        values or None, the other two are lists of any length. The order of
+        these five is significant in that a DCT earlier on the list if given
+        precedence over a DCT later on the list. Collects all the DCT values and
+        picks the very first one, or today's date if no DCTs are available. Logs
+        a warning if the DCTs do not all have the same value."""
+        dcts = []
+        for dct_val in [self.tarsqidoc.options.dct,
+                        self.tarsqidoc.metadata.get('dct'),
+                        self.tarsqidoc.sourcedoc.metadata.get('dct'),
+                        _get_dct_values(self.tarsqidoc.sourcedoc.tags),
+                        _get_dct_values(self.tarsqidoc.tags)]:
+            if dct_val is None:
+                # the case where there is no DCT in the options or metadata
+                continue
+            elif isinstance(dct_val, list):
+                dcts.extend(dct_val)
+            else:
+                dcts.append(dct_val)
+        if len(set(dcts)) > 1:
+            logger.warn("WARNING: more than one DCT value available")
+        dct = dcts[0] if dcts else _get_today()
+        self.tarsqidoc.metadata['dct'] = dct
 
     def get_dct(self):
-        """Return today's date in YYYYMMDD format."""
-        return get_today()
+        return None
 
-    def get_source(self):
+    def _get_source(self):
         """A convenience method to lift the SourceDoc out of the tarsqi
         instance."""
         return self.tarsqidoc.sourcedoc
@@ -45,8 +78,8 @@ class MetadataParser:
         """Return the text content of the first tag with name tagname, return
         None if there is no such tag."""
         try:
-            tag = self.get_source().tags.find_tags(tagname)[0]
-            content = self.get_source().text[tag.begin:tag.end].strip()
+            tag = self._get_source().tags.find_tags(tagname)[0]
+            content = self._get_source().text[tag.begin:tag.end].strip()
             return content
         except IndexError:
             logger.warn("Cannot get the %s tag in this document" % tagname)
@@ -55,26 +88,19 @@ class MetadataParser:
 
 class MetadataParserTTK(MetadataParser):
 
-    """The metadata parser for the ttk format, simply copies the meta data."""
-
-    def parse(self, tarsqidoc):
-        """Adds metadata to the TarsqiDocument. The only thing it adds to the
-        metadata dictionary is the DCT, which is copied from the metadata in the
-        SourceDoc."""
-        self.tarsqidoc = tarsqidoc
-        self.tarsqidoc.metadata['dct'] = self.get_dct(tarsqidoc.sourcedoc)
-
-    def get_dct(self, sourcedoc):
-        return sourcedoc.metadata.get('dct')
+    """The metadata parser for the ttk format. For now this one adds
+    nothing to the default metadata parser."""
 
 
 class MetadataParserText(MetadataParser):
 
-    """For now this one adds nothing to the default metadata parser."""
+    """The metadata parser for the text format. For now this one adds
+    nothing to the default metadata parser."""
 
 
 class MetadataParserTimebank(MetadataParser):
-    """The parser for Timebank documents. All it does is overwriting the
+
+    """The parser for Timebank documents. All it does is to overwrite the
     get_dct() method."""
 
     def get_dct(self):
@@ -85,7 +111,7 @@ class MetadataParserTimebank(MetadataParser):
         if result is None:
             # dct defaults to today if we cannot find the DOCNO tag in the
             # document
-            return get_today()
+            return _get_today()
         source_identifier, content = result
         if source_identifier in ('ABC', 'CNN', 'PRI', 'VOA'):
             return content[3:11]
@@ -105,8 +131,8 @@ class MetadataParserTimebank(MetadataParser):
             return '19' + content[2:8]
 
     def _get_doc_source(self):
-        """Return the name of the content provider as well as the content of the DOCNO
-        tag that has that information."""
+        """Return the name of the content provider as well as the content of the
+        DOCNO tag that has that information."""
         content = self._get_tag_content('DOCNO')
         content = str(content)  # in case the above returned None
         for source_identifier in ('ABC', 'APW', 'AP', 'CNN', 'NYT', 'PRI',
@@ -126,7 +152,7 @@ class MetadataParserTimebank(MetadataParser):
             return "%s%s%s" % (year, month, day)
         else:
             logger.warn("Could not get date from %s tag" % tagname)
-            return get_today()
+            return _get_today()
 
 
 class MetadataParserATEE(MetadataParser):
@@ -136,16 +162,13 @@ class MetadataParserATEE(MetadataParser):
     def get_dct(self):
         """All ATEE documents have a DATE tag with a value attribute, the value
         of that attribute is returned."""
-        date_tag = self.sourcedoc.tags.find_tag('DATE')
+        date_tag = self.tarsqidoc.sourcedoc.tags.find_tag('DATE')
         return date_tag.attrs['value']
 
 
 class MetadataParserRTE3(MetadataParser):
 
     """The parser for RTE3 documents, no differences with the default parser."""
-
-    def get_dct(self):
-        return get_today()
 
 
 class MetadataParserDB(MetadataParser):
@@ -163,15 +186,14 @@ class MetadataParserDB(MetadataParser):
 
     The get_dct() method uses this database and the location of the database is
     specified in the config.txt file. The first use case for this were VA
-    documents where the DCT was stored externally. To see this class in action
-    run
+    documents where the DCT was stored externally. To see this in action run
 
        $ python tarsqi.py --source=db data/in/va/test.xml out.xml
 
     """
 
     def get_dct(self):
-        fname = self.get_source().filename
+        fname = self._get_source().filename
         fname = os.path.basename(fname)
         db_location = self.options.getopt('dct-database')
         db_connection = sqlite3.connect(db_location)
@@ -181,6 +203,15 @@ class MetadataParserDB(MetadataParser):
         return dct
 
 
-def get_today():
+def _get_today():
     """Return today's date in YYYYMMDD format."""
     return time.strftime("%Y%m%d", time.localtime())
+
+
+def _get_dct_values(tag_repository):
+    """Return the list of nromalized values from all TIMEX3 tags in the
+    TagRepository."""
+    timexes = [t for t in tag_repository.find_tags('TIMEX3')
+               if t.attrs.get('functionInDocument') == 'CREATION_TIME']
+    values = [t.attrs.get(LIBRARY.timeml.VALUE) for t in timexes]
+    return values
