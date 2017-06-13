@@ -7,7 +7,7 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). L
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
-## Current in-progress version
+## Version 2.1.0 - 2017-06-13
 
 - Added code to update chunks given Timex tags. This was done in order to fix issue [#75](https://github.com/tarsqi/ttk/issues/75).
 - Added functionality to the evaluation code that makes inspection easier: it can now print html files with aligned tags from the gold data and system data.
