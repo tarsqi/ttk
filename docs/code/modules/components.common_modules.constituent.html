@@ -29,12 +29,13 @@ An abstract class that contains some methods that are identical for Chunks
 and Tokens plus a couple of default methods.
 
 Instance variables:
-   tree     - the TarsqiTree instance that the consituent is an element of
-   parent   - the parent, could be any non-token constituent
-   position - index in the parent's daughters list
-   dtrs     - a list of Tokens, EventTags and TimexTags
-   begin    - beginning offset in the SourceDoc
-   end      - ending offset in the SourceDoc
+   tree     -  the TarsqiTree instance that the constituent is an element of
+   parent   -  the parent, could be any non-token constituent
+   position -  index in the parent's daughters list
+   dtrs     -  a list of Tokens, EventTags and TimexTags
+   begin    -  beginning offset in the SourceDoc
+   end      -  ending offset in the SourceDoc
+   tag      -  the tag that the Constituent was created from
 
 On initialization these are all set to None or the empty list (for the dtrs
 variabe). All values are filled in when the TarsqiTree is created from a
@@ -73,7 +74,7 @@ Sets a value on the dtrs variable.</pre>
 <div class=function>all_nodes(self, result=None)</div>
 Returns all nodes through a pre-order tree search.</pre>
 <pre>
-<div class=function>createEvent(self)</div>
+<div class=function>createEvent(self, imported_events=None)</div>
 Does nothing except for logging a warning. If this happens something
 unexpected is going on. Event creation is only attempted on some sub
 classes.</pre>
@@ -142,6 +143,9 @@ Return None or the EventTag that is contained in the constituent.</pre>
 <div class=function>get_timex(self)</div>
 Return None or the TimexTag that is contained in the constituent.</pre>
 <pre>
+<div class=function>includes(self, tag)</div>
+Returns True if tag is positioned inside the consituent.</pre>
+<pre>
 <div class=function>isAdjToken(self)</div>
 </pre>
 <pre>
@@ -155,6 +159,9 @@ Return None or the TimexTag that is contained in the constituent.</pre>
 </pre>
 <pre>
 <div class=function>isPreposition(self)</div>
+</pre>
+<pre>
+<div class=function>isSentence(self)</div>
 </pre>
 <pre>
 <div class=function>isTimex(self)</div>
@@ -191,6 +198,9 @@ Return the next sibling in the tree or None if there is none. If this
 is called on the last dtr in a constituent, then it returns the next
 sibling of the parent. Returns None if self is a rightmost
 constituent.</pre>
+<pre>
+<div class=function>overlaps(self, tag)</div>
+Returns True if tag overlaps with the constituent.</pre>
 <pre>
 <div class=function>path_to_top(self)</div>
 Return the path to the top, but do not include the top and the node

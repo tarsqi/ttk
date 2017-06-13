@@ -36,8 +36,8 @@ Much of the functionality of Evita and Slinket is delegated to chunks.</pre>
 <pre>
 <strong>Inherits from: <a href=components.common_modules.constituent.html#Constituent>Constituent</a></strong></strong>
 
-Implements the common behaviour of chunks. Chunks are embedded in sentences and
-contain event tags, timex tags and tokens.
+Implements the common behaviour of chunks. Chunks are embedded in sentences
+and contain event tags, timex tags and tokens.
 
 Instance variables (in addition to the ones defined on Constituent)
    phraseType         - string indicating the chunk type, either 'vg' or 'ng'
@@ -86,7 +86,15 @@ Perform a few little checks on the head and check whether there is
 an event class, then add the event to the tree. When this is called on
 a NounChunk, then there is no GramChunk handed in and it will be
 retrieved from the features instance variable, when it is called from
-VerbChunk, then the GramChunk will be handed in.</pre>
+VerbChunk, then the verb's features will be handed in.</pre>
+<pre>
+<div class=function>_conditionally_add_imported_event(self, imported_event)</div>
+Create an event from the imported event, mixing information found in
+the chunk and in the imported event. Added from the imported event is
+the class (which means we potentially move away from the TimeML event
+classes) and the begin and end of the imported event which we store in
+the new 'full-range' feature, which is needed because Evita assumes
+events are all one-token.</pre>
 <pre>
 <div class=function>_getHeadText(self)</div>
 Get the text string of the head of the chunk. Used by
@@ -103,11 +111,21 @@ code to create events.</pre>
 <blockquote>
 <h3>Public Functions</h3>
 <pre>
-<div class=function>createEvent(self, verbfeatures=None)</div>
-Try to create an event in the NounChunk. Checks whether the nominal is an
-event candidate, then conditionally adds it. The verbfeatures dictionary
-is used when a governing verb hands in its features to a nominal in a
-predicative complement.</pre>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>createEvent(self, verbfeatures=None, imported_events=None)</div>
+Try to create an event in the NounChunk. Checks whether the nominal
+is an event candidate, then conditionally adds it. The verbfeatures
+dictionary is used when a governing verb hands in its features to a
+nominal in a predicative complement. The imported_events is handed in
+when Tarsqi tries to import events from a previous annotation.</pre>
+<pre>
+<div class=function>head_is_common_noun(self)</div>
+Returns True if the head of the chunk is a common noun.</pre>
+<pre>
+<div class=function>head_is_noun(self)</div>
+Returns True if the head of the chunk is a noun.</pre>
 <pre>
 <div class=function>isDefinite(self)</div>
 Return True if self includes a Token that is a POS, PRP$ or a definite
@@ -116,25 +134,27 @@ determiner.</pre>
 <div class=function>isEmpty(self)</div>
 Return True if the chunk is empty, False otherwise.</pre>
 <pre>
-<div class=function>isEventCandidate(self)</div>
-Return True if the nominal is syntactically and semantically an
-event, return False otherwise.</pre>
-<pre>
-<div class=function>isEventCandidate_Sem(self)</div>
-Return True if the nominal can be an event semantically. Depending
-on user settings this is done by a mixture of wordnet lookup and using a
-simple classifier.</pre>
-<pre>
-<div class=function>isEventCandidate_Syn(self)</div>
-Return True if the nominal is syntactically able to be an event,
-return False otherwise. An event candidate syntactically has to have a
-head which cannot be a timex and the head has to be a common noun.</pre>
-<pre>
 <div class=function>isNounChunk(self)</div>
 Returns True</pre>
 </blockquote>
 <blockquote>
 <h3>Private Functions</h3>
+<pre>
+<div class=function>_get_imported_event_for_chunk(self, imported_events)</div>
+Return None or a Tag from the imported_events dictionary, only return
+this tag is its span is head final to the chunk and it span is at least
+including the chunk head.</pre>
+<pre>
+<div class=function>_passes_semantics_test(self)</div>
+Return True if the nominal can be an event semantically. Depending
+on user settings this is done by a mixture of wordnet lookup and using a
+simple classifier.</pre>
+<pre>
+<div class=function>_passes_syntax_test(self)</div>
+Return True if the nominal is syntactically able to be an event,
+return False otherwise. An event candidate syntactically has to have a
+head which cannot be a timex and the head has to be a either a noun or a
+common noun, depending on the value of INCLUDE_PROPERNAMES.</pre>
 <pre>
 <div class=function>_run_classifier(self, lemma)</div>
 Run the classifier on lemma, using features from the GramNChunk.</pre>
@@ -148,7 +168,10 @@ Run the classifier on lemma, using features from the GramNChunk.</pre>
 <blockquote>
 <h3>Public Functions</h3>
 <pre>
-<div class=function>createEvent(self)</div>
+<div class=function>__init__(self)</div>
+</pre>
+<pre>
+<div class=function>createEvent(self, imported_events=None)</div>
 Try to create one or more events in the VerbChunk. How this works
 depends on how many instances of VChunkFeatures can be created for
 the chunk. For all non-final and non-axiliary elements in the list,
@@ -168,7 +191,7 @@ Return True.</pre>
 <blockquote>
 <h3>Private Functions</h3>
 <pre>
-<div class=function>_createEventOnBe(self, features)</div>
+<div class=function>_createEventOnBe(self, features, imported_events=None)</div>
 </pre>
 <pre>
 <div class=function>_createEventOnBecome(self, features)</div>
@@ -201,7 +224,7 @@ constituents as a composed verb chunk.</pre>
 <div class=function>_createEventOnPastUsedTo(self, features)</div>
 </pre>
 <pre>
-<div class=function>_createEventOnRightmostVerb(self, features)</div>
+<div class=function>_createEventOnRightmostVerb(self, features, imported_events=None)</div>
 </pre>
 <pre>
 <div class=function>_getRestSent(self, structure_type)</div>
@@ -229,7 +252,7 @@ adjective will not be given the verb features.</pre>
 <div class=function>_processEventInMultiAChunk(self, features, substring)</div>
 </pre>
 <pre>
-<div class=function>_processEventInMultiNChunk(self, features, substring)</div>
+<div class=function>_processEventInMultiNChunk(self, features, substring, imported_events)</div>
 </pre>
 <pre>
 <div class=function>_processEventInMultiVChunk(self, substring)</div>

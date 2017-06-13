@@ -18,14 +18,47 @@ function view_code(id) {
 <div class="title">module docmodel.main</div>
 
 <pre>
+<a href=#Xml>Xml</a>
+</pre>
+
+<pre>
+main.py
+
 Initialization of parsers responsible for first-level processing.
 
-This file includes the PARSERS dictionary, which is indexed on a source
-identifier (handed in by the --source option). If a new source type is
-introduced, then an item needs to be added to the PARSERS dictionary. In
-addition, if new parsers are required they should be added to source_parser.py
-and metadata_parser.py.</pre>
+This file includes the PARSERS dictionary (indexed on source identifiers, handed
+in by the --source option). If a new source type is introduced, then an item
+needs to be added to the PARSERS dictionary. In addition, if new parsers are
+required they should be added to source_parser.py and metadata_parser.py.</pre>
 
+
+<a name="Xml"/><div class="section">class Xml</div>
+<pre>
+<strong>Inherits from: object</strong>
+
+Test class used for determining whether a string looks like it contains
+XML. Note that it does not do a full XML parse and that the string handed in
+is intended to be a prefix of the entire string or document that is being
+tested.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, content)</div>
+</pre>
+<pre>
+<div class=function>get_first_tag(self)</div>
+Returns the first XML tag of the content. The content does not have to
+be well-formed XML, as long as it starts with an optional XML declaration
+followed by a tag it will return the tag name of that tag. Returns None
+if there is no such tag.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_handle_start(self, name, attrs)</div>
+</pre>
+</blockquote>
 
 <div class="section">module functions</div>
 <pre>
@@ -37,3 +70,8 @@ Return the default document structure parser.</pre>
 <pre>
 <div class=function>create_source_parser(options)</div>
 </pre>
+<pre>
+<div class=function>guess_source(filename_or_string)</div>
+Returns whether the source type of the content of the file or string is
+xml, ttk or text. This is a guess because the heuristics used are simple and
+just searching the first N characters of the input.</pre>

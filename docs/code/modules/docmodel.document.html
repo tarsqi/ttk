@@ -279,6 +279,12 @@ Tags. Raise errors if tags do not match.</pre>
 <div class=function>pp_tags(self, indent='')</div>
 </pre>
 <pre>
+<div class=function>remove_tag(self, tag)</div>
+Remove the tag from the list of tags. This is rather inefficient since the
+whole list is traversed. Also note that this method does not remove the
+tag from the opening_tags and closing_tags dictionaries, so depending on
+when this is done these may need to be re-indexed.</pre>
+<pre>
 <div class=function>remove_tags(self, tagname)</div>
 Remove all tags with name=tagname. Rebuilds the indexes after
 removing the tags.</pre>
@@ -355,9 +361,9 @@ already links added without using those counters.</pre>
 <div class=function>pp(self, source_tags=True, tarsqi_tags=True)</div>
 </pre>
 <pre>
-<div class=function>print_all(self, fname)</div>
+<div class=function>print_all(self, fname=None)</div>
 Write source string, metadata, comments, source tags and tarsqi tags
-all to one file.</pre>
+all to one file or to the standard output.</pre>
 <pre>
 <div class=function>print_sentences(self, fname=None)</div>
 Write to file (or stadard output if no filename was given) a Python
@@ -371,11 +377,17 @@ fname.</pre>
 <div class=function>remove_tlinks(self)</div>
 Remove all TLINK tags from the tags repository.</pre>
 <pre>
+<div class=function>slinks(self)</div>
+</pre>
+<pre>
 <div class=function>text(self, p1, p2)</div>
 </pre>
 <pre>
 <div class=function>timexes(self)</div>
 Convenience method for easy access to timexes.</pre>
+<pre>
+<div class=function>tlinks(self)</div>
+</pre>
 </blockquote>
 <blockquote>
 <h3>Private Functions</h3>

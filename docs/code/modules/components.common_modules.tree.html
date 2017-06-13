@@ -19,6 +19,7 @@ function view_code(id) {
 
 <pre>
 <a href=#Node>Node</a>
+<a href=#NodeInsertionError>NodeInsertionError</a>
 <a href=#TarsqiTree>TarsqiTree</a>
 </pre>
 
@@ -48,7 +49,7 @@ Instance variables:
   dtrs       -  a list of Nodes
   event_dtr  -  None or the Node from dtrs that is an event
   tag        -  the Tag that the Node is created from
-  tree       -  the Tree that the Node will be inserted into as an element</pre>
+  tree       -  the TarsqiTree that the Node will be inserted into as an element</pre>
 
 <blockquote>
 <h3>Public Functions</h3>
@@ -74,7 +75,7 @@ Node as needed.</pre>
 <pre>
 <div class=function>insert(self, tag)</div>
 Insert a Tag in the node. This could be insertion in one of the node's
-daughters, or insertion in the node's daughters list. Print a warning if
+daughters, or insertion in the node's daughters list. Log a warning if
 the tag cannot be inserted.</pre>
 <pre>
 <div class=function>pp(self, indent=0)</div>
@@ -121,6 +122,14 @@ Replace the span of dtrs with the tag and add the span as dtrs to the
 tag.</pre>
 </blockquote>
 
+<a name="NodeInsertionError"/><div class="section">class NodeInsertionError</div>
+<pre>
+<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
+
+An exception used to trap cases where you insert a node in the tree and there
+is no place where it can go.</pre>
+
+
 <a name="TarsqiTree"/><div class="section">class TarsqiTree</div>
 <pre>
 
@@ -135,6 +144,7 @@ Instance variables
     alinks      -  a list of AlinkTags, filled in by Slinket
     slinks      -  a list of SlinkTags, filled in by Slinket
     tlinks      -  a list of TlinkTags
+    orphans     -  a list of tags that could not be inserted
 
 The events dictionary is used by Slinket and stores events from the tree
 indexed on event eids.</pre>
@@ -163,6 +173,12 @@ them to self.alink_list, self.slink_list or self.tlink_list. This allows
 other code, for example the main function of Slinket, to easily access
 newly created links in the TarsqiTree. The linkType argument is'ALINK',
 'SLINK' or 'TLINK' and linkAttrs is a dictionary of attributes.</pre>
+<pre>
+<div class=function>get_nodes(self)</div>
+Returns a list of all nodes in the tree.</pre>
+<pre>
+<div class=function>get_sentences(self)</div>
+Returns a list of all sentences in the tree.</pre>
 <pre>
 <div class=function>hasEventWithAttribute(self, eid, att)</div>
 Returns the attribute value if the events dictionary has an event

@@ -18,8 +18,9 @@ function view_code(id) {
 <div class="title">module tarsqi</div>
 
 <pre>
-<a href=#TarsqiError>TarsqiError</a>
 <a href=#Options>Options</a>
+<a href=#TarsqiError>TarsqiError</a>
+<a href=#TarsqiWrapper>TarsqiWrapper</a>
 <a href=#Tarsqi>Tarsqi</a>
 </pre>
 
@@ -35,12 +36,14 @@ various tarsqi modules to do the rest of the real work.
 
 USAGE
 
-   % python tarsqy.py [OPTIONS] INPUT OUTPUT
+   % python tarsqy.py [OPTIONS] [INPUT OUTPUT]
 
    INPUT/OUTPUT
 
-      Input and output files or directories. If the input is a directory than
-      the output directory needs to exist.
+      Input and output files or directories. If the input is a directory then
+      the output directory needs to exist. If '--pipe' is one of the options
+      then input and output are not required and they are ignored if they are
+      there.
 
    OPTIONS
 
@@ -48,19 +51,35 @@ USAGE
           The source of the file; this reflects the source type of the document
           and allows components, especially the source parser and the metadata
           parser, to be sensitive to idiosyncratic properties of the text (for
-          example, the location of the DCT and the format of the text). The
-          source type is xml by default, other general source types are text and
-          ttk. There are four more types that can be used to process the more
-          specific sample data in data/in: timebank for data/in/TimeBank, atee
-          for data/in/ATEE, rte3 for data/in/RTE3 and db for data/in/db.
+          example, the location of the DCT and the format of the text). If this
+          option is not specified then the system will try to guess one of
+          'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
+          for the first two cases. Note that currently this guess will fail if
+          the --pipe option is used. There are four more types that can be used
+          to process the more specific sample data in data/in: timebank for
+          data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
+          for data/in/db.
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
-          pipeline.
+          pipeline minus the link merger.
+
+      --dct VALUE
+          Use this to pass a document creation time (DCT) to the main script.
+          The value is a normalized date expression like 20120830 for August
+          30th 2012. If this option is not used then the DCT will be determined
+          by the metadata parser that is defined for the input source. Note that
+          the value of --dct will overrule any value calculated by the metadata
+          parser.
+
+      --pipe
+          With this option the script reads input from the standard input and
+          writes output to standard output. Without it the script expects the
+          INPUT and OUTPUT arguments to be there.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
-          fine here and this options does not need to be used.
+          fine here and this option does not need to be used.
 
       --treetagger PATH
           Path to the TreeTagger.
@@ -73,14 +92,15 @@ USAGE
           The classifier used by the Mallet classifier, the default is MaxEnt.
 
       --ee-model FILENAME
-          The model used for classifying event-event tlinks, this is a model
-          file in components/classifier/models, the default is set to
-          tb-vectors.ee.model.
-
       --et-model FILENAME
-          The model used for classifying event-timex tlinks, this is a model
-          file in components/classifier/models, the default is set to
-          tb-vectors.et.model.
+          The models used for classifying event-event and event-timex tlinks,
+          these are model files in components/classifier/models, the defaults
+          are set to tb-vectors.ee.model and tb-vectors.et.model.
+
+      --import-events
+          With this option the Evita component will try to import existing
+          events by lifting EVENT tags from the source tags. It is assumed that
+          those tags have 'begin', 'end' and 'class' attributes.
 
       --trap-errors True|False
           Set error trapping, errors are trapped by default.
@@ -95,28 +115,23 @@ USAGE
 
 VARIABLES:
 
-   TTK_ROOT - the TTK directory
-   CONFIG - file with user settings
-   COMPONENTS - dictionary with all Tarsqi components
-   USE_PROFILER - a boolean determining whether the profiler is used
-   PROFILER_OUTPUT - file that profiler statistics are written to</pre>
-
-
-<a name="TarsqiError"/><div class="section">class TarsqiError</div>
-<pre>
-<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
-
-Tarsqi Exception class, so far only used in this file.</pre>
+   TTK_ROOT         -  the TTK directory
+   CONFIG_FILE      -  file with user settings
+   COMPONENTS       -  dictionary with all Tarsqi components
+   USE_PROFILER     -  a boolean determining whether the profiler is used
+   PROFILER_OUTPUT  -  file that profiler statistics are written to</pre>
 
 
 <a name="Options"/><div class="section">class Options</div>
 <pre>
+<strong>Inherits from: object</strong>
 
-A class to keep track of all the options. Options can be accessed with the
-getopt() method, but standard options are also accessable directly through
-the following instance variables: source, pipeline, loglevel, trap_errors,
-perl, treetagger, mallet, classifier, ee_model and et_model. There is no
-instance variable access for user-defined options in the config.txt file.</pre>
+A class to keep track of all the options. Options can be accessed with
+the getopt() method, but standard options are also accessable directly
+through the following instance variables: source, dct, pipeline, pipe,
+loglevel, trap_errors, import_event_tags, perl, mallet, treetagger,
+classifier, ee_model and et_model. There is no instance variable access for
+user-defined options in the config.txt file.</pre>
 
 <blockquote>
 <h3>Public Functions</h3>
@@ -125,8 +140,8 @@ instance variable access for user-defined options in the config.txt file.</pre>
 </pre>
 <pre>
 <div class=function>__init__(self, options)</div>
-Initialize options from the config file and the options handed in to the
-tarsqi script.</pre>
+Initialize options from the config file and the options handed in to
+the tarsqi script. Put known options in instance variables.</pre>
 <pre>
 <div class=function>__str__(self)</div>
 </pre>
@@ -139,19 +154,77 @@ Simplistic way to do dictionary emulation.</pre>
 <pre>
 <div class=function>pp(self)</div>
 </pre>
+<pre>
+<div class=function>set_option(self, opt, value)</div>
+Sets the value of opt in self._options to value. If opt is also
+expressed as an instance variable then change that one as well.</pre>
+<pre>
+<div class=function>set_source(self, value)</div>
+Sets the source value, both in the dictionary and the instance
+variable.</pre>
 </blockquote>
 <blockquote>
 <h3>Private Functions</h3>
 <pre>
-<div class=function>_massage_options(self)</div>
-Loop through the options dictionary and replace some of the strings
-with other objects: replace 'True' with True, 'False' with False, and
-strings indicating an integer with that integer. Also, for the --mallet
-and --treetagger options, which are known to be paths, replace the value
-with the absolute path.</pre>
+<div class=function>_initialize_options(self, command_line_options)</div>
+Reads options from the config file and the command line. Also loops
+through the options dictionary and replaces some of the strings with
+other objects: (1) replaces 'True', 'False' and 'None', with True, False
+and None respectively, (2) replaces strings indicating an integer with
+that integer (but not for the dct), (3) replaces the empty string with
+True for the --pipe and --import-events options, and (4) replaces the
+value of the --mallet and --treetagger options, which are known to be
+paths, with the absolute path.</pre>
 <pre>
-<div class=function>_read_options(self, CONFIG, options)</div>
-Read options from config file and command line options.</pre>
+<div class=function>_initialize_properties(self)</div>
+Put options in instance variables for convenience. This is done for
+those options that are defined for the command line and not for options
+from config.txt that are user-specific. Note that due to naming rules
+for attributes (no dashes allowed), options with a dash are spelled with
+an underscore when they are instance variables.</pre>
+</blockquote>
+
+<a name="TarsqiError"/><div class="section">class TarsqiError</div>
+<pre>
+<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
+
+Tarsqi Exception class, so far only used in this file.</pre>
+
+
+<a name="TarsqiWrapper"/><div class="section">class TarsqiWrapper</div>
+<pre>
+<strong>Inherits from: object</strong>
+
+Class that wraps the Tarsqi class, taking care of some of the IO aspects.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, args)</div>
+</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>run(self)</div>
+Main method that is called when the script is executed from the command
+line. It creates a Tarsqi instance and lets it process the input. If the
+input is a directory, this method will iterate over the contents, setting up
+Tarsqi instances for all files in the directory. The arguments are the list
+of arguments given by the user on the command line.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_run_tarsqi_on_directory(self)</div>
+Run Tarsqi on all files in a directory.</pre>
+<pre>
+<div class=function>_run_tarsqi_on_file(self)</div>
+</pre>
+<pre>
+<div class=function>_run_tarsqi_on_pipe(self)</div>
+Read text from standard input and run tarsqi over it, then print the result
+to standard out.</pre>
 </blockquote>
 
 <a name="Tarsqi"/><div class="section">class Tarsqi</div>
@@ -220,6 +293,9 @@ Remove all fragments from the temporary data directory.</pre>
 Return the pipeline as a list of pairs with the component name and
 wrapper.</pre>
 <pre>
+<div class=function>_initialize_parsers(self)</div>
+</pre>
+<pre>
 <div class=function>_write_output(self)</div>
 Write the TarsqiDocument to the output file.</pre>
 </blockquote>
@@ -238,13 +314,3 @@ loglevel and error trapping options.</pre>
 <pre>
 <div class=function>run_profiler(args)</div>
 Wrap running Tarsqi in the profiler.</pre>
-<pre>
-<div class=function>run_tarsqi(args)</div>
-Main method that is called when the script is executed from the command
-line. It creates a Tarsqi instance and lets it process the input. If the
-input is a directory, this method will iterate over the contents, setting up
-Tarsqi instances for all files in the directory. The arguments are the list
-of arguments given by the user on the command line.</pre>
-<pre>
-<div class=function>test()</div>
-</pre>

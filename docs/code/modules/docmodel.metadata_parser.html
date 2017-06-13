@@ -41,22 +41,21 @@ Current parsers only deal with the DCT.</pre>
 <a name="MetadataParser"/><div class="section">class MetadataParser</div>
 <pre>
 
-This is the minimal metadata parser that is used as a default. It sets the
-DCT to today's date and provides some common functionality to subclasses.</pre>
+This is the minimal metadata parser that is used as a default. It selects
+the DCT from all available sources and picks one of them, or it uses today's
+date if no DCT's are available. Subclasses should override the get_dct()
+method to define specific DCT extraction methods for the document source.</pre>
 
 <blockquote>
 <h3>Public Functions</h3>
 <pre>
 <div class=function>__init__(self, options)</div>
-At the moment, initialization does not use any of the options,
-but this could change.</pre>
+At the moment, initialization only uses the --dct option if it is
+present, but this could change. Note that the TarsqiDocument does not
+exist yet when the MetadataParser is initialized.</pre>
 <pre>
 <div class=function>get_dct(self)</div>
-Return today's date in YYYYMMDD format.</pre>
-<pre>
-<div class=function>get_source(self)</div>
-A convenience method to lift the SourceDoc out of the tarsqi
-instance.</pre>
+</pre>
 <pre>
 <div class=function>parse(self, tarsqidoc)</div>
 Adds metadata to the TarsqiDocument. The only thing it adds to the
@@ -65,9 +64,25 @@ metadata dictionary is the DCT, which is set to today.</pre>
 <blockquote>
 <h3>Private Functions</h3>
 <pre>
+<div class=function>_get_source(self)</div>
+A convenience method to lift the SourceDoc out of the tarsqi
+instance.</pre>
+<pre>
 <div class=function>_get_tag_content(self, tagname)</div>
 Return the text content of the first tag with name tagname, return
 None if there is no such tag.</pre>
+<pre>
+<div class=function>_moderate_dct_vals(self)</div>
+There are five places where a DCT can be expressed: the DCT handed in
+with the --dct option or defined in the config file, the DCT from the
+metadata on the TarsqiDocument, the DCT from the metadata on the
+SourceDoc, DCTs from the TagRepository on the TarsqiDocument and DCTs
+from the TagRepository on the SourceDoc. The first three are single
+values or None, the other two are lists of any length. The order of
+these five is significant in that a DCT earlier on the list if given
+precedence over a DCT later on the list. Collects all the DCT values and
+picks the very first one, or today's date if no DCTs are available. Logs
+a warning if the DCTs do not all have the same value.</pre>
 </blockquote>
 
 <a name="MetadataParserATEE"/><div class="section">class MetadataParserATEE</div>
@@ -101,8 +116,7 @@ follows:
 
 The get_dct() method uses this database and the location of the database is
 specified in the config.txt file. The first use case for this were VA
-documents where the DCT was stored externally. To see this class in action
-run
+documents where the DCT was stored externally. To see this in action run
 
    $ python tarsqi.py --source=db data/in/va/test.xml out.xml</pre>
 
@@ -119,43 +133,28 @@ run
 
 The parser for RTE3 documents, no differences with the default parser.</pre>
 
-<blockquote>
-<h3>Public Functions</h3>
-<pre>
-<div class=function>get_dct(self)</div>
-</pre>
-</blockquote>
 
 <a name="MetadataParserTTK"/><div class="section">class MetadataParserTTK</div>
 <pre>
 <strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
 
-The metadata parser for the ttk format, simply copies the meta data.</pre>
+The metadata parser for the ttk format. For now this one adds
+nothing to the default metadata parser.</pre>
 
-<blockquote>
-<h3>Public Functions</h3>
-<pre>
-<div class=function>get_dct(self, sourcedoc)</div>
-</pre>
-<pre>
-<div class=function>parse(self, tarsqidoc)</div>
-Adds metadata to the TarsqiDocument. The only thing it adds to the
-metadata dictionary is the DCT, which is copied from the metadata in the
-SourceDoc.</pre>
-</blockquote>
 
 <a name="MetadataParserText"/><div class="section">class MetadataParserText</div>
 <pre>
 <strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
 
-For now this one adds nothing to the default metadata parser.</pre>
+The metadata parser for the text format. For now this one adds
+nothing to the default metadata parser.</pre>
 
 
 <a name="MetadataParserTimebank"/><div class="section">class MetadataParserTimebank</div>
 <pre>
 <strong>Inherits from: <a href=docmodel.metadata_parser.html#MetadataParser>MetadataParser</a></strong></strong>
 
-The parser for Timebank documents. All it does is overwriting the
+The parser for Timebank documents. All it does is to overwrite the
 get_dct() method.</pre>
 
 <blockquote>
@@ -170,8 +169,8 @@ of the following tags: DOCNO, DATE_TIME, PUBDATE or FILEID.</pre>
 <h3>Private Functions</h3>
 <pre>
 <div class=function>_get_doc_source(self)</div>
-Return the name of the content provider as well as the content of the DOCNO
-tag that has that information.</pre>
+Return the name of the content provider as well as the content of the
+DOCNO tag that has that information.</pre>
 <pre>
 <div class=function>_parse_tag_content(self, regexpr, tagname)</div>
 Return the DCT part of the tag content of tagname, requires a reqular
@@ -179,6 +178,3 @@ expression as one of the arguments.</pre>
 </blockquote>
 
 <div class="section">module functions</div>
-<pre>
-<div class=function>get_today()</div>
-Return today's date in YYYYMMDD format.</pre>
