@@ -36,6 +36,7 @@ class MetadataParser:
         self.tarsqidoc = tarsqidoc
         self.tarsqidoc.metadata['dct'] = self.get_dct()
         self._moderate_dct_vals()
+        self._import_processing_steps()
 
     def _moderate_dct_vals(self):
         """There are five places where a DCT can be expressed: the DCT handed in
@@ -55,7 +56,7 @@ class MetadataParser:
                         _get_dct_values(self.tarsqidoc.sourcedoc.tags),
                         _get_dct_values(self.tarsqidoc.tags)]:
             if dct_val is None:
-                # the case where there is no DCT in the options or metadata
+                # this is the case where there is no DCT in options or metadata
                 continue
             elif isinstance(dct_val, list):
                 dcts.extend(dct_val)
@@ -65,6 +66,15 @@ class MetadataParser:
             logger.warn("WARNING: more than one DCT value available")
         dct = dcts[0] if dcts else _get_today()
         self.tarsqidoc.metadata['dct'] = dct
+
+    def _import_processing_steps(self):
+        """The processing steps were parsed by the metadata parser for the TTK
+        format, here we just import them."""
+        # steps are imported after the latest processing step was added, so put
+        # the imported steps at the beginning of the list
+        steps = self.tarsqidoc.sourcedoc.metadata.get('processing_steps', [])
+        steps.extend(self.tarsqidoc.metadata['processing_steps'])
+        self.tarsqidoc.metadata['processing_steps'] = steps
 
     def get_dct(self):
         return None

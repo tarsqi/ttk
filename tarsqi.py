@@ -161,6 +161,7 @@ class Tarsqi:
         self.components = COMPONENTS
         self._initialize_parsers()
         self.pipeline = self._create_pipeline()
+        self._update_processing_history()
 
     def _initialize_parsers(self):
         self.source_parser = create_source_parser(self.options)
@@ -227,6 +228,9 @@ class Tarsqi:
         wrapper."""
         component_names = self.options.pipeline.split(',')
         return [(name, self.components[name]) for name in component_names]
+
+    def _update_processing_history(self):
+        self.tarsqidoc.update_processing_history(self.pipeline)
 
     def _write_output(self):
         """Write the TarsqiDocument to the output file."""
