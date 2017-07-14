@@ -125,12 +125,14 @@ def write(string):
     _log('INFO', string)
 
 
-def report():
+def report(fh=None):
+    if fh is None:
+        fh = sys.stdout
     if logger.warnings or logger.errors:
-        print "\nWARNING"
-        print "   %s errors and %s warnings were reported" \
-            % (logger.errors, logger.warnings)
-        print "   see data/logs/ttk_log.html for details\n"
+        fh.write("\nWARNING\n")
+        fh.write("   %s errors and %s warnings were reported\n"
+                 % (logger.errors, logger.warnings))
+        fh.write("   see data/logs/ttk_log.html for details\n\n)")
 
 
 def _log(message_type, log_string):

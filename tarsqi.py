@@ -438,7 +438,7 @@ class TarsqiWrapper(object):
         else:
             raise TarsqiError('Invalid input')
         logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
-        logger.report()
+        logger.report(sys.stderr)
 
     def _run_tarsqi_on_pipe(self):
         """Read text from standard input and run tarsqi over it, then print the result
