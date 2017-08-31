@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotations textSource="LinkTest.txt">
+    <annotation>
+        <mention id="EHOST_Instance_95" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="27" end="45" />
+        <spannedText>September 29, 2005</spannedText>
+        <creationDate>Fri Jul 07 14:17:59 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_110">
+        <mentionSlot id="typeInfo" />
+        <stringSlotMentionValue value="Date" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_111">
+        <mentionSlot id="value" />
+        <stringSlotMentionValue value="09/29/2005" />
+    </stringSlotMention>
+    <classMention id="EHOST_Instance_95">
+        <hasSlotMention id="EHOST_Instance_110" />
+        <hasSlotMention id="EHOST_Instance_111" />
+        <mentionClass id="Timex3">September 29, 2005</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_96" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="54" end="68" />
+        <spannedText>tropical storm</spannedText>
+        <creationDate>Fri Jul 07 14:18:42 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_112">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <classMention id="EHOST_Instance_96">
+        <hasSlotMention id="EHOST_Instance_112" />
+        <mentionClass id="Event">tropical storm</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_97" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="69" end="76" />
+        <spannedText>arrived</spannedText>
+        <creationDate>Fri Jul 07 14:19:06 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_113">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_114">
+        <mentionSlot id="tense" />
+        <stringSlotMentionValue value="PERFECTIVE" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_115">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">DURING</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_98" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_97">
+        <hasSlotMention id="EHOST_Instance_113" />
+        <hasSlotMention id="EHOST_Instance_114" />
+        <hasSlotMention id="EHOST_Instance_115" />
+        <mentionClass id="Event">arrived</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_98" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="100" end="113" />
+        <spannedText>Septemeber 22</spannedText>
+        <creationDate>Fri Jul 07 14:19:35 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_116">
+        <mentionSlot id="typeInfo" />
+        <stringSlotMentionValue value="Date" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_117">
+        <mentionSlot id="value" />
+        <stringSlotMentionValue value="09/22/2005" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_118">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">INCLUDES</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_96" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_98">
+        <hasSlotMention id="EHOST_Instance_116" />
+        <hasSlotMention id="EHOST_Instance_117" />
+        <hasSlotMention id="EHOST_Instance_118" />
+        <mentionClass id="Timex3">Septemeber 22</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_99" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="155" end="163" />
+        <spannedText>upgraded</spannedText>
+        <creationDate>Fri Jul 07 14:19:58 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_119">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Reporting" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_120">
+        <mentionSlot id="tense" />
+        <stringSlotMentionValue value="PERFECTIVE" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_121">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">DURING</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_100" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_99">
+        <hasSlotMention id="EHOST_Instance_119" />
+        <hasSlotMention id="EHOST_Instance_120" />
+        <hasSlotMention id="EHOST_Instance_121" />
+        <mentionClass id="Event">upgraded</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_100" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="194" end="204" />
+        <spannedText>09/25/2005</spannedText>
+        <creationDate>Fri Jul 07 14:20:24 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_122">
+        <mentionSlot id="typeInfo" />
+        <stringSlotMentionValue value="Date" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_123">
+        <mentionSlot id="value" />
+        <stringSlotMentionValue value="09/29/2005" />
+    </stringSlotMention>
+    <classMention id="EHOST_Instance_100">
+        <hasSlotMention id="EHOST_Instance_122" />
+        <hasSlotMention id="EHOST_Instance_123" />
+        <mentionClass id="Timex3">09/25/2005</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_101" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="229" end="237" />
+        <spannedText>landfall</spannedText>
+        <creationDate>Fri Jul 07 14:20:53 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_124">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_125">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">BEFORE</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_102" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_101">
+        <hasSlotMention id="EHOST_Instance_124" />
+        <hasSlotMention id="EHOST_Instance_125" />
+        <mentionClass id="Event">landfall</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_102" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="262" end="270" />
+        <spannedText>devasted</spannedText>
+        <creationDate>Fri Jul 07 14:21:19 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_126">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <classMention id="EHOST_Instance_102">
+        <hasSlotMention id="EHOST_Instance_126" />
+        <mentionClass id="Event">devasted</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_103" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="359" end="372" />
+        <spannedText>two more days</spannedText>
+        <creationDate>Fri Jul 07 14:21:45 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_127">
+        <mentionSlot id="typeInfo" />
+        <stringSlotMentionValue value="Date" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_128">
+        <mentionSlot id="value" />
+        <stringSlotMentionValue value="P2D" />
+    </stringSlotMention>
+    <classMention id="EHOST_Instance_103">
+        <hasSlotMention id="EHOST_Instance_127" />
+        <hasSlotMention id="EHOST_Instance_128" />
+        <mentionClass id="Timex3">two more days</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_104" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="316" end="325" />
+        <spannedText>gathering</spannedText>
+        <creationDate>Fri Jul 07 14:22:09 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_129">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_130">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">DURING</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_103" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_104">
+        <hasSlotMention id="EHOST_Instance_129" />
+        <hasSlotMention id="EHOST_Instance_130" />
+        <mentionClass id="Event">gathering</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_105" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="377" end="380" />
+        <spannedText>hit</spannedText>
+        <creationDate>Fri Jul 07 14:22:29 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_131">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_132">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">AFTER</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_104" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_105">
+        <hasSlotMention id="EHOST_Instance_131" />
+        <hasSlotMention id="EHOST_Instance_132" />
+        <mentionClass id="Event">hit</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_106" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="420" end="438" />
+        <spannedText>September 29, 2005</spannedText>
+        <creationDate>Fri Jul 07 14:22:45 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_133">
+        <mentionSlot id="typeInfo" />
+        <stringSlotMentionValue value="Date" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_134">
+        <mentionSlot id="value" />
+        <stringSlotMentionValue value="09/29/2005" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_135">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">INCLUDES</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_105" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_106">
+        <hasSlotMention id="EHOST_Instance_133" />
+        <hasSlotMention id="EHOST_Instance_134" />
+        <hasSlotMention id="EHOST_Instance_135" />
+        <mentionClass id="Timex3">September 29, 2005</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_107" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="445" end="458" />
+        <spannedText>following day</spannedText>
+        <creationDate>Fri Jul 07 14:23:03 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_136">
+        <mentionSlot id="typeInfo" />
+        <stringSlotMentionValue value="Date" />
+    </stringSlotMention>
+    <stringSlotMention id="EHOST_Instance_137">
+        <mentionSlot id="value" />
+        <stringSlotMentionValue value="09/30/2005" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_138">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">INCLUDES</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_108" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_107">
+        <hasSlotMention id="EHOST_Instance_136" />
+        <hasSlotMention id="EHOST_Instance_137" />
+        <hasSlotMention id="EHOST_Instance_138" />
+        <mentionClass id="Timex3">following day</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_108" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="528" end="537" />
+        <spannedText>collapsed</spannedText>
+        <creationDate>Fri Jul 07 14:23:25 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_139">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <complexSlotMention id="EHOST_Instance_140">
+        <mentionSlot id="TLINK" />
+        <attribute id="relType">BEFORE</attribute>
+        <complexSlotMentionValue value="EHOST_Instance_109" />
+    </complexSlotMention>
+    <classMention id="EHOST_Instance_108">
+        <hasSlotMention id="EHOST_Instance_139" />
+        <hasSlotMention id="EHOST_Instance_140" />
+        <mentionClass id="Event">collapsed</mentionClass>
+    </classMention>
+    <annotation>
+        <mention id="EHOST_Instance_109" />
+        <annotator id="eHOST_2010">Ruth</annotator>
+        <span start="553" end="561" />
+        <spannedText>flooding</spannedText>
+        <creationDate>Fri Jul 07 14:23:40 CDT 2017</creationDate>
+    </annotation>
+    <stringSlotMention id="EHOST_Instance_141">
+        <mentionSlot id="classType" />
+        <stringSlotMentionValue value="Occurance" />
+    </stringSlotMention>
+    <classMention id="EHOST_Instance_109">
+        <hasSlotMention id="EHOST_Instance_141" />
+        <mentionClass id="Event">flooding</mentionClass>
+    </classMention>
+    <eHOST_Adjudication_Status version="1.0">
+        <Adjudication_Selected_Annotators version="1.0" />
+        <Adjudication_Selected_Classes version="1.0" />
+        <Adjudication_Others>
+            <CHECK_OVERLAPPED_SPANS>false</CHECK_OVERLAPPED_SPANS>
+            <CHECK_ATTRIBUTES>false</CHECK_ATTRIBUTES>
+            <CHECK_RELATIONSHIP>false</CHECK_RELATIONSHIP>
+            <CHECK_CLASS>false</CHECK_CLASS>
+            <CHECK_COMMENT>false</CHECK_COMMENT>
+        </Adjudication_Others>
+    </eHOST_Adjudication_Status>
+</annotations>
+

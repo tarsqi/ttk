@@ -34,14 +34,26 @@ Some format conversion utilities.
    $ python convert.py --knowtator2ttk --tarsqi KNOWTATOR_DIR TTK_DIR
 
    This is not a general conversion from any Knowtator output, it assumes that
-   the input annotations are all events. If the --tarsqi option is used then the
-   event tags are put in the tarsqi_tags repository, by default they are put in
-   the source_tags repository (that is, they are not considered Tarsqi results),
-   using the --tarsqi option can be useful for evaluation.
+   the input annotations are all events, timexes and tlinks. If the --tarsqi
+   option is used then the event tags are put in the tarsqi_tags repository, by
+   default they are put in the source_tags repository (that is, they are not
+   considered Tarsqi results), using the --tarsqi option can be useful for
+   evaluation.
+
+   $ python convert.py --knowtator2ttk --tarsqi TEXT_FILE TTK_FILE
+
+   Versions for file processing. Note that you only give the text file, the code
+   assumes that there is a file TEXT_FILE>knowtator.xml with the annotations.
+
+5. Convert TTK into Knowtator format.
+
+   IN PROGRESS.
 
 """
 
-import os, sys, getopt, codecs
+from __future__ import absolute_import, print_function, unicode_literals
+
+import os, sys, getopt, codecs, time
 from xml.dom import minidom, Node
 
 import path
@@ -94,7 +106,7 @@ def convert_timebank(timebank_dir, out_dir):
     _makedir(out_dir)
     for fname in os.listdir(timebank_dir):
         if fname.endswith('.tml'):
-            print fname
+            print(fname)
             _convert_timebank_file(os.path.join(timebank_dir, fname),
                                    os.path.join(out_dir, fname))
             break
@@ -117,7 +129,7 @@ def _convert_timebank_file(infile, outfile):
 
 ### CONVERTING THYME INTO TTK
 
-def convert_thyme(thyme_text_dir, thyme_anno_dir, out_dir, limit=sys.maxint):
+def convert_thyme(thyme_text_dir, thyme_anno_dir, out_dir, limit=sys.maxsize):
     thyme_text_dir = os.path.abspath(thyme_text_dir)
     thyme_anno_dir = os.path.abspath(thyme_anno_dir)
     out_dir = os.path.abspath(out_dir)
@@ -133,7 +145,7 @@ def convert_thyme(thyme_text_dir, thyme_anno_dir, out_dir, limit=sys.maxint):
         anno_files = os.listdir(os.path.join(thyme_anno_dir, fname))
         timeml_files = [f for f in anno_files if f.find('Temporal') > -1]
         if timeml_files:
-            print fname
+            print(fname)
             thyme_anno_file = os.path.join(thyme_anno_dir, fname, timeml_files[0])
             _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file)
 
@@ -164,8 +176,8 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
     for timex in timexes:
         try:
             begin, end = timex.span.split(',')
-            if timex_idx.has_key(timex.id):
-                print "WARNING: timex %s already exists" % timex.id
+            if timex.id in timex_idx.has_key:
+                print("WARNING: timex %s already exists" % timex.id)
             timex_idx[timex.id] = begin
             attrs = { TID: timex.id }
             if timex.type == 'DOCTIME':
@@ -179,7 +191,7 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
                 attrs['functionInDocument'] = 'SECTIONTIME'
             tarsqidoc.tags.add_tag('TIMEX3', begin, end, attrs)
         except ValueError:
-            print "Skipping discontinuous timex"
+            print("Skipping discontinuous timex")
 
 
 def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
@@ -189,20 +201,20 @@ def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
     for event in events:
         try:
             begin, end = event.span.split(',')
-            if event_idx.has_key(event.id):
-                print "WARNING: event %s already exists" % event.id
+            if event.id in event_idx:
+                print("WARNING: event %s already exists" % event.id)
             event_idx[event.id] = begin
             # TODO: is it okay for these to be the same?
             attrs = { EID: event.id, EIID: event.id}
             tarsqidoc.tags.add_tag('EVENT', begin, end, attrs)
             dct_rel_id += 1
-            attrs = { LID: LinkID.next(),
+            attrs = { LID: next(LinkID),
                       RELTYPE: event.DocTimeRel,
                       EVENT_INSTANCE_ID: event.id,
                       RELATED_TO_TIME: dct.id }
             tarsqidoc.tags.add_tag('TLINK', None, None, attrs)
         except ValueError:
-            print "Skipping discontinuous event"
+            print("Skipping discontinuous event")
 
 
 def _add_links_to_tarsqidoc(links, timex_idx, event_idx, tarsqidoc):
@@ -228,7 +240,7 @@ def _source_attr_name(link_type, source_id, timex_idx, event_idx):
     elif source_id in event_idx:
         return EVENT_INSTANCE_ID
     else:
-        print "WARNING: cannot find attribute name for", source_id
+        print("WARNING: cannot find attribute name for %s" % source_id)
 
 
 def _target_attr_name(link_type, target_id, timex_idx, event_idx):
@@ -239,7 +251,7 @@ def _target_attr_name(link_type, target_id, timex_idx, event_idx):
     elif target_id in event_idx:
         return RELATED_TO_EVENT_INSTANCE
     else:
-        print "WARNING: cannot find attribute name for", target_id
+        print("WARNING: cannot find attribute name for %s" % target_id)
 
 
 class Entity(object):
@@ -314,70 +326,292 @@ def get_simple_value(entity, attr):
 
 ### CONVERTING KNOWTATOR INTO TTK
 
+class KnowtatorConverter(object):
+
+    """Class responsible for converting two Knowtator files (a text file and an
+    annotation file) into a TTK file."""
+
+    def __init__(self, text_file=None, annotation_file=None, ttk_file=None):
+        """Initialize input and output file names. The input is a text file and
+        annotation file, the put is a ttk file. If no annotation file name is
+        given, it will be created from the text file name using the default
+        extentions."""
+        self.text_file = os.path.abspath(text_file)
+        self.ttk_file = os.path.abspath(ttk_file)
+        if annotation_file is None:
+            self.anno_file = self.text_file + '.knowtator.xml'
+        else:
+            self.anno_file = os.path.abspath(annotation_file)
+
+    def convert(self, tarsqi_tags):
+        """Reads the knowtator data and saves them as a TTK file."""
+        self.read()
+        self.export(tarsqi_tags)
+
+    def read(self):
+        """Read all annotations and put all information (including attributes and
+        relations) in the annotations instance variable."""
+        self.dom = minidom.parse(self.anno_file)
+        self._read_annotations()
+        self._read_stringSlotMentions()
+        self._read_classMentions()
+        self._read_complexSlotMention()
+        self._enrich_annotations()
+
+    def _read_annotations(self):
+        """Reads the annotation tags, which ontain the identifier, character offsets and
+        the text."""
+        self.annotations = {}
+        for ann_dom in self.dom.getElementsByTagName('annotation'):
+            annotation = KnowtatorAnnotation(ann_dom)
+            self.annotations[annotation.mention_id] = annotation
+
+    def _read_stringSlotMentions(self):
+        """Reads the stringSlotMention tags, which contain the attributes."""
+        self.string_slot_mentions = {}
+        for ssm_dom in self.dom.getElementsByTagName('stringSlotMention'):
+            ssm = KnowtatorStringSlotMention(ssm_dom)
+            self.string_slot_mentions[ssm.mention_id] = ssm
+
+    def _read_classMentions(self):
+        """Reads the classMention tags, which have the class (tagname) and links to
+        attributes and relations."""
+        self.class_mentions = {}
+        for cm_dom in self.dom.getElementsByTagName('classMention'):
+            cm = KnowtatorClassMention(cm_dom)
+            self.class_mentions[cm.mention_id] = cm
+
+    def _read_complexSlotMention(self):
+        """Reads the complexSlotMention tags, which contain the relations."""
+        self.complex_slot_mentions = {}
+        for csm_dom in self.dom.getElementsByTagName('complexSlotMention'):
+            csm = KnowtatorComplexSlotMention(csm_dom)
+            self.complex_slot_mentions[csm.mention_id] = csm
+
+    def _enrich_annotations(self):
+        """Adds information from other tags to the annotation tags."""
+        for cm in self.class_mentions.values():
+            anno = self.annotations[cm.mention_id]
+            anno.classname = cm.classname
+            for sm in cm.slot_mentions:
+                ssm = self.string_slot_mentions.get(sm)
+                if ssm is not None:
+                    # add the attributes
+                    anno.attributes[ssm.att] = ssm.val
+                else:
+                    # add the relations
+                    csm = self.complex_slot_mentions.get(sm)
+                    anno.relations.append([csm.attribute, csm.csm_value])
+
+    def export(self, tarsqi_tags):
+        """Saves all annotations in a TTK file."""
+        tarsqidoc = _get_tarsqidoc(self.text_file, "text")
+        for annotation in self.annotations.values():
+            tags = []
+            tag = annotation.as_ttk_tag()
+            tags.append(tag)
+            for rel in annotation.relations:
+                att1 = 'timeID' if annotation.classname == 'Timex3' else 'eventID'
+                val1 = tag.attrs.get('tid', tag.attrs.get('eiid'))
+                target = self.annotations[rel[1]]
+                target_tag = target.as_ttk_tag()
+                att2 = RELATED_TO_TIME
+                if target_tag.name == EVENT:
+                    att2 = RELATED_TO_EVENT_INSTANCE
+                val2 = target_tag.attrs.get(TID, target_tag.attrs.get(EIID))
+                feats = { 'relType': rel[0], att1: val1, att2: val2 }
+                tags.append(Tag(TLINK, -1, -1, feats))
+            tagrepo = tarsqidoc.tags if tarsqi_tags else tarsqidoc.sourcedoc.tags
+            for t in tags:
+                tagrepo.append(t)
+        tarsqidoc.print_all(self.ttk_file)
+
+    def pretty_print(self):
+        for annotation in sorted(self.annotations.values()):
+            print()
+            annotation.pretty_print()
+
+    def pp_csms(self):
+        for key in sorted(self.complex_slot_mentions):
+            print(self.complex_slot_mentions[key])
+
+    def pp_ssms(self):
+        for key in sorted(self.string_slot_mentions):
+            print(self.string_slot_mentions[key])
+
+    def pp_cms(self):
+        for key in sorted(self.class_mentions):
+            print(self.class_mentions[key])
+
+
+class KnowtatorAnnotation(object):
+
+    """Implements the object for <annotation> tags, which contain just the text
+    span, but enriches them with information from the other tags. Instance
+    variables are:
+
+       mention_id  - unique id, taken from the id attribute of the mention tag
+       start       - from start attribute of span tag
+       end         - from end attribute of span tag
+       text        - cdata of spannedText tag
+       classname   - taken from the classMention tag
+       attributes  - taken from the classMention and stringSlotMention tags
+       relations   - taken from the classMention and complexSlotMention tags
+
+    """
+
+    def __init__(self, annotation):
+        """Reads the relevant information from the DOM object. Assumes there is
+        only one mention, span and spanned text."""
+        mention = annotation.getElementsByTagName('mention')[0]
+        span = annotation.getElementsByTagName('span')[0]
+        text = annotation.getElementsByTagName('spannedText')[0]
+        self.mention_id = mention.getAttribute('id')
+        self.start = int(span.getAttribute('start'))
+        self.end = int(span.getAttribute('end'))
+        self.text = text.firstChild.data
+        self.classname = None
+        self.attributes = {}
+        self.relations = []
+
+    def __cmp__(self, other):
+        return cmp(self.start, other.start)
+
+    def __str__(self):
+        return "<annotation %s %s %s-%s '%s'>" \
+            % (self.mention_id, self.classname, self.start, self.end, self.text)
+
+    def as_ttk_tag(self):
+        tagname = self.classname.upper()
+        identifier = self.mention_id[15:]
+        if tagname == 'EVENT':
+            feats = { 'class': self.attributes['classType'],
+                      'eid': 'e' + identifier,
+                      'eiid': 'ei' + identifier }
+        elif tagname == 'TIMEX3':
+            # TODO: value is not the right format
+            feats = { 'type': self.attributes['typeInfo'],
+                      'value': self.attributes['value'],
+                      'tid': 't' + identifier }
+        else:
+            feats = {}
+        return Tag(tagname, self.start, self.end, feats)
+
+
+    def pretty_print(self):
+        print(self)
+        for att, val in self.attributes.items():
+            print("   %s=%s" % (att, val))
+        for relType, target in self.relations:
+            print("   %s %s" % (relType, target))
+
+
+class KnowtatorClassMention(object):
+
+    """Implements the objects for <classMention> tags, which contains the tag name
+    and links annotations to attributes and relations. Fields are:
+
+       mentiod_id    - value of the id attribute
+       classname     - the id attribute of the mentionClass tag
+       slot_mentions - list from the id attribute of the hasSlotMention tags
+
+    A hasSlotMention tag points to either a stringSlotMention tag, which
+    contains an attribute-value pair, or to a complexSlotMention, which contains
+    a relation and points to an annotation. The classname is the tagname, for
+    example 'Event'.
+    
+    """
+
+    def __init__(self, cm):
+        self.mention_id = cm.getAttribute('id')
+        mention_class = cm.getElementsByTagName('mentionClass')[0]
+        slot_mentions = cm.getElementsByTagName('hasSlotMention')
+        self.classname = mention_class.getAttribute('id')
+        self.slot_mentions = [sm.getAttribute('id') for sm in slot_mentions]
+
+    def __str__(self):
+        return "<classMention %s %s %s>" \
+            % (self.mention_id, self.classname, ' '.join(self.slot_mentions))
+
+
+class KnowtatorStringSlotMention(object):
+
+    """Implements the object for the <stringSlotMentionTag> tags, which contain
+    attributes and their values. The fields are:
+
+       mention_id - the value of the id attribute
+       att        - the id attribute of the mentionSlot tag
+       val        - the value attribute of the stringSlotMentionValue tag
+
+       """
+
+    def __init__(self, ssm):
+        """Reads a DOM Element with tagName=stringSlotMention."""
+        mention_slot = ssm.getElementsByTagName('mentionSlot')[0]
+        ssm_value = ssm.getElementsByTagName('stringSlotMentionValue')[0]
+        self.mention_id = ssm.getAttribute('id')
+        self.att = mention_slot.getAttribute('id')
+        self.val = ssm_value.getAttribute('value')
+
+    def __str__(self):
+        return "<stringSlotMention %s %s=%s>" \
+            % (self.mention_id, self.att, self.val)
+
+
+class KnowtatorComplexSlotMention(object):
+
+    """Implements the object for <complexSlotMention> tags, which contain the
+    relations. Fields are:
+
+       mention_slot - the id attribute of the mentionSlot tag
+       attribute    - the cdata of the attribute tag
+       csm_value    - the value attribute of the complexSlotMentionValue tag
+
+    The id links back to the classMention which links this tag to an
+    annotation. The attribute has an id (always TLINK for tlinks) and uses cdata
+    for the value. The csm_value points to another annotation."""
+
+    def __init__(self, csm):
+        self.mention_id = csm.getAttribute('id')
+        mention_slot = csm.getElementsByTagName('mentionSlot')[0]
+        attribute = csm.getElementsByTagName('attribute')[0]
+        csm_value = csm.getElementsByTagName('complexSlotMentionValue')[0]
+        self.mention_slot = mention_slot.getAttribute('id')
+        self.attribute = attribute.firstChild.data
+        self.csm_value = csm_value.getAttribute('value')
+
+    def __str__(self):
+        return "<complexSlotMention %s %s %s %s>" \
+            % (self.mention_id, self.mention_slot, self.attribute, self.csm_value)
+
+
 def convert_knowtator(knowtator_dir, ttk_dir, limit, tarsqi_tags=False):
-    """Convert pairs of Knowtator files (source plus annotations) with event
-    information into single TTK files. This assumes that the information needed
-    is in annotation and classMention tags and that all those tags have event
-    information. The event tags are added to the source tags, not to the tarsqi
-    tags, but if tarsqi_tags option is True then they will be added to the
-    tarsqi tags repository"""
+    """Convert pairs of Knowtator files (source plus annotations) into single TTK
+    files. This just takes care of figuring out the individual files in the
+    directories and then lets KnowtatorCOnverter do the work."""
     knowtator_dir = os.path.abspath(knowtator_dir)
     ttk_dir = os.path.abspath(ttk_dir)
     _makedir(ttk_dir)
     count = 0
-    fnames = _read_knowtator_filenames(knowtator_dir)
+    # Read the list of file names. Note that with Knowtator we have a separate
+    # annotation file in addition to the source file: for each source file named
+    # 'file.txt' we also have an annotations file named 'file.txt.knowtator.xml'.
+    fnames = os.listdir(knowtator_dir)
+    fnames = [f for f in fnames if not f.endswith('knowtator.xml')]
     for fname in fnames:
         count += 1
         if count > limit:
             break
-        print fname
+        print(fname)
         source_file = os.path.join(knowtator_dir, fname)
         anno_file = os.path.join(knowtator_dir, fname + '.knowtator.xml')
         # this assumes the .txt extension and replaces it with .ttk
         ttk_fname = fname[:-3] + 'ttk'
         ttk_file = os.path.join(ttk_dir, ttk_fname)
-        _convert_knowtator_file(source_file, anno_file, ttk_file, tarsqi_tags)
-
-
-def _read_knowtator_filenames(knowtator_dir):
-    """Read the list of file names. Note that with Knowtator we have a separate
-    annotation file in addition to the source file: for each source file named
-    'file.txt' we also have an annotations file named 'file.txt.knowtator.xml'."""
-    fnames = os.listdir(knowtator_dir)
-    return [f for f in fnames if not f.endswith('knowtator.xml')]
-
-
-def _convert_knowtator_file(source_file, anno_file, ttk_file, tarsqi_tags):
-    dom = minidom.parse(anno_file)
-    annotations = dom.getElementsByTagName('annotation')
-    class_mentions = dom.getElementsByTagName('classMention')
-    events = {}
-    for ann in annotations:
-        mention_id = ann.getElementsByTagName('mention')[0].getAttribute('id')
-        start = ann.getElementsByTagName('span')[0].getAttribute('start')
-        end = ann.getElementsByTagName('span')[0].getAttribute('end')
-        events[mention_id] = { 'start': start, 'end': end }
-    for cm in class_mentions:
-        cm_id = cm.getAttribute('id')
-        mention_class = cm.getElementsByTagName('mentionClass')[0]
-        class_name = mention_class.firstChild.data
-        events[cm_id]['class'] = class_name
-    tarsqidoc = _get_tarsqidoc(source_file, "text")
-    tags = []
-    for event_id, event in events.items():
-        tag = _create_event_tag(event_id, event)
-        if tarsqi_tags:
-            tarsqidoc.tags.append(tag)
-        else:
-            tarsqidoc.sourcedoc.tags.append(tag)
-    tarsqidoc.print_all(ttk_file)
-
-
-def _create_event_tag(event_id, event):
-    feats = { 'class': event['class'],
-              'eid': 'e' + event_id,
-              'eiid': 'ei' + event_id }
-    return Tag('EVENT', event['start'], event['end'], feats)
+        converter = KnowtatorConverter(text_file=source_file,
+                                       annotation_file=anno_file,
+                                       ttk_file=ttk_file)
+        converter.convert(tarsqi_tags)
 
 
 ### CONVERTING TTK INTO HTML
@@ -386,8 +620,8 @@ def convert_ttk_dir_into_html(ttk_dir, html_dir, showlinks, limit):
     ttk_dir = os.path.abspath(ttk_dir)
     html_dir = os.path.abspath(html_dir)
     _makedir(html_dir)
-    print ttk_dir
-    print html_dir
+    print(ttk_dir)
+    print(html_dir)
     index = open(os.path.join(html_dir, 'index.html'), 'w')
     count = 0
     for fname in os.listdir(ttk_dir):
@@ -401,7 +635,7 @@ def convert_ttk_dir_into_html(ttk_dir, html_dir, showlinks, limit):
 
 
 def convert_ttk_file_into_html(ttk_file, html_file, showlinks):
-    print "creating", html_file
+    print("creating %s" % html_file)
     ttk_file = os.path.abspath(ttk_file)
     html_file = os.path.abspath(html_file)
     tarsqidoc = _get_tarsqidoc(ttk_file, "ttk")
@@ -466,7 +700,7 @@ def _get_timexes(tarsqidoc):
 def _get_entities(event_idx, timex_idx):
     """Return an index of all entities indexed on the event or timex id."""
     entity_idx = {}
-    for elist in event_idx['open'].values() + timex_idx['open'].values():
+    for elist in list(event_idx['open'].values()) + list(timex_idx['open'].values()):
         entity = elist[0]
         identifier = 'tid' if  entity.name == 'TIMEX3' else 'eiid'
         entity_idx[entity.attrs[identifier]] = entity
@@ -481,8 +715,8 @@ def _get_links(tarsqidoc):
         target = link.attrs.get('relatedToTime') \
                  or link.attrs.get('relatedToEventInstance') \
                  or link.attrs.get('subordinatedEventInstance')
-        if source is None: print "WARNING, no source for", link
-        if target is None: print "WARNING, no target for", link
+        if source is None: print("WARNING, no source for %s" % link)
+        if target is None: print("WARNING, no target for %s" % link)
         links.setdefault(source, []).append([link.attrs['lid'], source,
                                              link.attrs['relType'], target])
     return links
@@ -542,7 +776,206 @@ def _write_link(link, entity_idx, fh):
              % (link_id, source_id, source_begin,
                 reltype.lower(), target_id, target_begin))
     if target_entity is None:
-        print "WARNING", (link_id, source_id, reltype, target_id)
+        print("WARNING: %s %s %s %s" % (link_id, source_id, reltype, target_id))
+
+
+### CONVERTING TTK FILE INTO KNOWTATOR FORMAT
+
+def convert_knowtator_file_into_ttk(ttk_file, text_file, annotation_file):
+    print("creating %s" % annotation_file)
+    ttk_file = os.path.abspath(ttk_file)
+    text_file = os.path.abspath(text_file)
+    annotation_file = os.path.abspath(annotation_file)
+    tarsqidoc = _get_tarsqidoc(ttk_file, "ttk")
+    full_text = tarsqidoc.sourcedoc.text
+    #tarsqidoc.pp()
+    with codecs.open(text_file, 'w', encoding="utf-8") as text:
+        text.write(full_text)
+    with codecs.open(annotation_file, 'w', encoding="utf-8") as anno:
+        anno.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+        anno.write('<annotations textSource="%s">\n' % os.path.basename(text_file))
+        tag_index = _create_tag_index(tarsqidoc.sourcedoc.tags.tags)
+        for tag in tarsqidoc.sourcedoc.tags.tags:
+            _knowtator_convert_tag(tag, tag_index, full_text, anno)
+        anno.write('</annotations>\n')
+
+
+def _create_tag_index(tags):
+    """Create an index for the event and timex tags. The keys in this index are the
+    eid or tid and the values are pairs of the tag itself and a list of tlinks for
+    which this tag is a source."""
+    tag_index = {}
+    tlink_index = {}
+    tlink_tags = []
+    for tag in tags:
+        tag_identifier = tag.get_identifier()
+        if tag_identifier is not None:
+            tag_index[tag_identifier] = [tag]
+        else:
+            tlink_tags.append(tag)
+    for tag in tlink_tags:
+        source_identifier = tag.attrs.get(TIME_ID,
+                                          tag.attrs.get('eventID'))
+        tlink_index.setdefault(source_identifier, []).append(tag)
+    for tag_identifier in tag_index:
+        tlinks = tlink_index.get(tag_identifier, [])
+        # print("%s %s" % (tag_identifier, tlinks))
+        tag_index[tag_identifier].append(tlinks)
+    _print_tag_index(tag_index)
+    return tag_index
+
+
+def _print_tag_index(tag_index):
+    for identifier in tag_index:
+        print("%s\n   %s" % (identifier, tag_index[identifier][0]))
+        for tlink in tag_index[identifier][1]:
+            print ("   %s" % tlink)
+    print()
+
+
+# The following should possibly use all the Knowtator classes above, but note
+# that a tag is typically converted into a bunch of those classes, which makes
+# for a less natural use of those classes, or, at least, the tags should be
+# broken up before the class initializations are called.
+
+def _knowtator_convert_tag(tag, tag_index, text, fh):
+    #print(tag); print()
+    identifier = tag.get_identifier()
+    if identifier is not None:
+        if identifier.startswith('t'):
+            _knowtator_convert_timex_tag(identifier, tag, tag_index, text, fh)
+        elif identifier.startswith('e'):
+            _knowtator_convert_event_tag(identifier, tag, tag_index, text, fh)
+    # complexSlotMention
+
+
+def _knowtator_convert_timex_tag(tag_identifier, tag, tag_index, text, fh):
+    spanned_text = text[tag.begin:tag.end]
+    annotation = _knowtator_annotation_tag(tag_identifier, tag, spanned_text)
+    string_slot_mentions \
+        = [(KnowtatorID.new_identifier(), 'typeInfo', tag.attrs.get('type'))]
+    ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
+    complex_slot_mentions = []
+    for tlink in tag_index[tag_identifier][1]:
+        target_id = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE,
+                                    tlink.attrs.get(RELATED_TO_TIME))
+        complex_slot_mentions.append(
+            (KnowtatorID.new_identifier(), tlink.attrs.get('relType'), target_id))
+    csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
+    slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
+    class_mention = _knowtator_classMention_tag(
+        tag_identifier, tag, 'Timex3', spanned_text, slot_mentions)
+    tags = _knowtator_tags(annotation, ssm_tags, csm_tags, class_mention)
+    fh.write(tags)
+
+
+def _knowtator_convert_event_tag(tag_identifier, tag, tag_index, text, fh):
+    spanned_text = text[tag.begin:tag.end]
+    annotation = _knowtator_annotation_tag(tag_identifier, tag, spanned_text)
+    string_slot_mentions \
+        = [(KnowtatorID.new_identifier(), 'classType', tag.attrs.get('class')),
+           (KnowtatorID.new_identifier(), 'Tense', tag.attrs.get('tense'))]
+    ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
+    complex_slot_mentions = []
+    for tlink in tag_index[tag_identifier][1]:
+        target_id = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE,
+                                    tlink.attrs.get(RELATED_TO_TIME))
+        complex_slot_mentions.append(
+            (KnowtatorID.new_identifier(), tlink.attrs.get('relType'), target_id))
+    csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
+    slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
+    class_mention = _knowtator_classMention_tag(
+        tag_identifier, tag, 'Event', spanned_text, slot_mentions)
+    tags = _knowtator_tags(annotation, ssm_tags, csm_tags, class_mention)
+    fh.write(tags)
+
+
+def _knowtator_annotation_tag(tag_identifier, tag, spanned_text):
+    return \
+        '<annotation>\n' + \
+        '    <mention id="EHOST_Instance_%s" />\n' % tag_identifier + \
+        '    <annotator id="%s">TTK</annotator>\n' % open('VERSION').read().strip() + \
+        '    <span start="%s" end="%s" />\n' % (tag.begin, tag.end) + \
+        '    <spannedText>%s</spannedText>\n' % spanned_text + \
+        '    <creationDate>%s</creationDate>\n' % time.strftime("%Y%m%d", time.localtime())+ \
+        '</annotation>\n'
+
+
+def _knowtator_stringSlotMention_tags(string_slot_mentions):
+    ssm_tags = []
+    for ssm in string_slot_mentions:
+        identifier, attribute, value = ssm
+        ssm_tags.append(
+            _knowtator_stringSlotMention_tag(identifier, attribute, value))
+    return ssm_tags
+
+
+def _knowtator_stringSlotMention_tag(identifier, attribute, value):
+    # <stringSlotMention id="EHOST_Instance_111">
+    #    <mentionSlot id="value" />
+    #    <stringSlotMentionValue value="09/29/2005" />
+    # </stringSlotMention>
+    return \
+        '<stringSlotMention id="EHOST_Instance_%s">\n' % identifier + \
+        '    <mentionSlot id="%s" />\n' % attribute + \
+        '    <stringSlotMentionValue value="%s" />\n' % value + \
+        '</stringSlotMention>\n'
+
+
+def _knowtator_complexSlotMention_tags(complex_slot_mentions):
+    csm_tags = []
+    for csm in complex_slot_mentions:
+        (identifier, reltype, target_id) = csm
+        csm_tags.append(
+            _knowtator_complexSlotMention_tag(identifier, reltype, target_id))
+    return csm_tags
+        
+def _knowtator_complexSlotMention_tag(identifier, reltype, target_identifier):
+    # <complexSlotMention id="EHOST_Instance_115">
+    #    <mentionSlot id="TLINK" />
+    #    <attribute id="relType">DURING</attribute>
+    #    <complexSlotMentionValue value="EHOST_Instance_98" />
+    # </complexSlotMention>
+    return \
+        '<complexSlotMention id="EHOST_Instance_%s">\n' % identifier + \
+        '    <mentionSlot id="TLINK" />\n' + \
+        '    <attribute id="relType">%s</attribute>\n' % reltype + \
+        '    <complexSlotMentionValue value="EHOST_Instance_%s" />\n' % target_identifier + \
+        '</complexSlotMention>\n'
+        
+    
+def _knowtator_classMention_tag(tag_identifier, tag, mention_class, spanned_text, slot_mentions):
+    # <classMention id="EHOST_Instance_95">
+    #    <hasSlotMention id="EHOST_Instance_110" />
+    #    <hasSlotMention id="EHOST_Instance_111" />
+    #    <mentionClass id="Timex3">September 29, 2005</mentionClass>
+    # </classMention>
+    has_slot_mention_tags = [_knowtator_hasSlotMention_tag(sm)
+                             for sm in slot_mentions]
+    return \
+        '<classMention id="EHOST_Instance_%s">\n' % tag_identifier + \
+        '    ' + '    '.join(has_slot_mention_tags) + \
+        '    <mentionClass id="%s">%s</mentionClass>\n' % (mention_class, spanned_text) + \
+        '</classMention>\n'
+
+def _knowtator_hasSlotMention_tag(identifier):
+    # <hasSlotMention id="EHOST_Instance_110" />
+    return '<hasSlotMention id="EHOST_Instance_%s" />\n' % identifier
+
+
+def _knowtator_tags(annotation, ssm_tags, csm_tags, class_mention):
+    return annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention
+
+    
+class KnowtatorID(object):
+
+    identifier = 0
+
+    @classmethod
+    def new_identifier(cls):
+        cls.identifier += 1
+        return cls.identifier
+    
 
 
 ### UTILITIES
@@ -566,19 +999,33 @@ def _get_tarsqidoc(infile, source, metadata=True):
 if __name__ == '__main__':
 
     long_options = ['timebank2ttk', 'thyme2ttk', 'ttk2html',
-                    'knowtator2ttk', 'tarsqi', 'show-links']
+                    'knowtator2ttk', 'ttk2knowtator', 'tarsqi', 'show-links']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
-    limit = 10 if DEBUG else sys.maxint
+    limit = 10 if DEBUG else sys.maxsize
+
     if '--timebank2ttk' in opts:
         convert_timebank(args[0], args[1])
+
     elif '--thyme2ttk' in opts:
         convert_thyme(args[0], args[1], args[2], limit)
+
     elif '--knowtator2ttk' in opts:
         tarsqi_tags = True if '--tarsqi' in opts else False
-        convert_knowtator(args[0], args[1], limit, tarsqi_tags)
+        if os.path.isfile(args[0]):
+            if os.path.exists(args[1]):
+                exit("ERROR: output file already exists")
+            converter = KnowtatorConverter(text_file=args[0], ttk_file=args[1])
+            converter.convert(tarsqi_tags)
+        elif os.path.isdir(args[0]):
+            if os.path.exists(args[1]):
+                exit("ERROR: output directory already exists")            
+            convert_knowtator(args[0], args[1], limit, tarsqi_tags)
+        else:
+            exit("ERROR: input is not a file or directory")
+
     elif '--ttk2html' in opts:
-        limit = 10 if DEBUG else sys.maxint
+        limit = 10 if DEBUG else sys.maxsize
         showlinks = True if '--show-links' in opts else False
         if os.path.exists(args[1]):
             exit("ERROR: output '%s' already exists" % args[1])
@@ -588,3 +1035,6 @@ if __name__ == '__main__':
             convert_ttk_file_into_html(args[0], args[1], showlinks)
         else:
             exit("ERROR: incorrect input")
+
+    elif '--ttk2knowtator' in opts:
+        convert_knowtator_file_into_ttk(args[0], args[1], args[2])

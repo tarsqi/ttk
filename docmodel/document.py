@@ -22,6 +22,7 @@ TLINK = LIBRARY.timeml.TLINK
 TID = LIBRARY.timeml.TID
 EID = LIBRARY.timeml.EID
 EIID = LIBRARY.timeml.EIID
+LID = LIBRARY.timeml.LID
 
 TIME_ID = LIBRARY.timeml.TIME_ID
 EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
@@ -109,10 +110,10 @@ class TarsqiDocument:
             print "   metadata.%-14s  -->  %s" % (key, value)
         for key, value in self.options.items():
             print "   options.%-15s  -->  %s" % (key, value)
-        if source_tags:
+        if source_tags and not self.sourcedoc.tags.is_empty():
             print "\nSOURCE_TAGS:"
             self.sourcedoc.tags.pp()
-        if tarsqi_tags:
+        if tarsqi_tags and not self.tags.is_empty():
             print "\nTARSQI_TAGS:"
             self.tags.pp()
         print
@@ -367,6 +368,9 @@ class TagRepository:
     def all_tags(self):
         return self.tags
 
+    def is_empty(self):
+        return len(self.tags) == 0
+
     def add_tmp_tag(self, tagInstance):
         """Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
@@ -517,13 +521,16 @@ class TagRepository:
 
 class Tag:
 
-    """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
-    attributes. The id is handed in by the code that creates the Tag which could
-    be: (1) the code that parses the source document, which will only assign an
-    identifier if the source had an id attribute, (2) the preprocessor code,
-    which assigns identifiers for lex, ng, vg and s tags, or (3) one of the
-    components that creates tarsqi tags, in which case the identifier is None,
-    but special identifiers like eid, eiid, tid and lid are used."""
+    """A Tag has a name, a begin offset, an end offset and a dictionary of
+    attributes. All arguments are handed in by the code that creates the Tag
+    which could be: (1) the code that parses the source document, which will
+    only assign an identifier if the source had an id attribute, (2) the
+    preprocessor code, which assigns identifiers for lex, ng, vg and s tags, or
+    (3) one of the components that creates tarsqi tags.
+
+    # TODO: check whether those are still the three that are used
+
+    """
 
     def __init__(self, name, o1, o2, attrs):
         """Initialize name, begin, end and attrs instance variables and make sure
@@ -562,11 +569,18 @@ class Tag:
 
     @staticmethod
     def new_attr(attr, attrs):
+        # TODO: See the comment in __init__, I have a strong feeling that there
+        # is a better and/or clearer way to do this.
         counter = itertools.count(1, step=1)
         for c in counter:
             new_attr = "%s_%d" % (attr, c)
             if new_attr not in attrs:
                 return new_attr
+
+    def get_identifier(self):
+        """Returns the identifier of the event, timex or tlink if there is one, returns
+        None otherwise. For an event, the identifier is assumed to be the eiid."""
+        return self.attrs.get(TID, self.attrs.get(EIID, self.attrs.get(LID)))
 
     def is_opening_tag(self):
         return False
