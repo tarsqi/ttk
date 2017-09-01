@@ -458,7 +458,30 @@ class KnowtatorAnnotation(object):
        attributes  - taken from the classMention and stringSlotMention tags
        relations   - taken from the classMention and complexSlotMention tags
 
+    Here is an example of an annotation XML tag:
+    
+       <annotation>
+           <mention id="EHOST_Instance_95" />
+           <annotator id="eHOST_2010">Ruth</annotator>
+           <span start="27" end="45" />
+           <spannedText>September 29, 2005</spannedText>
+           <creationDate>Fri Jul 07 14:17:59 CDT 2017</creationDate>
+       </annotation>
+
     """
+
+    @classmethod
+    def tag(cls, tag_identifier, tag, spanned_text):
+        """This acts as a factory method that given some arguments creates an XML string
+        for a Knowtator annotation tag."""
+        return \
+            '<annotation>\n' + \
+            '    <mention id="EHOST_Instance_%s" />\n' % tag_identifier + \
+            '    <annotator id="%s">TTK</annotator>\n' % open('VERSION').read().strip() + \
+            '    <span start="%s" end="%s" />\n' % (tag.begin, tag.end) + \
+            '    <spannedText>%s</spannedText>\n' % spanned_text + \
+            '    <creationDate>%s</creationDate>\n' % time.strftime("%Y%m%d", time.localtime())+ \
+            '</annotation>\n'
 
     def __init__(self, annotation):
         """Reads the relevant information from the DOM object. Assumes there is
@@ -519,8 +542,29 @@ class KnowtatorClassMention(object):
     contains an attribute-value pair, or to a complexSlotMention, which contains
     a relation and points to an annotation. The classname is the tagname, for
     example 'Event'.
-    
+
+    XML example:
+
+       <classMention id="EHOST_Instance_95">
+           <hasSlotMention id="EHOST_Instance_110" />
+           <hasSlotMention id="EHOST_Instance_111" />
+           <mentionClass id="Timex3">September 29, 2005</mentionClass>
+       </classMention>
+
     """
+
+    @classmethod
+    def tag(cls, tag_identifier, tag, mention_class, spanned_text, slot_mentions):
+        """Factory method for creating MentionClass XML strings."""
+        has_slot_mention_tags = []
+        for sm in slot_mentions:
+            has_slot_mention_tags.append(
+                '<hasSlotMention id="EHOST_Instance_%s" />\n' % sm)
+        return \
+            '<classMention id="EHOST_Instance_%s">\n' % tag_identifier + \
+            '    ' + '    '.join(has_slot_mention_tags) + \
+            '    <mentionClass id="%s">%s</mentionClass>\n' % (mention_class, spanned_text) + \
+            '</classMention>\n'
 
     def __init__(self, cm):
         self.mention_id = cm.getAttribute('id')
@@ -543,7 +587,24 @@ class KnowtatorStringSlotMention(object):
        att        - the id attribute of the mentionSlot tag
        val        - the value attribute of the stringSlotMentionValue tag
 
+   Example XML tag:
+
+       <stringSlotMention id="EHOST_Instance_111">
+           <mentionSlot id="value" />
+           <stringSlotMentionValue value="09/29/2005" />
+       </stringSlotMention>
+
        """
+
+    @classmethod
+    def tag(cls, identifier, attribute, value):
+        """Factory method to generate an XML string for the stringSlotMention tag from
+        an identifier, attribute and value."""
+        return \
+            '<stringSlotMention id="EHOST_Instance_%s">\n' % identifier + \
+            '    <mentionSlot id="%s" />\n' % attribute + \
+            '    <stringSlotMentionValue value="%s" />\n' % value + \
+            '</stringSlotMention>\n'
 
     def __init__(self, ssm):
         """Reads a DOM Element with tagName=stringSlotMention."""
@@ -569,8 +630,28 @@ class KnowtatorComplexSlotMention(object):
 
     The id links back to the classMention which links this tag to an
     annotation. The attribute has an id (always TLINK for tlinks) and uses cdata
-    for the value. The csm_value points to another annotation."""
+    for the value. The csm_value points to another annotation.
 
+    XML tag example:
+    
+       <complexSlotMention id="EHOST_Instance_115">
+           <mentionSlot id="TLINK" />
+           <attribute id="relType">DURING</attribute>
+           <complexSlotMentionValue value="EHOST_Instance_98" />
+       </complexSlotMention>
+    
+    """
+
+    @classmethod
+    def tag(cls, identifier, reltype, target_identifier):
+        """Factory method for complexSlotMention XML strings."""
+        return \
+            '<complexSlotMention id="EHOST_Instance_%s">\n' % identifier + \
+            '    <mentionSlot id="TLINK" />\n' + \
+            '    <attribute id="relType">%s</attribute>\n' % reltype + \
+            '    <complexSlotMentionValue value="EHOST_Instance_%s" />\n' % target_identifier + \
+            '</complexSlotMention>\n'
+        
     def __init__(self, csm):
         self.mention_id = csm.getAttribute('id')
         mention_slot = csm.getElementsByTagName('mentionSlot')[0]
@@ -788,7 +869,6 @@ def convert_knowtator_file_into_ttk(ttk_file, text_file, annotation_file):
     annotation_file = os.path.abspath(annotation_file)
     tarsqidoc = _get_tarsqidoc(ttk_file, "ttk")
     full_text = tarsqidoc.sourcedoc.text
-    #tarsqidoc.pp()
     with codecs.open(text_file, 'w', encoding="utf-8") as text:
         text.write(full_text)
     with codecs.open(annotation_file, 'w', encoding="utf-8") as anno:
@@ -819,9 +899,8 @@ def _create_tag_index(tags):
         tlink_index.setdefault(source_identifier, []).append(tag)
     for tag_identifier in tag_index:
         tlinks = tlink_index.get(tag_identifier, [])
-        # print("%s %s" % (tag_identifier, tlinks))
         tag_index[tag_identifier].append(tlinks)
-    _print_tag_index(tag_index)
+    #_print_tag_index(tag_index)
     return tag_index
 
 
@@ -833,149 +912,61 @@ def _print_tag_index(tag_index):
     print()
 
 
-# The following should possibly use all the Knowtator classes above, but note
-# that a tag is typically converted into a bunch of those classes, which makes
-# for a less natural use of those classes, or, at least, the tags should be
-# broken up before the class initializations are called.
-
 def _knowtator_convert_tag(tag, tag_index, text, fh):
-    #print(tag); print()
-    identifier = tag.get_identifier()
-    if identifier is not None:
-        if identifier.startswith('t'):
-            _knowtator_convert_timex_tag(identifier, tag, tag_index, text, fh)
-        elif identifier.startswith('e'):
-            _knowtator_convert_event_tag(identifier, tag, tag_index, text, fh)
-    # complexSlotMention
-
-
-def _knowtator_convert_timex_tag(tag_identifier, tag, tag_index, text, fh):
+    """Take the Tag instance and generate Knowtator XML tags for it."""
+    def new_id(): return KnowtatorID.new_identifier()
+    tag_id = tag.get_identifier()
+    if tag_id is None:
+        # skipping links
+        return 
+    # TODO: generalize creation if stringSlotMentions
+    if tag_id.startswith('t'):
+        classname = 'Timex3'
+        string_slot_mentions = [(new_id(), 'typeInfo', tag.attrs.get('type'))]
+    elif tag_id.startswith('e'):
+        classname = 'Event'
+        string_slot_mentions = [(new_id(), 'classType', tag.attrs.get('class')),
+                                (new_id(), 'Tense', tag.attrs.get('tense'))]
+    else:
+        print('WARNING: unexpected identifier for %s' % tag)
+        return
     spanned_text = text[tag.begin:tag.end]
-    annotation = _knowtator_annotation_tag(tag_identifier, tag, spanned_text)
-    string_slot_mentions \
-        = [(KnowtatorID.new_identifier(), 'typeInfo', tag.attrs.get('type'))]
+    annotation = KnowtatorAnnotation.tag(tag_id, tag, spanned_text)
     ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
     complex_slot_mentions = []
-    for tlink in tag_index[tag_identifier][1]:
+    for tlink in tag_index[tag_id][1]:
         target_id = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE,
                                     tlink.attrs.get(RELATED_TO_TIME))
         complex_slot_mentions.append(
             (KnowtatorID.new_identifier(), tlink.attrs.get('relType'), target_id))
     csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
     slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
-    class_mention = _knowtator_classMention_tag(
-        tag_identifier, tag, 'Timex3', spanned_text, slot_mentions)
-    tags = _knowtator_tags(annotation, ssm_tags, csm_tags, class_mention)
-    fh.write(tags)
-
-
-def _knowtator_convert_event_tag(tag_identifier, tag, tag_index, text, fh):
-    spanned_text = text[tag.begin:tag.end]
-    annotation = _knowtator_annotation_tag(tag_identifier, tag, spanned_text)
-    string_slot_mentions \
-        = [(KnowtatorID.new_identifier(), 'classType', tag.attrs.get('class')),
-           (KnowtatorID.new_identifier(), 'Tense', tag.attrs.get('tense'))]
-    ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
-    complex_slot_mentions = []
-    for tlink in tag_index[tag_identifier][1]:
-        target_id = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE,
-                                    tlink.attrs.get(RELATED_TO_TIME))
-        complex_slot_mentions.append(
-            (KnowtatorID.new_identifier(), tlink.attrs.get('relType'), target_id))
-    csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
-    slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
-    class_mention = _knowtator_classMention_tag(
-        tag_identifier, tag, 'Event', spanned_text, slot_mentions)
-    tags = _knowtator_tags(annotation, ssm_tags, csm_tags, class_mention)
-    fh.write(tags)
-
-
-def _knowtator_annotation_tag(tag_identifier, tag, spanned_text):
-    return \
-        '<annotation>\n' + \
-        '    <mention id="EHOST_Instance_%s" />\n' % tag_identifier + \
-        '    <annotator id="%s">TTK</annotator>\n' % open('VERSION').read().strip() + \
-        '    <span start="%s" end="%s" />\n' % (tag.begin, tag.end) + \
-        '    <spannedText>%s</spannedText>\n' % spanned_text + \
-        '    <creationDate>%s</creationDate>\n' % time.strftime("%Y%m%d", time.localtime())+ \
-        '</annotation>\n'
+    class_mention = KnowtatorClassMention.tag(
+        tag_id, tag, classname, spanned_text, slot_mentions)
+    fh.write(annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention)
 
 
 def _knowtator_stringSlotMention_tags(string_slot_mentions):
-    ssm_tags = []
-    for ssm in string_slot_mentions:
+    def ssm_tag(ssm):
         identifier, attribute, value = ssm
-        ssm_tags.append(
-            _knowtator_stringSlotMention_tag(identifier, attribute, value))
-    return ssm_tags
-
-
-def _knowtator_stringSlotMention_tag(identifier, attribute, value):
-    # <stringSlotMention id="EHOST_Instance_111">
-    #    <mentionSlot id="value" />
-    #    <stringSlotMentionValue value="09/29/2005" />
-    # </stringSlotMention>
-    return \
-        '<stringSlotMention id="EHOST_Instance_%s">\n' % identifier + \
-        '    <mentionSlot id="%s" />\n' % attribute + \
-        '    <stringSlotMentionValue value="%s" />\n' % value + \
-        '</stringSlotMention>\n'
+        return KnowtatorStringSlotMention.tag(identifier, attribute, value)
+    return [ssm_tag(ssm) for ssm in string_slot_mentions]
 
 
 def _knowtator_complexSlotMention_tags(complex_slot_mentions):
-    csm_tags = []
-    for csm in complex_slot_mentions:
-        (identifier, reltype, target_id) = csm
-        csm_tags.append(
-            _knowtator_complexSlotMention_tag(identifier, reltype, target_id))
-    return csm_tags
-        
-def _knowtator_complexSlotMention_tag(identifier, reltype, target_identifier):
-    # <complexSlotMention id="EHOST_Instance_115">
-    #    <mentionSlot id="TLINK" />
-    #    <attribute id="relType">DURING</attribute>
-    #    <complexSlotMentionValue value="EHOST_Instance_98" />
-    # </complexSlotMention>
-    return \
-        '<complexSlotMention id="EHOST_Instance_%s">\n' % identifier + \
-        '    <mentionSlot id="TLINK" />\n' + \
-        '    <attribute id="relType">%s</attribute>\n' % reltype + \
-        '    <complexSlotMentionValue value="EHOST_Instance_%s" />\n' % target_identifier + \
-        '</complexSlotMention>\n'
-        
-    
-def _knowtator_classMention_tag(tag_identifier, tag, mention_class, spanned_text, slot_mentions):
-    # <classMention id="EHOST_Instance_95">
-    #    <hasSlotMention id="EHOST_Instance_110" />
-    #    <hasSlotMention id="EHOST_Instance_111" />
-    #    <mentionClass id="Timex3">September 29, 2005</mentionClass>
-    # </classMention>
-    has_slot_mention_tags = [_knowtator_hasSlotMention_tag(sm)
-                             for sm in slot_mentions]
-    return \
-        '<classMention id="EHOST_Instance_%s">\n' % tag_identifier + \
-        '    ' + '    '.join(has_slot_mention_tags) + \
-        '    <mentionClass id="%s">%s</mentionClass>\n' % (mention_class, spanned_text) + \
-        '</classMention>\n'
-
-def _knowtator_hasSlotMention_tag(identifier):
-    # <hasSlotMention id="EHOST_Instance_110" />
-    return '<hasSlotMention id="EHOST_Instance_%s" />\n' % identifier
-
-
-def _knowtator_tags(annotation, ssm_tags, csm_tags, class_mention):
-    return annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention
+    def csm_tag(csm):
+        identifier, reltype, target_id = csm
+        return KnowtatorComplexSlotMention.tag(identifier, reltype, target_id)
+    return [csm_tag(csm) for csm in complex_slot_mentions]
 
     
 class KnowtatorID(object):
-
+    """Just a class to generate identifiers."""
     identifier = 0
-
     @classmethod
     def new_identifier(cls):
         cls.identifier += 1
         return cls.identifier
-    
 
 
 ### UTILITIES
