@@ -145,9 +145,14 @@ def convert_thyme(thyme_text_dir, thyme_anno_dir, out_dir, limit=sys.maxsize):
         anno_files = os.listdir(os.path.join(thyme_anno_dir, fname))
         timeml_files = [f for f in anno_files if f.find('Temporal') > -1]
         if timeml_files:
+            #if not fname == "ID090_clinic_265": continue
+            #if not fname == "ID090_path_266a": continue
             print(fname)
             thyme_anno_file = os.path.join(thyme_anno_dir, fname, timeml_files[0])
-            _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file)
+            try:
+                _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file)
+            except:
+                print("WARNING: error on %s" % fname)
 
 
 def _convert_thyme_file(thyme_text_file, thyme_anno_file, out_file):
@@ -176,7 +181,7 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
     for timex in timexes:
         try:
             begin, end = timex.span.split(',')
-            if timex.id in timex_idx.has_key:
+            if timex.id in timex_idx:
                 print("WARNING: timex %s already exists" % timex.id)
             timex_idx[timex.id] = begin
             attrs = { TID: timex.id }
@@ -189,7 +194,7 @@ def _add_timexes_to_tarsqidoc(timexes, timex_idx, metadata, tarsqidoc):
                 tarsqidoc.metadata['dct'] = dct_value
             elif timex.type == 'SECTIONTIME':
                 attrs['functionInDocument'] = 'SECTIONTIME'
-            tarsqidoc.tags.add_tag('TIMEX3', begin, end, attrs)
+            tarsqidoc.sourcedoc.tags.add_tag('TIMEX3', begin, end, attrs)
         except ValueError:
             print("Skipping discontinuous timex")
 
@@ -206,13 +211,14 @@ def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
             event_idx[event.id] = begin
             # TODO: is it okay for these to be the same?
             attrs = { EID: event.id, EIID: event.id}
-            tarsqidoc.tags.add_tag('EVENT', begin, end, attrs)
+            tarsqidoc.sourcedoc.tags.add_tag('EVENT', begin, end, attrs)
             dct_rel_id += 1
-            attrs = { LID: next(LinkID),
-                      RELTYPE: event.DocTimeRel,
-                      EVENT_INSTANCE_ID: event.id,
-                      RELATED_TO_TIME: dct.id }
-            tarsqidoc.tags.add_tag('TLINK', None, None, attrs)
+            if dct is not None:
+                attrs = { LID: LinkID.next(), #LID: next(LinkID),
+                          RELTYPE: event.DocTimeRel,
+                          EVENT_INSTANCE_ID: event.id,
+                          RELATED_TO_TIME: dct.id }
+                tarsqidoc.sourcedoc.tags.add_tag('TLINK', None, None, attrs)
         except ValueError:
             print("Skipping discontinuous event")
 
@@ -229,7 +235,7 @@ def _add_links_to_tarsqidoc(links, timex_idx, event_idx, tarsqidoc):
             _source_attr_name(rel.type, sourceid, timex_idx, event_idx): sourceid,
             _target_attr_name(rel.type, targetid, timex_idx, event_idx): targetid,
             RELTYPE: rel.RelType}
-        tarsqidoc.tags.add_tag(rel.type, None, None, attrs)
+        tarsqidoc.sourcedoc.tags.add_tag(rel.type, None, None, attrs)
 
 
 def _source_attr_name(link_type, source_id, timex_idx, event_idx):
