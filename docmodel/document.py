@@ -498,8 +498,8 @@ class TagRepository:
         for tag in tag_repository.find_tags(tagname):
             self.add_tag(tagname, tag.begin, tag.end, tag.attrs)
 
-    def pp(self):
-        self.pp_tags(indent='   ')
+    def pp(self, indent='   '):
+        self.pp_tags(indent)
         # print; self.pp_opening_tags()
         # print; self.pp_closing_tags()
 

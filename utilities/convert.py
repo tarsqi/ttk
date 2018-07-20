@@ -49,11 +49,20 @@ Some format conversion utilities.
 
    IN PROGRESS.
 
+6. Convert from ECB into TTK
+
+   $ python convert.py --ecb2ttk ECB_DIR TTK_DIR
+
+   The ECB directory structure is mirrored which includes the topic id, but each
+   TTK file also has the topic id as a metadata property.
+
+   Will at some point also include the ECB+ data.
+
 """
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import os, sys, getopt, codecs, time
+import os, sys, getopt, codecs, time, glob
 from xml.dom import minidom, Node
 
 import path
@@ -61,7 +70,7 @@ import tarsqi
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
-from docmodel.document import TarsqiDocument, Tag
+from docmodel.document import TarsqiDocument, Tag, ProcessingStep
 from library.main import TarsqiLibrary
 
 DEBUG = True
@@ -965,7 +974,7 @@ def _knowtator_complexSlotMention_tags(complex_slot_mentions):
         return KnowtatorComplexSlotMention.tag(identifier, reltype, target_id)
     return [csm_tag(csm) for csm in complex_slot_mentions]
 
-    
+
 class KnowtatorID(object):
     """Just a class to generate identifiers."""
     identifier = 0
@@ -973,6 +982,69 @@ class KnowtatorID(object):
     def new_identifier(cls):
         cls.identifier += 1
         return cls.identifier
+
+
+### 6. CONVERT ECB INTO TTK
+
+class ECBConverter(object):
+
+    def __init__(self, ecb_directory, ttk_directory):
+        self.ecb_directory = ecb_directory
+        self.ttk_directory = ttk_directory
+        filepaths = glob.glob(os.path.join(self.ecb_directory, 'data', '*', '*.ecb'))
+        self.ecb_files = []
+        self.topics = {}
+        for fp in filepaths:
+            datadir, fname = os.path.split(fp)
+            datadir, topicdir = os.path.split(datadir)
+            fname = os.path.join(topicdir, fname)
+            ecb_file = ECBFile(ecb_directory, ttk_directory, topicdir, fname)
+            self.ecb_files.append(ecb_file)
+            print(ecb_file)
+        self._populate_topics()
+
+    def write_files(self):
+        for ecb_file in self.ecb_files:
+            ecb_file.write()
+
+    def _populate_topics(self):
+        for ecb_file in self.ecb_files:
+            self.topics.setdefault(ecb_file.topic, []).append(ecb_file)
+
+    def print_topics(self):
+        for topic, ecb_files in self.topics.items():
+            print(topic)
+            for ecb_file in ecb_files:
+                print("   %s" % ecb_file)
+
+
+class ECBFile(object):
+
+    """An ECBFile is an intermediary object used by the ECBConverter. It is given
+    the ECB and TTK directories, the topic identifier and the filename and then
+    creates a TarsqiDocument for the ECB file. """
+
+    def __init__(self, ecb_directory, ttk_directory, topic, fname):
+        self.topic = topic
+        self.ecb_file = os.path.join(ecb_directory, 'data', fname)
+        self.ttk_file = os.path.join(ttk_directory, 'data', fname)
+        self.tarsqidoc = _get_tarsqidoc_from_ecb_file(self.ecb_file)
+        self.tarsqidoc.sourcedoc.filename = self.ecb_file
+        # here we fake a pipeline for the metadata
+        pipeline = [ProcessingStep(pipeline=[("ECB_CONVERTER", None)])]
+        self.tarsqidoc.metadata['processing_steps'] = pipeline
+        # and store the topic id since we do not to want to rely just on the
+        # directory structure
+        self.tarsqidoc.metadata['topic'] = topic
+
+    def __str__(self):
+        return "<ECBFile topic=%s %s>" % (self.topic, self.ecb_file)
+
+    def write(self):
+        path, fname = os.path.split(self.ttk_file)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        self.tarsqidoc.print_all(self.ttk_file)
 
 
 ### UTILITIES
@@ -993,10 +1065,31 @@ def _get_tarsqidoc(infile, source, metadata=True):
     return t.tarsqidoc
 
 
+def _get_tarsqidoc_from_ecb_file(infile):
+    """Return an instance of TarsqiDocument for infile. This is a special case of
+    _get_tarsqidoc() for ECB files since those do not allow us to use a source
+    parser in the regular way since ECB files are neither of the text type or
+    the xml type."""
+    opts = [("--source", "xml"), ("--trap-errors", "False")]
+    t = tarsqi.Tarsqi(opts, infile, None)
+    # create an XML string from the ECB file
+    with codecs.open(t.input, encoding="utf8") as fh:
+        content = "<text>%s</text>" % fh.read().replace('&', '&amp;')
+    t.source_parser.parse_string(content, t.tarsqidoc)
+    t.metadata_parser.parse(t.tarsqidoc)
+    # turn the MENTION tags into impoverished EVENT tags
+    for mention in t.tarsqidoc.sourcedoc.tags.find_tags('MENTION'):
+        attrs = { 'chain': mention.attrs['CHAIN'] }
+        t.tarsqidoc.tags.add_tag('EVENT', mention.begin, mention.end, attrs)
+    t.tarsqidoc.sourcedoc.tags.remove_tags('MENTION')
+    return t.tarsqidoc
+
+
 if __name__ == '__main__':
 
     long_options = ['timebank2ttk', 'thyme2ttk', 'ttk2html',
-                    'knowtator2ttk', 'ttk2knowtator', 'tarsqi', 'show-links']
+                    'knowtator2ttk', 'ttk2knowtator', 'ecb2ttk',
+                    'tarsqi', 'show-links']
     (opts, args) = getopt.getopt(sys.argv[1:], 'i:o:', long_options)
     opts = { k: v for k, v in opts }
     limit = 10 if DEBUG else sys.maxsize
@@ -1016,7 +1109,7 @@ if __name__ == '__main__':
             converter.convert(tarsqi_tags)
         elif os.path.isdir(args[0]):
             if os.path.exists(args[1]):
-                exit("ERROR: output directory already exists")            
+                exit("ERROR: output directory already exists")
             convert_knowtator(args[0], args[1], limit, tarsqi_tags)
         else:
             exit("ERROR: input is not a file or directory")
@@ -1035,3 +1128,7 @@ if __name__ == '__main__':
 
     elif '--ttk2knowtator' in opts:
         convert_knowtator_file_into_ttk(args[0], args[1], args[2])
+
+    elif '--ecb2ttk' in opts:
+        converter = ECBConverter(args[0], args[1])
+        converter.write_files()
