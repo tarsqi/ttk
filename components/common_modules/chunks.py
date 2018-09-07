@@ -631,7 +631,8 @@ def _debug_vcf(vcf_list):
     logger.debug("len(features_list) = %d" % len(vcf_list))
     if len(vcf_list) > 0 and DEBUG:
         for vcf in vcf_list:
-            print ' ',
-            vcf.pp()
+            if DEBUG:
+                print ' ',
+                vcf.pp()
     for vcf in vcf_list:
         logger.debug(vcf.as_verbose_string())

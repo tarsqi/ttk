@@ -158,6 +158,7 @@ class SourceParserTTK(SourceParser):
 
 
 def print_dom(node, indent=0):
+    """Debugging method."""
     if node is None:
         return
     if node.nodeType == minidom.Node.TEXT_NODE and not node.data.strip():

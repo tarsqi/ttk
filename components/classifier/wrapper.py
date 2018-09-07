@@ -87,7 +87,7 @@ class ClassifierWrapper:
                 classifier_line = classifier_file.readline()
                 result_id, scores = mallet.parse_classifier_line(classifier_line)
                 if vector_id != result_id:
-                    print 'WARNING: vector and classification do not match'
+                    logger.warn('vector and classification do not match')
                     continue
                 id1 = result_id.split('-')[-2]
                 id2 = result_id.split('-')[-1]
@@ -112,7 +112,6 @@ class ClassifierWrapper:
                 attrs = { LID: self.tarsqidoc.next_link_id(TLINK),
                           RELTYPE: reltype, ORIGIN: origin,
                           _arg1_attr(id1): id1, _arg2_attr(id2): id2 }
-                print attrs
                 self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 

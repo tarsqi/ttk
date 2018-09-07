@@ -118,7 +118,7 @@ class CombinationRule:
 
 
 def get_class(class_name):
-    print classname, '=',
+    #print classname, '=',
     classobj = vars(sys.modules[__name__])[classname]
     return classobj
 

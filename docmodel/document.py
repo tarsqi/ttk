@@ -148,7 +148,7 @@ class TarsqiDocument:
         self.sourcedoc.print_source(fname)
 
     def print_sentences(self, fname=None):
-        """Write to file (or stadard output if no filename was given) a Python
+        """Write to file (or standard output if no filename was given) a Python
         variable assignment where the content of the variable the list of
         sentences as a list of lists of token strings."""
         fh = sys.stdout if fname is None else codecs.open(fname, mode='w',
