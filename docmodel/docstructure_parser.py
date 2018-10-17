@@ -50,6 +50,7 @@ def split_paragraphs(text):
     par_begin = p2
     seeking_space = False
     paragraphs = []
+    last_para = (None, None)
 
     while (p2 < text_end):
         if not seeking_space:
@@ -61,17 +62,19 @@ def split_paragraphs(text):
             seeking_space = False
             if space.count("\n") > 1:
                 par_end = p1
+                last_para = (par_begin, par_end)
                 paragraphs.append((par_begin, par_end))
                 par_begin = p2
                 par_end = None
+            #print ('TOK', p1, p2, par_begin, par_end, seeking_space, space)
 
     if seeking_space and p2 > par_begin:
+        last_para = (par_begin, par_end)
         paragraphs.append((par_begin, par_end))
 
-    # this deals with the boundary case where there are no empty lines, should
-    # really have a more elegant solution
-    if not paragraphs:
-        paragraphs = [(0, text_end)]
+    # deal with the boundary case where there are no empty lines at the end
+    if not last_para == (par_begin, par_end) and par_end is not None:
+        paragraphs.append((par_begin, par_end))
 
     return paragraphs
 
