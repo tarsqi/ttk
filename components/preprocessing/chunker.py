@@ -31,6 +31,8 @@ from components.common_modules.tree import create_tarsqi_tree
 
 from library.tarsqi_constants import GUTIME
 
+DEBUG = False
+
 
 # CHUNK TYPES
 
@@ -410,7 +412,7 @@ class ChunkUpdater(object):
 
     @staticmethod
     def _debug(orphan, sentence, nodes):
-        if True:
+        if DEBUG:
             print orphan
             print '  ', sentence
             for n in nodes:

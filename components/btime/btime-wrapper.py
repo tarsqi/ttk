@@ -48,7 +48,7 @@ def parse_file(filename):
 
 
 def parse_sentence(sentence):
-    """This is  here BTime gets folded in."""
+    """This is where BTime gets folded in."""
     print "processing \"%s\"" % ' '.join([t.text for t in sentence])
 
 

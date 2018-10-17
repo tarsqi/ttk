@@ -1040,7 +1040,6 @@ class _IndexFile:
     def _buildIndexCacheFile(self):
 	import shelve
 	import os
-	print "Building %s:" % (self.shelfname,),
 	tempname = self.shelfname + ".temp"
 	try:
 	    indexCache = shelve.open(tempname)
@@ -1051,7 +1050,6 @@ class _IndexFile:
 		if not line: break
 		key = line[:string.find(line, ' ')]
 		if (count % 1000) == 0:
-		    print "%s..." % (key,),
 		    import sys
 		    sys.stdout.flush()
 		indexCache[key] = line
@@ -1061,7 +1059,6 @@ class _IndexFile:
 	finally:
 	    try: os.remove(tempname)
 	    except: pass
-	print "done."
 	self.indexCache = shelve.open(self.shelfname, 'r')
 
 

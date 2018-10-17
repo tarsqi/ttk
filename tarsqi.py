@@ -238,7 +238,7 @@ class Tarsqi:
             try:
                 self.tarsqidoc.print_all(self.output)
             except:
-                print "ERROR printing output"
+                logger.error("Writing output failed")
         else:
             self.tarsqidoc.print_all(self.output)
 
