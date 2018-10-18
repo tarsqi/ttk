@@ -5,8 +5,9 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 """
 
-import sys, codecs, StringIO, itertools
+import os, sys, codecs, StringIO, itertools, time
 from xml.sax.saxutils import escape, quoteattr
+from subprocess import Popen, PIPE
 
 from library.main import LIBRARY
 from utilities import logger
@@ -21,12 +22,15 @@ TLINK = LIBRARY.timeml.TLINK
 TID = LIBRARY.timeml.TID
 EID = LIBRARY.timeml.EID
 EIID = LIBRARY.timeml.EIID
+LID = LIBRARY.timeml.LID
 
 TIME_ID = LIBRARY.timeml.TIME_ID
 EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
 RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
 RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
+
+TTK_ROOT = os.environ['TTK_ROOT']
 
 
 class TarsqiDocument:
@@ -47,7 +51,7 @@ class TarsqiDocument:
 
     def __init__(self):
         self.sourcedoc = None
-        self.metadata = {}
+        self.metadata = { 'dct': None, 'processing_steps': [] }
         self.options = {}
         self.tags = TagRepository()
         self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
@@ -106,10 +110,10 @@ class TarsqiDocument:
             print "   metadata.%-14s  -->  %s" % (key, value)
         for key, value in self.options.items():
             print "   options.%-15s  -->  %s" % (key, value)
-        if source_tags:
+        if source_tags and not self.sourcedoc.tags.is_empty():
             print "\nSOURCE_TAGS:"
             self.sourcedoc.tags.pp()
-        if tarsqi_tags:
+        if tarsqi_tags and not self.tags.is_empty():
             print "\nTARSQI_TAGS:"
             self.tags.pp()
         print
@@ -135,13 +139,16 @@ class TarsqiDocument:
         """Remove all TLINK tags from the tags repository."""
         self.tags.remove_tags(TLINK)
 
+    def update_processing_history(self, pipeline):
+        self.metadata['processing_steps'].append(ProcessingStep(pipeline))
+
     def print_source(self, fname):
         """Print the original source of the document, without the tags to file
         fname."""
         self.sourcedoc.print_source(fname)
 
     def print_sentences(self, fname=None):
-        """Write to file (or stadard output if no filename was given) a Python
+        """Write to file (or standard output if no filename was given) a Python
         variable assignment where the content of the variable the list of
         sentences as a list of lists of token strings."""
         fh = sys.stdout if fname is None else codecs.open(fname, mode='w',
@@ -178,7 +185,13 @@ class TarsqiDocument:
     def _print_metadata(self, fh):
         fh.write("<metadata>\n")
         for k, v in self.metadata.items():
-            fh.write("  <%s value=\"%s\"/>\n" % (k, v))
+            if k == 'processing_steps':
+                fh.write("  <processing_steps>\n")
+                for step in self.metadata[k]:
+                    fh.write("    %s\n" % step.as_xml())
+                fh.write("  </processing_steps>\n")
+            else:
+                fh.write("  <%s value=\"%s\"/>\n" % (k, v))
         fh.write("</metadata>\n")
 
     def _print_tags(self, fh, tag_group, tags):
@@ -355,6 +368,9 @@ class TagRepository:
     def all_tags(self):
         return self.tags
 
+    def is_empty(self):
+        return len(self.tags) == 0
+
     def add_tmp_tag(self, tagInstance):
         """Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
@@ -482,8 +498,8 @@ class TagRepository:
         for tag in tag_repository.find_tags(tagname):
             self.add_tag(tagname, tag.begin, tag.end, tag.attrs)
 
-    def pp(self):
-        self.pp_tags(indent='   ')
+    def pp(self, indent='   '):
+        self.pp_tags(indent)
         # print; self.pp_opening_tags()
         # print; self.pp_closing_tags()
 
@@ -505,13 +521,16 @@ class TagRepository:
 
 class Tag:
 
-    """A Tag has a name, an id, a begin offset, an end offset and a dictionary of
-    attributes. The id is handed in by the code that creates the Tag which could
-    be: (1) the code that parses the source document, which will only assign an
-    identifier if the source had an id attribute, (2) the preprocessor code,
-    which assigns identifiers for lex, ng, vg and s tags, or (3) one of the
-    components that creates tarsqi tags, in which case the identifier is None,
-    but special identifiers like eid, eiid, tid and lid are used."""
+    """A Tag has a name, a begin offset, an end offset and a dictionary of
+    attributes. All arguments are handed in by the code that creates the Tag
+    which could be: (1) the code that parses the source document, which will
+    only assign an identifier if the source had an id attribute, (2) the
+    preprocessor code, which assigns identifiers for lex, ng, vg and s tags, or
+    (3) one of the components that creates tarsqi tags.
+
+    # TODO: check whether those are still the three that are used
+
+    """
 
     def __init__(self, name, o1, o2, attrs):
         """Initialize name, begin, end and attrs instance variables and make sure
@@ -550,11 +569,18 @@ class Tag:
 
     @staticmethod
     def new_attr(attr, attrs):
+        # TODO: See the comment in __init__, I have a strong feeling that there
+        # is a better and/or clearer way to do this.
         counter = itertools.count(1, step=1)
         for c in counter:
             new_attr = "%s_%d" % (attr, c)
             if new_attr not in attrs:
                 return new_attr
+
+    def get_identifier(self):
+        """Returns the identifier of the event, timex or tlink if there is one, returns
+        None otherwise. For an event, the identifier is assumed to be the eiid."""
+        return self.attrs.get(TID, self.attrs.get(EIID, self.attrs.get(LID)))
 
     def is_opening_tag(self):
         return False
@@ -613,6 +639,55 @@ class ClosingTag(Tag):
 
     def is_closing_tag(self):
         return True
+
+
+class ProcessingStep(object):
+
+    """Implements an element of the processing history in the metadata. The core
+    of the ProcessingStep is the pipeline that was exectued, in addition there
+    is some bookkeeping and the following are included: the TTK version, the git
+    commit if available and a timestamp. Note that the git commit does not
+    uniquely define the state of the code when the toolkti ran because there
+    could have been uncommitted changes."""
+
+    def __init__(self, pipeline=None, dom_node=None):
+        """Initialize from a pipeline or a DOM node."""
+        if pipeline is not None:
+            self._initialize_from_pipeline(pipeline)
+        elif dom_node is not None:
+            self._initialize_from_dom_node(dom_node)
+        else:
+            logger.error("ProcessingStep cannot be initialized")
+
+    def _initialize_from_pipeline(self, pipeline):
+        self.components = ','.join([c[0] for c in pipeline])
+        self.timestamp = time.strftime('%Y%m%d-%H%M%S')
+        self.commit = self._get_git_commit()
+        self.version = open(os.path.join(TTK_ROOT, 'VERSION')).read().strip()
+
+    def _initialize_from_dom_node(self, dom_node):
+        self.components = dom_node.getAttribute('components')
+        self.timestamp = dom_node.getAttribute('timestamp')
+        self.commit = dom_node.getAttribute('git_commit')
+        self.version = dom_node.getAttribute('ttk_version')
+
+    def __str__(self):
+        return "<ProcessingStep version='%s' commit='%s' timestamp='%s' %s>" \
+            % (self.version, self.commit, self.timestamp, self.components)
+
+    @staticmethod
+    def _get_git_commit():
+        command = 'git rev-parse --short HEAD'
+        close_fds = False if sys.platform == 'win32' else True
+        return Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
+                     close_fds=close_fds).stdout.read().strip()
+
+    def as_xml(self):
+        return "<processing_step %s%s%s%s/>" \
+            % (' ttk_version="%s"' % self.version,
+               ' git_commit="%s"' % self.commit if self.commit else '',
+               ' timestamp="%s"' % self.timestamp,
+               ' components="%s"' % self.components)
 
 
 class TarsqiInputError(Exception):

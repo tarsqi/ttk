@@ -1,10 +1,19 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented in this file.
 
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). Loosely because we do not keep separate sections within a version for additions and fixes etcetera, instead most logged changes will start with one of Added, Changed, Deprecated, Removed, Fixed, or Security.
 
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
+
+
+## Version 2.1.1 - 2018-10-17
+
+- Fixed issue [#84](https://github.com/tarsqi/ttk/issues/84).
+- Fixed issue [#74](https://github.com/tarsqi/ttk/issues/74). Changed inline error reporting by sending errors to standard error instead of standard output and removed all other print statements that are not embedded in print methods and functions.
+- Added processing history to TTK document (issue [#14](https://github.com/tarsqi/ttk/issues/14), in progress).
+- Fixed some errors in Thyme conversion code.
+- Added initial version of converter from the EventCoreferenceBank format to the TTK format (issue [#83](https://github.com/tarsqi/ttk/issues/83), in progress).
 
 
 ## Version 2.1.0 - 2017-06-13
@@ -18,7 +27,7 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 - Updated documentation (mostly spelling out some Windows limitations).
 - Changed command line options a bit (minor simplifications).
 - Fixed UnicodeDecodeError bug when printing a tag as a TTK tag.
-- Fixed problem withoften-used harmful print statement that caused problems when using the --pipe option (this is a partial fix of issue [#74](https://github.com/tarsqi/ttk/issues/74)).
+- Fixed problem with often-used harmful print statement that caused problems when using the --pipe option (this is a partial fix of issue [#74](https://github.com/tarsqi/ttk/issues/74)).
 
 
 ## Version 2.0.2 - 2017-04-09

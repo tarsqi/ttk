@@ -33,13 +33,12 @@ an instance of TarsqiDocument. Of that instance, all the parsers in this file do
 is to instantiate the source instance variable, which contains an instance of
 SourceDoc.
 
-What parser is used is defined in main.py, which has a mapping form source types
+What parser is used is defined in main.py, which has a mapping from source types
 (handed in by the --source command line option) to source parsers.
 
 There are now three parsers:
 
 SourceParserXML
-
    A simple XML parser that splits inline XML into a source string and a list of
    tags. The source string and the tags are stored in the SourceDoc instance,
    which is intended to provide just enough functionality to deal with the input
@@ -47,12 +46,10 @@ SourceParserXML
    instance.
 
 SourceParserText
-
    Simply puts the entire text in the DocSource instance and leaves the
    TagsRepository empty.
 
 SourceParserTTK
-
    This parser deals with the ttk format. In the TTK format there are two main
    sources for tags: source_tags and tarsqi_tags. The first are added to the
    tags repository on the SourceDoc (which is considered read-only after that),
@@ -200,7 +197,7 @@ Store the XML declaration.</pre>
 <div class="section">module functions</div>
 <pre>
 <div class=function>print_dom(node, indent=0)</div>
-</pre>
+Debugging method.</pre>
 <pre>
 <div class=function>replace_newline(text)</div>
 Just used for debugging, make sure to not use this elsewhere because it

@@ -85,7 +85,6 @@ class Constituent:
     def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used
         in the pattern matching phase."""
-        print name
         if name == 'nodeType':
             return self.__class__.__name__
         elif name == 'text':
