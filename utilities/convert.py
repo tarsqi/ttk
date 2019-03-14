@@ -51,10 +51,15 @@ Some format conversion utilities.
 
 6. Convert from ECB into TTK
 
-   $ python convert.py --ecb2ttk ECB_DIR TTK_DIR
+   $ python convert.py --ecb2ttk ECB_DIR OUT_DIR
 
-   The ECB directory structure is mirrored which includes the topic id, but each
-   TTK file also has the topic id as a metadata property.
+   THE ECB_DIR directory should be the top-level directory of the ECB
+   distribution (which has a README file and a data directory which includes
+   directories for each topic. Converted files are written to OUT_DIR, the
+   structure of which mirrors the structure of the ECB directory. Each TTK file
+   written to the output has the topic id as a metadata property as well as a
+   couple of EVENT tags in the tarsqi_tags section. Events are not like Evita
+   events and only have three attributes: begin, end and chain.
 
    Will at some point also include the ECB+ data.
 
@@ -989,21 +994,40 @@ class KnowtatorID(object):
 class ECBConverter(object):
 
     def __init__(self, ecb_directory, ttk_directory):
+        """Collect specifications for each ECB file, which includes the ecb directory,
+        the target directory (used to write converted files), the topic name and the
+        filename (includes the topic name, for example "1/7.ecb)."""
         self.ecb_directory = ecb_directory
         self.ttk_directory = ttk_directory
-        filepaths = glob.glob(os.path.join(self.ecb_directory, 'data', '*', '*.ecb'))
+        self.ecb_specs = []
         self.ecb_files = []
         self.topics = {}
+        filepaths = glob.glob(os.path.join(self.ecb_directory, 'data', '*', '*.ecb'))
         for fp in filepaths:
             datadir, fname = os.path.split(fp)
-            datadir, topicdir = os.path.split(datadir)
-            fname = os.path.join(topicdir, fname)
-            ecb_file = ECBFile(ecb_directory, ttk_directory, topicdir, fname)
-            self.ecb_files.append(ecb_file)
-            print(ecb_file)
-        self._populate_topics()
+            datadir, topic = os.path.split(datadir)
+            fname = os.path.join(topic, fname)
+            self.ecb_specs.append((ecb_directory, ttk_directory, topic, fname))
 
-    def write_files(self):
+    def convert(self, topic=None):
+        """Convert TTK files into ECB files. Use the topic argument to limit processing
+        to one topic, the value can be an integer from 1 to 45 or a string representation
+        of that integer."""
+        if topic is not None:
+            # turn the topic into a string if it isn't one yet
+            topic = "%s" % topic
+            specs = [spec for spec in self.ecb_specs if spec[2] == topic]
+        else:
+            specs = self.ecb_specs
+        print("Converting %d files..." % len(specs))
+        for (ecb_directory, ttk_directory, topic, fname) in specs:
+            ecb_file = ECBFile(ecb_directory, ttk_directory, topic, fname)
+            self.ecb_files.append(ecb_file)
+            print("   %s" % ecb_file)
+        self._populate_topics()
+        self._write_files()
+
+    def _write_files(self):
         for ecb_file in self.ecb_files:
             ecb_file.write()
 
@@ -1130,5 +1154,7 @@ if __name__ == '__main__':
         convert_knowtator_file_into_ttk(args[0], args[1], args[2])
 
     elif '--ecb2ttk' in opts:
-        converter = ECBConverter(args[0], args[1])
-        converter.write_files()
+        indir = os.path.abspath(args[0])
+        outdir = os.path.abspath(args[1])
+        ECBConverter(indir, outdir).convert()
+
