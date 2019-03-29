@@ -55,11 +55,13 @@ Some format conversion utilities.
 
    THE ECB_DIR directory should be the top-level directory of the ECB
    distribution (which has a README file and a data directory which includes
-   directories for each topic. Converted files are written to OUT_DIR, the
+   directories for each topic). Converted files are written to OUT_DIR, the
    structure of which mirrors the structure of the ECB directory. Each TTK file
    written to the output has the topic id as a metadata property as well as a
-   couple of EVENT tags in the tarsqi_tags section. Events are not like Evita
-   events and only have three attributes: begin, end and chain.
+   couple of MENTION tags in the source_tags section. These mentions tend to be
+   Evita events, but are impoverished in the sense that they only have three
+   attributes: begin, end and chain. The idea is that the information in
+   mentions will be merged with information in events.
 
    Will at some point also include the ECB+ data.
 
@@ -1101,11 +1103,11 @@ def _get_tarsqidoc_from_ecb_file(infile):
         content = "<text>%s</text>" % fh.read().replace('&', '&amp;')
     t.source_parser.parse_string(content, t.tarsqidoc)
     t.metadata_parser.parse(t.tarsqidoc)
-    # turn the MENTION tags into impoverished EVENT tags
     for mention in t.tarsqidoc.sourcedoc.tags.find_tags('MENTION'):
-        attrs = { 'chain': mention.attrs['CHAIN'] }
-        t.tarsqidoc.tags.add_tag('EVENT', mention.begin, mention.end, attrs)
-    t.tarsqidoc.sourcedoc.tags.remove_tags('MENTION')
+        # this is somewhat dangerous because we are not checking whether there
+        # is a double quote in the string, but those do not happen to occur
+        text = t.tarsqidoc.text(mention.begin, mention.end)
+        mention.attrs["text"] = text
     return t.tarsqidoc
 
 
