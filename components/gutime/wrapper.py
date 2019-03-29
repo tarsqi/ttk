@@ -76,6 +76,7 @@ class GUTimeWrapper:
         # apparently, parseString cannot deal with unicode
         # TODO: check whether this has unforeseen consequences
         result = u'{0}'.format(result).encode('utf-8')
+        result = _remove_bad_times(result)
         dom = parseString(result)
         _export_timex_tags(self.document, dom)
         _update_chunks(self.document)
@@ -139,6 +140,34 @@ def _run_gutime_on_file(fin, fout):
     (fh_in, fh_out, fh_errors) = (p.stdin, p.stdout, p.stderr)
     for line in fh_errors:
         logger.warn(line)
+
+
+def _remove_bad_times(gutime_result):
+    """This is a hack to deal with some weird GUTime results. In some cases GUTIME
+    will create a TIMEX3 tag with duplicate attributes. For example, with input
+    "at 7:48am (2248 GMT)" you get a TIMEX3 tag spanning "48am" (which is weird in
+    itself) which looks like:
+
+    <TIMEX3 tid="t4" TYPE="TIME" VAL="T48" ERROR="Bad Time" ERROR="Inconsistent">
+
+    When the XML parser later reads this it chokes and no timexes are added to
+    the Tarsqi document."""
+
+    filtered_result = []
+    removed_bad_time = False
+    remove_closing_timex = False
+    for line in gutime_result.split("\n"):
+        if "TIMEX3" in line and "ERROR" in line:
+            lex_idx = line.find("<lex ")
+            filtered_result.append(line[lex_idx:])
+            remove_closing_timex = True
+            removed_bad_time = True
+        elif remove_closing_timex and "</TIMEX3>" in line:
+            filtered_result.append(line[:-9])
+            remove_closing_timex = False
+        else:
+            filtered_result.append(line)
+    return "\n".join(filtered_result) if removed_bad_time else gutime_result
 
 
 def _export_timex_tags(tarsqidoc, dom):
