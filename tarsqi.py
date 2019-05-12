@@ -16,7 +16,8 @@ USAGE
       Input and output files or directories. If the input is a directory then
       the output directory needs to exist. If '--pipe' is one of the options
       then input and output are not required and they are ignored if they are
-      there.
+      there. Output is always in the TTK format, unless the --source option is
+      set to lif, in which case output will be in the LIF format.
 
    OPTIONS
 
@@ -28,10 +29,10 @@ USAGE
           option is not specified then the system will try to guess one of
           'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
           for the first two cases. Note that currently this guess will fail if
-          the --pipe option is used. There are four more types that can be used
-          to process the more specific sample data in data/in: timebank for
-          data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
-          for data/in/db.
+          the --pipe option is used. There are five more types that can be used
+          to process the more specific sample data in data/in: lif for the data
+          in data/in/lif, timebank for data/in/TimeBank, atee for data/in/ATEE,
+          rte3 for data/in/RTE3 and db for data/in/db.
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
@@ -83,7 +84,8 @@ USAGE
           more messages will be written to the log, see utilities.logger for
           more details.
 
-      All these options can also be set in the config.txt file.
+      Some of these options (the ones that have values) can also be set in the
+      config.txt file.
 
 
 VARIABLES:

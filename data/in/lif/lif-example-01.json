@@ -1,0 +1,381 @@
+{
+        "@context": "http://vocab.lappsgrid.org/context-1.0.0.jsonld",
+        "metadata": {},
+        "text": {
+            "@value": "\n\n\nMessage-ID: <4232569.1075852475436.JavaMail.evans@thyme>\nDate: Sat, 25 Aug 2001 16:35:13 -0700 (PDT)\nFrom: donk@prestongates.com\nSubject: PRIVILEGED AND CONFIDENTIAL - Scott Jones Draft\nMime-Version: 1.0\nContent-Type: text/plain; charset=us-ascii\nContent-Transfer-Encoding: 7bit\n\n\nAttached is the draft testimony of Scott Jones.\n\nComments should be received no later than 3:00 PM EST on Sunday, August 26.\nAll comments and suggestions need to be in writing and can be faxed (not\nE-mailed) to Dan Watkiss at 202-857-2131.  Also, if your suggestion is a\nproposed addition, please write out the exact language you would propose we\nincorporate into the testimony and where you would place the addition.\n\nDonald A. Kaplan, Esq.\nPreston Gates Ellis &\n  Rouvelas Meeds LLP\nSuite 500\n1735 New York Avenue, N.W.\nWashington, D.C.  20006\nPh: (202) 662-8466\nFax: (202) 331-1024\ndonk@prestongates.com\n\n(See attached file: TFG SJones Draft 8-25-01.doc)(See attached file:\nExhibit STJ-6.xls)(See attached file: Exhibit STJ-3.xls)(See attached file:\nExhibit STJ-4.xls)(See attached file: Exhibit STJ-5.xls)(See attached file:\nExhibit STJ-2.doc)\n\nCONFIDENTIALITY NOTE:\nThis email message is intended solely for the individual or individuals\nnamed above.  It may contain confidential attorney-client privileged\ninformation and/or attorney work product.  If the reader of this message is\nnot the intended recipient, you are requested not to read, copy or\ndistribute it or any of the information it contains.  Please delete it\nimmediately and notify the sender by return email or by telephone.  Thank\nyou.\n\n  <<TFG SJones Draft 8-25-01.doc>>  <<Exhibit STJ-6.xls>>  <<Exhibit\n  STJ-3.xls>>  <<Exhibit STJ-4.xls>>  <<Exhibit STJ-5.xls>>  <<Exhibit\n  STJ-2.doc>>\n\n - TFG SJones Draft 8-25-01.doc \n - Exhibit STJ-6.xls \n - Exhibit STJ-3.xls \n - Exhibit STJ-4.xls \n - Exhibit STJ-5.xls \n - Exhibit STJ-2.doc \n\n\n"
+        },
+        "views": [
+            {
+                "id": "v1",
+                "metadata": {
+                    "contains": {
+                        "http://vocab.lappsgrid.org/Token": {
+                            "producer": "GOST",
+                            "type": "token"
+                        },
+                        "http://vocab.lappsgrid.org/Token#pos": {
+                            "producer": "GOST",
+                            "type": "pos"
+                        },
+                        "http://vocab.lappsgrid.org/Token#lemma": {
+                            "producer": "GOST",
+                            "type": "lemma"
+                        },
+                        "http://vocab.lappsgrid.org/Token#semtag": {
+                            "producer": "GOST",
+                            "type": "Semantic tag"
+                        }
+                    }
+                },
+                "annotations": [
+                    {
+                        "id": "gost-1",
+                        "start": 3,
+                        "end": 13,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Message-ID",
+                            "lemma": "message-id",
+                            "pos": "NN1",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-2",
+                        "start": 13,
+                        "end": 14,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": ":",
+                            "lemma": "PUNC",
+                            "pos": "YCOL",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-3",
+                        "start": 92,
+                        "end": 93,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "-",
+                            "lemma": "PUNC",
+                            "pos": "YDSH",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-4",
+                        "start": 912,
+                        "end": 915,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "TFG",
+                            "lemma": "tfg",
+                            "pos": "NP1",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-5",
+                        "start": 916,
+                        "end": 922,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "SJones",
+                            "lemma": "sjones",
+                            "pos": "NP1",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-6",
+                        "start": 923,
+                        "end": 928,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Draft",
+                            "lemma": "draft",
+                            "pos": "NN1",
+                            "semtag": [
+                                "Q1.2",
+                                "G3",
+                                "Q1.2/I1"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-7",
+                        "start": 929,
+                        "end": 937,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "8-25-01.",
+                            "lemma": "8-25-01.",
+                            "pos": "MCMC",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-8",
+                        "start": 937,
+                        "end": 940,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "doc",
+                            "lemma": "doc",
+                            "pos": "NN1",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-9",
+                        "start": 972,
+                        "end": 973,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "-",
+                            "lemma": "PUNC",
+                            "pos": "YDSH",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-10",
+                        "start": 999,
+                        "end": 1006,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Exhibit",
+                            "lemma": "exhibit",
+                            "pos": "VV0",
+                            "semtag": [
+                                "A10+"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-11",
+                        "start": 1636,
+                        "end": 1645,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "STJ-6.xls",
+                            "lemma": "stj-6.xls",
+                            "pos": "NNU",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-12",
+                        "start": 1664,
+                        "end": 1665,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "-",
+                            "lemma": "PUNC",
+                            "pos": "YDSH",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-13",
+                        "start": 1676,
+                        "end": 1683,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Exhibit",
+                            "lemma": "exhibit",
+                            "pos": "VV0",
+                            "semtag": [
+                                "A10+"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-14",
+                        "start": 1811,
+                        "end": 1820,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "STJ-3.xls",
+                            "lemma": "stj-3.xls",
+                            "pos": "NNU",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-15",
+                        "start": 1823,
+                        "end": 1824,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "-",
+                            "lemma": "PUNC",
+                            "pos": "YDSH",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-16",
+                        "start": 1825,
+                        "end": 1832,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Exhibit",
+                            "lemma": "exhibit",
+                            "pos": "VV0",
+                            "semtag": [
+                                "A10+"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-17",
+                        "start": 1833,
+                        "end": 1842,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "STJ-4.xls",
+                            "lemma": "stj-4.xls",
+                            "pos": "NNU",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-18",
+                        "start": 1845,
+                        "end": 1846,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "-",
+                            "lemma": "PUNC",
+                            "pos": "YDSH",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-19",
+                        "start": 1847,
+                        "end": 1854,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Exhibit",
+                            "lemma": "exhibit",
+                            "pos": "VV0",
+                            "semtag": [
+                                "A10+"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-20",
+                        "start": 1855,
+                        "end": 1864,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "STJ-5.xls",
+                            "lemma": "stj-5.xls",
+                            "pos": "NNU",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-21",
+                        "start": 1867,
+                        "end": 1868,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "-",
+                            "lemma": "PUNC",
+                            "pos": "YDSH",
+                            "semtag": [
+                                "PUNC"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-22",
+                        "start": 1869,
+                        "end": 1876,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "Exhibit",
+                            "lemma": "exhibit",
+                            "pos": "VV0",
+                            "semtag": [
+                                "A10+"
+                            ],
+                            "mwe": "0"
+                        }
+                    },
+                    {
+                        "id": "gost-23",
+                        "start": 1877,
+                        "end": 1886,
+                        "@type": "http://vocab.lappsgrid.org/Token",
+                        "features": {
+                            "word": "STJ-2.doc",
+                            "lemma": "stj-2.doc",
+                            "pos": "NNU",
+                            "semtag": [
+                                "Z99"
+                            ],
+                            "mwe": "0"
+                        }
+                    }
+                ]
+            }
+        ]
+}

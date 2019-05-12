@@ -164,13 +164,16 @@ class TarsqiDocument:
             fh = sys.stdout
         else:
             fh = codecs.open(fname, mode='w', encoding='UTF-8')
-        fh.write("<ttk>\n")
-        fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
-        self._print_comments(fh)
-        self._print_metadata(fh)
-        self._print_tags(fh, 'source_tags', self.sourcedoc.tags.tags)
-        self._print_tags(fh, 'tarsqi_tags', self.tags.tags)
-        fh.write("</ttk>\n")
+        if self.options.source == 'lif':
+            self._print_all_lif(fh)
+        else:
+            fh.write("<ttk>\n")
+            fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
+            self._print_comments(fh)
+            self._print_metadata(fh)
+            self._print_tags(fh, 'source_tags', self.sourcedoc.tags.tags)
+            self._print_tags(fh, 'tarsqi_tags', self.tags.tags)
+            fh.write("</ttk>\n")
 
     def _print_comments(self, fh):
         if self.sourcedoc.comments:
@@ -211,6 +214,11 @@ class TarsqiDocument:
                 # the error, but leave the except here just in case.
                 logger.error("UnicodeDecodeError on printing a tag.")
         fh.write("</%s>\n" % tag_group)
+
+    def _print_all_lif(self, fh):
+        self.sourcedoc.lif.add_tarsqi_view(self)
+        json_string = self.sourcedoc.lif.as_json_string()
+        fh.write(json_string)
 
     def list_of_sentences(self):
         sentences = []
@@ -256,6 +264,7 @@ class SourceDoc:
         self.comments = {}
         self.metadata = {}
         self.tags = TagRepository()
+        self.lif = None
         self.offset = 0
 
     def __getitem__(self, i):

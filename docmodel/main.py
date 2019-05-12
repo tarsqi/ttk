@@ -12,7 +12,7 @@ required they should be added to source_parser.py and metadata_parser.py.
 import os, xml
 
 from docmodel.source_parser import SourceParserXML, SourceParserText
-from docmodel.source_parser import SourceParserTTK
+from docmodel.source_parser import SourceParserTTK, SourceParserLIF
 from docmodel.metadata_parser import MetadataParser, MetadataParserTTK
 from docmodel.metadata_parser import MetadataParserText
 from docmodel.metadata_parser import MetadataParserTimebank, MetadataParserDB
@@ -23,8 +23,9 @@ from utilities import logger
 
 
 PARSERS = { 'ttk': (SourceParserTTK, MetadataParserTTK),
-            'xml': (SourceParserXML, MetadataParser),
             'text': (SourceParserText, MetadataParserText),
+            'lif': (SourceParserLIF, MetadataParser),
+            'xml': (SourceParserXML, MetadataParser),
             'timebank': (SourceParserXML, MetadataParserTimebank),
             'atee': (SourceParserXML, MetadataParserATEE),
             'rte3': (SourceParserXML, MetadataParserRTE3),
