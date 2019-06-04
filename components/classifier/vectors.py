@@ -21,7 +21,7 @@ The only difference is in the second column (no relation versus a relation).
 
 """
 
-import os, textwrap
+import os, codecs, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree
 from library.main import LIBRARY
@@ -85,8 +85,8 @@ def collect_tarsqidoc_vectors(tarsqidoc):
 
 def write_vectors(ee_file, ee_vectors, et_file, et_vectors):
     """Write the vectors to files."""
-    ee_fh = open(ee_file, 'w')
-    et_fh = open(et_file, 'w')
+    ee_fh = codecs.open(ee_file, 'w', encoding='utf8')
+    et_fh = codecs.open(et_file, 'w', encoding='utf8')
     for ee_vector in ee_vectors:
         ee_fh.write("%s\n" % ee_vector)
     for et_vector in et_vectors:

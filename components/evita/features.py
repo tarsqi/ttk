@@ -38,7 +38,7 @@ def getWordList(constituents):
     """Returns a list of words from the list of constituents, typically the
     constituents are instances of NounChunk, VerbChunk or Token. Used for
     debugging purposes."""
-    return [str(constituent.getText()) for constituent in constituents]
+    return [constituent.getText() for constituent in constituents]
 
 def getPOSList(constituents):
     """Returns a list of parts-of-speech from the list of constituents, typically
