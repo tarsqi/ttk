@@ -31,9 +31,8 @@ class ClassifierWrapper:
 
     def __init__(self, document):
         self.component_name = CLASSIFIER
-        self.tarsqidoc = document             # instance of TarsqiDocument
-        self.models = os.path.join(TTK_ROOT,
-                                   'components', 'classifier', 'models')
+        self.tarsqidoc = document
+        self.models = os.path.join(TTK_ROOT, 'components', 'classifier', 'models')
         self.data = os.path.join(TTK_ROOT, 'data', 'tmp')
         options = self.tarsqidoc.options
         self.mallet = options.mallet
