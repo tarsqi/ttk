@@ -27,6 +27,10 @@ from components.common_modules.tree import create_tarsqi_tree
 from library.main import LIBRARY
 from utilities import logger
 
+
+DEBUG = False
+
+
 EVENT = LIBRARY.timeml.EVENT
 EID = LIBRARY.timeml.EID
 EIID = LIBRARY.timeml.EIID
@@ -42,10 +46,13 @@ TID = LIBRARY.timeml.TID
 TYPE = LIBRARY.timeml.TYPE
 VALUE = LIBRARY.timeml.VALUE
 
+
 # Determines what attributes to use for the object vectors
 EVENT_FEATURES = [CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]
 TIMEX_FEATURES = [TYPE, VALUE]
 
+
+# extra features for vectors
 TAG = 'tag'
 FUNINDOC = 'funInDoc'
 TEMPFUN = 'tempFun'
@@ -56,14 +63,12 @@ ORDER = 'order'
 SIGNAL = 'signal'
 SYNTAX = 'syntax'
 
+
 # use abbreviations in features for space efficiency
 ABBREVIATIONS = {ASPECT: 'asp', TENSE: 'ten', CLASS: 'cls', VALUE: 'val',
                  MODALITY: 'mod', POLARITY: 'pol', STRING: 'str',
                  SHIFT_TENSE: 'shTen', SHIFT_ASPECT: 'shAsp',
                  SIGNAL: 'sig', SYNTAX: 'syn'}
-
-DEBUG = False
-#DEBUG = True
 
 
 def create_tarsqidoc_vectors(tarsqidoc, ee_file, et_file):

@@ -98,7 +98,7 @@ VARIABLES:
 
 """
 
-import sys, os, time, types, getopt
+import sys, os, time, getopt
 
 import root
 from components import COMPONENTS
@@ -200,12 +200,12 @@ class Tarsqi:
 
     def _cleanup_directories(self):
         """Remove all fragments from the temporary data directory."""
-        for file in os.listdir(self.tmp_data):
-            if os.path.isfile(self.tmp_data + os.sep + file):
+        for filename in os.listdir(self.tmp_data):
+            if os.path.isfile(self.tmp_data + os.sep + filename):
                 # sometimes, on linux, weird files show up here, do not delete
                 # them should trap these here with an OSError
-                if not file.startswith('.'):
-                    os.remove(self.tmp_data + os.sep + file)
+                if not filename.startswith('.'):
+                    os.remove(self.tmp_data + os.sep + filename)
 
     def _apply_component(self, name, wrapper, tarsqidocument):
         """Apply a component by taking the TarsqDocument, which includes the
@@ -243,12 +243,6 @@ class Tarsqi:
                 logger.error("Writing output failed")
         else:
             self.tarsqidoc.print_all(self.output)
-
-    def pretty_print(self):
-        print self
-        print '   metadata    ', self.metadata
-        print '   content_tag ', self.content_tag
-        print '   document    ', self.xml_document
 
 
 class Options(object):
@@ -354,7 +348,6 @@ class Options(object):
 
 class TarsqiError(Exception):
     """Tarsqi Exception class, so far only used in this file."""
-    # TODO: should probably be defined elsewhere (in utilities)
     pass
 
 
@@ -367,7 +360,7 @@ def _read_arguments(args):
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
-        return (opts, args)
+        return opts, args
     except getopt.GetoptError:
         sys.stderr.write("ERROR: %s\n" % sys.exc_value)
         sys.exit(_usage_string())
@@ -457,18 +450,18 @@ class TarsqiWrapper(object):
         if not os.path.isdir(self.outpath):
             os.makedirs(self.outpath)
         else:
-            print "WARNING: Directory %s already exists" % outpath
-            print "WARNING: Existing files in %s will be overwritten" % outpath
+            print "WARNING: Directory %s already exists" % self.outpath
+            print "WARNING: Existing files in %s will be overwritten" % self.outpath
             print "Continue? (y/n)\n?",
             answer = raw_input()
             if answer != 'y':
                 exit()
-        for file in os.listdir(self.inpath):
-            infile = self.inpath + os.sep + file
-            outfile = self.outpath + os.sep + file
+        for filename in os.listdir(self.inpath):
+            infile = self.inpath + os.sep + filename
+            outfile = self.outpath + os.sep + filename
             if (os.path.isfile(infile)
-                and os.path.basename(infile)[0] != '.'
-                and os.path.basename(infile)[-1] != '~'):
+                    and os.path.basename(infile)[0] != '.'
+                    and os.path.basename(infile)[-1] != '~'):
                 print infile
                 Tarsqi(self.options, infile, outfile).process_document()
 
@@ -512,7 +505,7 @@ def load_ttk_document(fname, loglevel=2, trap_errors=False):
     tarsqi.source_parser.parse_file(tarsqi.input, tarsqi.tarsqidoc)
     tarsqi.metadata_parser.parse(tarsqi.tarsqidoc)
     tarsqi.docstructure_parser.parse(tarsqi.tarsqidoc)
-    return (tarsqi, tarsqi.tarsqidoc)
+    return tarsqi, tarsqi.tarsqidoc
 
 
 if __name__ == '__main__':

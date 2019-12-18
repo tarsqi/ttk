@@ -4,6 +4,7 @@ import os, sys
 def elements_file():
     return os.path.join(os.environ['TTK_ROOT'], 'components', 'simpletime', 'elements.txt')
 
+
 def rules_file():
     return os.path.join(os.environ['TTK_ROOT'], 'components', 'simpletime', 'rules.txt')
 
@@ -49,12 +50,14 @@ def load_rules():
         elif not line:
             continue
         else:
-            lhs, rhs = [s.strip() for s in line.split('=',1)]
+            lhs, rhs = [s.strip() for s in line.split('=', 1)]
             rhs = rhs.split()
             rules.append(CombinationRule(lhs, rhs))
     return rules
 
+
 class Date:
+
     name = 'Date'
 
 
@@ -118,12 +121,12 @@ class CombinationRule:
 
 
 def get_class(class_name):
-    #print classname, '=',
-    classobj = vars(sys.modules[__name__])[classname]
-    return classobj
+    # print class_name, '=',
+    class_obj = vars(sys.modules[__name__])[class_name]
+    return class_obj
 
 
-class SimpleTime():
+class SimpleTime(object):
 
     def __init__(self):
         type_order, type_index = load_types()

@@ -11,7 +11,6 @@ Current parsers only deal with the DCT.
 
 import re, time, os, sqlite3
 
-from docmodel.document import TarsqiDocument
 import utilities.logger as logger
 from library.main import LIBRARY
 
@@ -148,7 +147,7 @@ class MetadataParserTimebank(MetadataParser):
         for source_identifier in ('ABC', 'APW', 'AP', 'CNN', 'NYT', 'PRI',
                                   'SJMN', 'VOA', 'WSJ', 'ea', 'ed'):
             if content.startswith(source_identifier):
-                return (source_identifier, content)
+                return source_identifier, content
         logger.warn("Could not determine document source from DOCNO tag")
         return None
 

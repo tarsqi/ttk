@@ -36,14 +36,12 @@ SourceParserLIF
 
 """
 
-import sys, codecs, pprint
+import codecs
 import xml.parsers.expat
-from xml.sax.saxutils import escape, quoteattr
 from xml.dom import minidom
 
-from docmodel.document import TarsqiDocument, SourceDoc, ProcessingStep
-from docmodel.document import OpeningTag, ClosingTag
-from utilities.lif import LIF
+from docmodel.document import SourceDoc, ProcessingStep
+from utilities.lif import Container, LIF
 
 
 class SourceParser:
@@ -249,7 +247,7 @@ class SourceParserXML(SourceParser):
         of attributes. Asks the SourceDoc instance in the sourcedoc variable to
         add an opening tag."""
         self._debug('start', name, attrs)
-        #print ',,,', name, attrs
+        # print ',,,', name, attrs
         self.sourcedoc.add_opening_tag(name, attrs)
 
     def _handle_end(self, name):
@@ -299,15 +297,29 @@ class SourceParserLIF(SourceParser):
     def parse_file(self, filename, tarsqidoc):
         """Parse the TTK file and put the contents in the appropriate parts of
         the SourceDoc."""
-        self.lif = LIF(json_file=filename)
+        if self.is_container(filename):
+            self.container = Container(json_file=filename)
+            self.lif = self.container.payload
+        else:
+            self.container = None
+            self.lif = LIF(json_file=filename)
         tarsqidoc.sourcedoc = SourceDoc(filename)
         tarsqidoc.sourcedoc.text = self.lif.text.value
         tarsqidoc.sourcedoc.lif = self.lif
+        tarsqidoc.sourcedoc.lif_container = self.container
 
     def parse_string(self, text, tarsqidoc):
         """Parse the TTK string and put the contents in the appropriate parts of the
         SourceDoc."""
-        self.lif = LIF(json_text=text)
+        self.lif = LIF(json_string=text)
         tarsqidoc.sourcedoc = SourceDoc()
         tarsqidoc.sourcedoc.text = self.lif.text.value
         tarsqidoc.sourcedoc.lif = self.lif
+
+    @staticmethod
+    def is_container(filename):
+        with codecs.open(filename, encoding='utf8') as fh:
+            first100 = fh.read(100)
+            if first100.find('discriminator') > -1:
+                return True
+        return False

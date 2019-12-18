@@ -32,11 +32,17 @@ from components.preprocessing import chunker
 from library.tarsqi_constants import GUTIME
 from utilities import logger
 
+
 TTK_ROOT = os.environ['TTK_ROOT']
 
-# This variable determines whether GUTime is called using temporary files (the
-# old way) or using an input string.
+
+# This variable determines whether GUTime is called using temporary files or
+# using an input string, the latter is more robust with non-ascii data.
 USE_TMP_FILES = False
+USE_TMP_FILES = True
+
+
+DEBUG = False
 
 
 class GUTimeWrapper:
@@ -72,14 +78,24 @@ class GUTimeWrapper:
         collect the TIMEX3 tags."""
         os.chdir(self.DIR_GUTIME)
         string_buffer = _create_gutime_input(self.document)
+        _dribble('gut.1.txt', string_buffer.getvalue())
         result = _run_gutime_on_string(string_buffer.getvalue())
-        # apparently, parseString cannot deal with unicode
+        _dribble('gut.2.txt', result)
+        # parseString cannot deal with unicode so we encode in order to give it
+        # a byte string
         # TODO: check whether this has unforeseen consequences
         result = u'{0}'.format(result).encode('utf-8')
         result = _remove_bad_times(result)
+        _dribble('gut.3.txt', result)
         dom = parseString(result)
         _export_timex_tags(self.document, dom)
         _update_chunks(self.document)
+
+
+def _dribble(fname, string):
+    if DEBUG:
+        with codecs.open(fname, 'w', encoding='utf8') as fh:
+            fh.write(string)
 
 
 def _create_gutime_input(tarsqidoc, fname=None):

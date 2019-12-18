@@ -2,7 +2,7 @@
 
 Interface to the LAPPS Interchance Format and to the LAPPS Data container.
 
-Containes code to:
+Contains code to:
 
 - Read JSON-LD strings for containers and LIF objects
 - Export Containers and LIF objects to JSON-LD strings
@@ -32,7 +32,6 @@ Example input files are in ../data/in/lif.
 import sys
 import codecs
 import json
-import pprint
 import subprocess
 
 
@@ -65,7 +64,7 @@ class Container(LappsObject):
         LappsObject.__init__(self, json_file, json_string, json_object)
         self.discriminator = self.json_object['discriminator']
         self.payload = LIF(json_object=self.json_object['payload'])
-        self.parameters = self.json_object['parameters']
+        self.parameters = self.json_object.get('parameters', {})
 
     def as_json(self):
         return {"discriminator": self.discriminator,
@@ -93,6 +92,14 @@ class LIF(LappsObject):
 
     def as_json_string(self):
         return json.dumps(self.as_json(), sort_keys=True, indent=4, separators=(',', ': '))
+
+    def has_tarsqi_view(self):
+        tok = "http://vocab.lappsgrid.org/Token"
+        for view in self.views:
+            contains = view.metadata['contains']
+            if tok in contains and contains[tok].get("producer") == "TTK":
+                return True
+        return False
 
     def add_tarsqi_view(self, tarsqidoc):
         view = View()
@@ -137,7 +144,7 @@ TYPE_MAPPINGS = {
     # for now ignoring Slinks and Alinks
     'docelement': 'Paragraph', 's': 'Sentence', 'lex': 'Token',
     'ng': 'NounChunk', 'vg': 'VerbChunk', 'EVENT': 'Event',
-    'TIMEX3': 'TimeExpression', 'TLINK': 'TemporalRelation' }
+    'TIMEX3': 'TimeExpression', 'TLINK': 'TemporalRelation'}
 
 
 def _get_type(tag):
@@ -175,7 +182,7 @@ class View(object):
                 self.annotations.append(Annotation(a))
 
     def __str__(self):
-        return "<View id=%s>" % self.id
+        return "<View id=%s with %d annotations>" % (self.id, len(self.annotations))
 
     def as_json(self):
         d = {"id": self.id,

@@ -18,7 +18,6 @@ import os, sys, threading
 from time import time
 from subprocess import PIPE, Popen
 from types import StringType, TupleType
-from xml.sax.saxutils import escape, quoteattr
 
 from utilities import logger
 from docmodel.document import Tag
@@ -139,11 +138,11 @@ class Wrapper(object):
             vertical_string = '<s>'
         # treetagger does not accept a unicode string, so encode in utf-8
         # TODO: this may have changed with the latest version
-        taggedItems = self.treetagger.tag_text(vertical_string.encode('utf-8'))
+        tagged_items = self.treetagger.tag_text(vertical_string.encode('utf-8'))
         # The taggedItems result is the same whether you run this from the
         # PreprocessorWrapper or the TaggerWrapper, but those two use slightly
         # different _merge_tags() methods so the result is different
-        text = self._merge_tags(tokens, taggedItems)
+        text = self._merge_tags(tokens, tagged_items)
         self.tag_time += time() - t1
         return text
 

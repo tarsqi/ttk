@@ -22,14 +22,14 @@ from docmodel.docstructure_parser import DocumentStructureParser
 from utilities import logger
 
 
-PARSERS = { 'ttk': (SourceParserTTK, MetadataParserTTK),
-            'text': (SourceParserText, MetadataParserText),
-            'lif': (SourceParserLIF, MetadataParser),
-            'xml': (SourceParserXML, MetadataParser),
-            'timebank': (SourceParserXML, MetadataParserTimebank),
-            'atee': (SourceParserXML, MetadataParserATEE),
-            'rte3': (SourceParserXML, MetadataParserRTE3),
-            'db': (SourceParserXML, MetadataParserDB) }
+PARSERS = {'ttk': (SourceParserTTK, MetadataParserTTK),
+           'text': (SourceParserText, MetadataParserText),
+           'lif': (SourceParserLIF, MetadataParser),
+           'xml': (SourceParserXML, MetadataParser),
+           'timebank': (SourceParserXML, MetadataParserTimebank),
+           'atee': (SourceParserXML, MetadataParserATEE),
+           'rte3': (SourceParserXML, MetadataParserRTE3),
+           'db': (SourceParserXML, MetadataParserDB)}
 
 
 DEFAULT_SOURCE_PARSER = SourceParserXML

@@ -52,32 +52,32 @@ VG = 'vg'
 
 np_initial_tags = [
     'DT', 'PRP$', 'CD', 'JJ', 'JJR', 'JJS', 'NN', 'NNS', 'NNP',
-    'NNPS', 'VBG', 'VBN' ]
+    'NNPS', 'VBG', 'VBN']
 
 np_internal_tags = [
     'PRP$', 'EX', 'CD', 'JJ', 'JJR', 'JJS', 'NN', 'NNP', 'NNPS',
-    'NNS', 'VBG', 'VBN' ]
+    'NNS', 'VBG', 'VBN']
 
 np_final_tags = [
-    'NN', 'NNS', 'NNP', 'NNPS' ]
+    'NN', 'NNS', 'NNP', 'NNPS']
 
 vp_initial_tags = [
-    'TO', 'MD', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
+    'TO', 'MD', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
 
 vp_internal_tags = [
-    'RB', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
+    'RB', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
     # 'TO', 'RB', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
 
 vp_final_tags = [
-    'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ' ]
+    'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
 
 CHUNK_TAGS = {
-    NG: { 'b': { t:True for t in np_initial_tags },
-          'i': { t:True for t in np_internal_tags },
-          'e': { t:True for t in np_final_tags } },
-    VG: { 'b': { t:True for t in vp_initial_tags },
-          'i': { t:True for t in vp_internal_tags },
-          'e': { t:True for t in vp_final_tags } } }
+    NG: {'b': {t: True for t in np_initial_tags},
+         'i': {t: True for t in np_internal_tags},
+         'e': {t: True for t in np_final_tags}},
+    VG: {'b': {t: True for t in vp_initial_tags},
+         'i': {t: True for t in vp_internal_tags},
+         'e': {t: True for t in vp_final_tags}}}
 
 
 # The following two are not used, but we could to make the chunker
@@ -139,7 +139,7 @@ class Sentence:
                     idx = new_idx
                     continue
             # check for single pronouns, but only after we have tried noun groups
-            if (tag == 'PRP' or tag == 'PP'):
+            if tag == 'PRP' or tag == 'PP':
                 self._set_tags(NG, idx, idx)
                 idx += 1
                 continue
@@ -147,7 +147,6 @@ class Sentence:
         self._import_chunks()
         self._fix_common_errors()
         return self.sentence
-
 
     def _consume_term(self, term, idx):
         """Now that we now that a term starts at index idx, read the whole term
@@ -181,7 +180,6 @@ class Sentence:
             logger.warn("Could not consume full term")
             return begin_idx
 
-
     def _consume_chunk(self, chunk_type, idx):
         """Read constituent of class chunk_type, starting at index idx. Returns
         idx if no constituent could be read, returns the index after the end of the
@@ -214,7 +212,7 @@ class Sentence:
                 # break out of the loop when hitting the end of the sentence
                 break
 
-        if (end_idx > -1):
+        if end_idx > -1:
             # constituent found, set tags and return index after end
             self._set_tags(chunk_type, begin_idx, end_idx)
             return end_idx + 1
@@ -330,13 +328,16 @@ def _is_initial_tag(cat, tag):
     """Returns True if tag can be cat-initial, False otherwise."""
     return CHUNK_TAGS[cat]['b'].get(tag, False)
 
+
 def _is_internal_tag(cat, tag):
     """Returns True if tag can be cat-internal, False otherwise."""
     return CHUNK_TAGS[cat]['i'].get(tag, False)
 
+
 def _is_final_tag(cat, tag):
     """Returns True if tag can be cat-final, False otherwise."""
     return CHUNK_TAGS[cat]['e'].get(tag, False)
+
 
 def _is_term_initial_offset(begin, terms):
     """Returns True if begin is a key in terms."""
@@ -376,7 +377,7 @@ class ChunkUpdater(object):
                 continue
             nodes = [n for n in sentence.all_nodes() if n.overlaps(orphan)]
             nodes = [n for n in nodes if n is not sentence and not n.isToken()]
-            #self._debug(orphan, sentence, nodes)
+            # self._debug(orphan, sentence, nodes)
             self._remove_overlapping_chunks(nodes)
         self._add_chunks_for_timexes(element)
 
@@ -401,7 +402,7 @@ class ChunkUpdater(object):
         for sentence in doctree.get_sentences():
             nodes = sentence.all_nodes()
             timexes = [n for n in nodes if n.isTimex()]
-            nounchunks = [n for n in nodes if n.isNounChunk()]
+            # nounchunks = [n for n in nodes if n.isNounChunk()]
             for t in timexes:
                 # if the timexes parent is a sentence, then add a Tag with
                 # tagname ng to the TagRepository
@@ -418,7 +419,6 @@ class ChunkUpdater(object):
             for n in nodes:
                 print '  ', n
                 print '  ', n.tag
-
 
 
 if __name__ == '__main__':
