@@ -213,14 +213,14 @@ assume that the entire content of the file is to be parsed. Since the toolkit
 does not try to recognize any tags this type should only be used for real raw
 text. The <code>ttk</code> source type tells the toolkit that the input is in
 the TTK format. Typically the input here would be a file previously processed
-but the toolkit or a file that was converted into the TTK format.</p>
+by the toolkit or a file that was converted into the TTK format.</p>
 
 <p>The toolkit will usually run just fine without the <code>--source</code>
 option. In that case the toolkit will make an educated guess as to whether the
 input is <code>xml</code>, <code>text</code> or <code>ttk</code>. The system can
-be tricked, for example by giving it a file where the beginning really lookes
-like XML, but in those cases an error will usually follow and only then it would
-be prudent to use the <code>--source</code> option after all.</p>
+be tricked, for example by giving it a file where the beginning really looks
+like XML, but in those cases an error will usually follow and in those cases it
+would be prudent to use the <code>--source</code> option after all.</p>
 
 <p>The option should always be used when one of the special formats are
 used. When the input is vanilla text or XML then the toolkit has no good way to
@@ -320,7 +320,7 @@ pipeline since you would then run the tokenizer twice and this will cause errors
 later in the processing chain. For the third example, preprocessing, times and
 events are taken for granted and only links are added. In this case the input
 needs to be a ttk file which has the needed information. The fourth example is
-th efull pipeline except that the link merger component is left out, this
+the full pipeline except that the link merger component is left out, this
 is useful for large files since the merger component slows down on large
 file. This is in fact the default pipeline.</p>
 
@@ -498,7 +498,7 @@ HeidelTime).</li>
 
 <h2>8. Copyright and License</h2>
 
-<p>The Tarsqi Toolkit is copyright &copy;2017 of Brandeis University and is
+<p>The Tarsqi Toolkit is copyright &copy;2020 of Brandeis University and is
 distributed under the <a rel="license"
 href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a>.</p>
 

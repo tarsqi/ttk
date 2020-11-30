@@ -17,7 +17,7 @@ download=false
 install=false
 test=true
 
-data_dir=http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data
+data_dir=https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/
 
 if [ ! -d treetagger ]; 
 then
@@ -28,10 +28,10 @@ cd treetagger
 
 if [ $download = "true" ]; 
 then
-    curl -O $data_dir/tree-tagger-MacOSX-3.2.tar.gz
+    curl -O $data_dir/tree-tagger-MacOSX-3.2.3.tar.gz
     curl -O $data_dir/tagger-scripts.tar.gz
     curl -O $data_dir/install-tagger.sh
-    curl -O $data_dir/english-par-linux-3.2-utf8.bin.gz
+    curl -O $data_dir/english.par.gz
 fi
 
 if [ $install = "true" ];

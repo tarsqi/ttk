@@ -32,7 +32,8 @@ from components.preprocessing.chunker import chunk_sentences
 MAC_EXECUTABLE = "tree-tagger"
 LINUX_EXECUTABLE = "tree-tagger"
 WINDOWS_EXECUTABLE = "tree-tagger.exe"
-PARAMETER_FILE = "english-utf8.par"
+PARAMETER_FILE1 = "english-utf8.par"
+PARAMETER_FILE2 = "english.par"
 
 # Markers for begin and end of text for TreeTagger. There is no potential
 # conflict with substrings in the text that match these since the tokenizer will
@@ -451,7 +452,9 @@ class TreeTagger(object):
         self.bindir = os.path.join(self.dir, "bin")
         self.libdir = os.path.join(self.dir, "lib")
         executable = self._get_executable()
-        parfile = os.path.join(self.libdir, PARAMETER_FILE)
+        parfile = os.path.join(self.libdir, PARAMETER_FILE1)
+        if not os.path.exists(parfile):
+            parfile = os.path.join(self.libdir, PARAMETER_FILE2)
         tagcmd = "%s -token -lemma -sgml %s" % (executable, parfile)
         # when using subprocess, need to use a different close_fds for windows
         close_fds = False if sys.platform == 'win32' else True
