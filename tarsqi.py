@@ -101,7 +101,7 @@ VARIABLES:
 import sys, os, time, getopt
 
 import root
-from components import COMPONENTS
+from components import COMPONENTS, valid_components
 from docmodel.document import TarsqiDocument
 from docmodel.main import guess_source
 from docmodel.main import create_source_parser
@@ -160,7 +160,6 @@ class Tarsqi:
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
         self.tmp_data = os.path.join(TTK_ROOT, 'data', 'tmp')
-        self.components = COMPONENTS
         self._initialize_parsers()
         self.pipeline = self._create_pipeline()
         self._update_processing_history()
@@ -229,8 +228,11 @@ class Tarsqi:
         """Return the pipeline as a list of pairs with the component name and
         wrapper."""
         component_names = self.options.pipeline.split(',')
-        return [(name, self.components[name]) for name in component_names]
-
+        if valid_components(component_names):
+            return [(name, COMPONENTS[name]) for name in component_names]
+        else:
+            raise TarsqiError("Illegal pipeline")
+                
     def _update_processing_history(self):
         self.tarsqidoc.update_processing_history(self.pipeline)
 

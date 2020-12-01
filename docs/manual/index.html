@@ -133,6 +133,10 @@ Fido sleeps today.
 &lt;/text>
 &lt;metadata>
   &lt;dct value="20170113"/>
+  &lt;processing_steps>
+  &lt;processing_step ttk_version="2.1.1" git_commit="341ad95" timestamp="20201130-214225"
+                   components="PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"/>
+  &lt;/processing_steps>
 &lt;/metadata>
 &lt;source_tags>
   &lt;text id="1" begin="1" end="21" />
@@ -302,8 +306,9 @@ the <code>config.txt</code> settings file. A pipeline is a comma-separated
 string of component names. Allowed component names are <code>PREPROCESSOR,
 TOKENIZER, TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER,
 CLASSIFIER</code> and
-<code>LINK_MERGER</code>. The order of the components in the pipeline
-specification is significant. Some examples are:</p>
+<code>LINK_MERGER</code>. Using other names raises an error. The order of the
+components in the pipeline specification is significant. Some pipeline examples
+are:</p>
 
 <pre class="example">
 --pipeline PREPROCESSOR,GUTIME,EVITA

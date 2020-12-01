@@ -7,6 +7,17 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). L
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
+## Current
+
+- Fixed issue [#43](https://github.com/tarsqi/ttk/issues/43) by adding minimal pipeline checks.
+- Fixed installation issues with the TreeTagger.
+- Fixed problem with file names in vectors.
+- Fixed some encoding issues with Evita and the classifier.
+- Added initial capability to process and create LIF documents. Issue [#88](https://github.com/tarsqi/ttk/issues/88).
+- Fixed problem with weird GUTime output with multiple ERROR properties in the XML tag.
+- Updated conversion from ECB to TTK. Part of issue [#83](https://github.com/tarsqi/ttk/issues/83).
+
+
 ## Version 2.1.1 - 2018-10-17
 
 - Fixed issue [#84](https://github.com/tarsqi/ttk/issues/84).
