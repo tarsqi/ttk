@@ -11,3 +11,5 @@
 # Python anydbm files created from versioned text files, code runs without these
 # files (but should speed up with them)
 library/evita/dictionaries/wn*.db
+
+.idea

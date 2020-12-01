@@ -9,8 +9,9 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## Current
 
+- Added code for TTK to Knowtator conversion. Issue [#77](https://github.com/tarsqi/ttk/issues/77).
 - Fixed issue [#43](https://github.com/tarsqi/ttk/issues/43) by adding minimal pipeline checks.
-- Fixed installation issues with the TreeTagger.
+- Fixed installation issues with the TreeTagger. Issues [#89](https://github.com/tarsqi/ttk/issues/89) and [#90](https://github.com/tarsqi/ttk/issues/90).
 - Fixed problem with file names in vectors.
 - Fixed some encoding issues with Evita and the classifier.
 - Added initial capability to process and create LIF documents. Issue [#88](https://github.com/tarsqi/ttk/issues/88).

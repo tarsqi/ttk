@@ -42,10 +42,12 @@ Some format conversion utilities.
 
    $ python convert.py --knowtator2ttk --tarsqi TEXT_FILE TTK_FILE
 
-   Versions for file processing. Note that you only give the text file, the code
-   assumes that there is a file TEXT_FILE>knowtator.xml with the annotations.
+   Version for processing a single file. You only supply the text file, the code
+   assumes that there is a file TEXT_FILE.knowtator.xml with the annotations.
 
 5. Convert TTK into Knowtator format.
+
+   $ python convert.py --ttk2knowtator TTK_FILE TEXT_FILE ANNO_FILE
 
    IN PROGRESS.
 
@@ -884,7 +886,7 @@ def _write_link(link, entity_idx, fh):
 
 ### CONVERTING TTK FILE INTO KNOWTATOR FORMAT
 
-def convert_knowtator_file_into_ttk(ttk_file, text_file, annotation_file):
+def convert_ttk_into_knowtator(ttk_file, text_file, annotation_file):
     print("creating %s" % annotation_file)
     ttk_file = os.path.abspath(ttk_file)
     text_file = os.path.abspath(text_file)
@@ -896,8 +898,8 @@ def convert_knowtator_file_into_ttk(ttk_file, text_file, annotation_file):
     with codecs.open(annotation_file, 'w', encoding="utf-8") as anno:
         anno.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         anno.write('<annotations textSource="%s">\n' % os.path.basename(text_file))
-        tag_index = _create_tag_index(tarsqidoc.sourcedoc.tags.tags)
-        for tag in tarsqidoc.sourcedoc.tags.tags:
+        tag_index = _create_tag_index(tarsqidoc.tags.tags)
+        for tag in tarsqidoc.tags.tags:
             _knowtator_convert_tag(tag, tag_index, full_text, anno)
         anno.write('</annotations>\n')
 
@@ -910,14 +912,14 @@ def _create_tag_index(tags):
     tlink_index = {}
     tlink_tags = []
     for tag in tags:
-        tag_identifier = tag.get_identifier()
-        if tag_identifier is not None:
-            tag_index[tag_identifier] = [tag]
-        else:
+        tag_id = tag.get_identifier()
+        if tag.name.upper() in (EVENT, TIMEX):
+            tag_index[tag_id] = [tag]
+        elif tag.name.upper() in (TLINK,):
             tlink_tags.append(tag)
     for tag in tlink_tags:
         source_identifier = tag.attrs.get(TIME_ID,
-                                          tag.attrs.get('eventID'))
+                                          tag.attrs.get(EVENT_INSTANCE_ID))
         tlink_index.setdefault(source_identifier, []).append(tag)
     for tag_identifier in tag_index:
         tlinks = tlink_index.get(tag_identifier, [])
@@ -936,36 +938,27 @@ def _print_tag_index(tag_index):
 
 def _knowtator_convert_tag(tag, tag_index, text, fh):
     """Take the Tag instance and generate Knowtator XML tags for it."""
-    def new_id(): return KnowtatorID.new_identifier()
     tag_id = tag.get_identifier()
-    if tag_id is None:
-        # skipping links
-        return 
-    # TODO: generalize creation if stringSlotMentions
-    if tag_id.startswith('t'):
-        classname = 'Timex3'
-        string_slot_mentions = [(new_id(), 'typeInfo', tag.attrs.get('type'))]
-    elif tag_id.startswith('e'):
-        classname = 'Event'
-        string_slot_mentions = [(new_id(), 'classType', tag.attrs.get('class')),
-                                (new_id(), 'Tense', tag.attrs.get('tense'))]
-    else:
-        print('WARNING: unexpected identifier for %s' % tag)
-        return
-    spanned_text = text[tag.begin:tag.end]
-    annotation = KnowtatorAnnotation.tag(tag_id, tag, spanned_text)
-    ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
-    complex_slot_mentions = []
-    for tlink in tag_index[tag_id][1]:
-        target_id = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE,
-                                    tlink.attrs.get(RELATED_TO_TIME))
-        complex_slot_mentions.append(
-            (KnowtatorID.new_identifier(), tlink.attrs.get('relType'), target_id))
-    csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
-    slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
-    class_mention = KnowtatorClassMention.tag(
-        tag_id, tag, classname, spanned_text, slot_mentions)
-    fh.write(annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention)
+    # only looping over events and timexes, link tags are derived from them
+    if tag.name.upper() in {TIMEX, EVENT}:
+        classname = tag.name
+        string_slot_mentions = [(KnowtatorID.new_identifier(), attr, val)
+                                for attr, val in tag.attrs.items()]
+        spanned_text = text[tag.begin:tag.end]
+        annotation = KnowtatorAnnotation.tag(tag_id, tag, spanned_text)
+        ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
+        complex_slot_mentions = []
+        # pull the links out of the index and create complex slot mentions for them
+        for link in tag_index[tag_id][1]:
+            target_id = link.attrs.get(RELATED_TO_EVENT_INSTANCE,
+                                        link.attrs.get(RELATED_TO_TIME))
+            complex_slot_mentions.append(
+                (KnowtatorID.new_identifier(), link.attrs.get('relType'), target_id))
+        csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
+        slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
+        class_mention = KnowtatorClassMention.tag(
+            tag_id, tag, classname, spanned_text, slot_mentions)
+        fh.write(annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention)
 
 
 def _knowtator_stringSlotMention_tags(string_slot_mentions):
@@ -1153,7 +1146,7 @@ if __name__ == '__main__':
             exit("ERROR: incorrect input")
 
     elif '--ttk2knowtator' in opts:
-        convert_knowtator_file_into_ttk(args[0], args[1], args[2])
+        convert_ttk_into_knowtator(args[0], args[1], args[2])
 
     elif '--ecb2ttk' in opts:
         indir = os.path.abspath(args[0])
