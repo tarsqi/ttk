@@ -7,7 +7,7 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). L
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
-## Version 2.2.0 - ?????
+## Version 2.2.0 — 2020-12-12
 
 - Changed source format parameter (issue [#39](https://github.com/tarsqi/ttk/issues/39)), now using --source-format.
 - Added code for TTK to Knowtator conversion (issue [#77](https://github.com/tarsqi/ttk/issues/77)).
@@ -20,7 +20,7 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 - Updated conversion from ECB to TTK (part of issue [#83](https://github.com/tarsqi/ttk/issues/83)).
 
 
-## Version 2.1.1 - 2018-10-17
+## Version 2.1.1 — 2018-10-17
 
 - Fixed issue [#84](https://github.com/tarsqi/ttk/issues/84).
 - Fixed issue [#74](https://github.com/tarsqi/ttk/issues/74). Changed inline error reporting by sending errors to standard error instead of standard output and removed all other print statements that are not embedded in print methods and functions.
@@ -29,7 +29,7 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 - Added initial version of converter from the EventCoreferenceBank format to the TTK format (issue [#83](https://github.com/tarsqi/ttk/issues/83), in progress).
 
 
-## Version 2.1.0 - 2017-06-13
+## Version 2.1.0 — 2017-06-13
 
 - Added code to update chunks given Timex tags. This was done in order to fix issue [#75](https://github.com/tarsqi/ttk/issues/75).
 - Added functionality to the evaluation code that makes inspection easier: it can now print html files with aligned tags from the gold data and system data.
@@ -43,7 +43,7 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 - Fixed problem with often-used harmful print statement that caused problems when using the --pipe option (this is a partial fix of issue [#74](https://github.com/tarsqi/ttk/issues/74)).
 
 
-## Version 2.0.2 - 2017-04-09
+## Version 2.0.2 — 2017-04-09
 
 - Fixed bug where id attributes were added to source tags (issue #56).
 - Fixed bug where directory names could not have spaces in them (issue #42).
@@ -51,7 +51,7 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 - Changed how Tag instances are created, which used to be somewhat inconsistent.
 
 
-## Version 2.0.1 - 2017-04-03
+## Version 2.0.1 — 2017-04-03
 
 - Added links to Tarsqi publications to the manual.
 - Added use of confidence scores to LinkMerger (issue #23).
@@ -61,7 +61,7 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 - Removed some completely out-of-date or irrelevant documentation and notes.
 
 
-## Version 2.0.0 - 2017-03-27
+## Version 2.0.0 — 2017-03-27
 
 A complete reset of the Tarsqi code. The most significant changes are:
 
@@ -73,6 +73,6 @@ A complete reset of the Tarsqi code. The most significant changes are:
 - New test and evaluation code.
 
 
-## Version 1.0 - 2007-11-15
+## Version 1.0 — 2007-11-15
 
-First released version. Basically a wrapper around a series of components that were not released before individually.
+First released version. Basically a wrapper around a series of components that were not released before individually. This version, unlike all later versions, is not available on GitHub, but it can be downloaded from [http://timeml.org/tarsqi/toolkit/index.html](http://timeml.org/tarsqi/toolkit/index.html).
