@@ -43,22 +43,30 @@ USAGE
       Input and output files or directories. If the input is a directory then
       the output directory needs to exist. If '--pipe' is one of the options
       then input and output are not required and they are ignored if they are
-      there.
+      there. Output is always in the TTK format, unless the --target-format
+      option is set to lif, in which case output will be in the LIF format.
 
    OPTIONS
 
-      --source SOURCE_NAME
-          The source of the file; this reflects the source type of the document
+      --source-format NAME
+          The format of the input; this reflects the source type of the document
           and allows components, especially the source parser and the metadata
           parser, to be sensitive to idiosyncratic properties of the text (for
           example, the location of the DCT and the format of the text). If this
           option is not specified then the system will try to guess one of
           'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
           for the first two cases. Note that currently this guess will fail if
-          the --pipe option is used. There are four more types that can be used
-          to process the more specific sample data in data/in: timebank for
-          data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
-          for data/in/db.
+          the --pipe option is used. There are five more types that can be used
+          to process the more specific sample data in data/in: lif for the data
+          in data/in/lif, timebank for data/in/TimeBank, atee for data/in/ATEE,
+          rte3 for data/in/RTE3 and db for data/in/db.
+
+      --target-format NAME
+          Output is almost always written in the TTK format. This option allows
+          you to overrule that, but at the moment the only other format that is
+          experimentally supported is the LIF format. If you use 'lif' for the
+          target format then LIF output will be printed. However, currently this
+          only works if the --source-format is also LIF.
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
@@ -110,7 +118,8 @@ USAGE
           more messages will be written to the log, see utilities.logger for
           more details.
 
-      All these options can also be set in the config.txt file.
+      Some of these options (the ones that have values) can also be set in the
+      config.txt file.
 
 
 VARIABLES:
@@ -159,7 +168,7 @@ Simplistic way to do dictionary emulation.</pre>
 Sets the value of opt in self._options to value. If opt is also
 expressed as an instance variable then change that one as well.</pre>
 <pre>
-<div class=function>set_source(self, value)</div>
+<div class=function>set_source_format(self, value)</div>
 Sets the source value, both in the dictionary and the instance
 variable.</pre>
 </blockquote>
@@ -260,9 +269,6 @@ processing options. Does not set the instance variables related to the
 document model and the meta data. The opts argument has a list of
 command line options and the infile and outfile arguments are typically
 absolute paths, but they can be None when we are processing strings.</pre>
-<pre>
-<div class=function>pretty_print(self)</div>
-</pre>
 <pre>
 <div class=function>process_document(self)</div>
 Parse the source with the source parser, the metadata parser and the

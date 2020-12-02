@@ -27,7 +27,7 @@ main.py
 Initialization of parsers responsible for first-level processing.
 
 This file includes the PARSERS dictionary (indexed on source identifiers, handed
-in by the --source option). If a new source type is introduced, then an item
+in by the --source-format option). If a new source type is introduced, then an item
 needs to be added to the PARSERS dictionary. In addition, if new parsers are
 required they should be added to source_parser.py and metadata_parser.py.</pre>
 
@@ -74,4 +74,4 @@ Return the default document structure parser.</pre>
 <div class=function>guess_source(filename_or_string)</div>
 Returns whether the source type of the content of the file or string is
 xml, ttk or text. This is a guess because the heuristics used are simple and
-just searching the first N characters of the input.</pre>
+are just searching the first 1000 characters of the input.</pre>

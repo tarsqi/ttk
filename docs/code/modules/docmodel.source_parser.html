@@ -19,6 +19,7 @@ function view_code(id) {
 
 <pre>
 <a href=#SourceParser>SourceParser</a>
+<a href=#SourceParserLIF>SourceParserLIF</a>
 <a href=#SourceParserTTK>SourceParserTTK</a>
 <a href=#SourceParserText>SourceParserText</a>
 <a href=#SourceParserXML>SourceParserXML</a>
@@ -34,9 +35,9 @@ is to instantiate the source instance variable, which contains an instance of
 SourceDoc.
 
 What parser is used is defined in main.py, which has a mapping from source types
-(handed in by the --source command line option) to source parsers.
+(handed in by the --source-format command line option) to source parsers.
 
-There are now three parsers:
+There are now four parsers:
 
 SourceParserXML
    A simple XML parser that splits inline XML into a source string and a list of
@@ -53,13 +54,39 @@ SourceParserTTK
    This parser deals with the ttk format. In the TTK format there are two main
    sources for tags: source_tags and tarsqi_tags. The first are added to the
    tags repository on the SourceDoc (which is considered read-only after that),
-   the second are added to the tags repository on the TarsqiDocument.</pre>
+   the second are added to the tags repository on the TarsqiDocument.
+
+SourceParserLIF
+   Takes the LIF format as input. This results in a source document with empty
+   tag repositories. Annotations in the LIF input are stored on a special
+   variable on the source document (SourceDoc.lif) so it can be used later when
+   producing output.</pre>
 
 
 <a name="SourceParser"/><div class="section">class SourceParser</div>
 <pre>
 </pre>
 
+
+<a name="SourceParserLIF"/><div class="section">class SourceParserLIF</div>
+<pre>
+<strong>Inherits from: <a href=docmodel.source_parser.html#SourceParser>SourceParser</a></strong></strong>
+</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self)</div>
+Just declares the variable for the LIF object.</pre>
+<pre>
+<div class=function>parse_file(self, filename, tarsqidoc)</div>
+Parse the TTK file and put the contents in the appropriate parts of
+the SourceDoc.</pre>
+<pre>
+<div class=function>parse_string(self, text, tarsqidoc)</div>
+Parse the TTK string and put the contents in the appropriate parts of the
+SourceDoc.</pre>
+</blockquote>
 
 <a name="SourceParserTTK"/><div class="section">class SourceParserTTK</div>
 <pre>
