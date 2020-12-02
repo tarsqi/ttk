@@ -18,7 +18,6 @@ import os, sys, threading
 from time import time
 from subprocess import PIPE, Popen
 from types import StringType, TupleType
-from xml.sax.saxutils import escape, quoteattr
 
 from utilities import logger
 from docmodel.document import Tag
@@ -33,7 +32,8 @@ from components.preprocessing.chunker import chunk_sentences
 MAC_EXECUTABLE = "tree-tagger"
 LINUX_EXECUTABLE = "tree-tagger"
 WINDOWS_EXECUTABLE = "tree-tagger.exe"
-PARAMETER_FILE = "english-utf8.par"
+PARAMETER_FILE1 = "english-utf8.par"
+PARAMETER_FILE2 = "english.par"
 
 # Markers for begin and end of text for TreeTagger. There is no potential
 # conflict with substrings in the text that match these since the tokenizer will
@@ -139,11 +139,11 @@ class Wrapper(object):
             vertical_string = '<s>'
         # treetagger does not accept a unicode string, so encode in utf-8
         # TODO: this may have changed with the latest version
-        taggedItems = self.treetagger.tag_text(vertical_string.encode('utf-8'))
+        tagged_items = self.treetagger.tag_text(vertical_string.encode('utf-8'))
         # The taggedItems result is the same whether you run this from the
         # PreprocessorWrapper or the TaggerWrapper, but those two use slightly
         # different _merge_tags() methods so the result is different
-        text = self._merge_tags(tokens, taggedItems)
+        text = self._merge_tags(tokens, tagged_items)
         self.tag_time += time() - t1
         return text
 
@@ -452,7 +452,9 @@ class TreeTagger(object):
         self.bindir = os.path.join(self.dir, "bin")
         self.libdir = os.path.join(self.dir, "lib")
         executable = self._get_executable()
-        parfile = os.path.join(self.libdir, PARAMETER_FILE)
+        parfile = os.path.join(self.libdir, PARAMETER_FILE1)
+        if not os.path.exists(parfile):
+            parfile = os.path.join(self.libdir, PARAMETER_FILE2)
         tagcmd = "%s -token -lemma -sgml %s" % (executable, parfile)
         # when using subprocess, need to use a different close_fds for windows
         close_fds = False if sys.platform == 'win32' else True

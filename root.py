@@ -3,7 +3,7 @@
 All this module does is to set the TTK_ROOT environment variable.
 
 Previously, this was done inline for all the modules that needed it, but this
-resulted in an ugly situation where a piece of code was inserted inbetween a set
+resulted in an ugly situation where a piece of code was inserted in between a set
 of import statements.
 
 """

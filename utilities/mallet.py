@@ -97,7 +97,7 @@ def classify_command(mallet, vectors, model):
 
 def parse_classifier_line(line):
     """Return a pair of the identifier (instance name in Mallet talk) and a
-    sorted list of labels and their scores in {score, label) format, with the
+    sorted list of labels and their scores in <score, label> format, with the
     highest score first."""
     fields = line.strip().split()
     identifier = fields.pop(0)

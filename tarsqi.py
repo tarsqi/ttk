@@ -16,22 +16,30 @@ USAGE
       Input and output files or directories. If the input is a directory then
       the output directory needs to exist. If '--pipe' is one of the options
       then input and output are not required and they are ignored if they are
-      there.
+      there. Output is always in the TTK format, unless the --target-format
+      option is set to lif, in which case output will be in the LIF format.
 
    OPTIONS
 
-      --source SOURCE_NAME
-          The source of the file; this reflects the source type of the document
+      --source-format NAME
+          The format of the input; this reflects the source type of the document
           and allows components, especially the source parser and the metadata
           parser, to be sensitive to idiosyncratic properties of the text (for
           example, the location of the DCT and the format of the text). If this
           option is not specified then the system will try to guess one of
           'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
           for the first two cases. Note that currently this guess will fail if
-          the --pipe option is used. There are four more types that can be used
-          to process the more specific sample data in data/in: timebank for
-          data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
-          for data/in/db.
+          the --pipe option is used. There are five more types that can be used
+          to process the more specific sample data in data/in: lif for the data
+          in data/in/lif, timebank for data/in/TimeBank, atee for data/in/ATEE,
+          rte3 for data/in/RTE3 and db for data/in/db.
+
+      --target-format NAME
+          Output is almost always written in the TTK format. This option allows
+          you to overrule that, but at the moment the only other format that is
+          experimentally supported is the LIF format. If you use 'lif' for the
+          target format then LIF output will be printed. However, currently this
+          only works if the --source-format is also LIF.
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
@@ -83,7 +91,8 @@ USAGE
           more messages will be written to the log, see utilities.logger for
           more details.
 
-      All these options can also be set in the config.txt file.
+      Some of these options (the ones that have values) can also be set in the
+      config.txt file.
 
 
 VARIABLES:
@@ -96,10 +105,10 @@ VARIABLES:
 
 """
 
-import sys, os, time, types, getopt
+import sys, os, time, getopt
 
 import root
-from components import COMPONENTS
+from components import COMPONENTS, valid_components
 from docmodel.document import TarsqiDocument
 from docmodel.main import guess_source
 from docmodel.main import create_source_parser
@@ -151,14 +160,13 @@ class Tarsqi:
         self.output = outfile
         self.basename = _basename(infile) if infile else None
         self.options = opts if isinstance(opts, Options) else Options(opts)
-        if self.options.source is None:
-            self.options.set_source(guess_source(self.input))
+        if self.options.source_format is None:
+            self.options.set_source_format(guess_source(self.input))
         self.tarsqidoc = TarsqiDocument()
         self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
             logger.set_level(self.options.loglevel)
         self.tmp_data = os.path.join(TTK_ROOT, 'data', 'tmp')
-        self.components = COMPONENTS
         self._initialize_parsers()
         self.pipeline = self._create_pipeline()
         self._update_processing_history()
@@ -176,7 +184,7 @@ class Tarsqi:
         and update it."""
         self._cleanup_directories()
         logger.info(self.input)
-        logger.info("Source type is '%s'" % self.options.source)
+        logger.info("Source type is '%s'" % self.options.source_format)
         self.source_parser.parse_file(self.input, self.tarsqidoc)
         self.metadata_parser.parse(self.tarsqidoc)
         self.docstructure_parser.parse(self.tarsqidoc)
@@ -198,12 +206,12 @@ class Tarsqi:
 
     def _cleanup_directories(self):
         """Remove all fragments from the temporary data directory."""
-        for file in os.listdir(self.tmp_data):
-            if os.path.isfile(self.tmp_data + os.sep + file):
+        for filename in os.listdir(self.tmp_data):
+            if os.path.isfile(self.tmp_data + os.sep + filename):
                 # sometimes, on linux, weird files show up here, do not delete
                 # them should trap these here with an OSError
-                if not file.startswith('.'):
-                    os.remove(self.tmp_data + os.sep + file)
+                if not filename.startswith('.'):
+                    os.remove(self.tmp_data + os.sep + filename)
 
     def _apply_component(self, name, wrapper, tarsqidocument):
         """Apply a component by taking the TarsqDocument, which includes the
@@ -227,8 +235,11 @@ class Tarsqi:
         """Return the pipeline as a list of pairs with the component name and
         wrapper."""
         component_names = self.options.pipeline.split(',')
-        return [(name, self.components[name]) for name in component_names]
-
+        if valid_components(component_names):
+            return [(name, COMPONENTS[name]) for name in component_names]
+        else:
+            raise TarsqiError("Illegal pipeline")
+                
     def _update_processing_history(self):
         self.tarsqidoc.update_processing_history(self.pipeline)
 
@@ -241,12 +252,6 @@ class Tarsqi:
                 logger.error("Writing output failed")
         else:
             self.tarsqidoc.print_all(self.output)
-
-    def pretty_print(self):
-        print self
-        print '   metadata    ', self.metadata
-        print '   content_tag ', self.content_tag
-        print '   document    ', self.xml_document
 
 
 class Options(object):
@@ -302,7 +307,8 @@ class Options(object):
         from config.txt that are user-specific. Note that due to naming rules
         for attributes (no dashes allowed), options with a dash are spelled with
         an underscore when they are instance variables."""
-        self.source = self.getopt('source')
+        self.source_format = self.getopt('source-format')
+        self.target_format = self.getopt('target-format')
         self.dct = self.getopt('dct')
         self.pipeline = self.getopt('pipeline')
         self.pipe = self.getopt('pipe', False)
@@ -331,10 +337,10 @@ class Options(object):
         """Return the option, use None as default."""
         return self._options.get(option_name, default)
 
-    def set_source(self, value):
+    def set_source_format(self, value):
         """Sets the source value, both in the dictionary and the instance
         variable."""
-        self.set_option('source', value)
+        self.set_option('source-format', value)
 
     def set_option(self, opt, value):
         """Sets the value of opt in self._options to value. If opt is also
@@ -352,7 +358,6 @@ class Options(object):
 
 class TarsqiError(Exception):
     """Tarsqi Exception class, so far only used in this file."""
-    # TODO: should probably be defined elsewhere (in utilities)
     pass
 
 
@@ -360,12 +365,13 @@ def _read_arguments(args):
     """Read the list of arguments given to the tarsqi.py script.  Return a tuple
     with two elements: processing options dictionary, and remaining arguments
     (input path and output path)."""
-    options = ['source=', 'dct=', 'pipeline=', 'trap-errors=', 'loglevel=',
+    options = ['source-format=', 'target-format=', 'dct=', 'pipeline=',
+               'trap-errors=', 'loglevel=',
                'pipe', 'perl=', 'treetagger=', 'import-events',
                'mallet=', 'classifier=', 'ee-model=', 'et-model=']
     try:
         (opts, args) = getopt.getopt(args, '', options)
-        return (opts, args)
+        return opts, args
     except getopt.GetoptError:
         sys.stderr.write("ERROR: %s\n" % sys.exc_value)
         sys.exit(_usage_string())
@@ -455,18 +461,18 @@ class TarsqiWrapper(object):
         if not os.path.isdir(self.outpath):
             os.makedirs(self.outpath)
         else:
-            print "WARNING: Directory %s already exists" % outpath
-            print "WARNING: Existing files in %s will be overwritten" % outpath
+            print "WARNING: Directory %s already exists" % self.outpath
+            print "WARNING: Existing files in %s will be overwritten" % self.outpath
             print "Continue? (y/n)\n?",
             answer = raw_input()
             if answer != 'y':
                 exit()
-        for file in os.listdir(self.inpath):
-            infile = self.inpath + os.sep + file
-            outfile = self.outpath + os.sep + file
+        for filename in os.listdir(self.inpath):
+            infile = self.inpath + os.sep + filename
+            outfile = self.outpath + os.sep + filename
             if (os.path.isfile(infile)
-                and os.path.basename(infile)[0] != '.'
-                and os.path.basename(infile)[-1] != '~'):
+                    and os.path.basename(infile)[0] != '.'
+                    and os.path.basename(infile)[-1] != '~'):
                 print infile
                 Tarsqi(self.options, infile, outfile).process_document()
 
@@ -487,7 +493,7 @@ def run_profiler(args):
 def process_string(text, pipeline='PREPROCESSOR', loglevel=2, trap_errors=False):
     """Run tarsqi on a bare string without any XML tags, handing in pipeline,
     loglevel and error trapping options."""
-    (opts, args) = _read_arguments(["--source=text",
+    (opts, args) = _read_arguments(["--source-format=text",
                                     "--pipeline=%s" % pipeline,
                                     "--loglevel=%s" % loglevel,
                                     "--trap-errors=%s" % trap_errors])
@@ -504,13 +510,13 @@ def load_ttk_document(fname, loglevel=2, trap_errors=False):
     # the timebank documents, note that we want to define a pipeline because we
     # may want to use the Tarsqi instance to run the pipeline.
     pipeline = "PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"
-    opts = [('--source', 'ttk'), ('--pipeline', pipeline),
+    opts = [('--source-format', 'ttk'), ('--pipeline', pipeline),
             ('--loglevel',  str(loglevel)), ('--trap-errors', str(trap_errors))]
     tarsqi = Tarsqi(opts, fname, None)
     tarsqi.source_parser.parse_file(tarsqi.input, tarsqi.tarsqidoc)
     tarsqi.metadata_parser.parse(tarsqi.tarsqidoc)
     tarsqi.docstructure_parser.parse(tarsqi.tarsqidoc)
-    return (tarsqi, tarsqi.tarsqidoc)
+    return tarsqi, tarsqi.tarsqidoc
 
 
 if __name__ == '__main__':

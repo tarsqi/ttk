@@ -17,7 +17,6 @@ processing the elements one by one.
 
 
 from library.tarsqi_constants import DOCSTRUCTURE
-from docmodel.document import TarsqiDocument
 
 
 class DocumentStructureParser:
@@ -52,7 +51,7 @@ def split_paragraphs(text):
     paragraphs = []
     last_para = (None, None)
 
-    while (p2 < text_end):
+    while p2 < text_end:
         if not seeking_space:
             (p1, p2, token) = slurp_token(text, p2)
             par_end = p2
@@ -66,7 +65,7 @@ def split_paragraphs(text):
                 paragraphs.append((par_begin, par_end))
                 par_begin = p2
                 par_end = None
-            #print ('TOK', p1, p2, par_begin, par_end, seeking_space, space)
+            # print('TOK', p1, p2, par_begin, par_end, seeking_space, space)
 
     if seeking_space and p2 > par_begin:
         last_para = (par_begin, par_end)
@@ -91,8 +90,8 @@ def slurp(text, offset, test):
             offset += 1
             end = offset
         else:
-            return (begin, end, text[begin:end])
-    return (begin, end, text[begin:end])
+            return begin, end, text[begin:end]
+    return begin, end, text[begin:end]
 
 
 def slurp_space(text, offset):

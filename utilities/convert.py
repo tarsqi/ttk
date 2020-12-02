@@ -42,19 +42,28 @@ Some format conversion utilities.
 
    $ python convert.py --knowtator2ttk --tarsqi TEXT_FILE TTK_FILE
 
-   Versions for file processing. Note that you only give the text file, the code
-   assumes that there is a file TEXT_FILE>knowtator.xml with the annotations.
+   Version for processing a single file. You only supply the text file, the code
+   assumes that there is a file TEXT_FILE.knowtator.xml with the annotations.
 
 5. Convert TTK into Knowtator format.
+
+   $ python convert.py --ttk2knowtator TTK_FILE TEXT_FILE ANNO_FILE
 
    IN PROGRESS.
 
 6. Convert from ECB into TTK
 
-   $ python convert.py --ecb2ttk ECB_DIR TTK_DIR
+   $ python convert.py --ecb2ttk ECB_DIR OUT_DIR
 
-   The ECB directory structure is mirrored which includes the topic id, but each
-   TTK file also has the topic id as a metadata property.
+   THE ECB_DIR directory should be the top-level directory of the ECB
+   distribution (which has a README file and a data directory which includes
+   directories for each topic). Converted files are written to OUT_DIR, the
+   structure of which mirrors the structure of the ECB directory. Each TTK file
+   written to the output has the topic id as a metadata property as well as a
+   couple of MENTION tags in the source_tags section. These mentions tend to be
+   Evita events, but are impoverished in the sense that they only have three
+   attributes: begin, end and chain. The idea is that the information in
+   mentions will be merged with information in events.
 
    Will at some point also include the ECB+ data.
 
@@ -877,7 +886,7 @@ def _write_link(link, entity_idx, fh):
 
 ### CONVERTING TTK FILE INTO KNOWTATOR FORMAT
 
-def convert_knowtator_file_into_ttk(ttk_file, text_file, annotation_file):
+def convert_ttk_into_knowtator(ttk_file, text_file, annotation_file):
     print("creating %s" % annotation_file)
     ttk_file = os.path.abspath(ttk_file)
     text_file = os.path.abspath(text_file)
@@ -889,8 +898,8 @@ def convert_knowtator_file_into_ttk(ttk_file, text_file, annotation_file):
     with codecs.open(annotation_file, 'w', encoding="utf-8") as anno:
         anno.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         anno.write('<annotations textSource="%s">\n' % os.path.basename(text_file))
-        tag_index = _create_tag_index(tarsqidoc.sourcedoc.tags.tags)
-        for tag in tarsqidoc.sourcedoc.tags.tags:
+        tag_index = _create_tag_index(tarsqidoc.tags.tags)
+        for tag in tarsqidoc.tags.tags:
             _knowtator_convert_tag(tag, tag_index, full_text, anno)
         anno.write('</annotations>\n')
 
@@ -903,14 +912,14 @@ def _create_tag_index(tags):
     tlink_index = {}
     tlink_tags = []
     for tag in tags:
-        tag_identifier = tag.get_identifier()
-        if tag_identifier is not None:
-            tag_index[tag_identifier] = [tag]
-        else:
+        tag_id = tag.get_identifier()
+        if tag.name.upper() in (EVENT, TIMEX):
+            tag_index[tag_id] = [tag]
+        elif tag.name.upper() in (TLINK,):
             tlink_tags.append(tag)
     for tag in tlink_tags:
         source_identifier = tag.attrs.get(TIME_ID,
-                                          tag.attrs.get('eventID'))
+                                          tag.attrs.get(EVENT_INSTANCE_ID))
         tlink_index.setdefault(source_identifier, []).append(tag)
     for tag_identifier in tag_index:
         tlinks = tlink_index.get(tag_identifier, [])
@@ -929,36 +938,27 @@ def _print_tag_index(tag_index):
 
 def _knowtator_convert_tag(tag, tag_index, text, fh):
     """Take the Tag instance and generate Knowtator XML tags for it."""
-    def new_id(): return KnowtatorID.new_identifier()
     tag_id = tag.get_identifier()
-    if tag_id is None:
-        # skipping links
-        return 
-    # TODO: generalize creation if stringSlotMentions
-    if tag_id.startswith('t'):
-        classname = 'Timex3'
-        string_slot_mentions = [(new_id(), 'typeInfo', tag.attrs.get('type'))]
-    elif tag_id.startswith('e'):
-        classname = 'Event'
-        string_slot_mentions = [(new_id(), 'classType', tag.attrs.get('class')),
-                                (new_id(), 'Tense', tag.attrs.get('tense'))]
-    else:
-        print('WARNING: unexpected identifier for %s' % tag)
-        return
-    spanned_text = text[tag.begin:tag.end]
-    annotation = KnowtatorAnnotation.tag(tag_id, tag, spanned_text)
-    ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
-    complex_slot_mentions = []
-    for tlink in tag_index[tag_id][1]:
-        target_id = tlink.attrs.get(RELATED_TO_EVENT_INSTANCE,
-                                    tlink.attrs.get(RELATED_TO_TIME))
-        complex_slot_mentions.append(
-            (KnowtatorID.new_identifier(), tlink.attrs.get('relType'), target_id))
-    csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
-    slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
-    class_mention = KnowtatorClassMention.tag(
-        tag_id, tag, classname, spanned_text, slot_mentions)
-    fh.write(annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention)
+    # only looping over events and timexes, link tags are derived from them
+    if tag.name.upper() in {TIMEX, EVENT}:
+        classname = tag.name
+        string_slot_mentions = [(KnowtatorID.new_identifier(), attr, val)
+                                for attr, val in tag.attrs.items()]
+        spanned_text = text[tag.begin:tag.end]
+        annotation = KnowtatorAnnotation.tag(tag_id, tag, spanned_text)
+        ssm_tags = _knowtator_stringSlotMention_tags(string_slot_mentions)
+        complex_slot_mentions = []
+        # pull the links out of the index and create complex slot mentions for them
+        for link in tag_index[tag_id][1]:
+            target_id = link.attrs.get(RELATED_TO_EVENT_INSTANCE,
+                                        link.attrs.get(RELATED_TO_TIME))
+            complex_slot_mentions.append(
+                (KnowtatorID.new_identifier(), link.attrs.get('relType'), target_id))
+        csm_tags = _knowtator_complexSlotMention_tags(complex_slot_mentions)
+        slot_mentions = [sm[0] for sm in string_slot_mentions + complex_slot_mentions]
+        class_mention = KnowtatorClassMention.tag(
+            tag_id, tag, classname, spanned_text, slot_mentions)
+        fh.write(annotation + ''.join(ssm_tags) + ''.join(csm_tags) + class_mention)
 
 
 def _knowtator_stringSlotMention_tags(string_slot_mentions):
@@ -989,21 +989,40 @@ class KnowtatorID(object):
 class ECBConverter(object):
 
     def __init__(self, ecb_directory, ttk_directory):
+        """Collect specifications for each ECB file, which includes the ecb directory,
+        the target directory (used to write converted files), the topic name and the
+        filename (includes the topic name, for example "1/7.ecb)."""
         self.ecb_directory = ecb_directory
         self.ttk_directory = ttk_directory
-        filepaths = glob.glob(os.path.join(self.ecb_directory, 'data', '*', '*.ecb'))
+        self.ecb_specs = []
         self.ecb_files = []
         self.topics = {}
+        filepaths = glob.glob(os.path.join(self.ecb_directory, 'data', '*', '*.ecb'))
         for fp in filepaths:
             datadir, fname = os.path.split(fp)
-            datadir, topicdir = os.path.split(datadir)
-            fname = os.path.join(topicdir, fname)
-            ecb_file = ECBFile(ecb_directory, ttk_directory, topicdir, fname)
-            self.ecb_files.append(ecb_file)
-            print(ecb_file)
-        self._populate_topics()
+            datadir, topic = os.path.split(datadir)
+            fname = os.path.join(topic, fname)
+            self.ecb_specs.append((ecb_directory, ttk_directory, topic, fname))
 
-    def write_files(self):
+    def convert(self, topic=None):
+        """Convert TTK files into ECB files. Use the topic argument to limit processing
+        to one topic, the value can be an integer from 1 to 45 or a string representation
+        of that integer."""
+        if topic is not None:
+            # turn the topic into a string if it isn't one yet
+            topic = "%s" % topic
+            specs = [spec for spec in self.ecb_specs if spec[2] == topic]
+        else:
+            specs = self.ecb_specs
+        print("Converting %d files..." % len(specs))
+        for (ecb_directory, ttk_directory, topic, fname) in specs:
+            ecb_file = ECBFile(ecb_directory, ttk_directory, topic, fname)
+            self.ecb_files.append(ecb_file)
+            print("   %s" % ecb_file)
+        self._populate_topics()
+        self._write_files()
+
+    def _write_files(self):
         for ecb_file in self.ecb_files:
             ecb_file.write()
 
@@ -1058,7 +1077,7 @@ def _makedir(directory):
 
 def _get_tarsqidoc(infile, source, metadata=True):
     """Return an instance of TarsqiDocument for infile"""
-    opts = [("--source", source), ("--trap-errors", "False")]
+    opts = [("--source-format", source), ("--trap-errors", "False")]
     t = tarsqi.Tarsqi(opts, infile, None)
     t.source_parser.parse_file(t.input, t.tarsqidoc)
     t.metadata_parser.parse(t.tarsqidoc)
@@ -1070,18 +1089,18 @@ def _get_tarsqidoc_from_ecb_file(infile):
     _get_tarsqidoc() for ECB files since those do not allow us to use a source
     parser in the regular way since ECB files are neither of the text type or
     the xml type."""
-    opts = [("--source", "xml"), ("--trap-errors", "False")]
+    opts = [("--source-format", "xml"), ("--trap-errors", "False")]
     t = tarsqi.Tarsqi(opts, infile, None)
     # create an XML string from the ECB file
     with codecs.open(t.input, encoding="utf8") as fh:
         content = "<text>%s</text>" % fh.read().replace('&', '&amp;')
     t.source_parser.parse_string(content, t.tarsqidoc)
     t.metadata_parser.parse(t.tarsqidoc)
-    # turn the MENTION tags into impoverished EVENT tags
     for mention in t.tarsqidoc.sourcedoc.tags.find_tags('MENTION'):
-        attrs = { 'chain': mention.attrs['CHAIN'] }
-        t.tarsqidoc.tags.add_tag('EVENT', mention.begin, mention.end, attrs)
-    t.tarsqidoc.sourcedoc.tags.remove_tags('MENTION')
+        # this is somewhat dangerous because we are not checking whether there
+        # is a double quote in the string, but those do not happen to occur
+        text = t.tarsqidoc.text(mention.begin, mention.end)
+        mention.attrs["text"] = text
     return t.tarsqidoc
 
 
@@ -1127,8 +1146,10 @@ if __name__ == '__main__':
             exit("ERROR: incorrect input")
 
     elif '--ttk2knowtator' in opts:
-        convert_knowtator_file_into_ttk(args[0], args[1], args[2])
+        convert_ttk_into_knowtator(args[0], args[1], args[2])
 
     elif '--ecb2ttk' in opts:
-        converter = ECBConverter(args[0], args[1])
-        converter.write_files()
+        indir = os.path.abspath(args[0])
+        outdir = os.path.abspath(args[1])
+        ECBConverter(indir, outdir).convert()
+

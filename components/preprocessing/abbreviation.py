@@ -74,4 +74,3 @@ for abbr in months + titles + states + geo + measures + other_end:
 dict_initial_tokens = {}
 for tok in initial_tokens_brown + initial_tokens_other:
     dict_initial_tokens[tok] = 1
-

@@ -263,7 +263,7 @@ self.closing_tags
 Add a tag to the tags list and the opening_tags and closing_tags
 dictionaries.</pre>
 <pre>
-<div class=function>add_tmp_tag(self, tagInstance)</div>
+<div class=function>add_tmp_tag(self, tag_instance)</div>
 Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
 handlers.</pre>
 <pre>
@@ -406,6 +406,9 @@ already links added without using those counters.</pre>
 <div class=function>print_all(self, fname=None)</div>
 Write source string, metadata, comments, source tags and tarsqi tags
 all to one file or to the standard output.</pre>
+<pre>
+<div class=function>print_all_lif(self, fh)</div>
+</pre>
 <pre>
 <div class=function>print_sentences(self, fname=None)</div>
 Write to file (or standard output if no filename was given) a Python

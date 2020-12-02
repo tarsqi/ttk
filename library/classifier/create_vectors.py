@@ -51,7 +51,7 @@ tags, but it can be converted by using the utilities/convert.py script.
 Then you can run tarsqi.py on the result and create a version with preprocessor
 information added:
 
-   $ python tarsqi.py --source=ttk --pipeline=PREPROCESSOR <CONVERTED_TB> <OUT_DIR>
+   $ python tarsqi.py --source-format=ttk --pipeline=PREPROCESSOR <CONVERTED_TB> <OUT_DIR>
 
 
 USAGE
@@ -152,7 +152,7 @@ INVERSE = {
 }
 
 # needed for the source parser
-options = Options([('--source', 'ttk')])
+options = Options([('--source-format', 'ttk')])
 
 
 def process_dir(gold_dir):

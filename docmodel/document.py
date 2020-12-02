@@ -51,7 +51,7 @@ class TarsqiDocument:
 
     def __init__(self):
         self.sourcedoc = None
-        self.metadata = { 'dct': None, 'processing_steps': [] }
+        self.metadata = {'dct': None, 'processing_steps': []}
         self.options = {}
         self.tags = TagRepository()
         self.counters = {TIMEX: 0, EVENT: 0, ALINK: 0, SLINK: 0, TLINK: 0}
@@ -164,13 +164,24 @@ class TarsqiDocument:
             fh = sys.stdout
         else:
             fh = codecs.open(fname, mode='w', encoding='UTF-8')
-        fh.write("<ttk>\n")
-        fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
-        self._print_comments(fh)
-        self._print_metadata(fh)
-        self._print_tags(fh, 'source_tags', self.sourcedoc.tags.tags)
-        self._print_tags(fh, 'tarsqi_tags', self.tags.tags)
-        fh.write("</ttk>\n")
+        if self.options.target_format == 'lif':
+            self.print_all_lif(fh)
+        else:
+            fh.write("<ttk>\n")
+            fh.write("<text>%s</text>\n" % escape(self.sourcedoc.text))
+            self._print_comments(fh)
+            self._print_metadata(fh)
+            self._print_tags(fh, 'source_tags', self.sourcedoc.tags.tags)
+            self._print_tags(fh, 'tarsqi_tags', self.tags.tags)
+            fh.write("</ttk>\n")
+
+    def print_all_lif(self, fh):
+        # TODO: it feels like this should be elsewhere
+        if not self.sourcedoc.lif.has_tarsqi_view():
+            #print "Adding missing tarsqi data"
+            self.sourcedoc.lif.add_tarsqi_view(self)
+        json_string = self.sourcedoc.lif.as_json_string()
+        fh.write(json_string)
 
     def _print_comments(self, fh):
         if self.sourcedoc.comments:
@@ -251,11 +262,13 @@ class SourceDoc:
         self.filename = filename
         self.xmldecl = None
         # initialize as a string buffer, will be a string later
-        self.text = StringIO.StringIO()
+        self.text_buffer = StringIO.StringIO()
+        self.text = ""
         self.processing_instructions = {}
         self.comments = {}
         self.metadata = {}
         self.tags = TagRepository()
+        self.lif = None
         self.offset = 0
 
     def __getitem__(self, i):
@@ -277,7 +290,7 @@ class SourceDoc:
         """Add a character string to the source and increment the current
         offset. Used by the CharacterDataHandler of the Expat parser in
         SourceParserXML."""
-        self.text.write(string)     # this is already unicode
+        self.text_buffer.write(string)     # this is already unicode
         self.offset += len(string)
 
     def add_comment(self, string):
@@ -294,9 +307,8 @@ class SourceDoc:
         elements, it is not needed by SourceParserTTK since it uses a DOM
         object, it is also not needed by SourceParserText since it does not deal
         with tags."""
-        string_buffer = self.text
-        self.text = string_buffer.getvalue()
-        string_buffer.close()
+        self.text = self.text_buffer.getvalue()
+        self.text_buffer.close()
         self.tags.merge()
         self.tags.index()
 
@@ -371,10 +383,10 @@ class TagRepository:
     def is_empty(self):
         return len(self.tags) == 0
 
-    def add_tmp_tag(self, tagInstance):
+    def add_tmp_tag(self, tag_instance):
         """Add an OpeningTag or ClosingTag to a temporary list. Used by the XML
         handlers."""
-        self.tmp.append(tagInstance)
+        self.tmp.append(tag_instance)
 
     def add_tag(self, name, begin, end, attrs):
         """Add a tag to the tags list and the opening_tags and closing_tags
@@ -509,14 +521,14 @@ class TagRepository:
 
     def pp_opening_tags(self):
         print '<TagRepository>.opening_tags'
-        for offset, list in sorted(self.opening_tags.items()):
+        for offset, taglist in sorted(self.opening_tags.items()):
             print("   %d "
-                  % offset, "\n         ".join([x.__str__() for x in list]))
+                  % offset, "\n         ".join([x.__str__() for x in taglist]))
 
     def pp_closing_tags(self):
         print '<TagRepository>.closing_tags'
-        for offset, dict in sorted(self.closing_tags.items()):
-            print "   %d " % offset, dict
+        for offset, tagdict in sorted(self.closing_tags.items()):
+            print "   %d " % offset, tagdict
 
 
 class Tag:

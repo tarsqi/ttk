@@ -7,9 +7,9 @@ is to instantiate the source instance variable, which contains an instance of
 SourceDoc.
 
 What parser is used is defined in main.py, which has a mapping from source types
-(handed in by the --source command line option) to source parsers.
+(handed in by the --source-format command line option) to source parsers.
 
-There are now three parsers:
+There are now four parsers:
 
 SourceParserXML
    A simple XML parser that splits inline XML into a source string and a list of
@@ -28,15 +28,20 @@ SourceParserTTK
    tags repository on the SourceDoc (which is considered read-only after that),
    the second are added to the tags repository on the TarsqiDocument.
 
+SourceParserLIF
+   Takes the LIF format as input. This results in a source document with empty
+   tag repositories. Annotations in the LIF input are stored on a special
+   variable on the source document (SourceDoc.lif) so it can be used later when
+   producing output.
+
 """
 
-import sys, codecs, pprint
+import codecs
 import xml.parsers.expat
-from xml.sax.saxutils import escape, quoteattr
 from xml.dom import minidom
 
-from docmodel.document import TarsqiDocument, SourceDoc, ProcessingStep
-from docmodel.document import OpeningTag, ClosingTag
+from docmodel.document import SourceDoc, ProcessingStep
+from utilities.lif import Container, LIF
 
 
 class SourceParser:
@@ -242,7 +247,7 @@ class SourceParserXML(SourceParser):
         of attributes. Asks the SourceDoc instance in the sourcedoc variable to
         add an opening tag."""
         self._debug('start', name, attrs)
-        #print ',,,', name, attrs
+        # print ',,,', name, attrs
         self.sourcedoc.add_opening_tag(name, attrs)
 
     def _handle_end(self, name):
@@ -281,3 +286,40 @@ def replace_newline(text):
     """Just used for debugging, make sure to not use this elsewhere because it
     is dangerous since it turns unicode into non-unicode."""
     return str(text).replace("\n", '\\n')
+
+
+class SourceParserLIF(SourceParser):
+
+    def __init__(self):
+        """Just declares the variable for the LIF object."""
+        self.lif = None
+
+    def parse_file(self, filename, tarsqidoc):
+        """Parse the TTK file and put the contents in the appropriate parts of
+        the SourceDoc."""
+        if self.is_container(filename):
+            self.container = Container(json_file=filename)
+            self.lif = self.container.payload
+        else:
+            self.container = None
+            self.lif = LIF(json_file=filename)
+        tarsqidoc.sourcedoc = SourceDoc(filename)
+        tarsqidoc.sourcedoc.text = self.lif.text.value
+        tarsqidoc.sourcedoc.lif = self.lif
+        tarsqidoc.sourcedoc.lif_container = self.container
+
+    def parse_string(self, text, tarsqidoc):
+        """Parse the TTK string and put the contents in the appropriate parts of the
+        SourceDoc."""
+        self.lif = LIF(json_string=text)
+        tarsqidoc.sourcedoc = SourceDoc()
+        tarsqidoc.sourcedoc.text = self.lif.text.value
+        tarsqidoc.sourcedoc.lif = self.lif
+
+    @staticmethod
+    def is_container(filename):
+        with codecs.open(filename, encoding='utf8') as fh:
+            first100 = fh.read(100)
+            if first100.find('discriminator') > -1:
+                return True
+        return False

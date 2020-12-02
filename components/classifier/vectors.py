@@ -21,10 +21,15 @@ The only difference is in the second column (no relation versus a relation).
 
 """
 
-import os, textwrap
+import os, codecs, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree
 from library.main import LIBRARY
+from utilities import logger
+
+
+DEBUG = False
+
 
 EVENT = LIBRARY.timeml.EVENT
 EID = LIBRARY.timeml.EID
@@ -41,10 +46,13 @@ TID = LIBRARY.timeml.TID
 TYPE = LIBRARY.timeml.TYPE
 VALUE = LIBRARY.timeml.VALUE
 
+
 # Determines what attributes to use for the object vectors
 EVENT_FEATURES = [CLASS, STEM, EPOS, TENSE, ASPECT, MODALITY, POLARITY]
 TIMEX_FEATURES = [TYPE, VALUE]
 
+
+# extra features for vectors
 TAG = 'tag'
 FUNINDOC = 'funInDoc'
 TEMPFUN = 'tempFun'
@@ -55,14 +63,12 @@ ORDER = 'order'
 SIGNAL = 'signal'
 SYNTAX = 'syntax'
 
+
 # use abbreviations in features for space efficiency
 ABBREVIATIONS = {ASPECT: 'asp', TENSE: 'ten', CLASS: 'cls', VALUE: 'val',
                  MODALITY: 'mod', POLARITY: 'pol', STRING: 'str',
                  SHIFT_TENSE: 'shTen', SHIFT_ASPECT: 'shAsp',
                  SIGNAL: 'sig', SYNTAX: 'syn'}
-
-DEBUG = False
-#DEBUG = True
 
 
 def create_tarsqidoc_vectors(tarsqidoc, ee_file, et_file):
@@ -85,35 +91,43 @@ def collect_tarsqidoc_vectors(tarsqidoc):
 
 def write_vectors(ee_file, ee_vectors, et_file, et_vectors):
     """Write the vectors to files."""
-    ee_fh = open(ee_file, 'w')
-    et_fh = open(et_file, 'w')
+    ee_fh = codecs.open(ee_file, 'w', encoding='utf8')
+    et_fh = codecs.open(et_file, 'w', encoding='utf8')
     for ee_vector in ee_vectors:
-        ee_fh.write("%s\n" % ee_vector)
+        try:
+            ee_fh.write("%s\n" % ee_vector)
+        except UnicodeDecodeError:
+            logger.warn("UnicodeDecodeError when writing vector")
     for et_vector in et_vectors:
-        et_fh.write("%s\n" % et_vector)
+        try:
+            et_fh.write("%s\n" % et_vector)
+        except UnicodeDecodeError:
+            logger.warn("UnicodeDecodeError when writing vector")
 
 
-def _create_vectors_for_sentence(
-        tarsqidoc, element, s, ee_vectors, et_vectors):
+def _create_vectors_for_sentence(tarsqidoc, element, s, ee_vectors, et_vectors):
     """Adds vectors in the sentence to ee_vectors and et_vectors."""
     _debug_leafnodes(element, s)
     tag_vectors = _get_tag_vectors_for_sentence(tarsqidoc, s)
     for i in range(0, len(tag_vectors) - 1):
-        v1 = tag_vectors[i]
-        v2 = tag_vectors[i+1]
-        _debug("\n  %d %d %s %s\n" % (i, i + 1, v1.source, v2.source))
-        if v1.is_event_vector() and v2.is_event_vector():
-            ee_vector = EEVector(tarsqidoc, v1, v2)
-            _debug_wrapped("EE %s" % ee_vector, '  ')
-            ee_vectors.append(ee_vector)
-        elif v1.is_event_vector() and v2.is_timex_vector():
-            et_vector = ETVector(tarsqidoc, v1, v2)
-            _debug_wrapped("ET %s" % et_vector, '  ')
-            et_vectors.append(et_vector)
-        elif v1.is_timex_vector() and v2.is_event_vector():
-            et_vector = ETVector(tarsqidoc, v2, v1)
-            _debug_wrapped("TE %s" % et_vector, '  ')
-            et_vectors.append(et_vector)
+        try:
+            v1 = tag_vectors[i]
+            v2 = tag_vectors[i+1]
+            #_debug("\n  %d %d %s %s\n" % (i, i + 1, v1.source, v2.source))
+            if v1.is_event_vector() and v2.is_event_vector():
+                ee_vector = EEVector(tarsqidoc, v1, v2)
+                _debug_vector("EE", ee_vector, '    ')
+                ee_vectors.append(ee_vector)
+            elif v1.is_event_vector() and v2.is_timex_vector():
+                et_vector = ETVector(tarsqidoc, v1, v2)
+                _debug_vector("ET", et_vector, '    ')
+                et_vectors.append(et_vector)
+            elif v1.is_timex_vector() and v2.is_event_vector():
+                et_vector = ETVector(tarsqidoc, v2, v1)
+                _debug_vector("TE", et_vector, '    ')
+                et_vectors.append(et_vector)
+        except UnicodeDecodeError:
+            logger.warn("UnicodeDecodeError when adding vectors")
 
 
 def _get_tag_vectors_for_sentence(tarsqidoc, s):
@@ -167,6 +181,7 @@ def abbreviate(attr):
 class Vector(object):
 
     def __init__(self, tarsqidoc, sentence, source, source_tag, features):
+        self.tarsqidoc = tarsqidoc
         self.source = source
         self.sentence = sentence
         string = tarsqidoc.sourcedoc.text[source.begin:source.end]
@@ -238,10 +253,13 @@ class TimexVector(Vector):
 
 class PairVector(Vector):
 
+    ID = 0
+
     def __init__(self, tarsqidoc, prefix1, vector1, prefix2, vector2):
         """Initialize a pair vector from two object vectors by setting an
         identifier and by adding the features of th eobject vectors."""
         self.tarsqidoc = tarsqidoc
+        self.filename = self._get_filename()
         self.source = (vector1.source, vector2.source)
         self.relType = None
         self.prefix1 = prefix1
@@ -257,14 +275,17 @@ class PairVector(Vector):
                              super(PairVector, self).__str__())
 
     def _set_identifier(self):
+        PairVector.ID += 1
+        self.identifier = "%06d-%s-%s" \
+                          % (PairVector.ID, self.v1.identifier, self.v2.identifier)
+
+    def _get_filename(self):
         if self.tarsqidoc.sourcedoc.filename is not None:
-            fname = os.path.basename(self.tarsqidoc.sourcedoc.filename)
-        else:
-            # file name is not always available, for example when running Tarsqi
-            # in a pipe or running it on a string
-            fname = 'PIPE'
-        self.identifier = "%s-%s-%s" \
-                          % (fname, self.v1.identifier, self.v2.identifier)
+            return os.path.basename(self.tarsqidoc.sourcedoc.filename)
+        # file name is not always available, for example when running Tarsqi
+        # in a pipe or running it on a string
+        # TODO: does this have unintended consequences for classification?
+        return 'PIPE'
 
     def _inherit_object_features(self):
         """Copy the features from the object vectors."""
@@ -391,8 +412,9 @@ def _debug(text):
         print text
 
 
-def _debug_wrapped(text, indent=''):
+def _debug_vector(vector_type, vector, indent=''):
     if DEBUG:
+        text = "%s %s%s" % (vector_type, vector, indent)
         for line in textwrap.wrap(text, 100):
             print "%s%s" % (indent, line)
 

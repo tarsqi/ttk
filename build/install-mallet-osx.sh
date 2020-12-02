@@ -12,16 +12,24 @@ test=true
 archive=http://mallet.cs.umass.edu/dist/mallet-2.0.8.tar.gz
 
 
-if [ ! -d mallet ]; then mkdir mallet 
+if [ ! -d mallet ];
+then
+    mkdir mallet
 fi
 
 cd mallet
 
-if [ $download = "true" ]; then curl -O $archive
+if [ $download = "true" ];
+then
+    curl -O $archive
 fi
 
-if [ $install = "true" ]; then gunzip -c mallet-2.0.8.tar.gz | tar xp
+if [ $install = "true" ];
+then
+    gunzip -c mallet-2.0.8.tar.gz | tar xp
 fi
 
-if [ $test = "true" ]; then mallet-2.0.8/bin/mallet --help 
+if [ $test = "true" ];
+then
+    mallet-2.0.8/bin/mallet --help
 fi

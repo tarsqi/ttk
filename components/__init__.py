@@ -15,6 +15,7 @@ from blinker.wrapper import BlinkerWrapper
 from classifier.wrapper import ClassifierWrapper
 from merging.wrapper import MergerWrapper
 
+
 COMPONENTS = {
     PREPROCESSOR: PreprocessorWrapper,
     TOKENIZER: TokenizerWrapper,
@@ -28,3 +29,19 @@ COMPONENTS = {
     CLASSIFIER: ClassifierWrapper,
     LINK_MERGER: MergerWrapper
 }
+
+
+PREPROCESSOR_COMPONENTS = {TOKENIZER, TAGGER, CHUNKER}
+
+
+def valid_components(components):
+    """Some minimal checks on the pipeline of components. Returns False if one of
+    the components does not exist or if the preprocessor is mentioned along one of
+    its sub components. Returns True otherwise."""
+    if PREPROCESSOR in components:
+        if PREPROCESSOR_COMPONENTS.intersection(components):
+            return False
+    for component in components:
+        if component not in COMPONENTS:
+            return False
+    return True

@@ -109,7 +109,7 @@ class Tokenizer:
         offset, an end offset and a string."""
         (o1, o2, space) = self._slurp(offset, test_space)
         (o3, o4, token) = self._slurp(o2, test_nonspace)
-        return ((o1, o2, space), (o3, o4, token))
+        return (o1, o2, space), (o3, o4, token)
 
     def _slurp(self, offset, test):
         begin = offset
@@ -121,8 +121,8 @@ class Tokenizer:
                 offset += 1
                 end = offset
             else:
-                return (begin, end, self.text[begin:end])
-        return (begin, end, self.text[begin:end])
+                return begin, end, self.text[begin:end]
+        return begin, end, self.text[begin:end]
 
     def _set_lexes(self, ):
         """Set lexes list by flattening self.tokens. Sometimes empty core tokens are
@@ -175,7 +175,7 @@ class Tokenizer:
         if closing_puncts and closing_puncts[0][2] == '.':
             (core_token, closing_puncts) = \
                 self._restore_abbreviation(core_token, closing_puncts)
-        return (opening_puncts, core_token, closing_puncts)
+        return opening_puncts, core_token, closing_puncts
 
     def _restore_abbreviation(self, core_token, closing_puncts):
         """Glue the period back onto the core token if the first closing punctuation
@@ -186,7 +186,7 @@ class Tokenizer:
         if token_is_abbreviation(restored):
             core_token = (core_token[0], core_token[1] + 1, restored)
             closing_puncts.pop(0)
-        return (core_token, closing_puncts)
+        return core_token, closing_puncts
 
 
     def _split_punctuation(self, word):
@@ -230,7 +230,7 @@ class Tokenizer:
         # need to reverse because the closing punctuations were added from the
         # end
         closing_puncts.reverse()
-        return (opening_puncts,  core_token, closing_puncts)
+        return opening_puncts,  core_token, closing_puncts
 
 
     def _split_contractions(self):
@@ -243,16 +243,16 @@ class Tokenizer:
         def split(tok, i):
             return [(tok[0], tok[0]+i, tok[2][:i]), (tok[0]+i, tok[1], tok[2][i:])]
         if "'" not in tok[2]:
-            return (puncts1, [tok], puncts2)
+            return puncts1, [tok], puncts2
         found_neg = contraction_pattern1.search(tok[2])
         if found_neg:
             idx = found_neg.start(2)
-            return (puncts1, split(tok, idx), puncts2)
+            return puncts1, split(tok, idx), puncts2
         found_pos = contraction_pattern2.search(tok[2])
         if found_pos:
             idx = found_pos.start(2) - 1
             return (puncts1, split(tok, idx), puncts2)
-        return (puncts1, [tok], puncts2)
+        return puncts1, [tok], puncts2
 
     def get_tokenized_as_xml(self):
         """Return the tokenized text as an XML string. Crappy way of printing

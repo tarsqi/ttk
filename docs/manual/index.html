@@ -9,7 +9,7 @@
 
 <h1>The TARSQI Toolkit Manual</h1>
 
-<p class="subtitle">Release Notes and Manual for TTK Version 2.1.1. October 2018.
+<p class="subtitle">Release Notes and Manual for TTK Version 2.2.0. December 2018.
 
 <p class="navigation">
 [ <a href="#intro">introduction</a>
@@ -133,6 +133,10 @@ Fido sleeps today.
 &lt;/text>
 &lt;metadata>
   &lt;dct value="20170113"/>
+  &lt;processing_steps>
+  &lt;processing_step ttk_version="2.2.0" git_commit="341ad95" timestamp="20201130-214225"
+                   components="PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"/>
+  &lt;/processing_steps>
 &lt;/metadata>
 &lt;source_tags>
   &lt;text id="1" begin="1" end="21" />
@@ -197,7 +201,7 @@ documentation string in <code>tarsqi</code> (which can be browsed
 at <a href="../code/modules/tarsqi.html">docs/code/modules/tarsqi.html</a>). Here
 we just present the three options you are most likely to use.</p>
 
-<p><code>--source xml|text|ttk|timebank|...</code></p>
+<p><code>--source-format xml|text|ttk|timebank|...</code></p>
 
 <div class="indent">
 
@@ -213,14 +217,15 @@ assume that the entire content of the file is to be parsed. Since the toolkit
 does not try to recognize any tags this type should only be used for real raw
 text. The <code>ttk</code> source type tells the toolkit that the input is in
 the TTK format. Typically the input here would be a file previously processed
-but the toolkit or a file that was converted into the TTK format.</p>
+by the toolkit or a file that was converted into the TTK format.</p>
 
-<p>The toolkit will usually run just fine without the <code>--source</code>
-option. In that case the toolkit will make an educated guess as to whether the
-input is <code>xml</code>, <code>text</code> or <code>ttk</code>. The system can
-be tricked, for example by giving it a file where the beginning really lookes
-like XML, but in those cases an error will usually follow and only then it would
-be prudent to use the <code>--source</code> option after all.</p>
+<p>The toolkit will usually run just fine without
+the <code>--source-format</code> option. In that case the toolkit will make an
+educated guess as to whether the input is <code>xml</code>, <code>text</code>
+or <code>ttk</code>. The system can be tricked, for example by giving it a file
+where the beginning really looks like XML, but in those cases an error will
+usually follow and in those cases it would be prudent to use this option after
+all.</p>
 
 <p>The option should always be used when one of the special formats are
 used. When the input is vanilla text or XML then the toolkit has no good way to
@@ -302,8 +307,9 @@ the <code>config.txt</code> settings file. A pipeline is a comma-separated
 string of component names. Allowed component names are <code>PREPROCESSOR,
 TOKENIZER, TAGGER, CHUNKER, GUTIME, EVITA, SLINKET, S2T, BLINKER,
 CLASSIFIER</code> and
-<code>LINK_MERGER</code>. The order of the components in the pipeline
-specification is significant. Some examples are:</p>
+<code>LINK_MERGER</code>. Using other names raises an error. The order of the
+components in the pipeline specification is significant. Some pipeline examples
+are:</p>
 
 <pre class="example">
 --pipeline PREPROCESSOR,GUTIME,EVITA
@@ -320,7 +326,7 @@ pipeline since you would then run the tokenizer twice and this will cause errors
 later in the processing chain. For the third example, preprocessing, times and
 events are taken for granted and only links are added. In this case the input
 needs to be a ttk file which has the needed information. The fourth example is
-th efull pipeline except that the link merger component is left out, this
+the full pipeline except that the link merger component is left out, this
 is useful for large files since the merger component slows down on large
 file. This is in fact the default pipeline.</p>
 
@@ -328,16 +334,16 @@ file. This is in fact the default pipeline.</p>
 
 
 <p>To end this section here is an example to illustrate the interaction of
-the <code>--source</code> and <code>--pipeline</code> options:</p>
+the <code>--source-format</code> and <code>--pipeline</code> options:</p>
 
 <pre class="example">
-$ python tarsqi.py --source xml --pipeline TOKENIZER test.xml test.tokenized.xml
-$ python tarsqi.py --source ttk --pipeline TAGGER test.tokenized.xml test.tagged.xml
+$ python tarsqi.py --source-format xml --pipeline TOKENIZER test.xml test.tokenized.xml
+$ python tarsqi.py --source-format ttk --pipeline TAGGER test.tokenized.xml test.tagged.xml
 </pre>
 
 <p>Note how the second line uses the ttk source type because output is always in
-the TTK format. You couldof course leave out the <code>--source</code> and let
-the toolkit determine the source from the input files.</p>
+the TTK format. You could leave out the <code>--source-format</code> option and
+let the toolkit determine the source from the input file.</p>
 
 
 <a name="docs"></a>
@@ -498,7 +504,7 @@ HeidelTime).</li>
 
 <h2>8. Copyright and License</h2>
 
-<p>The Tarsqi Toolkit is copyright &copy;2017 of Brandeis University and is
+<p>The Tarsqi Toolkit is copyright &copy;2020 of Brandeis University and is
 distributed under the <a rel="license"
 href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a>.</p>
 
