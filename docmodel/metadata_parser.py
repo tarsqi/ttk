@@ -197,7 +197,7 @@ class MetadataParserDB(MetadataParser):
     specified in the config.txt file. The first use case for this were VA
     documents where the DCT was stored externally. To see this in action run
 
-       $ python tarsqi.py --source=db data/in/va/test.xml out.xml
+       $ python tarsqi.py --source-format=db data/in/va/test.xml out.xml
 
     """
 

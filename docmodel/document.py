@@ -164,7 +164,7 @@ class TarsqiDocument:
             fh = sys.stdout
         else:
             fh = codecs.open(fname, mode='w', encoding='UTF-8')
-        if self.options.source == 'lif':
+        if self.options.target_format == 'lif':
             self.print_all_lif(fh)
         else:
             fh.write("<ttk>\n")

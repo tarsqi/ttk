@@ -7,7 +7,7 @@ is to instantiate the source instance variable, which contains an instance of
 SourceDoc.
 
 What parser is used is defined in main.py, which has a mapping from source types
-(handed in by the --source command line option) to source parsers.
+(handed in by the --source-format command line option) to source parsers.
 
 There are now four parsers:
 

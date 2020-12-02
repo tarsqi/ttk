@@ -1077,7 +1077,7 @@ def _makedir(directory):
 
 def _get_tarsqidoc(infile, source, metadata=True):
     """Return an instance of TarsqiDocument for infile"""
-    opts = [("--source", source), ("--trap-errors", "False")]
+    opts = [("--source-format", source), ("--trap-errors", "False")]
     t = tarsqi.Tarsqi(opts, infile, None)
     t.source_parser.parse_file(t.input, t.tarsqidoc)
     t.metadata_parser.parse(t.tarsqidoc)
@@ -1089,7 +1089,7 @@ def _get_tarsqidoc_from_ecb_file(infile):
     _get_tarsqidoc() for ECB files since those do not allow us to use a source
     parser in the regular way since ECB files are neither of the text type or
     the xml type."""
-    opts = [("--source", "xml"), ("--trap-errors", "False")]
+    opts = [("--source-format", "xml"), ("--trap-errors", "False")]
     t = tarsqi.Tarsqi(opts, infile, None)
     # create an XML string from the ECB file
     with codecs.open(t.input, encoding="utf8") as fh:
