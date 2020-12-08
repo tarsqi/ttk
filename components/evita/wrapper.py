@@ -75,7 +75,7 @@ class EvitaWrapper:
                     if i in events_system:
                         imported += 1
                         break
-            percentage = imported * 100 / len(events_key)
+            percentage = imported * 100 // len(events_key)
             print "\n\nEVENTS TO BE IMPORTED:  %3s" % len(events_key)
             print "FOUND BY SYSTEM:        %3s (%s%%)\n" % (imported, percentage)
 

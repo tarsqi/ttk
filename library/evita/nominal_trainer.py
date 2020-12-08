@@ -15,6 +15,8 @@ instead.
 
 """
 
+from __future__ import division
+
 import os
 import sys
 import re
@@ -144,10 +146,10 @@ if __name__ == '__main__':
         cdictProb = {}        
         for contextForm in cdict.items():
             noCount, yesCount = contextForm[1]
-            probNo = float(noCount + .25)/((nonEventCount) +.5)
-            probYes = float(yesCount + .25)/(eventCount +.5)
+            probNo = (noCount + .25) / ((nonEventCount) +.5)
+            probYes = (yesCount + .25) / (eventCount +.5)
             cdictProb[contextForm[0]] = (probNo, probYes)
-        zeroData = (.25/((nonEventCount) +.5), .25/(eventCount+.5))
+        zeroData = (.25/((nonEventCount) +.5), .25 / (eventCount+.5))
         for value in valueList:
             if value not in cdictProb.keys():
                 cdictProb[value] = zeroData

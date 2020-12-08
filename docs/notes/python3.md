@@ -28,7 +28,9 @@ For now:
     - probably using individual fixers
   -  `pylint --py3k` for more hints on Python3 compatibility.
 
-In the following, each section corresponds to a commit on the `79-python3` branch.
+In the following, each section corresponds to one or more commits on the `79-python3` branch.
+
+
 
 ### 2. Initial syntax changes
 
@@ -105,4 +107,14 @@ No problems.
 <u>Syntax Changes: Others</u>
 
 There was no need to remove the inequality operator `<>` and there were no assignments to True or False. Other syntax changes are done in later steps. Want to find out why.
+
+The changes in this section are in commit [94b2bce5](https://github.com/tarsqi/ttk/commit/94b2bce5e5b68e688d4d385bcb2b022b4f1e7093).
+
+### 2. More preparatory changes
+
+Based on [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html). These are similar to the above in that they allow the code to still run on Python 2.7.
+
+<u>Division of integers</u>
+
+Using // when we really want to have integers as the result, using / in other cases. Sometimes using `from __future__ import division` and removing explicit conversions into floats.
 

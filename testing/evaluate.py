@@ -46,6 +46,8 @@ import os, sys, shutil, copy, getopt, StringIO
 sys.path.insert(0, '..')
 sys.path.insert(0, '.')
 
+from __future__ import division
+
 import tarsqi
 from library.main import LIBRARY
 
@@ -262,14 +264,14 @@ def _retrieve_from_index(identifier, tagtype, event_idx, timex_idx):
 
 def precision(tp, fp):
     try:
-        return float(tp) / (tp + fp)
+        return (tp / (tp + fp)
     except ZeroDivisionError:
         return None
 
 
 def recall(tp, fn):
     try:
-        return float(tp) / (tp + fn)
+        return tp / (tp + fn)
     except ZeroDivisionError:
         return None
 
@@ -430,7 +432,7 @@ class LinkStatistics(object):
 
     def accuracy(self):
         try:
-            return float(self.correct) / (self.correct + self.incorrect)
+            return self.correct / (self.correct + self.incorrect)
         except ZeroDivisionError:
             return None
 

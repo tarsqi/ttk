@@ -4,6 +4,8 @@ Contains a Bayesian disambiguator.
 
 """
 
+from __future__ import division
+
 from library import forms
 from utilities.file import open_pickle_file
 from utilities import logger

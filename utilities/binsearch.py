@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 import os
 from stat import ST_SIZE
@@ -16,7 +15,7 @@ def binarySearchFile(fh, key, sep=' ', cache={}, cacheDepth=-1):
         # if count > 20:
         #    raise "infinite loop"
         lastState = start, end
-        middle = (start + end) / 2
+        middle = (start + end) // 2
         if cache.get(middle):
             offset, line = cache[middle]
         else:
