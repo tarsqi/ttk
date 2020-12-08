@@ -32,7 +32,7 @@ FORM = LIBRARY.timeml.FORM
 VALUE = LIBRARY.timeml.VALUE
 
 
-class Graph:
+class Graph(object):
 
     """Implements the graph object used in the constraint propagation algorithm.
 

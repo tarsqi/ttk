@@ -357,7 +357,7 @@ NUMPY_DETERMINIZATION_CUTOFF = 50
 
 #debugFile = open(os.getcwd()+'/FSAdebugOutput.txt', 'w')   
 
-class FSA:
+class FSA(object):
         def __init__(self, states, alphabet, transitions, initialState, finalStates, arcMetadata=[]):
                 if states == None:
                         states = self.collectStates(transitions, initialState, finalStates)
@@ -1590,7 +1590,7 @@ print FSA_test.compileOP(['a', 'd', '+', 'e', '(', 'b', '|', 'c', ')', '(', 'f',
 print FSA_test.compileOP(['a', 'd', '+', 'e', '(', 'b', '|', 'c', ')', '(', 'f', '*', 'g', '|', 'h', ')', 'i'])
 """
 
-class Sequence:
+class Sequence(object):
 
         def __init__(self, pattern):
 #                print "\nENTERING SEQUENCE............\n"

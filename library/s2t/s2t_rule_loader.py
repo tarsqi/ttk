@@ -12,7 +12,7 @@ re_reltype = re.compile('(.*)=(.*)')
 re_attribute = re.compile('(.*)=(.*)')
 
 
-class S2TRule:
+class S2TRule(object):
 
     """Implements the S2T rule object. An S2T rule consists of an ID
     number and a set of conditions including:

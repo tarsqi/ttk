@@ -32,7 +32,7 @@ class DisambiguationError(LookupError):
     pass
 
 
-class BayesEventRecognizer:
+class BayesEventRecognizer(object):
     """Simple Bayesian disambiguator. The only features used are the pos
     tag and the definiteness of the noun chunk."""
 

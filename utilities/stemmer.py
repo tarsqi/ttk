@@ -12,7 +12,7 @@ from library.forms import STEM_EXCEPTIONS_FILE
 from binsearch import binarySearchFile
 
 
-class Stemmer:
+class Stemmer(object):
 
     def __init__(self):
         self.exceptionsFile = open(STEM_EXCEPTIONS_FILE, 'r')

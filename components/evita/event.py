@@ -19,7 +19,7 @@ MODALITY = LIBRARY.timeml.MODALITY
 POLARITY = LIBRARY.timeml.POLARITY
 
 
-class Event:
+class Event(object):
 
     """Instances of this class are created by Evita when it finds a new
     event. Instances have a short life because all that they are used for is to

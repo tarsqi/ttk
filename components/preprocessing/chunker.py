@@ -99,7 +99,7 @@ def chunk_sentences(sentences, terms=None):
 
 # CLASSES
 
-class Sentence:
+class Sentence(object):
 
     """The work horse for the chunker."""
 

@@ -148,7 +148,7 @@ class Slinket (TarsqiComponent):
         self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, attrs)
 
 
-class EventExpression:
+class EventExpression(object):
 
     """Class that wraps an event in a way that's convenient for Slinket.
 

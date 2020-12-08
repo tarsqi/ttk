@@ -181,7 +181,7 @@ VERB_FRAME_STRINGS = (
 #
 # Domain classes
 #
-class Word:
+class Word(object):
     """An index into the database.
     
     Each word has one or more Senses, which can be accessed via
@@ -319,7 +319,7 @@ class Word:
         return self.getSenses()[i:j]
 
 
-class Synset:
+class Synset(object):
     """A set of synonyms that share a common meaning.
     
     Each synonym contains one or more Senses, which represent a
@@ -507,7 +507,7 @@ class Synset:
         return self.getSenses()[i:j]
 
 
-class Sense:
+class Sense(object):
     """A specific meaning of a specific word -- the intersection of a Word and a Synset.
     
     Fields
@@ -656,7 +656,7 @@ class Sense:
         return _compareInstances(self, other, ('synset',)) or cmp(senseIndex(self), senseIndex(other))
 
 
-class Pointer:
+class Pointer(object):
     """ A typed directional relationship between Senses or Synsets.
     
     Fields
@@ -746,7 +746,7 @@ class Pointer:
 # Loading the lexnames
 # Klaus Ries <ries@cs.cmu.edu>
 
-class Lexname:
+class Lexname(object):
    dict = {}
    lexnames = []
    
@@ -769,7 +769,7 @@ setupLexnames()
 #
 # Dictionary
 #
-class Dictionary:
+class Dictionary(object):
     
     """A Dictionary contains all the Words in a given part of speech.
     This module defines four dictionaries, bound to N, V, ADJ, and ADV.
@@ -934,7 +934,7 @@ class Dictionary:
         print "done."
 
 
-class _IndexFile:
+class _IndexFile(object):
     """An _IndexFile is an implementation class that presents a
     Sequence and Dictionary interface to a sorted index file."""
     
@@ -1230,7 +1230,7 @@ def _partition(sequence, size, count):
 # The LRUCache approximates a weak dict in the case where temporal
 # locality is good.
 
-class _LRUCache:
+class _LRUCache(object):
     """ A cache of values such that least recently used element is
     flushed when the cache fills.
     
@@ -1301,7 +1301,7 @@ class _LRUCache:
         return value
 
 
-class _NullCache:
+class _NullCache(object):
     """A NullCache implements the Cache interface (the interface that
     LRUCache implements), but doesn't store any values."""
     

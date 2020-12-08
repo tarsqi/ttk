@@ -353,7 +353,7 @@ NUMPY_DETERMINIZATION_CUTOFF = 50
 
 #debugFile = open(os.getcwd()+'/FSAdebugOutput.txt', 'w')   
 
-class FSA:
+class FSA(object):
         def __init__(self, states, alphabet, transitions, initialState, finalStates, arcMetadata=[]):
                 if states == None:
                         states = self.collectStates(transitions, initialState, finalStates)
@@ -1324,12 +1324,11 @@ def labelMatches(label, input):
                 #print "LABEL in FSA (1): "+str(label)
                 #log("\tMATCH (0.1), STRING:"+str(input))
                 #print "\t\tINPUT class name: "+str(input.__class__.__name__)
-                if (type(input) is InstanceType and
-                    input.__class__.__name__ in ['Constituent', 'Chunk', 'NounChunk',
-                                                 'VerbChunk', 'Token', 'AdjectiveToken',
-                                                 'EventTag', 'TimexTag']):
+                if getattr(input, '__class__').__name__ in [
+                                'Constituent', 'Chunk', 'NounChunk', 'VerbChunk',
+                                'Token', 'AdjectiveToken', 'EventTag', 'TimexTag']:
                         """Specific for Evita"""
-                        #print ">>> input is InstanceType and class is in Constituent...."
+                        #print ">>> class is in Constituent...."
                         #print "EVITA: LABEL in FSA (2): "+str(label)
                         #print ">>> input is ", input
                         #logger.out('forwarding to input.matchConstituent')
@@ -1605,7 +1604,7 @@ print FSA_test.compileOP(['a', 'd', '+', 'e', '(', 'b', '|', 'c', ')', '(', 'f',
 print FSA_test.compileOP(['a', 'd', '+', 'e', '(', 'b', '|', 'c', ')', '(', 'f', '*', 'g', '|', 'h', ')', 'i'])
 """
 
-class Sequence:
+class Sequence(object):
 
         def __init__(self, pattern):
 #                print "\nENTERING SEQUENCE............\n"

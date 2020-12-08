@@ -33,7 +33,7 @@ RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 TTK_ROOT = os.environ['TTK_ROOT']
 
 
-class TarsqiDocument:
+class TarsqiDocument(object):
 
     """An instance of TarsqiDocument should contain all information that may be
     needed by the wrappers to do their work. It includes the source, metadata,
@@ -240,7 +240,7 @@ class TarsqiDocument:
         return sentences
 
 
-class SourceDoc:
+class SourceDoc(object):
 
     """A SourceDoc is created by a SourceParser and contains source data and
     annotations of those data. The source data are put in the text variable as a
@@ -330,7 +330,7 @@ class SourceDoc:
         fh.write(self.text.encode('utf-8'))
 
 
-class TagRepository:
+class TagRepository(object):
 
     """Class that provides access to the tags for a document. An instance of this
     class is used for the DocSource instance, other instances will be used for
@@ -531,7 +531,7 @@ class TagRepository:
             print "   %d " % offset, tagdict
 
 
-class Tag:
+class Tag(object):
 
     """A Tag has a name, a begin offset, an end offset and a dictionary of
     attributes. All arguments are handed in by the code that creates the Tag

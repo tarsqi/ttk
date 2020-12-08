@@ -54,7 +54,7 @@ class Slink2Tlink (TarsqiComponent):
             self.doctree.tarsqidoc.tags.add_tag(tagname, -1, -1, tlink.attrs)
 
 
-class Slink:
+class Slink(object):
 
     """Implements the Slink object. An Slink object consists of the attributes
     of the SLINK (relType, eventInstanceID, and subordinatedEventInstance) and
@@ -127,7 +127,7 @@ class Slink:
         self.doctree.addLink(tlinkAttrs, LIBRARY.timeml.TLINK)
 
 
-class Alink:
+class Alink(object):
 
     # TODO: needs complete overhaul and needs to be done in another component
 

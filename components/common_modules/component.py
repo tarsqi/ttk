@@ -8,7 +8,7 @@ Base class for Tarsqi components implemented in Python.
 from utilities import logger
 
 
-class TarsqiComponent:
+class TarsqiComponent(object):
 
     """Abstract class for the python components."""
     

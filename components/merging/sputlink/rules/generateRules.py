@@ -55,7 +55,7 @@ def initializeGlobalData():
     POINT_AXIOMS.add(Axiom('=','=','='))
 
 
-class Environment:
+class Environment(object):
 
     def __init__(self,id=0):
         self.id = id
@@ -192,7 +192,7 @@ class Environment:
         fh.write("  %s\n" % self.asPLinkString())
 
 
-class EnvironmentFactory:
+class EnvironmentFactory(object):
 
     def allRelationCombinations(self):
         rels = []

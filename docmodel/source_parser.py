@@ -44,7 +44,7 @@ from docmodel.document import SourceDoc, ProcessingStep
 from utilities.lif import Container, LIF
 
 
-class SourceParser:
+class SourceParser(object):
 
     DEBUG = False
 

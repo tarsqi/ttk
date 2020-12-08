@@ -17,7 +17,7 @@ NORMALIZED_RELATIONS = {rel: True for rel in NORMALIZED_RELS}
 SIMPLE_RELATIONS = {rel: True for rel in SIMPLE_RELS}
 
 
-class Node:
+class Node(object):
 
     """Implements the node objects of the graph.
 
@@ -70,7 +70,7 @@ class Node:
         print "  o [%s]" % (' '.join(e_out))
 
 
-class Edge:
+class Edge(object):
 
     """Implements the edges of the graph.
 
@@ -129,7 +129,7 @@ class Edge:
         return self.constraint.source not in ('user', 'user-inverted')
 
 
-class Constraint:
+class Constraint(object):
 
     """An object representing the constraint on an edge.
 

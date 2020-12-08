@@ -57,7 +57,7 @@ def debug(text, newline=True):
         else: print text,
 
 
-class ChunkFeatures:
+class ChunkFeatures(object):
 
     """The subclasses of this class are used to add grammatical features to a
     NounChunk, VerbChunk or AdjectiveToken. It lives in the features variable
@@ -371,7 +371,7 @@ class VChunkFeatures(ChunkFeatures):
             print self
 
 
-class VChunkFeaturesList:
+class VChunkFeaturesList(object):
 
     """This class is used to create a list of VChunkFeatures instances. What
     it does is (1) collecting information from a VerbChunk or a list of Tokens,

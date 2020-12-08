@@ -28,7 +28,8 @@ Each entry in the Predicate Dictionaries has the following structure:
 """
 
 
-from library.timeMLspec import INIT, CULM, TERM, CONT, REINIT
+#from library.timeMLspec import INIT, CULM, TERM, CONT, REINIT
+from timeMLspec import INIT, CULM, TERM, CONT, REINIT
 
 # FORWARD patterns:
 

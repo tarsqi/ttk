@@ -14,6 +14,8 @@ dictionaries.
 from library import forms
 
 #from library.timeMLspec import *
+from timeMLspec import *
+
 from utilities.FSA import compileOP
 
 print "Loading and compiling patterns"

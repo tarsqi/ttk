@@ -126,7 +126,7 @@ logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'),
                          level=3)
 
 
-class Tarsqi:
+class Tarsqi(object):
 
     """Main Tarsqi class that drives all processing.
 

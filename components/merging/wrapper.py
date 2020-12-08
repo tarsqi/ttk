@@ -37,7 +37,7 @@ RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
-class MergerWrapper:
+class MergerWrapper(object):
 
     """Wraps the merging code, including Sputlink's temporal closure code."""
 

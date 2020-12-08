@@ -9,7 +9,7 @@ from components.s2t.main import Slink2Tlink
 from components.common_modules import tree
 
 
-class S2tWrapper:
+class S2tWrapper(object):
 
     """Wraps the S2T component."""
 

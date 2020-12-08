@@ -1,6 +1,6 @@
 
 
-class ObjectList:
+class ObjectList(object):
     """Class that provides interface for global PointLink and Link data
     bases. Just a wrapper around a list. Assumes that all elements are 
     temporal objects because it uses isTrivial to skip some elements
@@ -28,7 +28,7 @@ class ObjectList:
 
 
 
-class TemporalObject:
+class TemporalObject(object):
     """Abstract class that is a super class of all link and node classes. Only
     responsible for providing unique IDs."""
     

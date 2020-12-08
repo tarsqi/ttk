@@ -60,7 +60,7 @@ logger = None
 STDOUT_PRINTING = True
 
 
-class Logger:
+class Logger(object):
 
     """The Logger class, has no other function than to store the logging
     level and the log file."""

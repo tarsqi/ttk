@@ -5,7 +5,7 @@ TTK_ROOT = os.environ['TTK_ROOT']
 DIR_DICTS = os.path.join(TTK_ROOT, 'library', 'slinket', 'dictionaries')
 
 
-class SlinketDicts:
+class SlinketDicts(object):
 
     def __init__(self):
         self.slinkVerbsDict = None

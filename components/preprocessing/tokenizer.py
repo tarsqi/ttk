@@ -64,7 +64,7 @@ def token_is_abbreviation(token):
     return token in dict_abbrevs or abbrev_pattern.search(token)
 
 
-class Tokenizer:
+class Tokenizer(object):
 
     """Class to create lex tags and s tags given a text string that is not
     modified. The lexes and sentences are gathered in the variables with the
@@ -344,7 +344,7 @@ class Tokenizer:
             self.closing_sents[s[1]] = s
 
 
-class TokenizedText:
+class TokenizedText(object):
 
     """This class takes a list of sentences of the form (begin_offset, end_offset)
     and a list of tokens of the form (begin_offset, end_offset, text), and
@@ -416,7 +416,7 @@ class TokenizedText:
         print "</TOKENS>"
 
 
-class TokenizedSentence:
+class TokenizedSentence(object):
 
     def __init__(self, b, e):
         self.begin = b
@@ -445,7 +445,7 @@ class TokenizedSentence:
         print '</s>'
 
 
-class TokenizedLex:
+class TokenizedLex(object):
 
     def __init__(self, b, e, text):
         self.begin = b

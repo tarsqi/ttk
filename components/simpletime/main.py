@@ -56,12 +56,12 @@ def load_rules():
     return rules
 
 
-class Date:
+class Date(object):
 
     name = 'Date'
 
 
-class TimexElement:
+class TimexElement(object):
 
     def is_word_list(self):
         return False
@@ -110,7 +110,7 @@ class RegularExpression(TimexElement):
         print "%s = %s" % (self.name, self.regexp)
 
 
-class CombinationRule:
+class CombinationRule(object):
 
     def __init__(self, lhs, rhs):
         self.lhs = lhs

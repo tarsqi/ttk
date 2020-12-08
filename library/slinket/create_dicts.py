@@ -6,7 +6,17 @@ are saved in the current directory.
 
 The pickle files should be moved to the dictionaries directory.
 
+TODO:
+
+The code in slinkPredicates.py and alinkPredicates.py depended on the old way of
+importing TimeML specifications and was not updated to usie the TarsqiLibrary in
+library.main. For now I used the hack of adding an old timeMLspec.py file to
+this directory and use that instead.
+
 """
+
+
+
 
 import os, sys, cPickle
 

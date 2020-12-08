@@ -38,7 +38,7 @@ def compare_id(a, b):
         return 1
 
 
-class CompositionTable:
+class CompositionTable(object):
 
     """Implements the 28 by 28 composition table. Takes care of loading
     the table from file and retrieving compositions from the table."""

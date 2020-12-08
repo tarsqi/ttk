@@ -25,7 +25,7 @@ RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
-class ClassifierWrapper:
+class ClassifierWrapper(object):
 
     """Wraps the maxent link classifier."""
 

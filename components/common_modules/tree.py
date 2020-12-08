@@ -304,7 +304,7 @@ class NodeInsertionError(Exception):
     is no place where it can go."""
 
 
-class TarsqiTree:
+class TarsqiTree(object):
 
     """Implements the shallow tree that is input to some of the Tarsqi components.
 

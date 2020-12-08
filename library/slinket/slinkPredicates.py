@@ -27,7 +27,8 @@ Each entry in the Predicate Dictionaries has the following structure:
 
 """
 
-from library.timeMLspec import *
+#from library.timeMLspec import *
+from timeMLspec import *
 
 # FORWARD patterns:
 from slinketPatterns import THAT_clause_that, THAT_clause_NOT_that, THAT_clausePAST_that, THAT_clausePERFECTIVE_NEG_that, THAT_clausePAST_NOT_that, THAT_clausePERFECTIVE_NEG_NOT_that, THAT_clause_that_QUOTES, THAT_clause_NOT_that_QUOTES, THAT_clause_N_that_N_report, THAT_clause_that_NOT_report, THAT_clause_SIMPLE, THAT_clause_NOT_tensed, THAT_clause_if

@@ -32,7 +32,7 @@ TIMEX = LIBRARY.timeml.TIMEX
 TID = LIBRARY.timeml.TID
 
 
-class ConstraintPropagator:
+class ConstraintPropagator(object):
 
     """Main SputLink class. Instance variables:
 

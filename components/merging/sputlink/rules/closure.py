@@ -13,7 +13,7 @@ class Axiom(TemporalObject):
         return "<%s %s %s>" % (self.inRel,self.outRel,self.resultRel)
 
 
-class Closure:
+class Closure(object):
 
     def __init__(self,environment,closureType):
         """Initialize a closure object, there is a separate closure object for each graph

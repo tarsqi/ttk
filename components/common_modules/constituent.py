@@ -5,7 +5,7 @@ from utilities import logger
 from library.main import LIBRARY
 
 
-class Constituent:
+class Constituent(object):
 
     """An abstract class that contains some methods that are identical for Chunks
     and Tokens plus a couple of default methods.

@@ -18,7 +18,7 @@ re_rule_header = re.compile('ruleNum=(\d+)-(\d+)')
 re_attribute = re.compile('(.*)=(.*)')
 
 
-class BlinkerRuleDictionary:
+class BlinkerRuleDictionary(object):
 
     """Convenience class to store the Blinker rules. Doesn't do a
     lot more than that at this point."""
@@ -48,7 +48,7 @@ class BlinkerRuleDictionary:
         
                     
     
-class BlinkerRule:
+class BlinkerRule(object):
 
     """Implements the Blinker rule object."""
     

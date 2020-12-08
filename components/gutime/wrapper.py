@@ -45,7 +45,7 @@ USE_TMP_FILES = True
 DEBUG = False
 
 
-class GUTimeWrapper:
+class GUTimeWrapper(object):
 
     """Wrapper for GUTime."""
 

@@ -139,7 +139,7 @@ class TimexTag(Tag):
             dtr.pretty_print(indent+2)
 
 
-class LinkTag():
+class LinkTag(object):
 
     """Abstract class for all TimeML link tags. LinkTags are not constituents
     since they are never inserted in the hierarchical structure of a TarsqiTree,

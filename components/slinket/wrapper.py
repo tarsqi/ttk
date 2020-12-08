@@ -10,7 +10,8 @@ from components.common_modules import tree
 from utilities import logger
 
 
-class SlinketWrapper:
+class SlinketWrapper(object):
+
     """Wrapper for Slinket."""
 
     def __init__(self, tarsqi_document):

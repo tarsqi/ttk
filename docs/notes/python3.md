@@ -1,9 +1,9 @@
 
 # Porting to Python 3
 
-This document has some notes on the effort to get a Python 3 version of TTK. Originally, the goal was to get a few steps along the way without any impact to TTK users, that is, no extra installations, not even something as simple as `pip install future` or `pip install builtins`. The goal was also to eventually change the code so that it supports both Python 2.7 and Python 3.5 and up.
+This document has notes on the effort to get a Python 3 version of TTK. Originally, the goal was to get a few steps along the way without any impact to TTK users, that is, no extra installations, not even something as simple as `pip install future` or `pip install builtins`. The goal was also to eventually change the code so that it supports both Python 2.7 and Python 3.5 and up.
 
-This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0. Period. Probably version 3.6. This might require extra installation, fine. And version 2.7 will not be supported anymore apart from minimal bug fixes on version 2.2.0.
+This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0. Period. Probably version 3.6. This might require extra installation, fine. And version 2.7 will not be supported anymore apart from now on expcept perhaps for requested bug fixes on version 2.2.0.
 
 
 
@@ -116,5 +116,71 @@ Based on [http://python3porting.com/preparing.html](http://python3porting.com/pr
 
 <u>Division of integers</u>
 
+See commit [047d9c28](https://github.com/tarsqi/ttk/commit/047d9c2850b5589e05641e182f69704f8787bb09).
+
 Using // when we really want to have integers as the result, using / in other cases. Sometimes using `from __future__ import division` and removing explicit conversions into floats.
 
+<u>Using new style classes</u>
+
+Doing this all manually, but used the following code to find the classes. 
+
+```python
+import os
+
+def check_classes(fname):
+    with open(fname) as fh:
+        for line in fh:
+            line = line.strip()
+            if line.startswith('class ') and line.endswith(':'):
+                if is_old_class(line):
+                    print(fname, '>>>', line)
+                if has_muliple_parents(line):
+                    print(fname, '===', line)
+
+def is_old_class(line):
+    return '(' not in line or line.endswith('():')
+
+def has_muliple_parents(line):
+    return ',' in line
+
+if __name__ == '__main__':
+    for root, dirs, files in os.walk(".", topdown=False):
+        for name in files:
+            if name.endswith('.py'):
+                check_classes(os.path.join(root, name))
+```
+
+Luckily there was no mulitple inheritance anywhere so I did not need to worry about the MRO. The only thing that may need some time is to figure out how to do the FSA code since allegedly its error handling depends on old style classes. Well, it doesn't, it is just that there was a part in the code that relied on things like Constituent being of type types.InstanceType:
+
+```python
+if (type(input) is InstanceType and
+    input.__class__.__name__ in ['Constituent', 'Chunk', 'NounChunk',
+                                 'VerbChunk', 'Token', 'AdjectiveToken',
+	                               'EventTag', 'TimexTag']):
+```
+
+This was replaced with
+
+```python
+if getattr(input, '__class__').__name__ in [
+    'Constituent', 'Chunk', 'NounChunk', 'VerbChunk',
+    'Token', 'AdjectiveToken', 'EventTag', 'TimexTag']:
+```
+
+There are issues however with raising errors in `FSA.py`, they will need to be dealt with in a later step.
+
+More seriously, when `FSA.FSA` and `FSA.Sequence` are made new style classes, code starts crashing on loading pickle files. It turned out that we needed to re compile Evita and Slinket patterns:
+
+```
+$ cd library/evita
+$ python2 compile_patterns.py
+$ cp *.pickle patterns
+```
+
+```
+$ cd library/slinket
+$ python2 create_dicts.py
+$ cp *.pickle dictionaries
+```
+
+After this it all worked, but see the TODO comment in `create_dicts.py` which elaborates a bit on the ugly hack I used.

@@ -17,7 +17,7 @@ EVALUATE_EVENT_IMPORT = False
 EVENT = LIBRARY.timeml.EVENT
 
 
-class EvitaWrapper:
+class EvitaWrapper(object):
 
     """Wrapper for Evita."""
 

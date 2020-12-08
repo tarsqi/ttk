@@ -48,7 +48,7 @@ POS_MAPPINGS = { 'SENT': '.', 'NP': 'NNP', 'IN/that': 'IN' }
 treetagger = None
 
 
-class TagId():
+class TagId(object):
 
     """Class to provide fresh identifiers for lex, ng, vg and s tags."""
 
