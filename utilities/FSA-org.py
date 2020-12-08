@@ -836,7 +836,7 @@ class FSA:
                         localTransitions = filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions)
                         if localTransitions:
                                 #debugFile.write( "\n..............determinzed option 2.1")
-                                localLabels = map(lambda(_,__,label):label, localTransitions)  #R: added an underscore
+                                localLabels = map(lambda _____label:_____label[2], localTransitions)  #R: added an underscore
                                 #debugFile.write( "\n..............determinzed option 2.1.1")
                                 labelMap = constructLabelMap(localLabels, self.alphabet)
                                 #debugFile.write( "\n..............determinzed option 2.1.2")
@@ -975,7 +975,7 @@ class FSA:
                 output = []
                 output.append('%s {' % (self.__class__.__name__,))
                 output.append('\tname = %s;' % (self.fsaname,))
-                output.append('\tinitialState = ' + `self.initialState` + ';')
+                output.append('\tinitialState = ' + repr(self.initialState) + ';')
                 if self.finalStates:
                         output.append('\tfinalStates = ' + string.join(map(str, self.finalStates), ', ') + ';')
                 transitions = list(self.transitions)
@@ -1167,7 +1167,7 @@ def option(fsa):
 def reverse(fsa):
         states, alpha, transitions, initial, finals = fsa.tuple()
         newInitial = fsa.nextAvailableState()
-        return fsa.create(states + [newInitial], alpha, map(lambda (s0, s1, l):(s1, s0, l), transitions) + map(lambda s1, s0=newInitial:(s0, s1, EPSILON), finals), [initial])
+        return fsa.create(states + [newInitial], alpha, map(lambda s0_s1_l:(s0_s1_l[1], s0_s1_l[0], s0_s1_l[2]), transitions) + map(lambda s1, s0=newInitial:(s0, s1, EPSILON), finals), [initial])
 
 def union(*args):
         initial = 1
@@ -1212,7 +1212,7 @@ def completion(fsa):
         transitions = transitions[:]
         sinkState = fsa.nextAvailableState()
         for state in states:
-                labels = map(lambda (_, __, label):label, fsa.transitionsFrom(state)) #added underscore insecond argument
+                labels = map(lambda _____label1:_____label1[2], fsa.transitionsFrom(state)) #added underscore insecond argument
                 for label in complementLabelSet(labels, alphabet):
                         transitions.append((state, sinkState, label))  #added parenthesis pair 
         if alphabet:
@@ -1429,7 +1429,7 @@ TRACE_CONSTRUCT_LABEL_MAP = 0
 
 def consolidateTransitions(transitions):
         result = []
-        for s0, s1 in removeDuplicates(map(lambda (s0, s1, _):(s0,s1), transitions)):
+        for s0, s1 in removeDuplicates(map(lambda s0_s1__:(s0_s1__[0],s0_s1__[1]), transitions)):
                 labels = []
                 for ss0, ss1, label in transitions:
                         if ss0 == s0 and ss1 == s1:
@@ -1541,12 +1541,12 @@ def singleton(symbol, alphabet=None, arcMetadata=None):
         fsa = FSA([0,1], alphabet, [(0, 1, symbol)], 0, [1])
         if arcMetadata:
                 fsa.setArcMetadataFor((0, 1, symbol), arcMetadata)
-        fsa.label = `symbol`
+        fsa.label = repr(symbol)
         return fsa
 
 def sequence(sequence, alphabet=None):
         fsa = reduce(concatenation, map(lambda label, alphabet=alphabet:singleton(label, alphabet), sequence), EMPTY_STRING_FSA)
-        fsa.label = `sequence`
+        fsa.label = repr(sequence)
         return fsa
 
 
@@ -1890,7 +1890,7 @@ def compileRE(s, **options):
                 s = string.replace(s, ' ', '')
         fsa, index = compileREExpr(s + ')', 0, options)
         if index < len(s):
-                raise 'extra ' + `')'`
+                raise 'extra ' + repr(')')
         fsa.label = str(s)
         return fsa.minimized()
 
