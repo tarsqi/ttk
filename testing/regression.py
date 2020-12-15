@@ -3,24 +3,25 @@
 Regression test for the Tarsqi components. Currently only for Evita and within
 evita only loads some verbal event cases.
 
-Usage:
+USAGE, this needs to be run from the parent directory with the -m option:
 
-$ python regression.py --evita
+$ python -m testing.regression --evita
 
    Runs all available Evita tests and stores the results in directories
    results/evita-XX where the XX denotes a particular Evita test. Files in the
    results directories are timestamped.
 
-$ python regression.py --report
+$ python -m testing.regression --report
 
-   Generate HTML reports of all available tests.
+   Generate HTML reports of all available tests. The reports are written to
+   results/html.
 
-$ python regression.py --purge TEST_CASE TIMESTAMP
+$ python -m testing.regression --purge TEST_CASE TIMESTAMP
 
    Purge the resuts data for a particular test case at a particular timestamp
    and update the report. An example test case would be evita-vg.
 
-$ python regression.py --create-event-vg-cases
+$ python -m testing.regression --create-event-vg-cases
 
    Creates test cases from cases/input/timebank-events-vg.txt and puts them in
    cases/cases-evita-vg.tab. This needs to be run only once.
@@ -41,10 +42,11 @@ indicate whether a tag was found at the indicated offsets. Results are + or -.
 
 
 from __future__ import absolute_import
+
 import os, sys, getopt, time, glob
 
-from . import path
 import tarsqi
+
 
 def load_cases(fname):
     """return a list of all test cases in fname."""

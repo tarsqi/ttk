@@ -9,6 +9,13 @@ This code was written because pydoc breaks on some of the tarsqi modules, most
 notably those that import the treetagger.
 
 
+USAGE:
+
+Run this from the parent directory with the -m option
+
+$ python -m utilities.make_documentation
+
+
 TODO:
 
 - the code does not deal with class methods, see for example TagId in
@@ -18,6 +25,8 @@ TODO:
   module components.preprocessing.wrapper, adding a couple of module-level
   functions that are not in the code, but are imported functions. This has
   seized to be the case for that module, but it is not clear why.
+
+- Check whether pydoc still chokes in tarsqi code
 
 """
 
@@ -40,7 +49,7 @@ WRITE_FUNCTION_SOURCES = False
 PRINT_PRIVATE_FUNCTIONS = True
 
 # directory where the documentation is written
-DOCUMENTATION_DIR = os.path.join('..', 'docs', 'code')
+DOCUMENTATION_DIR = os.path.join('docs', 'code')
 
 
 javascript_code = """<script language="JavaScript" type="text/JavaScript">

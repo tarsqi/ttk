@@ -200,21 +200,11 @@ This made many changes, importing from future and changing other imports. One we
 
 There are no occurrences of "import *" in functions and no import cycles that I am aware of.
 
+See commit [038ec101](https://github.com/tarsqi/ttk/commit/038ec101a197840f92ba492a064a7d452b0ed501).
 
-
-```
-$ python regression.py --evita
-Traceback (most recent call last):
-  File "regression.py", line 46, in <module>
-    from . import path
-ValueError: Attempted relative import in non-package
-```
-
-No idea what is going on here because there is an init file and the directory should be considered a package. Okay, got it, see [stackoverflow.com/questions/11536764](https://stackoverflow.com/questions/11536764/how-to-fix-attempted-relative-import-in-non-package-even-with-init-py) and [PEP 338](https://www.python.org/dev/peps/pep-0338/). When you run the regressions script it is the main script and then `__name__` is set to `__main__` and all the imports go awry.
-
-Could not figure out exactly how to use `__package__` to deal with this, but you can do the following from the parent directory:
+After this I made some changes to streamline some of the utilities and testing scripts, including removing the annoying *path* module and updating the documentation on running the scripts. Previsously, scripts like `testing/run_tests.py` ran from the directory they are in and they relied on separate scrappy module to manipulate the path. That started to fail after the import updates so I removed the path cludge and changed the documentation to reflect the new way of calling the scripts from the parent directory: 
 
 ```
-$ python -m testing.regression --evita
+$ python -m testing.run_tests
 ```
 

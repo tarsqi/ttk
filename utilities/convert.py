@@ -1,10 +1,11 @@
 """convert.py
 
-Some format conversion utilities.
+Some format conversion utilities. Run all commands below from the parent
+directory using the -m option.
 
 1. Convert LDC TimeBank into a modern TimeBank in the TTK format.
 
-   $ python convert.py --timebank2ttk TIMEBANK_DIR TTK_DIR
+   $ python -m utilities.convert --timebank2ttk TIMEBANK_DIR TTK_DIR
 
    Converts TimeBank 1.2 as released by LDC into a version without makeinstance
    tags using the TTK format. This should be run on the data/extra files in the
@@ -13,7 +14,7 @@ Some format conversion utilities.
 
 2. Convert Thyme format into TTK.
 
-   $ python convert.py --thyme2ttk THYME_TEXT_DIR THYME_ANNO_DIR TTK_DIR
+   $ python -m utilities.convert --thyme2ttk THYME_TEXT_DIR THYME_ANNO_DIR TTK_DIR
 
    Note that in the Thyme corpus we have annotation directories like
    AnnotationData/coloncancer/Dev, whereas in the text directories we find
@@ -22,16 +23,16 @@ Some format conversion utilities.
 
 3. Convert the TTK format into HTML.
 
-   $ python convert.py --ttk2html TTK_DIR HTML_DIR
-   $ python convert.py --ttk2html --show-links TTK_DIR HTML_DIR
+   $ python -m utilities.convert --ttk2html TTK_DIR HTML_DIR
+   $ python -m utilities.convert --ttk2html --show-links TTK_DIR HTML_DIR
 
    Converts TTK files in TTK_DIR into HTML files in HTML_DIR, if --show-links is
    used links are shown in addition to the timexes and events.
 
 4. Convert Knowtator format into TTK.
 
-   $ python convert.py --knowtator2ttk KNOWTATOR_DIR TTK_DIR
-   $ python convert.py --knowtator2ttk --tarsqi KNOWTATOR_DIR TTK_DIR
+   $ python -m utilities.convert --knowtator2ttk KNOWTATOR_DIR TTK_DIR
+   $ python -m utilities.convert --knowtator2ttk --tarsqi KNOWTATOR_DIR TTK_DIR
 
    This is not a general conversion from any Knowtator output, it assumes that
    the input annotations are all events, timexes and tlinks. If the --tarsqi
@@ -40,20 +41,20 @@ Some format conversion utilities.
    considered Tarsqi results), using the --tarsqi option can be useful for
    evaluation.
 
-   $ python convert.py --knowtator2ttk --tarsqi TEXT_FILE TTK_FILE
+   $ python -m utilities.convert --knowtator2ttk --tarsqi TEXT_FILE TTK_FILE
 
    Version for processing a single file. You only supply the text file, the code
    assumes that there is a file TEXT_FILE.knowtator.xml with the annotations.
 
 5. Convert TTK into Knowtator format.
 
-   $ python convert.py --ttk2knowtator TTK_FILE TEXT_FILE ANNO_FILE
+   $ python -m utilities.convert --ttk2knowtator TTK_FILE TEXT_FILE ANNO_FILE
 
    IN PROGRESS.
 
 6. Convert from ECB into TTK
 
-   $ python convert.py --ecb2ttk ECB_DIR OUT_DIR
+   $ python -m utilities.convert --ecb2ttk ECB_DIR OUT_DIR
 
    THE ECB_DIR directory should be the top-level directory of the ECB
    distribution (which has a README file and a data directory which includes
@@ -74,7 +75,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os, sys, getopt, codecs, time, glob
 from xml.dom import minidom, Node
 
-import path
 import tarsqi
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
