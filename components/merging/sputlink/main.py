@@ -8,6 +8,7 @@ from .mappings import translate_timeml_relation, invert_interval_relation
 from .utils import CompositionTable
 from .utils import html_graph_prefix
 from library.main import LIBRARY
+from io import open
 
 DEBUG = False
 DEBUG = True

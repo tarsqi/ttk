@@ -18,6 +18,7 @@ import sys
 from types import UnicodeType, IntType, StringType, NoneType
 import xml.parsers.expat
 from xml.sax.saxutils import escape, quoteattr
+from io import open
 
 
 # variable used for assigning unique IDs to XmlDocElements

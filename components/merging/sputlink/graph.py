@@ -19,6 +19,7 @@ from .mappings import invert_interval_relation
 from .mappings import abbreviate_convex_relation
 from utilities import logger
 from library.main import LIBRARY
+from io import open
 
 DEBUG = True
 DEBUG = False

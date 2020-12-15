@@ -12,6 +12,7 @@ settings can be accessed.
 
 from __future__ import absolute_import
 import os
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 

@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 import re
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
@@ -109,7 +110,7 @@ def read_syntactic_rules(rule_file):
             if val[0] != '(':
                 val = [val]
             else:
-                val = str.split(val[1:-1], '|')
+                val = val[1:-1].split('|')
             current_rule.set_attribute(att, val)
             continue
 

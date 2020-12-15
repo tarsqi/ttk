@@ -20,6 +20,7 @@ this directory and use that instead.
 
 from __future__ import absolute_import
 import os, sys, cPickle
+from io import open
 
 sys.path.append('../..')
 

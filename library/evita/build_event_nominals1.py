@@ -23,6 +23,7 @@ import sys
 import forms
 import anydbm
 from wntools import *
+from io import open
 
 DEBUG = False
 

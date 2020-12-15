@@ -20,6 +20,7 @@ from docmodel.model import DocumentModel
 from docmodel.xml_parser import Parser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, CLASSIFIER, LINK_MERGER
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 

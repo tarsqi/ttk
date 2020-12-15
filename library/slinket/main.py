@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 import cPickle
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 DIR_DICTS = os.path.join(TTK_ROOT, 'library', 'slinket', 'dictionaries')

@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from library import forms
 import utilities.binsearch as binsearch
 import utilities.logger as logger
+from io import open
 
 
 # Open dbm's with information about nominal events. If that does not work, open

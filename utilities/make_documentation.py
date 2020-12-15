@@ -38,6 +38,7 @@ import inspect
 from types import ClassType, FunctionType, MethodType, TypeType
 
 from .modules import MODULES
+from io import open
 
 # Set this to True if you want the sources for all functions written to files
 # that are linked to from the module page, this slows down the code quite a bit

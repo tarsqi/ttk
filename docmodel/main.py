@@ -21,6 +21,7 @@ from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
 from docmodel.docstructure_parser import DocumentStructureParser
 
 from utilities import logger
+from io import open
 
 
 PARSERS = {'ttk': (SourceParserTTK, MetadataParserTTK),

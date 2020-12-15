@@ -106,6 +106,7 @@ from docmodel.main import create_source_parser
 from components.classifier.vectors import collect_tarsqidoc_vectors
 
 from library.main import LIBRARY
+from io import open
 
 
 GOLD_DIR = os.path.join('data', 'gold')

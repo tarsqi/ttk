@@ -11,6 +11,7 @@ for those cases when a token does not have a lemma.
 from __future__ import absolute_import
 from library.forms import STEM_EXCEPTIONS_FILE
 from .binsearch import binarySearchFile
+from io import open
 
 
 class Stemmer(object):

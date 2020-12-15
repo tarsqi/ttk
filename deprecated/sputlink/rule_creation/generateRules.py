@@ -13,6 +13,7 @@ from objects import \
      Node, EventNode, TimexNode, Point, Link, PLink 
      
 from closure import Axiom, Closure
+from io import open
 
 settings = {}
 settings['debug'] = 0

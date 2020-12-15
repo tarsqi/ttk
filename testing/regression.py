@@ -46,6 +46,7 @@ from __future__ import absolute_import
 import os, sys, getopt, time, glob
 
 import tarsqi
+from io import open
 
 
 def load_cases(fname):
@@ -177,10 +178,10 @@ class ReportGenerator(object):
 
     def write_index(self):
         """Create the idex for all results."""
-        self.index_fh.write("<html>\n<body>\n")
+        self.index_fh.write(u"<html>\n<body>\n")
         for name in self.cases:
-            self.index_fh.write("<a href=cases-%s.html>%s</a>\n" % (name, name))
-        self.index_fh.write("</body>\n</html>\n")
+            self.index_fh.write(u"<a href=cases-%s.html>%s</a>\n" % (name, name))
+        self.index_fh.write(u"</body>\n</html>\n")
 
     def write_cases(self):
         """Create the file with results for all cases."""
@@ -194,7 +195,7 @@ class ReportGenerator(object):
             self._write_case_report()
 
     def _load_cases(self):
-        self.case_input_file = "%s/cases-%s.tab" % (self.cases_dir, self.case)
+        self.case_input_file = u"%s/cases-%s.tab" % (self.cases_dir, self.case)
         self.case_input_fh = open(self.case_input_file)
         print "  reading cases in", self.case_input_file
         self.case_input = {}
@@ -203,7 +204,7 @@ class ReportGenerator(object):
 
     def _load_case_results(self):
         self.case_results = {}
-        for results_file in glob.glob("%s/%s/*.tab" % (self.results_dir, self.case)):
+        for results_file in glob.glob(u"%s/%s/*.tab" % (self.results_dir, self.case)):
             print '  reading results from', results_file
             timestamp = os.path.splitext(os.path.basename(results_file))[0]
             self.case_results[timestamp] = {}
@@ -217,31 +218,31 @@ class ReportGenerator(object):
         for ts in timestamps:
             for identifier in self.case_results[ts].keys():
                 identifiers[identifier] = True
-        self.case_fh.write("<html>\n</body>\n")
-        self.case_fh.write("<head>\n<style>\n")
-        self.case_fh.write(".tag { color: blue; xfont-weight: bold; }\n")
-        self.case_fh.write("</style>\n</head>\n")
-        self.case_fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
-        self.case_fh.write("<tr>")
-        self.case_fh.write("  <td>&nbsp;")
+        self.case_fh.write(u"<html>\n</body>\n")
+        self.case_fh.write(u"<head>\n<style>\n")
+        self.case_fh.write(u".tag { color: blue; xfont-weight: bold; }\n")
+        self.case_fh.write(u"</style>\n</head>\n")
+        self.case_fh.write(u"<table cellpadding=5 cellspacing=0 border=1>\n")
+        self.case_fh.write(u"<tr>")
+        self.case_fh.write(u"  <td>&nbsp;")
         for ts in timestamps:
-            self.case_fh.write("  <td>%s" % ts[2:8])
-        self.case_fh.write("  <td>o1")
-        self.case_fh.write("  <td>o2")
-        self.case_fh.write("  <td>sentence")
+            self.case_fh.write(u"  <td>%s" % ts[2:8])
+        self.case_fh.write(u"  <td>o1")
+        self.case_fh.write(u"  <td>o2")
+        self.case_fh.write(u"  <td>sentence")
         for identifier in sorted(identifiers.keys()):
-            self.case_fh.write("<tr style=\"white-space:nowrap\">")
-            self.case_fh.write("  <td>%s" % identifier)
+            self.case_fh.write(u"<tr style=\"white-space:nowrap\">")
+            self.case_fh.write(u"  <td>%s" % identifier)
             for ts in timestamps:
-                self.case_fh.write("  <td>%s" % self.case_results[ts].get(identifier, '&nbsp;'))
+                self.case_fh.write(u"  <td>%s" % self.case_results[ts].get(identifier, '&nbsp;'))
             case = self.case_input[identifier]
-            self.case_fh.write("  <td align=right>%s" % case.o1)
-            self.case_fh.write("  <td align=right>%s" % case.o2)
-            self.case_fh.write("  <td>%s<span class=\"tag\">%s</span>%s"
+            self.case_fh.write(u"  <td align=right>%s" % case.o1)
+            self.case_fh.write(u"  <td align=right>%s" % case.o2)
+            self.case_fh.write(u"  <td>%s<span class=\"tag\">%s</span>%s"
                                % (case.sentence[:case.o1],
                                   case.sentence[case.o1:case.o2],
                                   case.sentence[case.o2:]))
-        self.case_fh.write("</table>")
+        self.case_fh.write(u"</table>")
 
 
 def generate_report():

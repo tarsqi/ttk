@@ -1,5 +1,7 @@
 
 
+from __future__ import absolute_import
+from io import open
 def intersect_relations(rels1, rels2):
     """Returns the intersection of two relation sets. Returns None if both
     of the two sets are None."""

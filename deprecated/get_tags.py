@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import os, glob
 
 from xml.dom import minidom
+from io import open
 
 
 INDIR = "data/out/Timebank"

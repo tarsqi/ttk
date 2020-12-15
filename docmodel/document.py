@@ -12,6 +12,7 @@ from subprocess import Popen, PIPE
 
 from library.main import LIBRARY
 from utilities import logger
+from io import open
 
 
 TIMEX = LIBRARY.timeml.TIMEX

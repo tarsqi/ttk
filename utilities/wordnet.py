@@ -37,6 +37,7 @@ clearly(adv.)
 """
 
 from __future__ import absolute_import
+from io import open
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "1.4"
 

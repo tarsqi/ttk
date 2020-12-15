@@ -81,6 +81,7 @@ from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
 from docmodel.document import TarsqiDocument, Tag, ProcessingStep
 from library.main import TarsqiLibrary
+from io import open
 
 DEBUG = True
 DEBUG = False

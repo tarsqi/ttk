@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 import re
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 

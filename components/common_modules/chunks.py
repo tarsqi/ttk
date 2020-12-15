@@ -29,6 +29,7 @@ from components.evita.settings import EVITA_NOM_CONTEXT
 from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
 
 from utilities import logger
+from io import open
 
 
 # Get the Bayesian event recognizer

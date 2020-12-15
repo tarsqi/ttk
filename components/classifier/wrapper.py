@@ -11,6 +11,7 @@ from library.tarsqi_constants import CLASSIFIER
 from library.main import LIBRARY
 from utilities import logger, mallet
 from components.classifier import vectors
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 

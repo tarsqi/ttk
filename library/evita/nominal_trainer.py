@@ -25,6 +25,7 @@ import pickle
 
 import evitaTimemlParser
 import forms
+from io import open
 
 contentPos = re.compile(r'(NN$|NNS|VB|JJ)')
 featureFuncs = [lambda x: x.pos, lambda x: definiteness(x)]

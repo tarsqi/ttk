@@ -5,7 +5,7 @@ December 2020.
 
 This document has notes on the effort to get a Python 3 version of TTK. Originally, the goal was to get a few steps along the way without any impact to TTK users, that is, no extra installations, not even something as simple as `pip install future` or `pip install builtins`. The goal was also to eventually change the code so that it supports both Python 2.7 and Python 3.5 and up.
 
-This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0. Period. Probably version 3.6. This might require extra installation, fine. And version 2.7 will not be supported anymore from now on except perhaps for requested bug fixes on version 2.2.0. Having said that, the first steps of the process are all steps where the resulting code will still run on Python 2.7
+This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0. Period. Probably version 3.6. This might require extra installation, fine. And version 2.7 will not be supported anymore from now on except perhaps for requested bug fixes on version 2.2.0. Having said that, the first steps of the process are all steps where the resulting code will still run on Python 2.7.
 
 
 
@@ -19,7 +19,9 @@ For now:
 
   - After each step, review the changes, do not yet make any manual edits
   - After one or more steps, run the tests and if they pass put all changes in the git staging area.
-  - Try to isolate automatic amd manual changes in separate commits. The only exception is that this file may be updated in a commit alongside automatic changes.
+  - Try to isolate automatic amd manual changes in separate commits. The only exception are:
+    - A porting issue where a automatic step is followed by well-defined manual steps, these sometimes make more sense in just one commit. 
+    - This file may be updated in a commit alongside automatic changes, typically changes are relevant to the porting issue of the commit.
 - Also looking at [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html) to do those preparatory changes that allow you to still run under Python2 (division, strings, new classes, etcetera). There obviously is major overlap between this one and the previous one.
 - Commands that give information:
 
@@ -35,11 +37,11 @@ In the following, each section corresponds to one or more commits on the `79-pyt
 
 
 
-### 2. Initial syntax changes
+### 2.  Initial syntax changes
 
-These changes are based on https://portingguide.readthedocs.io/en/latest/syntax.html.
+These changes are based on https://portingguide.readthedocs.io/en/latest/syntax.html. All changes made in this section are in commit [94b2bce5](https://github.com/tarsqi/ttk/commit/94b2bce5e5b68e688d4d385bcb2b022b4f1e7093).
 
-<u>Syntax Change 1: Get rid of tabs</u>
+#### 2.1.  Getting rid of tabs
 
 ```
 find . -name '*.py' -type f -exec bash -c 'T=$(mktemp); expand -i -t 8 "$0" > "$T" && mv "$T" "$0"' {} \;
@@ -57,7 +59,7 @@ $ mv wordnet.new.py wordnet.py
 
 No problems with that.
 
-<u>Syntax Change 2: Tuple Unpacking in Parameter Lists</u>
+#### 2.2.  Tuple Unpacking in Parameter Lists
 
 ```
 $ python-modernize -wnf lib2to3.fixes.fix_tuple_params .
@@ -99,29 +101,27 @@ it is used for finding backward slinks and alinks.
 
 However, it turns out that this error also happens with the code before this change, so I will let it go.
 
-<u>Syntax Change 3: Backticks</u>
+#### 2.3.   Backticks and other changes
+
+The following fixes backtics and there were no problems with it:
 
 ```
 $ python-modernize -wnf lib2to3.fixes.fix_repr .
 ```
 
-No problems.
+There was no need to remove the inequality operator `<>` and there were no assignments to True or False. Other syntax changes are done in later steps.
 
-<u>Syntax Changes: Others</u>
 
-There was no need to remove the inequality operator `<>` and there were no assignments to True or False. Other syntax changes are done in later steps. Want to find out why.
 
-The changes in this section are in commit [94b2bce5](https://github.com/tarsqi/ttk/commit/94b2bce5e5b68e688d4d385bcb2b022b4f1e7093).
-
-### 2. More preparatory changes
+### 3. More preparatory changes
 
 Based on [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html). These are similar to the above in that they allow the code to still run on Python 2.7.
 
-<u>Division of integers</u>
+#### 3.1.  Division of integers
 
 Using // when we really want to have integers as the result, using / in other cases. Sometimes using `from __future__ import division` and removing explicit conversions into floats. See commit [047d9c28](https://github.com/tarsqi/ttk/commit/047d9c2850b5589e05641e182f69704f8787bb09).
 
-<u>Using new style classes</u>
+#### 3.2.  Using new style classes
 
 Doing this all manually, but used the following code to find the classes.
 
@@ -135,13 +135,13 @@ def check_classes(fname):
             if line.startswith('class ') and line.endswith(':'):
                 if is_old_class(line):
                     print(fname, '>>>', line)
-                if has_muliple_parents(line):
+                if has_multiple_parents(line):
                     print(fname, '===', line)
 
 def is_old_class(line):
     return '(' not in line or line.endswith('():')
 
-def has_muliple_parents(line):
+def has_multiple_parents(line):
     return ',' in line
 
 if __name__ == '__main__':
@@ -188,7 +188,7 @@ After this it all worked, but see the TODO comment in `create_dicts.py` which el
 
 See commit [0ccd82d9](https://github.com/tarsqi/ttk/commit/0ccd82d9f11e72c75b7bcbb5e71044b87a818385).
 
-<u>Absolute imports</u>
+#### 3.3.  Absolute imports
 
 Changed made here are based on [https://portingguide.readthedocs.io/en/latest/imports.html](https://portingguide.readthedocs.io/en/latest/imports.html).
 
@@ -207,4 +207,144 @@ After this I made some changes to streamline some of the utilities and testing s
 ```
 $ python -m testing.run_tests
 ```
+
+See commit [465f9dfc](https://github.com/tarsqi/ttk/commit/465f9dfcdb6ef4b5051d6d5732f1ef116c4486f6).
+
+#### 3.4.  String handling
+
+Changed made here are based on [https://portingguide.readthedocs.io/en/latest/strings.html](https://portingguide.readthedocs.io/en/latest/strings.html).
+
+For separating binary data and strings I glanced over all the lines with quoted strings in them, they all appear to be text strings. Did this for cases like `"hello"` with the find.pl script and created find.py to do the same for use of `'string'`, `u"string"`, `u'string'`, byte strings with the b prefix and the raw string.
+
+String operations in Python 3 cannot mix different types, look into this. Using -3 on the tarsqi.py script and run_tests.py gives 2 warnings on Blinker code:
+
+```
+compare.py:150: DeprecationWarning: comparing unequal types not supported in 3.x
+  if (year1_int < year2_int):
+compare.py:152: DeprecationWarning: comparing unequal types not supported in 3.x
+  elif (year1_int > year2_int):
+```
+
+However, looking at the code it seems that both variables must be of type *int*.
+
+For type checking (use of basestring) I ran
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_basestring .
+```
+
+which didn't make any changes.
+
+##### 3.4.1  File I/O
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_open .
+```
+
+This caused many changes, most are to add
+
+```python
+from io import open
+```
+
+We do get some problems, here's the first:
+
+```
+python tarsqi.py data/in/simple-xml/tiny.xml out.xml 
+Traceback (most recent call last):
+  File "tarsqi.py", line 111, in <module>
+    from components import COMPONENTS, valid_components
+  File ".../ttk/git/ttk/components/__init__.py", line 6, in <module>
+    from preprocessing.wrapper import PreprocessorWrapper
+  File ".../ttk/git/ttk/components/preprocessing/wrapper.py", line 28, in <module>
+    from components.preprocessing.chunker import chunk_sentences
+  File ".../ttk/git/ttk/components/preprocessing/chunker.py", line 30, in <module>
+    from components.common_modules.tree import create_tarsqi_tree
+  File ".../ttk/git/ttk/components/common_modules/tree.py", line 9, in <module>
+    from components.common_modules.chunks import NounChunk, VerbChunk
+  File ".../ttk/git/ttk/components/common_modules/chunks.py", line 24, in <module>
+    from components.evita import bayes
+  File ".../ttk/git/ttk/components/evita/bayes.py", line 16, in <module>
+    DictSemcorContext = open_pickle_file(forms.DictSemcorContextPickleFilename)
+  File ".../ttk/git/ttk/utilities/file.py", line 45, in open_pickle_file
+    return pickle.load(fh)
+  File ".../miniconda2/lib/python2.7/pickle.py", line 1384, in load
+    return Unpickler(file).load()
+  File ".../miniconda2/lib/python2.7/pickle.py", line 864, in load
+    dispatch[key](self)
+  File ".../miniconda2/lib/python2.7/pickle.py", line 986, in load_unicode
+    self.append(unicode(self.readline()[:-1],'raw-unicode-escape'))
+TypeError: decoding Unicode is not supported
+```
+
+The problem here is in the code that loads a pickle file (`utilities/file.py`), which reads a native string where it should read a binary string, change `open_pickle_file()` into 
+
+```python
+def open_pickle_file(fname):
+    """Return the contents of a pickle file."""
+    with open(fname, 'r') as fh:
+        return pickle.load(fh)
+```
+
+The next problem is in the logger: 
+
+```
+  File ".../ttk/git/ttk/utilities/logger.py", line 76, in __init__
+    self.html_file.write("<html>\n")
+TypeError: write() argument 1 must be unicode, not str
+```
+
+While this would work fine in Python3, in Python 2 the string has to be of type unicode and the string literal is not that type so we need to add a `u` in front of it.
+
+And then:
+
+```
+  File ".../ttk/git/ttk/docmodel/source_parser.py", line 218, in parse_file
+    self.parser.ParseFile(open(filename))
+TypeError: read() did not return a string object (type=unicode)
+```
+
+This could be fixed in docmodel.source_parser.SourceParserXml.parse_file, replacing
+
+```python
+self.parser.ParseFile(open(filename))
+```
+
+with
+
+```python
+content = open(filename).read()
+self.parser.Parse(content)
+```
+
+Finally, the last problem:
+
+```
+  File ".../ttk/git/ttk/library/blinker/blinker_rule_loader.py", line 113, in read_syntactic_rules
+    val = str.split(val[1:-1], '|')
+TypeError: descriptor 'split' requires a 'str' object but received a 'unicode'
+```
+
+Blinker contained an ancient line that used str.split(), replaced it with
+
+```python
+val = val[1:-1].split('|')
+```
+
+And finally the tarsqi script works and so does the basic test script and the evita regression test... but not for writing the regression report, which takes us to the next section.
+
+##### 3.4.1.  Unresolved string issue
+
+Generating a report for the regression tests croaks the same way as the logger:
+
+```
+$ python -m testing.regression --report
+...
+  File ".../ttk/git/ttk/testing/regression.py", line 181, in write_index
+    self.index_fh.write("<html>\n<body>\n")
+TypeError: write() argument 1 must be unicode, not str
+```
+
+This will probably show up all over the place. The annoying part is that the code would work fine on Python3 but to make it run on Python 2 we need to track down all those string literals, which I really do not want to do. So for now we just fix it for the code I need for porting to python3, including showing the results of the regression tests (and whatever else comes up later).
+
 

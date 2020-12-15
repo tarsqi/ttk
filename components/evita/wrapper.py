@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from library.tarsqi_constants import EVITA
 from library.main import LIBRARY
 from components.evita.main import Evita
+from io import open
 
 
 # Set this to True if you want to do a simplistic evaluation of how many of the

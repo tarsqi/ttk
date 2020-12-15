@@ -43,6 +43,7 @@ from xml.dom import minidom
 
 from docmodel.document import SourceDoc, ProcessingStep
 from utilities.lif import Container, LIF
+from io import open
 
 
 class SourceParser(object):
@@ -214,7 +215,11 @@ class SourceParserXML(SourceParser):
         text and tags in SourceDoc."""
         self.sourcedoc = SourceDoc(filename)
         # TODO: should this be codecs.open() for non-ascii?
-        self.parser.ParseFile(open(filename))
+        # self.parser.ParseFile(open(filename))
+        # NOTE: actually, the above line needed to replaced with the following
+        # while preparing to port code to Python3.
+        content = open(filename).read()
+        self.parser.Parse(content)
         self.sourcedoc.finish()
         tarsqidoc.sourcedoc = self.sourcedoc
 

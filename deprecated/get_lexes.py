@@ -19,6 +19,7 @@ from __future__ import absolute_import
 import sys, os
 
 from xml.dom.minidom import parse
+from io import open
 
 
 def getText(nodelist):
