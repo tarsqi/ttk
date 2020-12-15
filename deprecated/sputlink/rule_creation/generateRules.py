@@ -4,6 +4,7 @@
 basic relations are used instead of TimeML relations. Also produces an
 extra short output for consumption of Perl scripts. """
 
+from __future__ import absolute_import
 import sys
 import string
 

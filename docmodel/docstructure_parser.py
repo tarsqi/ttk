@@ -16,6 +16,7 @@ processing the elements one by one.
 """
 
 
+from __future__ import absolute_import
 from library.tarsqi_constants import DOCSTRUCTURE
 
 

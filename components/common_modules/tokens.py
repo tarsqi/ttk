@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 from library import forms
 from library.main import LIBRARY
 from components.evita.event import Event

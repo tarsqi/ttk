@@ -14,6 +14,7 @@ Contains the wrappers for all preprocessing components.
 # about 40% so we want to keep the PreprocessorWrapper around.
 
 
+from __future__ import absolute_import
 import os, sys, threading
 from time import time
 from subprocess import PIPE, Popen

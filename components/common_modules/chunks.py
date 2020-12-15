@@ -7,6 +7,7 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 
 """
 
+from __future__ import absolute_import
 import types
 from xml.sax.saxutils import quoteattr
 

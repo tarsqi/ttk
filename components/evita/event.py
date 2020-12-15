@@ -5,6 +5,7 @@ Chunk._processEventInChunk() or AdjectiveToken._processEventInToken().
 
 """
 
+from __future__ import absolute_import
 from library.main import LIBRARY
 from library.tarsqi_constants import EVITA
 

@@ -4,6 +4,7 @@ Python wrapper around the Mallet Classifier
 
 """
 
+from __future__ import absolute_import
 import os
 
 from library.tarsqi_constants import CLASSIFIER

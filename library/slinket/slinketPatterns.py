@@ -11,10 +11,11 @@ dictionaries.
 
 """
 
+from __future__ import absolute_import
 from library import forms
 
 #from library.timeMLspec import *
-from timeMLspec import *
+from .timeMLspec import *
 
 from utilities.FSA import compileOP
 

@@ -7,6 +7,7 @@ applying s2t-rules to each SLINK.
 
 """
 
+from __future__ import absolute_import
 from utilities import logger
 from components.common_modules.component import TarsqiComponent
 from library.tarsqi_constants import S2T

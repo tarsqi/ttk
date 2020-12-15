@@ -18,6 +18,7 @@ this directory and use that instead.
 
 
 
+from __future__ import absolute_import
 import os, sys, cPickle
 
 sys.path.append('../..')
@@ -27,8 +28,8 @@ sys.path.append('../..')
 # variable is not used so we hand in a dummy value
 os.environ['TTK_ROOT'] = 'DUMMY'
 
-import slinkPredicates
-import alinkPredicates
+from . import slinkPredicates
+from . import alinkPredicates
 
 
 print "Pickling dictionaries..."

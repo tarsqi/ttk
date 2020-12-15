@@ -10,12 +10,13 @@ It is here where Allen's constraint propagation algorithm is implemented.
 # to be sufficient for our current purposes.
 
 
-from objects import Node, Edge, Constraint
-from utils import intersect_relations
-from utils import compare_id
-from utils import html_graph_prefix
-from mappings import invert_interval_relation
-from mappings import abbreviate_convex_relation
+from __future__ import absolute_import
+from .objects import Node, Edge, Constraint
+from .utils import intersect_relations
+from .utils import compare_id
+from .utils import html_graph_prefix
+from .mappings import invert_interval_relation
+from .mappings import abbreviate_convex_relation
 from utilities import logger
 from library.main import LIBRARY
 

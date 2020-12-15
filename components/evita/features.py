@@ -9,6 +9,7 @@ recognition.
 # TODO: check whether these are used by Slinket, if so move it to common_modules
 
 
+from __future__ import absolute_import
 from types import ListType, InstanceType
 from pprint import pprint
 

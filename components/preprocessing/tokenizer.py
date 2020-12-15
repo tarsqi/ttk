@@ -29,13 +29,14 @@ to change this.
 
 """
 
+from __future__ import absolute_import
 import re
 from StringIO import StringIO
 from xml.sax.saxutils import escape
 
-from abbreviation import dict_abbrevs
-from abbreviation import dict_end_abbrevs
-from abbreviation import dict_initial_tokens
+from .abbreviation import dict_abbrevs
+from .abbreviation import dict_end_abbrevs
+from .abbreviation import dict_initial_tokens
 
 
 abbrev_pattern = re.compile(r'^([A-Z]\.)+$')

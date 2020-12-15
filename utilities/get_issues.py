@@ -24,6 +24,7 @@ To turn the downloaded JSON files into HTM files do the following:
 """
 
 
+from __future__ import absolute_import
 import os, sys, json, pprint, re
 from HTMLParser import HTMLParser
 

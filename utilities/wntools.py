@@ -29,10 +29,11 @@ Usage
     [('raise' in {verb: raise, lift, elevate, get up, bring up}, 'lower' in {verb: lower, take down, let down, get down, bring down})]
 """
 
+from __future__ import absolute_import
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "2.0"
 
-from wordnet import *
+from .wordnet import *
 
 #
 # Domain utilities
@@ -295,7 +296,7 @@ def morphy(form, pos='noun', collect=0):
     'abacus'
     >>> morphy('hardrock', 'adv')
     """
-    from wordnet import _normalizePOS, _dictionaryFor
+    from .wordnet import _normalizePOS, _dictionaryFor
     pos = _normalizePOS(pos)
     excfile = open(os.path.join(WNSEARCHDIR, {NOUN: 'noun', VERB: 'verb', ADJECTIVE: 'adj', ADVERB: 'adv'}[pos] + '.exc'))
     substitutions = MORPHOLOGICAL_SUBSTITUTIONS[pos]

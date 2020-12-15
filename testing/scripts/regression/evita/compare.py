@@ -34,6 +34,7 @@ occurrences of the same tag name with the same begin and end.
 
 """
 
+from __future__ import absolute_import
 import sys
 
 from xml.dom.minidom import parse

@@ -25,6 +25,7 @@ on temporal functions in postTempEx.pl.
 
 """
 
+from __future__ import absolute_import
 import os, sys, subprocess, codecs, StringIO
 from xml.dom.minidom import parse, parseString
 

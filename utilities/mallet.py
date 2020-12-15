@@ -20,10 +20,11 @@ classify_command().
 
 """
 
+from __future__ import absolute_import
 import os, sys
 from subprocess import Popen, PIPE
 
-import logger
+from . import logger
 
 DEBUG = False
 

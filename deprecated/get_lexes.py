@@ -15,6 +15,7 @@ and OUTDIR have to be directories, existing files in OUTDIR may be overwritten.
 """
 
 
+from __future__ import absolute_import
 import sys, os
 
 from xml.dom.minidom import parse

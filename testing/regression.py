@@ -40,9 +40,10 @@ indicate whether a tag was found at the indicated offsets. Results are + or -.
 """
 
 
+from __future__ import absolute_import
 import os, sys, getopt, time, glob
 
-import path
+from . import path
 import tarsqi
 
 def load_cases(fname):

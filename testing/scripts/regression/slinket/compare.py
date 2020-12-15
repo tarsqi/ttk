@@ -41,6 +41,7 @@ attributes removed from the event for readability):
 # TODO: and how about highlighting the events in the fragment
 
 
+from __future__ import absolute_import
 import sys
 
 from xml.dom.minidom import parse

@@ -21,6 +21,7 @@ After creation these should be moved to the patterns directory.
 
 """
 
+from __future__ import absolute_import
 import os, sys, cPickle
 
 sys.path.append('../..')

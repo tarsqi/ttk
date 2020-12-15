@@ -22,12 +22,13 @@ TODO:
 """
 
 
+from __future__ import absolute_import
 import os
 import sys
 import inspect
 from types import ClassType, FunctionType, MethodType, TypeType
 
-from modules import MODULES
+from .modules import MODULES
 
 # Set this to True if you want the sources for all functions written to files
 # that are linked to from the module page, this slows down the code quite a bit

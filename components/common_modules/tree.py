@@ -1,5 +1,6 @@
 """Contains the TarsqiTree class."""
 
+from __future__ import absolute_import
 import sys
 import re
 from xml.sax.saxutils import escape, quoteattr

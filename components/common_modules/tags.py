@@ -5,10 +5,11 @@ Contains classes for TimeML tags.
 """
 
 
+from __future__ import absolute_import
 from library.main import LIBRARY
 from components.common_modules.constituent import Constituent
 from utilities import logger
-from utils import get_tokens
+from .utils import get_tokens
 
 
 EVENT = LIBRARY.timeml.EVENT

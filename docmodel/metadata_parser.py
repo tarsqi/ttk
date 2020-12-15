@@ -9,6 +9,7 @@ Current parsers only deal with the DCT.
 
 """
 
+from __future__ import absolute_import
 import re, time, os, sqlite3
 
 import utilities.logger as logger

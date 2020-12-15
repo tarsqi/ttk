@@ -21,6 +21,7 @@ The only difference is in the second column (no relation versus a relation).
 
 """
 
+from __future__ import absolute_import
 import os, codecs, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree

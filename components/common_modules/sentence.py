@@ -1,5 +1,6 @@
 """Contains functionality specific to sentences in a tree."""
 
+from __future__ import absolute_import
 from utilities import logger
 from components.common_modules.constituent import Constituent
 

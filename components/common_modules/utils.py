@@ -4,6 +4,7 @@ Some utilities common to all the objects in the common_modules module.
 
 """
 
+from __future__ import absolute_import
 import types
 
 from library import forms

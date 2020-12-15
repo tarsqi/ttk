@@ -51,6 +51,7 @@ be turned on and off with
 #   send an object with a print operation instead
 
 
+from __future__ import absolute_import
 import os
 import sys
 import inspect

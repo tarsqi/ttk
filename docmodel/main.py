@@ -9,6 +9,7 @@ required they should be added to source_parser.py and metadata_parser.py.
 
 """
 
+from __future__ import absolute_import
 import os, xml
 
 from docmodel.source_parser import SourceParserXML, SourceParserText

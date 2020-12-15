@@ -29,6 +29,7 @@ Example input files are in ../data/in/lif.
 
 """
 
+from __future__ import absolute_import
 import sys
 import codecs
 import json

@@ -5,6 +5,7 @@ Base class for Tarsqi components implemented in Python.
 """
 
 
+from __future__ import absolute_import
 from utilities import logger
 
 

@@ -36,6 +36,7 @@ SourceParserLIF
 
 """
 
+from __future__ import absolute_import
 import codecs
 import xml.parsers.expat
 from xml.dom import minidom

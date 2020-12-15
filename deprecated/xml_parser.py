@@ -13,6 +13,7 @@ WARNING:
         
 """
 
+from __future__ import absolute_import
 import sys
 from types import UnicodeType, IntType, StringType, NoneType
 import xml.parsers.expat

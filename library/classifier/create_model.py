@@ -40,8 +40,9 @@ for each fold.
 """
 
 
+from __future__ import absolute_import
 import os, sys, glob, getopt
-import path
+from . import path
 from utilities import mallet
 
 

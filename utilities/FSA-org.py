@@ -339,6 +339,7 @@ April 2005:
 """
 
 
+from __future__ import absolute_import
 import string, os, tempfile
 from types import InstanceType, ListType, TupleType, IntType, LongType, DictType, StringType
 IntegerTypes = (IntType, LongType)

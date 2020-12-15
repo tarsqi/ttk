@@ -10,6 +10,7 @@ settings can be accessed.
 
 """
 
+from __future__ import absolute_import
 import os
 
 TTK_ROOT = os.environ['TTK_ROOT']

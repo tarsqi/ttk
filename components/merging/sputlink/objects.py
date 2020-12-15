@@ -1,6 +1,7 @@
-from utils import intersect_lists
-from utils import intersect_relations
-from utils import compare_id
+from __future__ import absolute_import
+from .utils import intersect_lists
+from .utils import intersect_relations
+from .utils import compare_id
 from library.main import LIBRARY
 
 TIMEX = LIBRARY.timeml.TIMEX

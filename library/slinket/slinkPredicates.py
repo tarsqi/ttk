@@ -28,24 +28,25 @@ Each entry in the Predicate Dictionaries has the following structure:
 """
 
 #from library.timeMLspec import *
-from timeMLspec import *
+from __future__ import absolute_import
+from .timeMLspec import *
 
 # FORWARD patterns:
-from slinketPatterns import THAT_clause_that, THAT_clause_NOT_that, THAT_clausePAST_that, THAT_clausePERFECTIVE_NEG_that, THAT_clausePAST_NOT_that, THAT_clausePERFECTIVE_NEG_NOT_that, THAT_clause_that_QUOTES, THAT_clause_NOT_that_QUOTES, THAT_clause_N_that_N_report, THAT_clause_that_NOT_report, THAT_clause_SIMPLE, THAT_clause_NOT_tensed, THAT_clause_if
-from slinketPatterns import IND_INTERROG, OF_IND_INTERROG
-from slinketPatterns import TO_clause1, TO_clause1_PERFECTIVE, TO_clause3, TO_clause3_PERFECTIVE, TO_clause5, TO_clause5_PERFECTIVE, TO_clause7 #TO_clause1, TO_clause2, TO_clause3, TO_clause4, TO_clause5, TO_clause6, TO_clause7
-from slinketPatterns import IND_INTERROG_nonfin, OF_IND_INTERROG_nonfin
-from slinketPatterns import ING_clause, ABOUT_ING_clause, AGAINST_ING_clause, AT_ING_clause, FOR_ING_clause, FROM_ING_clause, IN_ING_clause, OF_ING_clause, ON_ING_clause, TO_ING_clause, WITH_ING_clause
-from slinketPatterns import ABOUT_NPev, AT_NPev, FOR_NPev, FROM_NPev, IN_NPev, OF_NPev, ON_NPev, OVER_NPev, TO_NPev, WITH_NPev, WITHOUT_NPev, PP_ABOUT
-from slinketPatterns import NP_ev1, NP_ev2
-from slinketPatterns import OBJCOMPL_pastPart, OBJCOMPL_adj
+from .slinketPatterns import THAT_clause_that, THAT_clause_NOT_that, THAT_clausePAST_that, THAT_clausePERFECTIVE_NEG_that, THAT_clausePAST_NOT_that, THAT_clausePERFECTIVE_NEG_NOT_that, THAT_clause_that_QUOTES, THAT_clause_NOT_that_QUOTES, THAT_clause_N_that_N_report, THAT_clause_that_NOT_report, THAT_clause_SIMPLE, THAT_clause_NOT_tensed, THAT_clause_if
+from .slinketPatterns import IND_INTERROG, OF_IND_INTERROG
+from .slinketPatterns import TO_clause1, TO_clause1_PERFECTIVE, TO_clause3, TO_clause3_PERFECTIVE, TO_clause5, TO_clause5_PERFECTIVE, TO_clause7 #TO_clause1, TO_clause2, TO_clause3, TO_clause4, TO_clause5, TO_clause6, TO_clause7
+from .slinketPatterns import IND_INTERROG_nonfin, OF_IND_INTERROG_nonfin
+from .slinketPatterns import ING_clause, ABOUT_ING_clause, AGAINST_ING_clause, AT_ING_clause, FOR_ING_clause, FROM_ING_clause, IN_ING_clause, OF_ING_clause, ON_ING_clause, TO_ING_clause, WITH_ING_clause
+from .slinketPatterns import ABOUT_NPev, AT_NPev, FOR_NPev, FROM_NPev, IN_NPev, OF_NPev, ON_NPev, OVER_NPev, TO_NPev, WITH_NPev, WITHOUT_NPev, PP_ABOUT
+from .slinketPatterns import NP_ev1, NP_ev2
+from .slinketPatterns import OBJCOMPL_pastPart, OBJCOMPL_adj
 
 # BACKWARD patterns:
-from slinketPatterns import Passive1, RelClauseExplic, RelClauseExplicPerfect
-from slinketPatterns import NP_evAsSubj1, NP_evAsSubj2, NP_evAsSubj3
+from .slinketPatterns import Passive1, RelClauseExplic, RelClauseExplicPerfect
+from .slinketPatterns import NP_evAsSubj1, NP_evAsSubj2, NP_evAsSubj3
 
 # REPORTING patterns:
-from slinketPatterns import MAINsentence
+from .slinketPatterns import MAINsentence
 
 
 print "Creating Slink predicate dictionaries"

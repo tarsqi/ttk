@@ -36,6 +36,7 @@ clearly(adv.)
 [{noun: Canis, genus Canis}, {noun: pack}]
 """
 
+from __future__ import absolute_import
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "1.4"
 
@@ -245,7 +246,7 @@ class Word(object):
 
     # Deprecated.  Present for backwards compatability.
     def senses(self):
-        import wordnet
+        from . import wordnet
         #warningKey = 'SENSE_DEPRECATION_WARNING'
         #if not wordnet.has_key(warningKey):
         #    print 'Word.senses() has been deprecated.  Use Word.sense() instead.'

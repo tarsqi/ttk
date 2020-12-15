@@ -8,6 +8,7 @@ Code like this should be added somewhere else, probably to some module in docmod
 """
 
 
+from __future__ import absolute_import
 import os, glob
 
 from xml.dom import minidom

@@ -6,6 +6,7 @@ Contains a Bayesian disambiguator.
 
 from __future__ import division
 
+from __future__ import absolute_import
 from library import forms
 from utilities.file import open_pickle_file
 from utilities import logger

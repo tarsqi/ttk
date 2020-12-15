@@ -4,6 +4,7 @@ Responsible for loading the libraries and other top-level processing.
 
 """
 
+from __future__ import absolute_import
 import re
 
 from utilities import logger

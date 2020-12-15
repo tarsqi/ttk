@@ -16,6 +16,7 @@ TODO:
 
 """
 
+from __future__ import absolute_import
 import os
 
 from library.tarsqi_constants import LINK_MERGER, S2T, BLINKER, CLASSIFIER

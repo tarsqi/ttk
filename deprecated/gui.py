@@ -6,6 +6,7 @@ Graphical User Interface for the Tarsqi Toolkit
 
 """
 
+from __future__ import absolute_import
 import os, sys, popen2, time, re
 
 import wx
@@ -14,7 +15,7 @@ import wx.html
 from xml.sax.saxutils import escape
 
 from tarsqi import Tarsqi
-from demo.display import HtmlGenerator
+from .demo.display import HtmlGenerator
 from docmodel.model import DocumentModel
 from docmodel.xml_parser import Parser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T

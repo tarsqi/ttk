@@ -6,6 +6,7 @@ the Chunk class.
 """
 
 
+from __future__ import absolute_import
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.utils import get_events, get_words_as_string
 from library.slinket.main import SLINKET_DICTS

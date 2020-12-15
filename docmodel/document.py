@@ -5,6 +5,7 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 """
 
+from __future__ import absolute_import
 import os, sys, codecs, StringIO, itertools, time
 from xml.sax.saxutils import escape, quoteattr
 from subprocess import Popen, PIPE

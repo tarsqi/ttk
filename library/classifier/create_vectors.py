@@ -93,10 +93,11 @@ the model that ships with the Tarsqi Toolkit.
 
 """
 
+from __future__ import absolute_import
 import os, sys
 
-import path
-import root
+from . import path
+from . import root
 
 from tarsqi import Options
 from docmodel.document import TarsqiDocument

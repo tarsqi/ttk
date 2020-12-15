@@ -4,6 +4,7 @@ Contains the Evita wrapper.
 
 """
 
+from __future__ import absolute_import
 from library.tarsqi_constants import EVITA
 from library.main import LIBRARY
 from components.evita.main import Evita

@@ -24,6 +24,7 @@ docmodel.document.Tag.
 # For more details see https://github.com/tarsqi/ttk/issues/63.
 
 
+from __future__ import absolute_import
 from types import StringType
 
 from utilities import logger

@@ -1,9 +1,11 @@
 
 # Porting to Python 3
 
+December 2020.
+
 This document has notes on the effort to get a Python 3 version of TTK. Originally, the goal was to get a few steps along the way without any impact to TTK users, that is, no extra installations, not even something as simple as `pip install future` or `pip install builtins`. The goal was also to eventually change the code so that it supports both Python 2.7 and Python 3.5 and up.
 
-This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0. Period. Probably version 3.6. This might require extra installation, fine. And version 2.7 will not be supported anymore apart from now on expcept perhaps for requested bug fixes on version 2.2.0.
+This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0. Period. Probably version 3.6. This might require extra installation, fine. And version 2.7 will not be supported anymore from now on except perhaps for requested bug fixes on version 2.2.0. Having said that, the first steps of the process are all steps where the resulting code will still run on Python 2.7
 
 
 
@@ -13,20 +15,21 @@ This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0.
 For now:
 
 - Started branch `79-python3`.
-
 - Following the steps in [https://portingguide.readthedocs.io/en/latest/process.html](https://portingguide.readthedocs.io/en/latest/process.html)
 
   - After each step, review the changes, do not yet make any manual edits
   - After one or more steps, run the tests and if they pass put all changes in the git staging area.
   - Try to isolate automatic amd manual changes in separate commits. The only exception is that this file may be updated in a commit alongside automatic changes.
-
 - Also looking at [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html) to do those preparatory changes that allow you to still run under Python2 (division, strings, new classes, etcetera). There obviously is major overlap between this one and the previous one.
-
-- Using
+- Commands that give information:
 
   -  `python-modernize` to give hints on the idioms to change.
     - probably using individual fixers
   -  `pylint --py3k` for more hints on Python3 compatibility.
+  -  `python -3` when running tarsqi.py and the testing and regression scripts.
+- Use `2to3` [http://python3porting.com/2to3.html](http://python3porting.com/2to3.html) for the final mechanichal steps, many of them probably already done in the previous steps. Will probably also want to get rid of all the future imports. Look at [https://adamj.eu/tech/2019/03/13/dropping-python-2-support/](https://adamj.eu/tech/2019/03/13/dropping-python-2-support/) for some notes on dropping Python 2 support.
+- At the very end, test this on a new clone. There could be issues like updating libraries that have slipped through the cracks.
+
 
 In the following, each section corresponds to one or more commits on the `79-python3` branch.
 
@@ -116,13 +119,11 @@ Based on [http://python3porting.com/preparing.html](http://python3porting.com/pr
 
 <u>Division of integers</u>
 
-See commit [047d9c28](https://github.com/tarsqi/ttk/commit/047d9c2850b5589e05641e182f69704f8787bb09).
-
-Using // when we really want to have integers as the result, using / in other cases. Sometimes using `from __future__ import division` and removing explicit conversions into floats.
+Using // when we really want to have integers as the result, using / in other cases. Sometimes using `from __future__ import division` and removing explicit conversions into floats. See commit [047d9c28](https://github.com/tarsqi/ttk/commit/047d9c2850b5589e05641e182f69704f8787bb09).
 
 <u>Using new style classes</u>
 
-Doing this all manually, but used the following code to find the classes. 
+Doing this all manually, but used the following code to find the classes.
 
 ```python
 import os
@@ -150,7 +151,7 @@ if __name__ == '__main__':
                 check_classes(os.path.join(root, name))
 ```
 
-Luckily there was no mulitple inheritance anywhere so I did not need to worry about the MRO. The only thing that may need some time is to figure out how to do the FSA code since allegedly its error handling depends on old style classes. Well, it doesn't, it is just that there was a part in the code that relied on things like Constituent being of type types.InstanceType:
+TTK does not use mulitple inheritance so I did not need to worry about the MRO. The only thing that needed some time was to figure out how to do the FSA code since allegedly its error handling depends on old style classes. Well, it doesn't, it is just that there was a part in the code that relied on things like *Constituent* being of type *types.InstanceType*:
 
 ```python
 if (type(input) is InstanceType and
@@ -167,9 +168,9 @@ if getattr(input, '__class__').__name__ in [
     'Token', 'AdjectiveToken', 'EventTag', 'TimexTag']:
 ```
 
-There are issues however with raising errors in `FSA.py`, they will need to be dealt with in a later step.
+WIth this fixed no errors were raised. There are issues however with raising errors in `FSA.py`, they will need to be dealt with in a later step.
 
-More seriously, when `FSA.FSA` and `FSA.Sequence` are made new style classes, code starts crashing on loading pickle files. It turned out that we needed to re compile Evita and Slinket patterns:
+More seriously, when `FSA.FSA` and `FSA.Sequence` are turned into new style classes, code starts crashing on loading pickle files. I needed to re compile Evita and Slinket patterns:
 
 ```
 $ cd library/evita
@@ -184,3 +185,36 @@ $ cp *.pickle dictionaries
 ```
 
 After this it all worked, but see the TODO comment in `create_dicts.py` which elaborates a bit on the ugly hack I used.
+
+See commit [0ccd82d9](https://github.com/tarsqi/ttk/commit/0ccd82d9f11e72c75b7bcbb5e71044b87a818385).
+
+<u>Absolute imports</u>
+
+Changed made here are based on [https://portingguide.readthedocs.io/en/latest/imports.html](https://portingguide.readthedocs.io/en/latest/imports.html).
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_import .
+```
+
+This made many changes, importing from future and changing other imports. One weird change is that pretty much every line in `componets/blinker/compare.py ` is changed. Not sure what is going on there, but when getting the previous version and comparing it to the one after the patch, all I see is a difference in the line with the future import.
+
+There are no occurrences of "import *" in functions and no import cycles that I am aware of.
+
+
+
+```
+$ python regression.py --evita
+Traceback (most recent call last):
+  File "regression.py", line 46, in <module>
+    from . import path
+ValueError: Attempted relative import in non-package
+```
+
+No idea what is going on here because there is an init file and the directory should be considered a package. Okay, got it, see [stackoverflow.com/questions/11536764](https://stackoverflow.com/questions/11536764/how-to-fix-attempted-relative-import-in-non-package-even-with-init-py) and [PEP 338](https://www.python.org/dev/peps/pep-0338/). When you run the regressions script it is the main script and then `__name__` is set to `__main__` and all the imports go awry.
+
+Could not figure out exactly how to use `__package__` to deal with this, but you can do the following from the parent directory:
+
+```
+$ python -m testing.regression --evita
+```
+

@@ -6,6 +6,7 @@ extra short output for consumption of Perl scripts.
 
 """
 
+from __future__ import absolute_import
 import sys
 
 from objects import \

@@ -4,6 +4,7 @@ Contains the Slinket wrapper.
 
 """
 
+from __future__ import absolute_import
 from library.tarsqi_constants import SLINKET
 from components.slinket.main import Slinket
 from components.common_modules import tree

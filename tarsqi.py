@@ -105,6 +105,7 @@ VARIABLES:
 
 """
 
+from __future__ import absolute_import
 import sys, os, time, getopt
 
 import root

@@ -4,6 +4,7 @@ Module to access list of nominals havested from WordNet.
 
 """
 
+from __future__ import absolute_import
 from library import forms
 import utilities.binsearch as binsearch
 import utilities.logger as logger

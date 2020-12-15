@@ -48,19 +48,20 @@ to deal with reading an arbitrary number of tests from a file.
 """
 
 
+from __future__ import absolute_import
 import sys, getopt, traceback, types
 
-import path
+from . import path
 import tarsqi
 from components.merging.sputlink.main import ConstraintPropagator
 
-from cases.test_cases_timex import TIMEX_TESTS
-from cases.test_cases_event import EVENT_TESTS
-from cases.test_cases_slink import ALINK_TESTS
-from cases.test_cases_slink import SLINK_TESTS
-from cases.test_cases_tlink import S2T_TESTS
-from cases.test_cases_tlink import BLINKER_TESTS
-from cases.test_cases_sputlink import SPUTLINK_TESTS
+from .cases.test_cases_timex import TIMEX_TESTS
+from .cases.test_cases_event import EVENT_TESTS
+from .cases.test_cases_slink import ALINK_TESTS
+from .cases.test_cases_slink import SLINK_TESTS
+from .cases.test_cases_tlink import S2T_TESTS
+from .cases.test_cases_tlink import BLINKER_TESTS
+from .cases.test_cases_sputlink import SPUTLINK_TESTS
 
 
 PASS = 'ok'

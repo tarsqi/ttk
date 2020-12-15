@@ -23,6 +23,7 @@ events, timexes and tlinks:
     
 """
 
+from __future__ import absolute_import
 import os
 from docmodel.xml_parser import Parser, create_dct_element
 from library.tarsqi_constants import BLINKER, SLINKET, S2T, CLASSIFIER
