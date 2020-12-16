@@ -86,7 +86,7 @@ class EventTag(Tag):
                 logger.warn("Returning 'epos' instead of 'pos' value")
                 return self.tree.events[self.eid][EPOS]
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def _get_attribute(self, name, default):
         try:
@@ -127,7 +127,7 @@ class TimexTag(Tag):
                       EVENTID, EIID, CLASS]:
             return None
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def isTimex(self):
         return True

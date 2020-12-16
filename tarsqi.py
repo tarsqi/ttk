@@ -226,8 +226,9 @@ class Tarsqi(object):
             try:
                 wrapper(tarsqidocument).process()
             except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
                 logger.error("%s error:\n\t%s\n\t%s\n"
-                             % (name, sys.exc_type, sys.exc_value))
+                             % (name, exc_type, exc_value))
         else:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
@@ -374,7 +375,7 @@ def _read_arguments(args):
         (opts, args) = getopt.getopt(args, '', options)
         return opts, args
     except getopt.GetoptError:
-        sys.stderr.write("ERROR: %s\n" % sys.exc_value)
+        sys.stderr.write("ERROR: %s\n" % sys.exc_info()[1])
         sys.exit(_usage_string())
 
 
@@ -528,4 +529,4 @@ if __name__ == '__main__':
         else:
             TarsqiWrapper(sys.argv[1:]).run()
     except TarsqiError:
-        sys.exit('ERROR: ' + str(sys.exc_value))
+        sys.exit('ERROR: ' + str(sys.exc_info()[1]))

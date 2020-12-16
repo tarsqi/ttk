@@ -1329,7 +1329,7 @@ def labelMatches(label, input):
                         return matchDict(label, input)
                 else:
                         #print "LABEL:", label, "\nINPUT:", input.nodeType
-                        raise "ERROR: possibly label is in dict format, but not the input"
+                        raise Exception("ERROR: possibly label is in dict format, but not the input")
         elif type(label) == InstanceType and hasattr(label, 'matches'):
                 #debugFile.write("\n\tMATCH (1)")
                 #print "\n\tMATCH (1)"
@@ -1370,7 +1370,7 @@ def matchDict(label, input):
                                 if input[key] == value:
                                     return 0
                         else:
-                            raise "ERROR specifying description of pattern"
+                            raise Exception("ERROR specifying description of pattern")
                     elif type(value) is ListType:
                         #print "\t\t......LIST TYPE"
                         if input[key] not in value:
@@ -1638,7 +1638,7 @@ class Sequence(object):
                                         or because we are in a subpattern that resetted
                                         the currentSubpattern variable to 0 """
                                         if self.__class__.__name__ == "Sequence": pass
-                                        else: raise "ERROR (1): expression missing at least one '('"
+                                        else: raise Exception("ERROR (1): expression missing at least one '('")
                                         
                         elif self.sequence[i] == '|':
                                 try:
@@ -1647,7 +1647,7 @@ class Sequence(object):
                                 except: pass
                                 previousBorder[currentSubpattern] = i
                 if currentSubpattern != 0:
-                        raise "ERROR (2): expression missing at least one ')'"
+                        raise Exception("ERROR (2): expression missing at least one ')'")
                                 
         def getNextBorder(self, index):
                 try: return self.bordersDict[index]
@@ -1675,7 +1675,7 @@ class SyntaxSequence(Sequence):
                             if item[0] in ['(','[','|']:
                                     #print "SIT 1"
                                     if len(item) > 1:
-                                        raise 'ERROR (1): check syntax for pattern: '+ str(self.description)
+                                        raise Exception('ERROR (1): check syntax for pattern: '+ str(self.description))
                                     else:
                                         res.append(item)
                             if item[0] == '~':
@@ -1686,13 +1686,13 @@ class SyntaxSequence(Sequence):
                             elif item[-1] in ['(','[','|']:
                                     #print "SIT 3"
                                     if len(item) > 1:
-                                        raise 'ERROR (2): check syntax for pattern: '+ str(self.description)
+                                        raise Exception('ERROR (2): check syntax for pattern: '+ str(self.description))
                                     else:
                                         pass
                             elif item[-1] in [')',']']:
                                     #print "SIT 4"
                                     if len(item) > 1:
-                                        raise 'ERROR (3): check syntax for pattern: '+ str(self.description)
+                                        raise Exception('ERROR (3): check syntax for pattern: '+ str(self.description))
                                     else:
                                         res.append(item)
                             elif item[-1] in ['*','+','?']:
@@ -1730,7 +1730,7 @@ def compileOP(description, **options):
 
 
         if index < len(pattern):
-                raise 'extra character in pattern (possibly ")" )'
+                raise Exception('extra character in pattern (possibly ")" )')
         fsa.label = pattern.label
         #debugFile.write( "\n=\n\tFSA MINIMIZED:\n\t\t")
         #debugFile.write(str(fsa.minimized()))
@@ -1878,7 +1878,7 @@ def compileItemOP(pattern, index, options):
                 elif c == '+':
                         fsa = iteration(fsa)
                 else:
-                        raise 'unimplemented'
+                        raise Exception('unimplemented')
         return fsa, index
 
 
@@ -1891,7 +1891,7 @@ def compileRE(s, **options):
                 s = string.replace(s, ' ', '')
         fsa, index = compileREExpr(s + ')', 0, options)
         if index < len(s):
-                raise 'extra ' + repr(')')
+                raise Exception('extra ' + repr(')'))
         fsa.label = str(s)
         return fsa.minimized()
 
@@ -1956,7 +1956,7 @@ def compileItem(str, index, options):
                 elif c == '+':
                         fsa = iteration(fsa)
                 else:
-                        raise 'unimplemented'
+                        raise Exception('unimplemented')
         return fsa, index
 
 """

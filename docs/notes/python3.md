@@ -10,7 +10,7 @@ This was all dropped. The goal is to get a Python3 version in TTK version 3.0.0.
 
 
 
-### 1. Process
+## 1. Process
 
 For now:
 
@@ -37,11 +37,11 @@ In the following, each section corresponds to one or more commits on the `79-pyt
 
 
 
-### 2.  Initial syntax changes
+## 2.  Initial syntax changes
 
 These changes are based on https://portingguide.readthedocs.io/en/latest/syntax.html. All changes made in this section are in commit [94b2bce5](https://github.com/tarsqi/ttk/commit/94b2bce5e5b68e688d4d385bcb2b022b4f1e7093).
 
-#### 2.1.  Getting rid of tabs
+### 2.1.  Getting rid of tabs
 
 ```
 find . -name '*.py' -type f -exec bash -c 'T=$(mktemp); expand -i -t 8 "$0" > "$T" && mv "$T" "$0"' {} \;
@@ -59,7 +59,7 @@ $ mv wordnet.new.py wordnet.py
 
 No problems with that.
 
-#### 2.2.  Tuple Unpacking in Parameter Lists
+### 2.2.  Tuple Unpacking in Parameter Lists
 
 ```
 $ python-modernize -wnf lib2to3.fixes.fix_tuple_params .
@@ -101,7 +101,7 @@ it is used for finding backward slinks and alinks.
 
 However, it turns out that this error also happens with the code before this change, so I will let it go.
 
-#### 2.3.   Backticks and other changes
+### 2.3.   Backticks and other changes
 
 The following fixes backtics and there were no problems with it:
 
@@ -113,15 +113,15 @@ There was no need to remove the inequality operator `<>` and there were no assig
 
 
 
-### 3. More preparatory changes
+## 3. More preparatory changes
 
 Based on [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html). These are similar to the above in that they allow the code to still run on Python 2.7.
 
-#### 3.1.  Division of integers
+### 3.1.  Division of integers
 
 Using // when we really want to have integers as the result, using / in other cases. Sometimes using `from __future__ import division` and removing explicit conversions into floats. See commit [047d9c28](https://github.com/tarsqi/ttk/commit/047d9c2850b5589e05641e182f69704f8787bb09).
 
-#### 3.2.  Using new style classes
+### 3.2.  Using new style classes
 
 Doing this all manually, but used the following code to find the classes.
 
@@ -188,7 +188,7 @@ After this it all worked, but see the TODO comment in `create_dicts.py` which el
 
 See commit [0ccd82d9](https://github.com/tarsqi/ttk/commit/0ccd82d9f11e72c75b7bcbb5e71044b87a818385).
 
-#### 3.3.  Absolute imports
+### 3.3.  Absolute imports
 
 Changed made here are based on [https://portingguide.readthedocs.io/en/latest/imports.html](https://portingguide.readthedocs.io/en/latest/imports.html).
 
@@ -210,9 +210,9 @@ $ python -m testing.run_tests
 
 See commit [465f9dfc](https://github.com/tarsqi/ttk/commit/465f9dfcdb6ef4b5051d6d5732f1ef116c4486f6).
 
-#### 3.4.  String handling
+### 3.4.  String handling
 
-Changed made here are based on [https://portingguide.readthedocs.io/en/latest/strings.html](https://portingguide.readthedocs.io/en/latest/strings.html).
+Changed made here are based on [https://portingguide.readthedocs.io/en/latest/strings.html](https://portingguide.readthedocs.io/en/latest/strings.html). See commit [c378f688](https://github.com/tarsqi/ttk/commit/c378f688321ff52111325f29ad7c705cf1292923) for all changes made in this section.
 
 For separating binary data and strings I glanced over all the lines with quoted strings in them, they all appear to be text strings. Did this for cases like `"hello"` with the find.pl script and created find.py to do the same for use of `'string'`, `u"string"`, `u'string'`, byte strings with the b prefix and the raw string.
 
@@ -235,7 +235,7 @@ $ python-modernize -wnf libmodernize.fixes.fix_basestring .
 
 which didn't make any changes.
 
-##### 3.4.1  File I/O
+#### 3.4.1  File I/O
 
 ```
 $ python-modernize -wnf libmodernize.fixes.fix_open .
@@ -333,7 +333,7 @@ val = val[1:-1].split('|')
 
 And finally the tarsqi script works and so does the basic test script and the evita regression test... but not for writing the regression report, which takes us to the next section.
 
-##### 3.4.1.  Unresolved string issue
+#### 3.4.1.  Unresolved string issue
 
 Generating a report for the regression tests croaks the same way as the logger:
 
@@ -347,4 +347,167 @@ TypeError: write() argument 1 must be unicode, not str
 
 This will probably show up all over the place. The annoying part is that the code would work fine on Python3 but to make it run on Python 2 we need to track down all those string literals, which I really do not want to do. So for now we just fix it for the code I need for porting to python3, including showing the results of the regression tests (and whatever else comes up later).
 
+### 3.5.  Exceptions
+
+[https://portingguide.readthedocs.io/en/latest/exceptions.html](https://portingguide.readthedocs.io/en/latest/exceptions.html)
+
+```
+$ python-modernize -wnf lib2to3.fixes.fix_except .
+```
+
+This introduced one change, which had to be edited manually to enter some meaningful mains instead of the standard `xxx_todo_changeme`.
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_raise -f libmodernize.fixes.fix_raise_six .
+```
+
+This made a bunch of changes, usually of the following kind: 
+
+```diff
+-            raise AttributeError, name
++            raise AttributeError(name)
+```
+
+But some things gave warnings:
+
+```
+RefactoringTool: ### In file ./utilities/wordnet.py ###
+RefactoringTool: Line 856: could not convert: raise "unimplemented"
+RefactoringTool: Python 3 does not support string exceptions
+```
+
+Here is a list of all lines that had this problem:
+
+```
+### In file ./components/common_modules/constituent.py ###
+Line 236:   raise "ERROR specifying description of pattern"
+
+### In file ./utilities/FSA-org.py ###
+Line 1641:  raise "ERROR (1): expression missing at least one '('"
+Line 1373:  raise "ERROR specifying description of pattern"
+Line 1332:  raise "ERROR: possibly label is in dict format, but not the input"
+Line 1650:  raise "ERROR (2): expression missing at least one ')'"
+Line 1881:  raise 'unimplemented'
+Line 1959:  raise 'unimplemented'
+Line 1733:  raise 'extra character in pattern (possibly ")" )'
+
+### In file ./utilities/FSA.py ###
+Line 1655:  raise "ERROR (1): expression missing at least one '('"
+Line 1387:  raise "ERROR specifying description of pattern"
+Line 1344:  raise "ERROR: possibly label is in dict format, but not the input"
+Line 1664:  raise "ERROR (2): expression missing at least one ')'"
+Line 1895:  raise 'unimplemented'
+Line 1973:  raise 'unimplemented'
+Line 1747:  raise 'extra character in pattern (possibly ")" )'
+
+### In file ./utilities/wordnet.py ###
+Line 856:   raise "unimplemented"
+```
+
+Changed those manually by adding wrapping Exception around all strings.
+
+Some instances were not found by the modernize script:
+
+```
+$  python utilities/find.py 'raise '
+./components/evita/features.py ==  else: raise "ERROR: unknown modal form: "+str(form)
+./components/evita/features.py ==  else: raise "ERROR: unknown raise form: "+str(form)
+./utilities/wordnet.py         ==  raise "unknown attribute " + key
+./utilities/wordnet.py         ==  raise self.getPointers.__doc__
+./utilities/wordnet.py         ==  raise self.getPointers.__doc__
+```
+
+These were also changed by hand.
+
+All these changes resulted in some errors due to non-unicode strings being written to a file in the sputlink code (see 3.4.1), those were fixed manually.
+
+Raising StandardError does not occur in the code.
+
+Raising non-exceptions were all caught I think.
+
+Removing `sys.exc_type`, `sys.exc_value`, `sys.exc_traceback`:
+
+```
+python utilities/find.py "sys.exc_"
+./tarsqi.py       ==   % (name, sys.exc_type, sys.exc_value))
+./tarsqi.py       ==   sys.stderr.write("ERROR: %s\n" % sys.exc_value)
+./tarsqi.py       ==   sys.exit('ERROR: ' + str(sys.exc_value))
+```
+
+These were manually fixed.
+
+
+#### 3.5.1.  Unresolved
+
+Did not look at the exception scope case.
+
+The command line invocation for the iteration case seems to be wrong becuase it was the same as for the new except syntax. RUnning it did give cryptic notes on files that needed to be modified.
+
+```
+$ python-modernize -wnf lib2to3.fixes.fix_except .
+```
+
+```
+RefactoringTool: Files that need to be modified:
+RefactoringTool: ./tarsqi.py
+RefactoringTool: ./components/blinker/main.py
+RefactoringTool: ./components/classifier/vectors.py
+RefactoringTool: ./components/common_modules/chunks.py
+RefactoringTool: ./components/common_modules/constituent.py
+RefactoringTool: ./components/common_modules/tree.py
+RefactoringTool: ./components/evita/bayes.py
+RefactoringTool: ./components/evita/features.py
+RefactoringTool: ./components/gutime/wrapper.py
+RefactoringTool: ./components/preprocessing/chunker.py
+RefactoringTool: ./deprecated/xml_parser.py
+RefactoringTool: ./deprecated/demo/display.py
+RefactoringTool: ./docmodel/document.py
+RefactoringTool: ./docmodel/main.py
+RefactoringTool: ./docmodel/metadata_parser.py
+RefactoringTool: ./library/classifier/create_vectors.py
+RefactoringTool: ./library/evita/nominal_trainer.py
+RefactoringTool: ./testing/create_slinket_cases.py
+RefactoringTool: ./utilities/FSA-org.py
+RefactoringTool: ./utilities/FSA.py
+RefactoringTool: ./utilities/convert.py
+RefactoringTool: ./utilities/make_documentation.py
+RefactoringTool: ./utilities/wordnet.py
+```
+
+
+
+## 4.  Remaining thingies
+
+List of steps still remaining.
+
+- standard library
+  
+   - [htps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html](tps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html)
+- numbers and dictionaries and comprehensions
+  - [https://portingguide.readthedocs.io/en/latest/numbers.html](https://portingguide.readthedocs.io/en/latest/numbers.html)
+  - [https://portingguide.readthedocs.io/en/latest/dicts.html](https://portingguide.readthedocs.io/en/latest/dicts.html)
+  - [https://portingguide.readthedocs.io/en/latest/comprehensions.html](https://portingguide.readthedocs.io/en/latest/comprehensions.html)
+- Other core object changes
+  
+  - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
+- iterators
+  
+  - [https://portingguide.readthedocs.io/en/latest/iterators.html](https://portingguide.readthedocs.io/en/latest/iterators.html)
+- built-in functions
+  
+  - [https://portingguide.readthedocs.io/en/latest/builtins.html](https://portingguide.readthedocs.io/en/latest/builtins.html)
+- comparing and sorting, including rich comarison operators
+  - [https://portingguide.readthedocs.io/en/latest/comparisons.html](https://portingguide.readthedocs.io/en/latest/comparisons.html)
+  - [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html)
+- Other changes
+   - [https://portingguide.readthedocs.io/en/latest/etc.html](https://portingguide.readthedocs.io/en/latest/etc.html)
+
+After that we can run `python-modernize` ,`pylint --py3k` and `python -3` when running tarsqi.py and the testing and regression scripts.
+
+Followed by `2to3`.
+
+Also see:
+
+- http://python-future.org/automatic_conversion.html
+- http://python-future.org/compatible_idioms.html
 

@@ -80,7 +80,7 @@ class Token(Constituent):
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             return None
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def getText(self):
         """Return the text of the token."""
@@ -156,7 +156,7 @@ class AdjectiveToken(Token):
                 return self.tree.events[self.eid].get(POS,'NONE')
             return self.tree.events[self.eid][name]
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def isAdjToken(self):
         return True

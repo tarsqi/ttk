@@ -225,12 +225,12 @@ class Word(object):
     def getPointers(self, pointerType=None):
         """Pointers connect senses and synsets, not words.
         Try word[0].getPointers() instead."""
-        raise self.getPointers.__doc__
+        raise Exception(self.getPointers.__doc__)
 
     def getPointerTargets(self, pointerType=None):
         """Pointers connect senses and synsets, not words.
         Try word[0].getPointerTargets() instead."""
-        raise self.getPointers.__doc__
+        raise Exception(self.getPointers.__doc__)
 
     def getSenses(self):
         """Return a sequence of senses.
@@ -563,7 +563,7 @@ class Sense(object):
             elif key == 'ip':
                 sense.position = IMMEDIATE_POSTNOMINAL
             else:
-                raise "unknown attribute " + key
+                raise Exception("unknown attribute " + key)
         sense.form = string.replace(form, '_', ' ')
         "orthographic representation of the Word this is a Sense of."
     
@@ -575,7 +575,7 @@ class Sense(object):
         elif name == 'lexname':
             return self.synset.lexname
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
     
     def __str__(self):
         """Return a human-readable representation.
@@ -817,7 +817,7 @@ class Dictionary(object):
         if word:
             return word
         else:
-            raise KeyError, "%s is not in the %s database" % (repr(form), repr(pos))
+            raise KeyError("%s is not in the %s database" % (repr(form), repr(pos)))
     
     def getSynset(self, offset):
         pos = self.pos
@@ -853,7 +853,7 @@ class Dictionary(object):
     def __getslice__(self, a, b):
         results = []
         if type(a) == type('') and type(b) == type(''):
-            raise "unimplemented"
+            raise Exception("unimplemented")
         elif type(a) == type(1) and type(b) == type(1):
             for i in range(a, b):
                 results.append(self[i])
@@ -877,7 +877,7 @@ class Dictionary(object):
             line = self.indexFile[index]
             return self.getWord(string.replace(line[:string.find(line, ' ')], '_', ' '), line)
         else:
-            raise TypeError, "%s is not a String or Int" % repr(index)
+            raise TypeError("%s is not a String or Int" % repr(index))
     
     #
     # Dictionary protocol
@@ -997,12 +997,12 @@ class _IndexFile(object):
                 self.file.seek(self.nextOffset)
                 line = self.file.readline()
                 if line == "":
-                    raise IndexError, "index out of range"
+                    raise IndexError("index out of range")
                 self.nextIndex = self.nextIndex + 1
                 self.nextOffset = self.file.tell()
             return line
         else:
-            raise TypeError, "%s is not a String or Int" % repr(index)
+            raise TypeError("%s is not a String or Int" % repr(index))
         
     #
     # Dictionary protocol
@@ -1088,7 +1088,7 @@ getword, getsense, getsynset = getWord, getSense, getSynset
 
 def _requirePointerType(pointerType):
     if pointerType not in POINTER_TYPES:
-        raise TypeError, repr(pointerType) + " is not a pointer type"
+        raise TypeError(repr(pointerType) + " is not a pointer type")
     return pointerType
 
 def _compareInstances(a, b, fields):
@@ -1381,13 +1381,13 @@ def _normalizePOS(pos):
     norm = _POSNormalizationTable.get(pos)
     if norm:
         return norm
-    raise TypeError, repr(pos) + " is not a part of speech type"
+    raise TypeError(repr(pos) + " is not a part of speech type")
 
 def _dictionaryFor(pos):
     pos = _normalizePOS(pos)
     dict = _POStoDictionaryTable.get(pos)
     if dict == None:
-        raise RuntimeError, "The " + repr(pos) + " dictionary has not been created"
+        raise RuntimeError("The " + repr(pos) + " dictionary has not been created")
     return dict
 
 def buildIndexFiles():

@@ -130,7 +130,7 @@ class ConstraintPropagator(object):
     def _debug_print_cycle(self, constraint=None):
         if DEBUG:
             fname = "cycle-%02d.html" % self.graph.cycle
-            self.cycles_fh.write("<p>Cycle %s - <b>%s</b></p>\n"
+            self.cycles_fh.write(u"<p>Cycle %s - <b>%s</b></p>\n"
                                  % (self.graph.cycle, constraint))
             graph_file = os.path.join(TTK_ROOT, 'data', 'tmp', fname)
             self.graph.pp_html(filehandle=self.cycles_fh)

@@ -296,13 +296,13 @@ class VChunkFeatures(ChunkFeatures):
     def normalizeMod(self, form):
         if form == 'ca': return 'can'
         elif form == "'d": return 'would'
-        else: raise "ERROR: unknown modal form: "+str(form)
+        else: raise Exception("ERROR: unknown modal form: "+str(form))
 
     def normalizeHave(self, form):
         if form == "'d": return 'had'
         elif form == "'s": return 'has'
         elif form == "'ve": return 'have'
-        else: raise "ERROR: unknown raise form: "+str(form)
+        else: raise Exception("ERROR: unknown raise form: "+str(form))
 
     def getPolarity(self):
         if self.negative:

@@ -233,7 +233,7 @@ class Constituent(object):
                         if self.feature_value(feat) == value[1]:
                             return False
                 else:
-                    raise "ERROR specifying description of pattern"
+                    raise Exception("ERROR specifying description of pattern")
             elif type(value) is ListType:
                 if self.feature_value(feat) not in value:
                     if self.isChunk() and feat == 'text':

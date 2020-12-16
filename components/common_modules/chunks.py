@@ -291,9 +291,8 @@ class NounChunk(Chunk):
                 is_event = self._run_classifier(lemma)
                 logger.debug("  baysian classifier result ==> %s" % is_event)
                 return is_event
-            except bayes.DisambiguationError, (strerror):
-                pass
-                logger.debug("  DisambiguationError: %s" % unicode(strerror))
+            except bayes.DisambiguationError as e:
+                logger.debug("  DisambiguationError: %s" % e)
         # check whether primary sense or some of the senses are events
         if EVITA_NOM_WNPRIMSENSE_ONLY:
             is_event = wordnet.primarySenseIsEvent(lemma)
