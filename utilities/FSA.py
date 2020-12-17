@@ -980,7 +980,7 @@ class FSA(object):
                 output.append('\tname = %s;' % (self.fsaname,))
                 output.append('\tinitialState = ' + repr(self.initialState) + ';')
                 if self.finalStates:
-                        output.append('\tfinalStates = ' + string.join(map(str, self.finalStates), ', ') + ';')
+                        output.append('\tfinalStates = ' + ', '.join(map(str, self.finalStates)) + ';')
                 transitions = list(self.transitions)
                 transitions.sort()
                 for transition in transitions:
@@ -988,11 +988,11 @@ class FSA(object):
                         additionalInfo = self.additionalTransitionInfoString(transition)
                         output.append('\t%s -> %s %s%s;' % (s0, s1, labelString(label), additionalInfo and ' ' + additionalInfo or ''));
                 output.append('}');
-                return string.join(output, '\n')
+                return '\n'.join(output)
         
         def additionalTransitionInfoString(self, transition):
                 if self.getArcMetadataFor(transition):
-                        return '<' + string.join(map(str, self.getArcMetadataFor(transition)), ', ') + '>'
+                        return '<' + ', '.join(map(str, self.getArcMetadataFor(transition))) + '>'
         
         def stateLabelString(self, state):
                 """A template method for specifying a state's label, for use in dot
@@ -1006,19 +1006,23 @@ class FSA(object):
                 output = []
                 output.append('digraph finite_state_machine {');
                 if self.finalStates:
-                                output.append('\tnode [shape = doublecircle]; ' + string.join(map(str, self.finalStates), '; ') + ';' );
+                        output.append('\tnode [shape = doublecircle]; '
+                                      + '; '.join(map(str, self.finalStates))
+                                      + ';' );
                 output.append('\tnode [shape = circle];');
                 output.append('\trankdir=LR;');
                 output.append('\t%s [style = bold];' % (self.initialState,))
                 for state in self.states:
                         if self.stateLabelString(state):
-                                output.append('\t%s [label = "%s"];' % (state, string.replace(self.stateLabelString(state), '\n', '\\n')))
+                                output.append('\t%s [label = "%s"];'
+                                              % (state, self.stateLabelString(state).replace('\n', '\\n')))
                 transitions = list(self.transitions)
                 transitions.sort()
                 for (s0, s1, label) in transitions:
-                        output.append('\t%s -> %s  [label = "%s"];' % (s0, s1, string.replace(labelString(label), '\n', '\\n')));
+                        output.append('\t%s -> %s  [label = "%s"];'
+                                      % (s0, s1, labelString(label).replace('\n', '\\n')));
                 output.append('}');
-                return string.join(output, '\n')
+                return '\n'.join(output)
         
         def view(self):
                 view(self.toDotString())
@@ -1506,24 +1510,24 @@ def symbolComplement(symbol):
         #debugFile.write( "\nSYMBOL: "+str(symbol))
         if type(symbol) is not StringType:
                 symbol = str(symbol)
-
         if '&' in symbol:
                 #debugFile.write( "\nSYMBOL .........1")
-                return map(symbolComplement, string.split(symbol, '&'))
+                return map(symbolComplement, symbol.split('&'))
         elif symbol[0] == '~':
                 #debugFile.write( "\nSYMBOL .........2")
                 return symbol[1:]
         else:
                 #debugFile.write( "\nSYMBOL .........3")
                 return '~' + str(symbol)
-              
-        
+
 
 def symbolIntersection(s1, s2):
-        if type(s1) is StringType: set1 = string.split(s1, '&')
+        if type(s1) is StringType:
+                set1 = s1.split('&')
         else: set1 = [str(s1)]
 
-        if type(s2) is StringType: set2 = string.split(s2, '&')
+        if type(s2) is StringType:
+                set2 = s2.split('&')
         else: set2 = [str(s2)]
                 
         for symbol in set1:
@@ -1544,7 +1548,7 @@ def symbolIntersection(s1, s2):
         if nonNegatedSymbols:
                 return nonNegatedSymbols[0]
         set1.sort()
-        return string.join(set1, '&')
+        return '&'.join(set1)
 
 
 #
@@ -1673,7 +1677,7 @@ class SyntaxSequence(Sequence):
                 #print "\nENTERING SYNTAX SEQUENCE............\n"
                 Sequence.__init__(self, description)
                 self.description = description
-                self.label = string.join(str(self.description), '_')
+                self.label = '_'.join(str(self.description))
                 self.sequence = self.atomizeDescription()
 
         def atomizeDescription(self):
@@ -1834,6 +1838,7 @@ def compileSequenceOP(pattern, index, options):
                 ##debugFile.write( "\n\tcompileSequenceOP_FSA_Concat min:\n\t\t"+str(fsa.minimized()))
         return fsa, index
 
+
 def compileItemOP(pattern, index, options):
         ##debugFile.write( "\n\n\t\t\tCOMPILE ITEM OP")
         c = pattern[index]
@@ -1858,26 +1863,27 @@ def compileItemOP(pattern, index, options):
                 #print "ITS COMPLEMENT:", fsa
         else:
                 ##debugFile.write( "\nHERE 5:")
-#                #debugFile.write( "\nC:", c)
+                ##debugFile.write( "\nC:", c)
                 label = c
                 if options.get('multichar'):
-                #        #debugFile.write( "\nHERE 6:")
-                        while ((pattern[index] in string.letters or pattern[index] in string.digits) and
-                               index < len(pattern)):  ### CAL CANVIAR CONDICIONS string.letter!!!
-                 #               #debugFile.write( "\nHERE 7:")
+                        #debugFile.write( "\nHERE 6:")
+                        while ((pattern[index] in string.ascii_letters
+                                or pattern[index] in string.digits)
+                               and index < len(pattern)):  ### CAL CANVIAR CONDICIONS string.letter!!!
+                                #debugFile.write( "\nHERE 7:")
                                 label = label + pattern[index]
                                 index = index + 1
                 if pattern[index] == ':':
-                  #      #debugFile.write( "\nHERE 8:")
+                        #debugFile.write( "\nHERE 8:")
                         index = index + 1
                         upper = label
                         lower = pattern[index]
                         index = index + 1
                         if upper  == '0':
-                   #             #debugFile.write( "\nHERE 9:")
+                                #debugFile.write( "\nHERE 9:")
                                 upper  = EPSILON
                         if lower == '0':
-                    #            #debugFile.write( "\nHERE 10:")
+                                #debugFile.write( "\nHERE 10:")
                                 lower = EPSILON
                         label = (upper, lower)
                 fsa = singleton(label)
@@ -1902,7 +1908,7 @@ def compileItemOP(pattern, index, options):
 
 def compileRE(s, **options):
         if not options.get('multichar'):
-                s = string.replace(s, ' ', '')
+                s = s.replace(' ', '')
         fsa, index = compileREExpr(s + ')', 0, options)
         if index < len(s):
                 raise Exception('extra ' + repr(')'))

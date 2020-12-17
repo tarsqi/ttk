@@ -19,7 +19,7 @@ this directory and use that instead.
 
 
 from __future__ import absolute_import
-import os, sys, cPickle
+import os, sys, six.moves.cPickle
 from io import open
 
 sys.path.append('../..')
@@ -44,4 +44,4 @@ for (dictionary, name) in slink_dictionaries:
     fname = "%s.pickle" % name
     pickleFile = open(fname, 'w')
     print "Writing %s to %s" % (name, fname)
-    cPickle.dump(dictionary, pickleFile)
+    six.moves.cPickle.dump(dictionary, pickleFile)

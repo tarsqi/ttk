@@ -163,7 +163,7 @@ class AbstractLink(TemporalObject):
 
     def __str__(self):
         return "LinkDescription  %s  %s  %s" % \
-               (self.begin,string.upper(self.relation),self.end)
+               (self.begin, self.relation.upper(), self.end)
 
     
 class Link(AbstractLink):
@@ -196,7 +196,7 @@ class Link(AbstractLink):
            
     def __str__(self):
         return "Link(%s)  %s --%s-->  %s" % \
-               (self.id, self.begin,string.upper(self.relation),self.end)
+               (self.id, self.begin, self.relation.upper(), self.end)
 
     def printVerbosely(self):
         def printPLinks(point):
@@ -205,7 +205,7 @@ class Link(AbstractLink):
             print "      outLinks:"
             for link in point.outLinks: print "           ", link
         print "\nTimeML_Link(%s)" % (self.id)
-        print "  %s" % (string.upper(self.relation))
+        print "  %s" % (self.relation.upper())
         print "  %s" % (self.begin)
         print "    %s" % (self.begin.begin)
         printPLinks(self.begin.begin)

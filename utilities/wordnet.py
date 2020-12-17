@@ -212,9 +212,9 @@ class Word(object):
     
     def __init__(self, line):
         """Initialize the word from a line of a WN POS file."""
-        tokens = string.split(line)
+        tokens = line.split()
         ints = map(int, tokens[int(tokens[3]) + 4:])
-        self.form = string.replace(tokens[0], '_', ' ')
+        self.form = tokens[0].replace('_', ' ')
         "Orthographic representation of the word."
         self.pos = _normalizePOS(tokens[1])
         "Part of speech.  One of NOUN, VERB, ADJECTIVE, ADVERB."
@@ -361,16 +361,16 @@ class Synset(object):
         self.offset = offset
         """integer offset into the part-of-speech file.  Together
         with pos, this can be used as a unique id."""
-        tokens = string.split(line[:string.index(line, '|')])
+        tokens = line[:line.index('|')].split()
         self.ssType = tokens[2]
-        self.gloss = string.strip(line[string.index(line, '|') + 1:])
+        self.gloss = line[line.index('|') + 1:].strip()
         self.lexname = Lexname.lexnames[int(tokens[1])]
-        (self._senseTuples, remainder) = _partition(tokens[4:], 2, string.atoi(tokens[3], 16))
+        (self._senseTuples, remainder) = _partition(tokens[4:], 2, int(tokens[3], 16))
         (self._pointerTuples, remainder) = _partition(remainder[1:], 4, int(remainder[0]))
         if pos == VERB:
             (vfTuples, remainder) = _partition(remainder[1:], 3, int(remainder[0]))
             def extractVerbFrames(index, vfTuples):
-                return tuple(map(lambda t:string.atoi(t[1]), filter(lambda t,i=index:string.atoi(t[2]) in (0, i), vfTuples)))
+                return tuple(map(lambda t:int(t[1]), filter(lambda t,i=index:int(t[2]) in (0, i), vfTuples)))
             senseVerbFrames = []
             for index in range(1, len(self._senseTuples) + 1):
                 senseVerbFrames.append(extractVerbFrames(index, vfTuples))
@@ -457,7 +457,7 @@ class Synset(object):
         >>> str(N['dog'][0].synset)
         '{noun: dog, domestic dog, Canis familiaris}'
         """
-        return "{" + self.pos + ": " + string.joinfields(map(lambda sense:sense.form, self.getSenses()), ", ") + "}"
+        return "{" + self.pos + ": " + ", ".join(map(lambda sense:sense.form, self.getSenses())) + "}"
     
     def __repr__(self):
         """If ReadableRepresentations is true, return a human-readable
@@ -553,7 +553,7 @@ class Sense(object):
         (form, idString) = senseTuple
         sense.position = None
         if '(' in form:
-            index = string.index(form, '(')
+            index = form.index('(')
             key = form[index + 1:-1]
             form = form[:index]
             if key == 'a':
@@ -564,7 +564,7 @@ class Sense(object):
                 sense.position = IMMEDIATE_POSTNOMINAL
             else:
                 raise Exception("unknown attribute " + key)
-        sense.form = string.replace(form, '_', ' ')
+        sense.form = form.replace('_', ' ')
         "orthographic representation of the Word this is a Sense of."
     
     def __getattr__(self, name):
@@ -705,7 +705,7 @@ class Pointer(object):
         self.targetOffset = int(offset)
         self.pos = _normalizePOS(pos)
         """part of speech -- one of NOUN, VERB, ADJECTIVE, ADVERB"""
-        indices = string.atoi(indices, 16)
+        indices = int(indices, 16)
         self.sourceIndex = indices >> 8
         self.targetIndex = indices & 255
     
@@ -763,7 +763,7 @@ class Lexname(object):
 
 def setupLexnames():
     for l in open(WNSEARCHDIR+'/lexnames').readlines():
-        i,name,category = string.split(l)
+        i,name,category = l.split()
         Lexname(name,PartsOfSpeech[int(category)-1])
 
 setupLexnames()
@@ -808,7 +808,7 @@ class Dictionary(object):
         return "<%s.%s instance for %s>" % (self.__module__, "Dictionary", self.pos)
     
     def getWord(self, form, line=None):
-        key = string.replace(string.lower(form), ' ', '_')
+        key = form.lower().replace(' ', '_')
         pos = self.pos
         def loader(key=key, line=line, indexFile=self.indexFile):
             line = line or indexFile.get(key)
@@ -875,7 +875,7 @@ class Dictionary(object):
             return self.getWord(index)
         elif isinstance(index, IntType):
             line = self.indexFile[index]
-            return self.getWord(string.replace(line[:string.find(line, ' ')], '_', ' '), line)
+            return self.getWord(line[:line.find(' ')].replace('_', ' '), line)
         else:
             raise TypeError("%s is not a String or Int" % repr(index))
     
@@ -900,7 +900,7 @@ class Dictionary(object):
     def keys(self):
         """Return a sorted list of strings that index words in this
         dictionary."""
-        return map(lambda key:string.replace(key, ' ', '_'), self.indexFile.keys())
+        return map(lambda key: key.replace(' ', '_'), self.indexFile.keys())
     
     def has_key(self, form):
         """Return true iff the argument indexes a word in this dictionary.
@@ -925,7 +925,7 @@ class Dictionary(object):
             line = file.readline()
             if line == '': break
             if line[0] != ' ':
-                key = string.replace(line[:string.find(line, ' ')], '_', ' ')
+                key = line[:line.find(' ')].replace('_', ' ')
                 if (counter % 1000) == 0:
                     print "%s..." % (key,),
                     import sys
@@ -1050,7 +1050,7 @@ class _IndexFile(object):
             while 1:
                 offset, line = self.file.tell(), self.file.readline()
                 if not line: break
-                key = line[:string.find(line, ' ')]
+                key = line[:line.find(' ')]
                 if (count % 1000) == 0:
                     import sys
                     sys.stdout.flush()
@@ -1112,7 +1112,7 @@ def _equalsIgnoreCase(a, b):
     >>> _equalsIgnoreCase('dOg', 'DOG')
     1
     """
-    return a == b or string.lower(a) == string.lower(b)
+    return a == b or a.lower() == b.lower()
 
 #
 # File utilities
@@ -1367,10 +1367,10 @@ def _initializePOSTables():
             (VERB, "verb v v."),
             (ADJECTIVE, "adjective adj adj. a s"),
             (ADVERB, "adverb adv adv. r")):
-        tokens = string.split(abbreviations)
+        tokens = abbreviations.split()
         for token in tokens:
             _POSNormalizationTable[token] = pos
-            _POSNormalizationTable[string.upper(token)] = pos
+            _POSNormalizationTable[token.upper()] = pos
     for dict in Dictionaries:
         _POSNormalizationTable[dict] = dict.pos
         _POStoDictionaryTable[dict.pos] = dict

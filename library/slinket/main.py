@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import os
-import cPickle
+import six.moves.cPickle
 from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
@@ -19,10 +19,10 @@ class SlinketDicts(object):
     def load(self):
         """Load the Slinket dictionaries if they have not been loaded yet."""
         if not self.slinkVerbsDict:
-            self.slinkVerbsDict = cPickle.load(open(os.path.join(DIR_DICTS, "slinkVerbs.pickle")))
-            self.slinkNounsDict = cPickle.load(open(os.path.join(DIR_DICTS, "slinkNouns.pickle")))
-            self.slinkAdjsDict = cPickle.load(open(os.path.join(DIR_DICTS, "slinkAdjs.pickle")))
-            self.alinkVerbsDict = cPickle.load(open(os.path.join(DIR_DICTS, "alinkVerbs.pickle")))
-            self.alinkNounsDict = cPickle.load(open(os.path.join(DIR_DICTS, "alinkNouns.pickle")))
+            self.slinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkVerbs.pickle")))
+            self.slinkNounsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkNouns.pickle")))
+            self.slinkAdjsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkAdjs.pickle")))
+            self.alinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "alinkVerbs.pickle")))
+            self.alinkNounsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "alinkNouns.pickle")))
         
 SLINKET_DICTS = SlinketDicts()

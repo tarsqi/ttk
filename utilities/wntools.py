@@ -142,7 +142,7 @@ def equalsIgnoreCase(a, b):
     1
     """
     # test a == b first as an optimization where they're equal
-    return a == b or string.lower(a) == string.lower(b)
+    return a == b or a.lower() == b.lower()
 
 
 #
@@ -248,7 +248,7 @@ def getIndex(form, pos='noun'):
             return dictionary[form]
         elif substitutions:
             (old, new) = substitutions[0]
-            substitute = string.replace(form, old, new) and substitute != form
+            substitute = form.replace(old, new) and substitute != form
             if substitute and dictionary.has_key(substitute):
                 return dictionary[substitute]
             return              trySubstitutions(trySubstitutions, form, substitutions[1:], lookup=0) or \
@@ -312,7 +312,7 @@ def morphy(form, pos='noun', collect=0):
         import string
         exceptions = binarySearchFile(excfile, form)
         if exceptions:
-            form = exceptions[string.find(exceptions, ' ')+1:-1]
+            form = exceptions[exceptions.find(' ')+1:-1]
         if lookup and dictionary.has_key(form):
             if collect:
                 collection.append(form)

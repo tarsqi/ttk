@@ -22,7 +22,7 @@ After creation these should be moved to the patterns directory.
 """
 
 from __future__ import absolute_import
-import os, sys, cPickle
+import os, sys, six.moves.cPickle
 from io import open
 
 sys.path.append('../..')
@@ -45,4 +45,4 @@ for (listName, patternsList) in patternsGroups:
     toPickle = []
     for name, pattern in patternsList:
         toPickle.append(compileOP(pattern, name=name))
-    cPickle.dump(toPickle, pickleFile)
+    six.moves.cPickle.dump(toPickle, pickleFile)

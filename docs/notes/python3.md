@@ -349,13 +349,13 @@ This will probably show up all over the place. The annoying part is that the cod
 
 ### 3.5.  Exceptions
 
-[https://portingguide.readthedocs.io/en/latest/exceptions.html](https://portingguide.readthedocs.io/en/latest/exceptions.html)
+Based on [https://portingguide.readthedocs.io/en/latest/exceptions.html](https://portingguide.readthedocs.io/en/latest/exceptions.html). All changes made in this context are in commit [854baedc](https://github.com/tarsqi/ttk/commit/854baedc0417e9ed431045248fcede3649e17bf2).
 
 ```
 $ python-modernize -wnf lib2to3.fixes.fix_except .
 ```
 
-This introduced one change, which had to be edited manually to enter some meaningful mains instead of the standard `xxx_todo_changeme`.
+This introduced one change, which had to be edited manually to enter some meaningful names instead of the standard `xxx_todo_changeme`.
 
 ```
 $ python-modernize -wnf libmodernize.fixes.fix_raise -f libmodernize.fixes.fix_raise_six .
@@ -476,13 +476,47 @@ RefactoringTool: ./utilities/wordnet.py
 
 
 
+### 3.6.  Standard library
+
+[htps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html](tps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html)
+
+<u>Renamed modules</u>
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_imports_six .
+```
+
+This resulted in changes like this
+
+```diff
+-import cPickle
++import six.moves.cPickle
+
+-HAVE_FSAs = cPickle.load(openfile("HAVE_FSAs.pickle"))
++HAVE_FSAs = six.moves.cPickle.load(openfile("HAVE_FSAs.pickle"))
+```
+
+These were simplified to the following to make it simpler to change to non-six pickle when we are Python3 only.
+
+```diff
+-import cPickle
++from six.moves import cPickle
+```
+
+<u>Removed modules</u> and the <u>urllib modules</u>
+
+None that I am aware of, did search the code for urllib, nothing there.
+
+<u>The string module</u>
+
+Manually replaced all functions used in this module with string methods, there are about 50-60 of them, mostly in the FSA and wordnet utilities.
+
+
+
 ## 4.  Remaining thingies
 
 List of steps still remaining.
 
-- standard library
-  
-   - [htps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html](tps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html)
 - numbers and dictionaries and comprehensions
   - [https://portingguide.readthedocs.io/en/latest/numbers.html](https://portingguide.readthedocs.io/en/latest/numbers.html)
   - [https://portingguide.readthedocs.io/en/latest/dicts.html](https://portingguide.readthedocs.io/en/latest/dicts.html)

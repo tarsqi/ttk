@@ -185,10 +185,10 @@ class Vector(object):
         self.tarsqidoc = tarsqidoc
         self.source = source
         self.sentence = sentence
-        string = tarsqidoc.sourcedoc.text[source.begin:source.end]
-        string = '_'.join(string.split())
+        s = tarsqidoc.sourcedoc.text[source.begin:source.end]
+        s = '_'.join(s.split())
         self.features = {TAG: source_tag,
-                         STRING: string,
+                         STRING: s,
                          SYNTAX: self.source.syntax()}
         for feat in features:
             val = self.get_value(feat)
