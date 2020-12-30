@@ -23,6 +23,8 @@ from library.evita.patterns.feature_rules import FEATURE_RULES
 from components.common_modules.utils import get_tokens, remove_interjections
 from components.common_modules.utils import contains_adverbs_only
 from components.evita.rule import FeatureRule
+from six.moves import zip
+from six.moves import range
 
 DEBUG = True
 DEBUG = False

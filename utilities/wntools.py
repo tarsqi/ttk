@@ -31,6 +31,7 @@ Usage
 
 from __future__ import absolute_import
 from io import open
+from six.moves import map
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "2.0"
 
@@ -66,9 +67,9 @@ def tree(source, pointerType):
     >>> #pprint(tree(dog, HYPONYM)) # too verbose to include here
     """
     if isinstance(source,  Word):
-        return map(lambda s, t=pointerType:tree(s,t), source.getSenses())
+        return list(map(lambda s, t=pointerType:tree(s,t), source.getSenses()))
     _requireSource(source)
-    return [source] + map(lambda s, t=pointerType:tree(s,t), source.pointerTargets(pointerType))
+    return [source] + list(map(lambda s, t=pointerType:tree(s,t), source.pointerTargets(pointerType)))
 
 def closure(source, pointerType, accumulator=None):
     """Return the transitive closure of source under the pointerType
@@ -80,7 +81,7 @@ def closure(source, pointerType, accumulator=None):
     ['dog' in {noun: dog, domestic dog, Canis familiaris}, {noun: canine, canid}, {noun: carnivore}, {noun: placental, placental mammal, eutherian, eutherian mammal}, {noun: mammal}, {noun: vertebrate, craniate}, {noun: chordate}, {noun: animal, animate being, beast, brute, creature, fauna}, {noun: organism, being}, {noun: living thing, animate thing}, {noun: object, physical object}, {noun: entity}]
     """
     if isinstance(source, Word):
-        return reduce(union, map(lambda s, t=pointerType:tree(s,t), source.getSenses()))
+        return reduce(union, list(map(lambda s, t=pointerType:tree(s,t), source.getSenses())))
     _requireSource(source)
     if accumulator is None:
         accumulator = []
@@ -195,7 +196,7 @@ def product(u, v):
     >>> product("123", "abc")
     [('1', 'a'), ('1', 'b'), ('1', 'c'), ('2', 'a'), ('2', 'b'), ('2', 'c'), ('3', 'a'), ('3', 'b'), ('3', 'c')]
     """
-    return flatten1(map(lambda a, v=v:map(lambda b, a=a:(a,b), v), u))
+    return flatten1(list(map(lambda a, v=v:list(map(lambda b, a=a:(a,b), v)), u)))
 
 def removeDuplicates(sequence):
     """Return a copy of _sequence_ with equal items removed.

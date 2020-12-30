@@ -14,6 +14,7 @@ from objects import \
      
 from closure import Axiom, Closure
 from io import open
+from six.moves import range
 
 settings = {}
 settings['debug'] = 0
@@ -425,7 +426,7 @@ def test3():
     
     # 2. MERGE X-Y and Y-Z ENVIRONMENTS AND RUN CLOSURE
     sys.stderr.write("Merging and running closure...\n")
-    indexes = range(len(envs1))
+    indexes = list(range(len(envs1)))
     #indexes = range(4)
     out = open("compositions_long.txt",'w')
     out2 = open("compositions_short.txt",'w')

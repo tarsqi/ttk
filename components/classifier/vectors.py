@@ -27,6 +27,7 @@ import os, codecs, textwrap
 from components.common_modules.tree import create_tarsqi_tree
 from library.main import LIBRARY
 from utilities import logger
+from six.moves import range
 
 
 DEBUG = False

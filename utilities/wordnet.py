@@ -38,6 +38,9 @@ clearly(adv.)
 
 from __future__ import absolute_import
 from io import open
+from six.moves import map
+from six.moves import filter
+from six.moves import range
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "1.4"
 
@@ -213,7 +216,7 @@ class Word(object):
     def __init__(self, line):
         """Initialize the word from a line of a WN POS file."""
         tokens = line.split()
-        ints = map(int, tokens[int(tokens[3]) + 4:])
+        ints = list(map(int, tokens[int(tokens[3]) + 4:]))
         self.form = tokens[0].replace('_', ' ')
         "Orthographic representation of the word."
         self.pos = _normalizePOS(tokens[1])
@@ -370,7 +373,7 @@ class Synset(object):
         if pos == VERB:
             (vfTuples, remainder) = _partition(remainder[1:], 3, int(remainder[0]))
             def extractVerbFrames(index, vfTuples):
-                return tuple(map(lambda t:int(t[1]), filter(lambda t,i=index:int(t[2]) in (0, i), vfTuples)))
+                return tuple([int(t[1]) for t in filter(lambda t,i=index:int(t[2]) in (0, i), vfTuples)])
             senseVerbFrames = []
             for index in range(1, len(self._senseTuples) + 1):
                 senseVerbFrames.append(extractVerbFrames(index, vfTuples))
@@ -421,7 +424,7 @@ class Synset(object):
             return self._pointers
         else:
             _requirePointerType(pointerType)
-            return filter(lambda pointer, type=pointerType: pointer.type == type, self._pointers)
+            return list(filter(lambda pointer, type=pointerType: pointer.type == type, self._pointers))
 
     pointers = getPointers # backwards compatability
     
@@ -437,7 +440,7 @@ class Synset(object):
         >>> N['dog'][0].getPointerTargets(HYPERNYM)
         [{noun: canine, canid}]
         """
-        return map(Pointer.target, self.getPointers(pointerType))
+        return list(map(Pointer.target, self.getPointers(pointerType)))
 
     pointerTargets = getPointerTargets # backwards compatability
     
@@ -449,7 +452,7 @@ class Synset(object):
         >>> N['dog'][1].isTagged()
         0
         """
-        return len(filter(Sense.isTagged, self.getSenses())) > 0
+        return len(list(filter(Sense.isTagged, self.getSenses()))) > 0
     
     def __str__(self):
         """Return a human-readable representation.
@@ -457,7 +460,7 @@ class Synset(object):
         >>> str(N['dog'][0].synset)
         '{noun: dog, domestic dog, Canis familiaris}'
         """
-        return "{" + self.pos + ": " + ", ".join(map(lambda sense:sense.form, self.getSenses())) + "}"
+        return "{" + self.pos + ": " + ", ".join([sense.form for sense in self.getSenses()]) + "}"
     
     def __repr__(self):
         """If ReadableRepresentations is true, return a human-readable
@@ -501,8 +504,8 @@ class Synset(object):
         if isinstance(idx, Word):
             idx = idx.form
         if isinstance(idx, StringType):
-            idx = _index(idx, map(lambda sense:sense.form, senses)) or \
-                  _index(idx, map(lambda sense:sense.form, senses), _equalsIgnoreCase)
+            idx = _index(idx, [sense.form for sense in senses]) or \
+                  _index(idx, [sense.form for sense in senses], _equalsIgnoreCase)
         return senses[idx]
     
     def __getslice__(self, i, j):
@@ -611,7 +614,7 @@ class Sense(object):
         senseIndex = _index(self, self.synset.getSenses())
         def pointsFromThisSense(pointer, selfIndex=senseIndex):
             return pointer.sourceIndex == 0 or pointer.sourceIndex - 1 == selfIndex
-        return filter(pointsFromThisSense, self.synset.getPointers(pointerType))
+        return list(filter(pointsFromThisSense, self.synset.getPointers(pointerType)))
 
     pointers = getPointers # backwards compatability
 
@@ -627,7 +630,7 @@ class Sense(object):
         >>> N['dog'][0].getPointerTargets(HYPERNYM)
         [{noun: canine, canid}]
         """
-        return map(Pointer.target, self.getPointers(pointerType))
+        return list(map(Pointer.target, self.getPointers(pointerType)))
 
     pointerTargets = getPointerTargets # backwards compatability
     
@@ -900,7 +903,7 @@ class Dictionary(object):
     def keys(self):
         """Return a sorted list of strings that index words in this
         dictionary."""
-        return map(lambda key: key.replace(' ', '_'), list(self.indexFile.keys()))
+        return [key.replace(' ', '_') for key in list(self.indexFile.keys())]
     
     def has_key(self, form):
         """Return true iff the argument indexes a word in this dictionary.

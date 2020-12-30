@@ -24,6 +24,7 @@ import forms
 import anydbm
 from wntools import *
 from io import open
+from six.moves import map
 
 DEBUG = False
 
@@ -111,7 +112,7 @@ def isWNEvent(sense):
 def checkWNEvent(wnWord):
     """Returns 1 if all wordnet senses are events, returns -1 if no
     senses are events and returns 0 otherwise."""
-    senses = map(isWNEvent,wnWord.getSenses())
+    senses = list(map(isWNEvent,wnWord.getSenses()))
     all = True
     one = False
     for sense in senses:

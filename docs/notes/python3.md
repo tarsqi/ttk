@@ -513,7 +513,9 @@ Manually replaced all functions used in this module with string methods, there a
 
 
 
-### 3.6.  Numbers and dictionaries and comprehensions
+### 3.7.  Numbers, dictionaries and comprehensions
+
+See commit [1ae64966](https://github.com/tarsqi/ttk/commit/1ae64966ccc0206e31ba1af822d017c436cd30d0) for changes made in this section.
 
 <u>Numbers</u>
 
@@ -579,19 +581,41 @@ There were no comprehensions over tuples.
 
 
 
+### 3.8.  Iterators
+
+[https://portingguide.readthedocs.io/en/latest/iterators.html](https://portingguide.readthedocs.io/en/latest/iterators.html)
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_map .
+$ python-modernize -wnf libmodernize.fixes.fix_filter .
+```
+
+This made a fair amount of changes, mostly on third party code (FSA and WordNet). Should review all the uses of map() and filter() and replace them with comprehensions or for loops.
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_zip
+```
+
+Just imported zip from six.moves.
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_xrange_six .
+```
+
+Imported range from six.moves, added some list functions around results, and removed xrange().
+
+
+
 ## 4.  Remaining thingies
 
 List of steps still remaining.
 
 - Other core object changes
   - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
-- iterators
-  
-  - [https://portingguide.readthedocs.io/en/latest/iterators.html](https://portingguide.readthedocs.io/en/latest/iterators.html)
 - built-in functions
   
   - [https://portingguide.readthedocs.io/en/latest/builtins.html](https://portingguide.readthedocs.io/en/latest/builtins.html)
-- comparing and sorting, including rich comarison operators
+- comparing and sorting, including rich comparison operators
   - [https://portingguide.readthedocs.io/en/latest/comparisons.html](https://portingguide.readthedocs.io/en/latest/comparisons.html)
   - [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html)
 - Other changes
@@ -602,6 +626,8 @@ After that we can run `python-modernize` ,`pylint --py3k` and `python -3` when r
 Maybe check [http://python3porting.com/stdlib.html#removed-modules](http://python3porting.com/stdlib.html#removed-modules).
 
 Followed by `2to3`.
+
+Remove from future imports and calls to six library.
 
 Also see:
 

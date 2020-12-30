@@ -34,6 +34,7 @@ import sys
 import codecs
 import json
 import subprocess
+from six.moves import range
 
 
 class LappsObject(object):
@@ -129,7 +130,7 @@ class LIF(LappsObject):
 
     def _get_new_view_id(self):
         ids = [view.id for view in self.views]
-        for i in xrange(1, sys.maxint):
+        for i in range(1, sys.maxint):
             if "v%d" % i not in ids:
                 return "v%d" % i
 

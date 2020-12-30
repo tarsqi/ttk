@@ -9,6 +9,7 @@ from library.tarsqi_constants import EVITA
 from library.main import LIBRARY
 from components.evita.main import Evita
 from io import open
+from six.moves import range
 
 
 # Set this to True if you want to do a simplistic evaluation of how many of the
@@ -51,7 +52,7 @@ class EvitaWrapper(object):
                 # Use character offsets of all characters in the event, so if we
                 # have "He sleeps." with sleep from 3 to 9, then the offsets are
                 # [3,4,5,6,7,8] since offset 9 points to the period.
-                offsets = range(event.begin, event.end)
+                offsets = list(range(event.begin, event.end))
                 for off in offsets:
                     if off in imported_events:
                         logger.warning("Overlapping imported events")

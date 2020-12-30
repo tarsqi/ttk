@@ -37,6 +37,8 @@ from xml.sax.saxutils import escape
 from .abbreviation import dict_abbrevs
 from .abbreviation import dict_end_abbrevs
 from .abbreviation import dict_initial_tokens
+from six.moves import filter
+from six.moves import range
 
 
 abbrev_pattern = re.compile(r'^([A-Z]\.)+$')
@@ -145,7 +147,7 @@ class Tokenizer(object):
 
         def has_eos(puncts):
             token_has_eos = (lambda token: token[2] in ('.', '?', '!'))
-            return filter( token_has_eos, puncts)
+            return list(filter( token_has_eos, puncts))
 
         if self.tokens:
             first = self._first_token_start()

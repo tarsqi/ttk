@@ -13,6 +13,7 @@ from components.common_modules.tags import EventTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.main import LIBRARY
 from utilities import logger
+from six.moves import range
 
 
 EVENT = LIBRARY.timeml.EVENT

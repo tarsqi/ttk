@@ -27,6 +27,7 @@ from library.main import LIBRARY
 
 from components.preprocessing.tokenizer import Tokenizer, TokenizedLex
 from components.preprocessing.chunker import chunk_sentences
+from six.moves import zip
 
 
 # TreeTagger executables and parameter file

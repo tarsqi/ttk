@@ -7,6 +7,8 @@ and are used by the VChunkFeatures class in Evita.
 """
 
 
+from __future__ import absolute_import
+from six.moves import range
 class FeatureRule(object):
 
     """Objects of this class contain a chunk and a feature rule and are tasked

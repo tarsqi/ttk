@@ -9,7 +9,7 @@ $ python -m testing.regression --evita
 
    Runs all available Evita tests and stores the results in directories
    results/evita-XX where the XX denotes a particular Evita test. Files in the
-   results directories are timestamped.
+   results directories are timestamped. This will also generate new reports.
 
 $ python -m testing.regression --report
 
@@ -89,6 +89,7 @@ def create_name_generator(names):
         return name
     return name_generator
 
+
 def create_event_vg_cases():
     """Create cases for verbal events, using timebank-events-vg.txt."""
     name_generator = create_name_generator({})
@@ -115,6 +116,7 @@ def create_event_vg_cases():
         out.write("VG-%s\t%s\t%s\t%s\n" % (name, sentence, o1, o2))
     print "Created", outfile
 
+
 def run_evita():
     load_tagger()
     cases = load_cases('testing/cases/cases-evita-vg.tab')
@@ -131,6 +133,7 @@ def run_evita():
             false += 1
     print "True=%s False=%s" % (true, false)
 
+
 def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
     # NOTE: apart from the options this is the same function as in unittests.py
@@ -141,10 +144,12 @@ def check_tag(pipeline, sentence, tag, o1, o2):
             return True
     return False, tags
 
+
 def load_tagger():
     # a dummy run just to get the tagger messages out of the way
     #tarsqi.process_string("Fido barks.", [('--pipeline', 'PREPROCESSOR')])
     tarsqi.process_string("Fido barks.", pipeline='PREPROCESSOR')
+
 
 def timestamp():
     return time.strftime('%Y%m%d-%H%M%S')
@@ -251,6 +256,7 @@ def generate_report():
     generator.write_index()
     generator.write_cases()
 
+
 def purge_result(args):
     """Delete the results of one particular run of a case, the args parameter is
     a list of a case identifier and a timestamp, for example ['evita-vg',
@@ -281,8 +287,12 @@ if __name__ == '__main__':
     if not opts:
         exit("Nothing to do")
     for opt, val in opts:
-        if opt == '--create-event-vg-cases': create_event_vg_cases()
-        elif opt == '--evita': run_evita()
-        elif opt == '--gutime': run_gutime()
-        elif opt == '--report': generate_report()
-        elif opt == '--purge': purge_result(args)
+        if opt == '--create-event-vg-cases':
+            create_event_vg_cases()
+        elif opt == '--evita':
+            run_evita()
+            generate_report()
+        elif opt == '--report':
+            generate_report()
+        elif opt == '--purge':
+            purge_result(args)

@@ -30,6 +30,8 @@ from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
 
 from utilities import logger
 from io import open
+from six.moves import map
+from six.moves import range
 
 
 # Get the Bayesian event recognizer
@@ -309,7 +311,7 @@ class NounChunk(Chunk):
         # TODO: we now miss multiple events in a chunk
         if imported_events is None:
             imported_events = {}
-        offsets = range(self.begin, self.end)
+        offsets = list(range(self.begin, self.end))
         # Get the tags for all characters in the entire span and then get the
         # head of the list, that is, the contiguous sequence of Tags at the end
         # of the range.
@@ -606,17 +608,17 @@ class VerbChunk(Chunk):
         verbfeatureslist = VChunkFeaturesList(tokens=token_list)
         GramMultiVChunk = verbfeatureslist[0]
         self._conditionallyAddEvent(GramMultiVChunk)
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
     def _processEventInMultiNChunk(self, features, substring, imported_events):
         nounChunk = substring[-1]
         nounChunk.createEvent(features, imported_events)
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
     def _processEventInMultiAChunk(self, features, substring):
         adjToken = substring[-1]
         adjToken.createAdjEvent(features)
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
     def _processDoubleEventInMultiAChunk(self, features, substring):
         """Tagging EVENT in both VerbChunk and AdjectiveToken. In this case the
@@ -625,7 +627,7 @@ class VerbChunk(Chunk):
         self._conditionallyAddEvent(features)
         adjToken = substring[-1]
         adjToken.createAdjEvent()
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
 
 def _debug_vcf(vcf_list):

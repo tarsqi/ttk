@@ -4,6 +4,7 @@ from pprint import pprint
 
 from utilities import logger
 from library.main import LIBRARY
+from six.moves import range
 
 
 class Constituent(object):

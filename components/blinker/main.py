@@ -14,6 +14,7 @@ from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.tree import create_tarsqi_tree
 from components.blinker.compare import compare_date
+from six.moves import range
 
 
 TIMEX = LIBRARY.timeml.TIMEX

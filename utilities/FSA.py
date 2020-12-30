@@ -335,6 +335,9 @@ April 2005:
 from __future__ import absolute_import
 import string, os, tempfile
 from types import InstanceType, ListType, TupleType, IntType, LongType, DictType, StringType
+from six.moves import map
+from six.moves import filter
+from six.moves import range
 IntegerTypes = (IntType, LongType)
 
 #from utilities import logger
@@ -359,7 +362,7 @@ class FSA(object):
                 if states == None:
                         states = self.collectStates(transitions, initialState, finalStates)
                 else:
-                        assert not filter(lambda s, states=states:s not in states, self.collectStates(transitions, initialState, finalStates))
+                        assert not list(filter(lambda s, states=states:s not in states, self.collectStates(transitions, initialState, finalStates)))
                 self.states = states
                 self.alphabet = alphabet
                 self.transitions = transitions
@@ -451,7 +454,7 @@ class FSA(object):
                 return labels
         
         def nextAvailableState(self):
-                return reduce(max, filter(lambda s:type(s) in IntegerTypes, self.states), -1) + 1
+                return reduce(max, [s for s in self.states if type(s) in IntegerTypes], -1) + 1
         
         def transitionsFrom(self, state):
                 try:
@@ -582,7 +585,7 @@ class FSA(object):
                         states = newStates
                 """Returning the length of the list containing all states s in states
                 that are also in self.finalStates"""
-                return len(filter(lambda s, finals=self.finalStates: s in finals, states)) > 0
+                return len(list(filter(lambda s, finals=self.finalStates: s in finals, states))) > 0
                 #return len(filter(lambda s: s in self.finalStates, states)) > 0
 
         def acceptsSubstringOf(self, sequence):   #looking for Longest Subsequence
@@ -720,7 +723,7 @@ class FSA(object):
         #
         def complement(self):
                 states, alpha, transitions, start, finals = completion(self.determinized()).tuple()
-                return self.create(states, alpha, transitions, start, filter(lambda s,f=finals:s not in f, states))#.trimmed()
+                return self.create(states, alpha, transitions, start, list(filter(lambda s,f=finals:s not in f, states)))#.trimmed()
         
         
         #
@@ -751,9 +754,9 @@ class FSA(object):
                                 if s not in states:
                                         states.append(s)
                 states = list(stateMap.values())
-                transitions = map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions)
-                arcMetadata = map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata())
-                copy = self.copy(states, self.alphabet, transitions, stateMap[self.initialState], map(stateMap.get, self.finalStates), arcMetadata)
+                transitions = list(map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions))
+                arcMetadata = list(map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata()))
+                copy = self.copy(states, self.alphabet, transitions, stateMap[self.initialState], list(map(stateMap.get, self.finalStates)), arcMetadata)
                 copy._isSorted = 1
                 return copy
         
@@ -784,9 +787,9 @@ class FSA(object):
                                 return NULL_FSA
                         else:
                                 return NULL_FSA.coerce(self.__class__)
-                transitions = filter(lambda (s0, s1, _), states=states:s0 in states and s1 in states, transitions)
-                arcMetadata = filter(lambda ((s0, s1, _), __), states=states: s0 in states and s1 in states, self.getArcMetadata())  #R: added underscore
-                result = self.copy(states, alpha, transitions, initial, filter(lambda s, states=states:s in states, finals), arcMetadata).sorted()
+                transitions = list(filter(lambda (s0, s1, _), states=states:s0 in states and s1 in states, transitions))
+                arcMetadata = list(filter(lambda ((s0, s1, _), __), states=states: s0 in states and s1 in states, self.getArcMetadata()))  #R: added underscore
+                result = self.copy(states, alpha, transitions, initial, list(filter(lambda s, states=states:s in states, finals)), arcMetadata).sorted()
                 result._isTrimmed = 1
                 return result
         
@@ -812,7 +815,7 @@ class FSA(object):
                                                 stateSets.append(target)
                 finalStates = []
                 for stateSet in stateSets:
-                        if filter(lambda s, finalStates=self.finalStates:s in finalStates, stateSet):
+                        if list(filter(lambda s, finalStates=self.finalStates:s in finalStates, stateSet)):
                                 finalStates.append(stateSet)
                 copy = self.copy(stateSets, alphabet, transitions, stateSets[0], finalStates).sorted()
                 copy._isTrimmed = 1
@@ -836,10 +839,10 @@ class FSA(object):
                 while index < len(stateSets):
                         #debugFile.write( "\n..............determinzed option 2")
                         stateSet, index = stateSets[index], index + 1
-                        localTransitions = filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions)
+                        localTransitions = list(filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions))
                         if localTransitions:
                                 #debugFile.write( "\n..............determinzed option 2.1")
-                                localLabels = map(lambda _____label:_____label[2], localTransitions)  #R: added an underscore
+                                localLabels = [_____label[2] for _____label in localTransitions]  #R: added an underscore
                                 #debugFile.write( "\n..............determinzed option 2.1.1")
                                 labelMap = constructLabelMap(localLabels, self.alphabet)
                                 #debugFile.write( "\n..............determinzed option 2.1.2")
@@ -873,7 +876,7 @@ class FSA(object):
                 finalStates = []
                 for stateSet in stateSets:
                         #debugFile.write( "\n..............determinzed option 3")
-                        if filter(lambda s,finalStates=self.finalStates:s in finalStates, stateSet):
+                        if list(filter(lambda s,finalStates=self.finalStates:s in finalStates, stateSet)):
                                 #debugFile.write( "\n..............determinzed option 3.1")
                                 finalStates.append(stateSet)
                 if arcMetadata:
@@ -883,7 +886,7 @@ class FSA(object):
                                 s1.sort()
                                 s1 = tuple(s1)
                                 return ((s0, s1, label), data)
-                        arcMetadata = map(fixArc, arcMetadata)
+                        arcMetadata = list(map(fixArc, arcMetadata))
                 result = self.copy(stateSets, self.alphabet, transitions, stateSets[0], finalStates, arcMetadata).sorted()
                 result._isDeterminized = 1
                 result._isTrimmed = 1
@@ -899,9 +902,9 @@ class FSA(object):
                 states0, alpha0, transitions0, initial0, finals0 = self.tuple()
                 sinkState = self.nextAvailableState()
                 labels = self.labels()
-                states = filter(None, [
+                states = [_f for _f in [
                                 tuple(filter(lambda s, finalStates=self.finalStates:s not in finalStates, states0)),
-                                tuple(filter(lambda s, finalStates=self.finalStates:s in finalStates, states0))])
+                                tuple(filter(lambda s, finalStates=self.finalStates:s in finalStates, states0))] if _f]
                 labelMap = {}
                 for state in states0:
                         for label in labels:
@@ -937,11 +940,11 @@ class FSA(object):
                                                         #print 'splitting', destinationMap.keys()
                                                         for value in values:
                                                                 value.sort()
-                                                        states[index:index+1] = map(tuple, values)
+                                                        states[index:index+1] = list(map(tuple, values))
                                                         changed = 1
                                                         break
-                transitions = removeDuplicates(map(lambda (s0,s1,label), m=partitionMap:(m[s0], m[s1], label), transitions0))
-                arcMetadata = map(lambda ((s0, s1, label), data), m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata())
+                transitions = removeDuplicates(list(map(lambda (s0,s1,label), m=partitionMap:(m[s0], m[s1], label), transitions0)))
+                arcMetadata = list(map(lambda ((s0, s1, label), data), m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata()))
                 if not alpha0:
                         newTransitions = consolidateTransitions(transitions)
                         if arcMetadata:
@@ -957,7 +960,7 @@ class FSA(object):
                                 arcMetadata = newArcMetadata
                         transitions = newTransitions
                 initial = partitionMap[initial0]
-                finals = removeDuplicates(map(lambda s, m=partitionMap:m[s], finals0))
+                finals = removeDuplicates(list(map(lambda s, m=partitionMap:m[s], finals0)))
                 result = self.copy(states, self.alphabet, transitions, initial, finals, arcMetadata).sorted()
                 result._isDeterminized = 1
                 result._isMinimized = 1
@@ -1098,7 +1101,7 @@ def concatenation(a, *args):
                 b = toFSA(b).sorted(a.nextAvailableState())
                 states0, alpha0, transitions0, initial0, finals0 = a.tuple()
                 states1, alpha1, transitions1, initial1, finals1 = b.tuple()
-                a = a.create(states0 + states1, alpha0, transitions0 + transitions1 + map(lambda  s0, s1=initial1:(s0, s1, EPSILON), finals0), initial0, finals1, a.getArcMetadata() + b.getArcMetadata())
+                a = a.create(states0 + states1, alpha0, transitions0 + transitions1 + list(map(lambda  s0, s1=initial1:(s0, s1, EPSILON), finals0)), initial0, finals1, a.getArcMetadata() + b.getArcMetadata())
         return a
 
 def containment(arg, occurrences=1):
@@ -1152,7 +1155,7 @@ def intersection(a, b):
                                                         arcMetadata.append((transition, a.getArcMetadataFor((sa0, sa1, la))))
                                                 if b.getArcMetadataFor((sa0, sa1, la)):
                                                         arcMetadata.append((transition, b.getArcMetadataFor((sa0, sa1, la))))
-        finals = filter(lambda (s0, s1), f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states)
+        finals = list(filter(lambda (s0, s1), f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states))
         return a.create(states, alpha0, transitions, states[0], finals, arcMetadata).sorted()
 
 def iteration(fsa, min=1, max=None):
@@ -1176,8 +1179,8 @@ def reverse(fsa):
         newInitial = fsa.nextAvailableState()
         return fsa.create(states + [newInitial],
                           alpha,
-                          map(lambda s0_s1_l:(s0_s1_l[1], s0_s1_l[0], s0_s1_l[2]), transitions)
-                          + map(lambda s1, s0=newInitial:(s0, s1, EPSILON), finals),
+                          [(s0_s1_l[1], s0_s1_l[0], s0_s1_l[2]) for s0_s1_l in transitions]
+                          + list(map(lambda s1, s0=newInitial:(s0, s1, EPSILON), finals)),
                           [initial])
 
 def union(*args):
@@ -1223,11 +1226,11 @@ def completion(fsa):
         transitions = transitions[:]
         sinkState = fsa.nextAvailableState()
         for state in states:
-                labels = map(lambda _____label1:_____label1[2], fsa.transitionsFrom(state)) #added underscore insecond argument
+                labels = [_____label1[2] for _____label1 in fsa.transitionsFrom(state)] #added underscore insecond argument
                 for label in complementLabelSet(labels, alphabet):
                         transitions.append((state, sinkState, label))  #added parenthesis pair 
         if alphabet:
-                transitions.extend(map(lambda symbol, s=sinkState:(s, s, symbol), alphabet))
+                transitions.extend(list(map(lambda symbol, s=sinkState:(s, s, symbol), alphabet)))
         else:
                 transitions.append((sinkState, sinkState, ANY))
         return fsa.copy(states + [sinkState], alphabet, transitions, start, finals, fsa.getArcMetadata())
@@ -1268,7 +1271,7 @@ def labelComplement(label, alphabet):
                 return label.complement()
         elif alphabet:
                 #debugFile.write( "\nHERE.......2")
-                return filter(lambda s, s1=label:s != s1, alphabet)
+                return list(filter(lambda s, s1=label:s != s1, alphabet))
         elif label == ANY:
                 #debugFile.write( "\nHERE.......3")
                 return None
@@ -1448,13 +1451,13 @@ TRACE_CONSTRUCT_LABEL_MAP = 0
 
 def consolidateTransitions(transitions):
         result = []
-        for s0, s1 in removeDuplicates(map(lambda s0_s1__:(s0_s1__[0],s0_s1__[1]), transitions)):
+        for s0, s1 in removeDuplicates([(s0_s1__[0],s0_s1__[1]) for s0_s1__ in transitions]):
                 labels = []
                 for ss0, ss1, label in transitions:
                         if ss0 == s0 and ss1 == s1:
                                 labels.append(label)
                 if len(labels) > 1:
-                        reduced = reduce(unionLabelSets, map(lambda label:[label], labels))
+                        reduced = reduce(unionLabelSets, [[label] for label in labels])
                         if TRACE_LABEL_OPERATIONS or TRACE_CONSOLIDATE_TRANSITIONS:
                                 pass
                                 #log('consolidateTransitions(%s) -> %s' % (labels, reduced))
@@ -1512,7 +1515,7 @@ def symbolComplement(symbol):
                 symbol = str(symbol)
         if '&' in symbol:
                 #debugFile.write( "\nSYMBOL .........1")
-                return map(symbolComplement, symbol.split('&'))
+                return list(map(symbolComplement, symbol.split('&')))
         elif symbol[0] == '~':
                 #debugFile.write( "\nSYMBOL .........2")
                 return symbol[1:]
@@ -1539,7 +1542,7 @@ def symbolIntersection(s1, s2):
                         
         if type(s1) is StringType:
                 #debugFile.write( "\nS1:"+s1)
-                nonNegatedSymbols = filter(lambda s:s[0] != '~', set1)
+                nonNegatedSymbols = [s for s in set1 if s[0] != '~']
         else:
                 nonNegatedSymbols = set1
                
@@ -1564,7 +1567,7 @@ def singleton(symbol, alphabet=None, arcMetadata=None):
         return fsa
 
 def sequence(sequence, alphabet=None):
-        fsa = reduce(concatenation, map(lambda label, alphabet=alphabet:singleton(label, alphabet), sequence), EMPTY_STRING_FSA)
+        fsa = reduce(concatenation, list(map(lambda label, alphabet=alphabet:singleton(label, alphabet), sequence)), EMPTY_STRING_FSA)
         fsa.label = repr(sequence)
         return fsa
 
