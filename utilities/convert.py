@@ -233,7 +233,7 @@ def _add_events_to_tarsqidoc(events, event_idx, dct, tarsqidoc):
             tarsqidoc.sourcedoc.tags.add_tag('EVENT', begin, end, attrs)
             dct_rel_id += 1
             if dct is not None:
-                attrs = { LID: LinkID.next(), #LID: next(LinkID),
+                attrs = { LID: next(LinkID), #LID: next(LinkID),
                           RELTYPE: event.DocTimeRel,
                           EVENT_INSTANCE_ID: event.id,
                           RELATED_TO_TIME: dct.id }
