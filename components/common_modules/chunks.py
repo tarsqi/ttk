@@ -8,6 +8,7 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import types
 from xml.sax.saxutils import quoteattr
 
@@ -198,9 +199,9 @@ class Chunk(Constituent):
         return True
 
     def pretty_print(self, indent=0):
-        print "%s<%s position=%s %d-%d checkedEvents=%s event=%s eid=%s>" % \
+        print("%s<%s position=%s %d-%d checkedEvents=%s event=%s eid=%s>" % \
             (indent * ' ', self.__class__.__name__, self.position,
-             self.begin, self.end, self.checkedEvents, self.event, self.eid)
+             self.begin, self.end, self.checkedEvents, self.event, self.eid))
         for tok in self.dtrs:
             tok.pretty_print(indent + 2)
 
@@ -598,7 +599,7 @@ class VerbChunk(Chunk):
             lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
             if lenSubstring:
                 if DEBUG:
-                    print "Succesful application of %s" % fsa.fsaname
+                    print("Succesful application of %s" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
         else:
             return (0, fsaCounter)
@@ -635,7 +636,7 @@ def _debug_vcf(vcf_list):
     if len(vcf_list) > 0 and DEBUG:
         for vcf in vcf_list:
             if DEBUG:
-                print ' ',
+                print(' ', end=' ')
                 vcf.pp()
     for vcf in vcf_list:
         logger.debug(vcf.as_verbose_string())

@@ -5,6 +5,7 @@ Contains the Evita wrapper.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 from library.tarsqi_constants import EVITA
 from library.main import LIBRARY
 from components.evita.main import Evita
@@ -66,7 +67,7 @@ class EvitaWrapper(object):
         the system."""
         events_key = self.document.sourcedoc.tags.find_tags(EVENT)
         if not events_key:
-            print  "Nothing to evaluate"
+            print("Nothing to evaluate")
         else:
             events_system = {}
             for e in self.document.tags.find_tags(EVENT):
@@ -79,8 +80,8 @@ class EvitaWrapper(object):
                         imported += 1
                         break
             percentage = imported * 100 // len(events_key)
-            print "\n\nEVENTS TO BE IMPORTED:  %3s" % len(events_key)
-            print "FOUND BY SYSTEM:        %3s (%s%%)\n" % (imported, percentage)
+            print("\n\nEVENTS TO BE IMPORTED:  %3s" % len(events_key))
+            print("FOUND BY SYSTEM:        %3s (%s%%)\n" % (imported, percentage))
 
 
 def _pp_imported_events(imported_events):

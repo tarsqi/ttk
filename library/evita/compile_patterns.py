@@ -22,6 +22,7 @@ After creation these should be moved to the patterns directory.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, sys, six.moves.cPickle
 from io import open
 
@@ -41,7 +42,7 @@ from library.evita.multi_chunk_patterns import patternsGroups
 for (listName, patternsList) in patternsGroups:
     fname = "%s.pickle" % listName
     pickleFile = open(fname, 'w')
-    print "Compiling %d %s and saving them in %s" % (len(patternsList), listName, fname)
+    print("Compiling %d %s and saving them in %s" % (len(patternsList), listName, fname))
     toPickle = []
     for name, pattern in patternsList:
         toPickle.append(compileOP(pattern, name=name))

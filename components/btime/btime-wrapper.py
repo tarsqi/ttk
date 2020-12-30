@@ -25,6 +25,7 @@ Usage:
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 import sys, codecs
 
 
@@ -50,7 +51,7 @@ def parse_file(filename):
 
 def parse_sentence(sentence):
     """This is where BTime gets folded in."""
-    print "processing \"%s\"" % ' '.join([t.text for t in sentence])
+    print("processing \"%s\"" % ' '.join([t.text for t in sentence]))
 
 
 

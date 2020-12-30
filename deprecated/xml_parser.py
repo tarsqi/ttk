@@ -14,6 +14,7 @@ WARNING:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import sys
 from types import UnicodeType, IntType, StringType, NoneType
 import xml.parsers.expat
@@ -355,14 +356,14 @@ class XmlDocument:
     def pretty_print(self):
         """Pretty printer for XmlDocuments. Pretty prints the list of elements and prints
         the tag dictionary to standard output."""
-        print "\n%s\n" % str(self)
+        print("\n%s\n" % str(self))
         element = self.elements[0]
         while element:
             element.pretty_print(indent='')
             element = element.get_next()
-        print "\nTAGS:"
+        print("\nTAGS:")
         for tag in self.tags.keys():
-            print "   %-5s  %s" % ('<'+tag+'>', [el.id for el in self.tags[tag]])
+            print("   %-5s  %s" % ('<'+tag+'>', [el.id for el in self.tags[tag]]))
 
     def pp(self):
         self.pretty_print()
@@ -648,7 +649,7 @@ class XmlDocElement:
 
     def pretty_print(self, indent=''):
         """Pretty printer for XmlDocElements, prints the content of the element."""
-        print indent + 'ELEMENT(' + str(self.id) + '): ' + self.content.replace("\n", '\\n')
+        print(indent + 'ELEMENT(' + str(self.id) + '): ' + self.content.replace("\n", '\\n'))
 
 
 

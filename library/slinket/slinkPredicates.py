@@ -29,6 +29,7 @@ Each entry in the Predicate Dictionaries has the following structure:
 
 #from library.timeMLspec import *
 from __future__ import absolute_import
+from __future__ import print_function
 from .timeMLspec import *
 
 # FORWARD patterns:
@@ -49,7 +50,7 @@ from .slinketPatterns import NP_evAsSubj1, NP_evAsSubj2, NP_evAsSubj3
 from .slinketPatterns import MAINsentence
 
 
-print "Creating Slink predicate dictionaries"
+print("Creating Slink predicate dictionaries")
 
 # TODO: it looks like when these dictionaries are pickled, the values of
 # 'acceptance' and 'acceptances' are going to be equal. Check this out.

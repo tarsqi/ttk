@@ -11,6 +11,7 @@ It is here where Allen's constraint propagation algorithm is implemented.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 from .objects import Node, Edge, Constraint
 from .utils import intersect_relations
 from .utils import compare_id
@@ -403,4 +404,4 @@ class Graph(object):
 
 def debug(indent=0, str=''):
     if DEBUG:
-        print '  ' * indent, str
+        print('  ' * indent, str)

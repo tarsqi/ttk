@@ -30,6 +30,7 @@ Example input files are in ../data/in/lif.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import codecs
 import json
@@ -193,9 +194,9 @@ class View(object):
         return d
 
     def pp(self):
-        print self
+        print(self)
         for contains in self.metadata["contains"].keys():
-            print '   ', contains
+            print('   ', contains)
 
 
 class Annotation(object):

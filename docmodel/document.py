@@ -6,6 +6,7 @@ This module contains TarsqiDocument and some of the classes used by it.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, sys, codecs, StringIO, itertools, time
 from xml.sax.saxutils import escape, quoteattr
 from subprocess import Popen, PIPE
@@ -107,18 +108,18 @@ class TarsqiDocument(object):
         self.tags.add_tag('EVENT', begin, end, attrs)
 
     def pp(self, source_tags=True, tarsqi_tags=True):
-        print "\n", self, "\n"
+        print("\n", self, "\n")
         for key, value in self.metadata.items():
-            print "   metadata.%-14s  -->  %s" % (key, value)
+            print("   metadata.%-14s  -->  %s" % (key, value))
         for key, value in self.options.items():
-            print "   options.%-15s  -->  %s" % (key, value)
+            print("   options.%-15s  -->  %s" % (key, value))
         if source_tags and not self.sourcedoc.tags.is_empty():
-            print "\nSOURCE_TAGS:"
+            print("\nSOURCE_TAGS:")
             self.sourcedoc.tags.pp()
         if tarsqi_tags and not self.tags.is_empty():
-            print "\nTARSQI_TAGS:"
+            print("\nTARSQI_TAGS:")
             self.tags.pp()
-        print
+        print()
 
     def next_event_id(self):
         self.counters[EVENT] += 1
@@ -316,12 +317,12 @@ class SourceDoc(object):
 
     def pp(self):
         """Print source and tags."""
-        print "\n<SourceDoc on '%s'>\n" % self.filename
-        print self.text.encode('utf-8').strip()
-        print "\nMETADATA:", self.metadata
-        print "\nTAGS:"
+        print("\n<SourceDoc on '%s'>\n" % self.filename)
+        print(self.text.encode('utf-8').strip())
+        print("\nMETADATA:", self.metadata)
+        print("\nTAGS:")
         self.tags.pp()
-        print
+        print()
         # print "XMLDECL:", self.xmldecl
         # print "COMMENTS:", self.comments
         # print "PROCESSING:", self.processing_instructions
@@ -519,18 +520,18 @@ class TagRepository(object):
 
     def pp_tags(self, indent=''):
         for tag in self.tags:
-            print "%s%s" % (indent, tag)
+            print("%s%s" % (indent, tag))
 
     def pp_opening_tags(self):
-        print '<TagRepository>.opening_tags'
+        print('<TagRepository>.opening_tags')
         for offset, taglist in sorted(self.opening_tags.items()):
-            print("   %d "
-                  % offset, "\n         ".join([x.__str__() for x in taglist]))
+            print(("   %d "
+                  % offset, "\n         ".join([x.__str__() for x in taglist])))
 
     def pp_closing_tags(self):
-        print '<TagRepository>.closing_tags'
+        print('<TagRepository>.closing_tags')
         for offset, tagdict in sorted(self.closing_tags.items()):
-            print "   %d " % offset, tagdict
+            print("   %d " % offset, tagdict)
 
 
 class Tag(object):

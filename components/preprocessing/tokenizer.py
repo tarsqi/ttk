@@ -30,6 +30,7 @@ to change this.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import re
 from StringIO import StringIO
 from xml.sax.saxutils import escape
@@ -413,10 +414,10 @@ class TokenizedText(object):
             s.print_as_string()
 
     def print_as_xmlstring(self):
-        print "<TOKENS>"
+        print("<TOKENS>")
         for s in self.sentences:
             s.print_as_xmlstring()
-        print "</TOKENS>"
+        print("</TOKENS>")
 
 
 class TokenizedSentence(object):
@@ -439,13 +440,13 @@ class TokenizedSentence(object):
         return [(t.text, t) for t in self.tokens]
 
     def print_as_string(self):
-        print ' '.join([t.text for t in self.tokens])
+        print(' '.join([t.text for t in self.tokens]))
 
     def print_as_xmlstring(self):
-        print '<s>'
+        print('<s>')
         for t in self.tokens:
             t.print_as_xmlstring(indent='  ')
-        print '</s>'
+        print('</s>')
 
 
 class TokenizedLex(object):
@@ -468,11 +469,11 @@ class TokenizedLex(object):
         return [(self.text, self)]
 
     def print_as_string(self, indent=''):
-        print self.text
+        print(self.text)
 
     def print_as_xmlstring(self, indent=''):
-        print "%s<lex begin=\"%d\" end=\"%d\">%s</lex>" % \
-              (indent, self.begin, self.end, escape(self.text))
+        print("%s<lex begin=\"%d\" end=\"%d\">%s</lex>" % \
+              (indent, self.begin, self.end, escape(self.text)))
 
 
 if __name__ == '__main__':
@@ -487,6 +488,6 @@ if __name__ == '__main__':
         text = tk.tokenize_text()
     # print tk.sentences
     # print tk.lexes
-    print tk.get_tokenized_as_xml()
-    print tk.get_tokenized_as_string()
-    print "\nDONE, processing time was %.3f seconds\n" % (time() - t1)
+    print(tk.get_tokenized_as_xml())
+    print(tk.get_tokenized_as_string())
+    print("\nDONE, processing time was %.3f seconds\n" % (time() - t1))

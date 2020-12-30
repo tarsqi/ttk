@@ -18,6 +18,7 @@ TODO: this does not work at the moment.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import forms
@@ -132,31 +133,31 @@ IN = open(forms.WORDNET_NOUNS_FILE,'r');
 for (line_number, line) in IN:
 
     if not ((line_number + 1) % 1000):
-        print line_number + 1
+        print(line_number + 1)
     token = line.split()[0]
 
     # first sense is event
     if (isWNEvent(N[str(token)][0])):
         if DEBUG:
-            print token
-            print "  ", N[str(token)], "\n  ", N[str(token)][0]
-            print "   primSenseIsEvent"
+            print(token)
+            print("  ", N[str(token)], "\n  ", N[str(token)][0])
+            print("   primSenseIsEvent")
         file1.write(token+"\n")
         dbm1[token] = '1'
 
     if (wnAllSensesAreEvents(token)):
         if DEBUG:
-            print token
-            print "  ", N[str(token)], "\n  ", N[str(token)][0]
-            print "   isAlwaysEvent"
+            print(token)
+            print("  ", N[str(token)], "\n  ", N[str(token)][0])
+            print("   isAlwaysEvent")
         file2.write(token+"\n")
         dbm2[token] = '1'
 
     if (wnSomeSensesAreEvents(token)):
         if DEBUG:
-            print token
-            print "  ", N[str(token)], "\n  ", N[str(token)][0]
-            print "   isAmbiguous"
+            print(token)
+            print("  ", N[str(token)], "\n  ", N[str(token)][0])
+            print("   isAmbiguous")
         file3.write(token+"\n")
         dbm3[token] = '1'
 

@@ -6,6 +6,7 @@ Base class for Tarsqi components implemented in Python.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 from utilities import logger
 
 
@@ -22,7 +23,7 @@ class TarsqiComponent(object):
     def pp_doctree(self, componentName):
         """Print the document tree. Assumes there is a doctree instance variable that
         contains a TarsqiTree object."""
-        print "\n--------- DOCUMENT TREE for %s ----------" % componentName
+        print("\n--------- DOCUMENT TREE for %s ----------" % componentName)
         self.doctree.pretty_print()
 
 

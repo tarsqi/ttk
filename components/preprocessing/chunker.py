@@ -25,6 +25,7 @@ docmodel.document.Tag.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 from types import StringType
 
 from utilities import logger
@@ -312,14 +313,14 @@ class Sentence(object):
     def pp_tokens(self):
         for e in self.sentence:
             if type(e) == type((None,)):
-                print e[0],
-        print
+                print(e[0], end=' ')
+        print()
 
     def pp(self):
         in_chunk = False
         for t in self.sentence:
             ss = '   '+str(t) if in_chunk else str(t)
-            print ss
+            print(ss)
             if type(t) == StringType:
                 in_chunk = not in_chunk
 
@@ -416,11 +417,11 @@ class ChunkUpdater(object):
     @staticmethod
     def _debug(orphan, sentence, nodes):
         if DEBUG:
-            print orphan
-            print '  ', sentence
+            print(orphan)
+            print('  ', sentence)
             for n in nodes:
-                print '  ', n
-                print '  ', n.tag
+                print('  ', n)
+                print('  ', n.tag)
 
 
 if __name__ == '__main__':

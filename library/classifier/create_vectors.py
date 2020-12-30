@@ -94,6 +94,7 @@ the model that ships with the Tarsqi Toolkit.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, sys
 
 from . import path
@@ -162,11 +163,11 @@ def process_dir(gold_dir):
         if fname.startswith('.') or fname.endswith('~'):
             continue
         try:
-            print fname
+            print(fname)
             process_file(gold_dir, fname)
         except Exception as e:
-            print "WARNING: could not process %s" % fname
-            print "        ", sys.exc_info()[1]
+            print("WARNING: could not process %s" % fname)
+            print("        ", sys.exc_info()[1])
 
 
 def process_file(gold_dir, fname):

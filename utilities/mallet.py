@@ -21,6 +21,7 @@ classify_command().
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, sys
 from subprocess import Popen, PIPE
 
@@ -137,10 +138,10 @@ class MalletClassifier(object):
 
     def pp(self):
         """Pretty priniter for the MalletClassifier."""
-        print "<MalletClassifier>"
-        print "   directory  -  %s" % self.mallet
+        print("<MalletClassifier>")
+        print("   directory  -  %s" % self.mallet)
         for classifier in self.classifiers.keys():
-            print "   model      -  %s" % classifier
+            print("   model      -  %s" % classifier)
 
     def add_classifiers(self, *classifier_paths):
         for path in classifier_paths:
@@ -201,9 +202,9 @@ class MalletClassifier(object):
 
 def _debug_vectors(vectors, out, err):
     if DEBUG:
-        print '>>>', vectors
-        print '   [OUT]', out
-        print '   [ERR]', err
+        print('>>>', vectors)
+        print('   [OUT]', out)
+        print('   [ERR]', err)
 
 
 """Some notes on classify_command()

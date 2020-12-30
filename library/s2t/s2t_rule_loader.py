@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
 from io import open
@@ -39,9 +40,9 @@ class S2TRule(object):
         return '<S2TRule ' + self.id + '>'
     
     def pp(self):
-        print "<S2TRule %s>" % self.id
+        print("<S2TRule %s>" % self.id)
         for attr, val in self.attrs.items():
-            print "  %s=\"%s\"" % (attr, val)
+            print("  %s=\"%s\"" % (attr, val))
 
 
 def read_rules():

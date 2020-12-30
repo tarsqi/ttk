@@ -52,6 +52,7 @@ be turned on and off with
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import inspect
@@ -194,12 +195,12 @@ def out(*args):
         file = path_elements[-1]
         file = file.replace('.py', '')
         prefix = 'LOG (' + str(depth) + ') [' + file + '.' + function + ']'
-        print prefix + ' ',
+        print(prefix + ' ', end=' ')
         for arg in args:
-            print arg,
-        print
+            print(arg, end=' ')
+        print()
 
 
 def outnl():
     if STDOUT_PRINTING:
-        print
+        print()

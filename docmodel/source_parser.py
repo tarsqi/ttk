@@ -37,6 +37,7 @@ SourceParserLIF
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import codecs
 import xml.parsers.expat
 from xml.dom import minidom
@@ -172,7 +173,7 @@ def print_dom(node, indent=0):
         return
     if node.nodeType == minidom.Node.TEXT_NODE and not node.data.strip():
         return
-    print "%s%s" % (indent * ' ', node)
+    print("%s%s" % (indent * ' ', node))
     for childnode in node.childNodes:
         print_dom(childnode, indent + 3)
 
@@ -286,8 +287,8 @@ class SourceParserXML(SourceParser):
             p1 = "%s-%s" % (self.parser.CurrentLineNumber,
                             self.parser.CurrentColumnNumber)
             p2 = "%s" % self.parser.CurrentByteIndex
-            print("%-5s  %-4s    %s" %
-                  (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest])))
+            print(("%-5s  %-4s    %s" %
+                  (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest]))))
 
 
 def replace_newline(text):

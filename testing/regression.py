@@ -43,10 +43,12 @@ indicate whether a tag was found at the indicated offsets. Results are + or -.
 
 from __future__ import absolute_import
 
+from __future__ import print_function
 import os, sys, getopt, time, glob
 
 import tarsqi
 from io import open
+from six.moves import input
 
 
 def load_cases(fname):
@@ -59,7 +61,7 @@ def load_cases(fname):
         o1 = int(o1)
         o2 = int(o2)
         cases.append(Case(identifier, sentence, o1, o2))
-    print "Loaded %d test cases from fname" % len(cases)
+    print("Loaded %d test cases from fname" % len(cases))
     return cases
 
 
@@ -114,7 +116,7 @@ def create_event_vg_cases():
         o1 = o2 - last_token_length
         name = name_generator("%s-%s" % (chunkclass, vg))
         out.write("VG-%s\t%s\t%s\t%s\n" % (name, sentence, o1, o2))
-    print "Created", outfile
+    print("Created", outfile)
 
 
 def run_evita():
@@ -131,7 +133,7 @@ def run_evita():
             true += 1
         else:
             false += 1
-    print "True=%s False=%s" % (true, false)
+    print("True=%s False=%s" % (true, false))
 
 
 def check_tag(pipeline, sentence, tag, o1, o2):
@@ -194,7 +196,7 @@ class ReportGenerator(object):
             self.case = case
             self.case_file = os.path.join(self.html_dir, "cases-%s.html" % case)
             self.case_fh = open(self.case_file, 'w')
-            print "writing", self.case_file
+            print("writing", self.case_file)
             self._load_cases()
             self._load_case_results()
             self._write_case_report()
@@ -202,7 +204,7 @@ class ReportGenerator(object):
     def _load_cases(self):
         self.case_input_file = u"%s/cases-%s.tab" % (self.cases_dir, self.case)
         self.case_input_fh = open(self.case_input_file)
-        print "  reading cases in", self.case_input_file
+        print("  reading cases in", self.case_input_file)
         self.case_input = {}
         for case in load_cases(self.case_input_file):
             self.case_input[case.identifier] = case
@@ -210,7 +212,7 @@ class ReportGenerator(object):
     def _load_case_results(self):
         self.case_results = {}
         for results_file in glob.glob(u"%s/%s/*.tab" % (self.results_dir, self.case)):
-            print '  reading results from', results_file
+            print('  reading results from', results_file)
             timestamp = os.path.splitext(os.path.basename(results_file))[0]
             self.case_results[timestamp] = {}
             for line in open(results_file):
@@ -268,14 +270,14 @@ def purge_result(args):
                                 case, "%s.tab" % timestamp)
     results_file_was_removed = False
     if os.path.isfile(results_file):
-        print "Remove %s? (y/n)" % results_file
-        print "?",
-        answer = raw_input()
+        print("Remove %s? (y/n)" % results_file)
+        print("?", end=' ')
+        answer = input()
         if answer.strip() == 'y':
             os.remove(results_file)
             results_file_was_removed = True
     else:
-        print "Warning: incorrect case or timestamp"
+        print("Warning: incorrect case or timestamp")
     if results_file_was_removed:
         generate_report()
 

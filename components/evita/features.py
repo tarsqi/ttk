@@ -10,6 +10,7 @@ recognition.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 from types import ListType, InstanceType
 from pprint import pprint
 
@@ -56,8 +57,8 @@ def getWordPosList(constituents):
 
 def debug(text, newline=True):
     if DEBUG:
-        if newline: print text
-        else: print text,
+        if newline: print(text)
+        else: print(text, end=' ')
 
 
 class ChunkFeatures(object):
@@ -369,9 +370,9 @@ class VChunkFeatures(ChunkFeatures):
 
     def pp(self, verbose=False):
         if verbose:
-            print self.as_verbose_string()
+            print(self.as_verbose_string())
         else:
-            print self
+            print(self)
 
 
 class VChunkFeaturesList(object):
@@ -426,7 +427,7 @@ class VChunkFeaturesList(object):
         self._initialize_lists()
         self._distributeNodes()
         self._generate_features_list()
-        if DEBUG: print "\n", self
+        if DEBUG: print("\n", self)
 
     def _initialize_nodes(self):
         """Given the VerbChunk or a list of Tokens, set the nodes variable to
@@ -648,5 +649,5 @@ class VChunkFeaturesList(object):
             inf =  sep.join(["%s" % x.text for x in self.infMarkLists[i]])
             adv1 =  sep.join(["%s" % x.text for x in self.adverbsPreLists[i]])
             adv2 =  sep.join(["%s" % x.text for x in self.adverbsPostLists[i]])
-            print "      tc=[%s] inf=[%s] neg=[%s] adv1=[%s] adv2=[%s]" % \
-                (tc, inf, neg, adv1, adv2)
+            print("      tc=[%s] inf=[%s] neg=[%s] adv1=[%s] adv2=[%s]" % \
+                (tc, inf, neg, adv1, adv2))

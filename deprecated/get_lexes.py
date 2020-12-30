@@ -16,6 +16,7 @@ and OUTDIR have to be directories, existing files in OUTDIR may be overwritten.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 import sys, os
 
 from xml.dom.minidom import parse
@@ -37,7 +38,7 @@ def get_lexes(infile, outfile):
     except:
         "Warning in XML parsing, skipping %s" % infile
         return
-    fh = file(outfile, 'w')
+    fh = open(outfile, 'w')
     sentences = dom.getElementsByTagName("s")
     for sentence in sentences:
         tokens = []
@@ -59,5 +60,5 @@ if __name__ == '__main__':
             outfile = OUT + os.sep + filename
             if outfile[-3:] == 'xml':
                 outfile = outfile[:-3] + 'txt'
-            print outfile
+            print(outfile)
             get_lexes(infile, outfile)

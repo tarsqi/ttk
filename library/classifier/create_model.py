@@ -41,6 +41,7 @@ for each fold.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, sys, glob, getopt
 from . import path
 from utilities import mallet
@@ -66,7 +67,7 @@ def create_model(vectors, trainer='MaxEnt',
                 mallet.train_model_command(MALLET, vectors, trainer=trainer,
                                            cross_validation=cross_validation)]
     for command in commands:
-        print command
+        print(command)
         os.system(command)
 
 

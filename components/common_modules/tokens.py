@@ -1,5 +1,6 @@
 
 from __future__ import absolute_import
+from __future__ import print_function
 from library import forms
 from library.main import LIBRARY
 from components.evita.event import Event
@@ -120,9 +121,9 @@ class Token(Constituent):
             eid = self.event_tag.attrs.get('eid')
             eiid = self.event_tag.attrs.get('eiid')
             event_string = " eid=%s eiid=%s" % (eid, eiid)
-        print "%s<%s position=%d %d-%d pos=%s text=%s%s>" % \
+        print("%s<%s position=%d %d-%d pos=%s text=%s%s>" % \
             (indent * ' ', self.__class__.__name__, self.position,
-             self.begin, self.end, self.pos, self.getText(), event_string)
+             self.begin, self.end, self.pos, self.getText(), event_string))
 
 
 class AdjectiveToken(Token):

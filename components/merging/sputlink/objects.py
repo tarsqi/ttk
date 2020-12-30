@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 from .utils import intersect_lists
 from .utils import intersect_relations
 from .utils import compare_id
@@ -62,13 +63,13 @@ class Node(object):
     def pretty_print(self):
         """Print the node with its edges_in and edges_out attributes to standard
         output."""
-        print "\n", self
+        print("\n", self)
         e_in = list(self.edges_in.keys())
         e_out = list(self.edges_out.keys())
         e_in.sort(compare_id)
         e_out.sort(compare_id)
-        print "  i [%s]" % (' '.join(e_in))
-        print "  o [%s]" % (' '.join(e_out))
+        print("  i [%s]" % (' '.join(e_in)))
+        print("  o [%s]" % (' '.join(e_out)))
 
 
 class Edge(object):
@@ -191,15 +192,15 @@ class Constraint(object):
 
     def pp_history(self, indent=''):
         if isinstance(self.history, tuple):
-            print("%s%s" % (indent, str(self.history[0])))
-            print("%s%s" % (indent, str(self.history[1])))
+            print(("%s%s" % (indent, str(self.history[0]))))
+            print(("%s%s" % (indent, str(self.history[1]))))
         elif self.history.__class__.__name__ == 'Tag':
             tlink = "TLINK(relType=%s)" % self.history.attrs.get('relType')
-            print("%s%s" % (indent, tlink))
+            print(("%s%s" % (indent, tlink)))
         elif self.history.__class__.__name__ == 'Constraint':
-            print("%s%s" % (indent, self.history))
+            print(("%s%s" % (indent, self.history)))
         else:
-            print("%sno history" % indent)
+            print(("%sno history" % indent))
 
     def history_string(self):
         if isinstance(self.history, tuple):

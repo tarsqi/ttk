@@ -30,6 +30,7 @@ Each entry in the Predicate Dictionaries has the following structure:
 
 #from library.timeMLspec import INIT, CULM, TERM, CONT, REINIT
 from __future__ import absolute_import
+from __future__ import print_function
 from .timeMLspec import INIT, CULM, TERM, CONT, REINIT
 
 # FORWARD patterns:
@@ -62,7 +63,7 @@ from .slinketPatterns import Passive1, RelClauseExplic, RelClauseExplicPerfect
 from .slinketPatterns import RelClauseRestric, RelClauseRestricPerfect
 
 
-print "Creating Alink predicate dictionaries"
+print("Creating Alink predicate dictionaries")
 
 
 nounDict = {

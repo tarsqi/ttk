@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import re
@@ -15,7 +16,7 @@ def search_file(name, search_term):
             line = line.rstrip()
             if search_term in line:
                 loc = "%s:%d" % (name, line_number)
-                print("%-30s  ==  %s" %  (loc, line.strip()))
+                print(("%-30s  ==  %s" %  (loc, line.strip())))
 
 
 for root, dirs, files in os.walk(".", topdown=False):

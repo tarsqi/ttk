@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 from types import ListType, TupleType
 from pprint import pprint
 
@@ -274,7 +275,7 @@ class Constituent(object):
         pprint(vars(self))
 
     def pretty_print(self):
-        print "<<pretty_print() not defined for this object>>"
+        print("<<pretty_print() not defined for this object>>")
 
     # SLINKET METHODS
     # There is some serious redundancy here, refactor these methods.

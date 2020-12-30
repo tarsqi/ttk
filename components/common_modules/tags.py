@@ -6,6 +6,7 @@ Contains classes for TimeML tags.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 from library.main import LIBRARY
 from components.common_modules.constituent import Constituent
 from utilities import logger
@@ -100,9 +101,9 @@ class EventTag(Tag):
     def pretty_print(self, indent=0):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'),
                            self.attrs.get('class'))
-        print "%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
+        print("%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
             (indent * ' ', self.__class__.__name__, self.position,
-             self.begin, self.end, eid, eiid, cl)
+             self.begin, self.end, eid, eiid, cl))
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
@@ -133,9 +134,9 @@ class TimexTag(Tag):
         return True
 
     def pretty_print(self, indent=0):
-        print "%s<%s tid=%s type=%s value=%s>" % \
+        print("%s<%s tid=%s type=%s value=%s>" % \
             (indent * ' ', self.__class__.__name__, self.attrs.get('tid'),
-             self.attrs.get('type'), self.attrs.get('value'))
+             self.attrs.get('type'), self.attrs.get('value')))
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 

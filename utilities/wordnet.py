@@ -37,6 +37,7 @@ clearly(adv.)
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 from io import open
 from six.moves import map
 from six.moves import filter
@@ -921,7 +922,7 @@ class Dictionary(object):
     
     def _testKeys(self):
         """Verify that index lookup can find each word in the index file."""
-        print "Testing: ", self
+        print("Testing: ", self)
         file = open(self.indexFile.file.name, _FILE_OPEN_MODE)
         counter = 0
         while 1:
@@ -930,13 +931,13 @@ class Dictionary(object):
             if line[0] != ' ':
                 key = line[:line.find(' ')].replace('_', ' ')
                 if (counter % 1000) == 0:
-                    print "%s..." % (key,),
+                    print("%s..." % (key,), end=' ')
                     import sys
                     sys.stdout.flush()
                 counter = counter + 1
                 self[key]
         file.close()
-        print "done."
+        print("done.")
 
 
 class _IndexFile(object):

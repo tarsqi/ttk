@@ -1,5 +1,6 @@
 
 from __future__ import absolute_import
+from __future__ import print_function
 from objects import TemporalObject, Link, PLink
 
 
@@ -37,7 +38,7 @@ class Closure(object):
             self.axioms = environment.POINT_AXIOMS
             self.linkType = PLink
         else:
-            print "ERROR: unknown closure type"
+            print("ERROR: unknown closure type")
             return
         
     def computeClosure(self):
@@ -53,12 +54,12 @@ class Closure(object):
 
     def closeNode(self,node):
         if self.debug: 
-            print "Closing node %s" % (node.string)
-            print node.inLinks
-            print node.outLinks
+            print("Closing node %s" % (node.string))
+            print(node.inLinks)
+            print(node.outLinks)
         for inLink in node.inLinks:
             for outLink in node.outLinks:
-                if self.debug: print inLink.asPrettyString(),outLink.asPrettyString()
+                if self.debug: print(inLink.asPrettyString(),outLink.asPrettyString())
                 axiom = self.findAxiom(inLink,outLink)
                 if axiom:
                     self.printMessage1(node, axiom, inLink, outLink)
@@ -121,15 +122,15 @@ class Closure(object):
     
     def printMessage1(self,node,axiom,inlink,outlink):
         if self.debug:
-            print "Closing:.."
-            print "  ", node
-            print "  ", axiom
-            print "  ", inlink
-            print "  ", outlink
+            print("Closing:..")
+            print("  ", node)
+            print("  ", axiom)
+            print("  ", inlink)
+            print("  ", outlink)
     
     def printMessage2(self,existingLink,relation,inlink,outlink):
-        print "\nWARNING: link already exists"
-        print "  %s" % (existingLink)
-        print "  %s" % (relation.upper())
-        print "    %s" % (inlink)
-        print "    %s" % (outlink)
+        print("\nWARNING: link already exists")
+        print("  %s" % (existingLink))
+        print("  %s" % (relation.upper()))
+        print("    %s" % (inlink))
+        print("    %s" % (outlink))

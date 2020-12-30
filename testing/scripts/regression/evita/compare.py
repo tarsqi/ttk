@@ -35,6 +35,7 @@ occurrences of the same tag name with the same begin and end.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 from xml.dom.minidom import parse
@@ -90,9 +91,9 @@ def node_as_string(node, text):
 
 def print_results(diffs, text):
     for diff in sorted(diffs):
-        print diff[1]
+        print(diff[1])
     if diffs:
-        print "%d differences in %d lines" % (len(diffs), len(text.split("\n")))
+        print("%d differences in %d lines" % (len(diffs), len(text.split("\n"))))
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@ dictionaries.
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 from library import forms
 
 #from library.timeMLspec import *
@@ -19,7 +20,7 @@ from .timeMLspec import *
 
 from utilities.FSA import compileOP
 
-print "Loading and compiling patterns"
+print("Loading and compiling patterns")
 
 
 # Note: Patterns must be sorted from shortest to longest, and from most to less

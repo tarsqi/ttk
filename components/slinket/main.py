@@ -7,6 +7,7 @@ the Chunk class.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.utils import get_events, get_words_as_string
 from library.slinket.main import SLINKET_DICTS
@@ -50,7 +51,7 @@ class Slinket (TarsqiComponent):
         if DEBUG:
             for s in doctree:
                 for e in s:
-                    print e
+                    print(e)
                     e.print_vars()
             doctree.pp()
         self.docelement = self.doctree.docelement
@@ -215,7 +216,7 @@ class EventExpression(object):
         self.pretty_print()
 
     def pretty_print(self):
-        print self.as_verbose_string()
+        print(self.as_verbose_string())
 
     def can_introduce_alink(self):
         """Returns True if the EventExpression instance can introduce an Alink, False

@@ -32,6 +32,7 @@ TODO:
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import inspect
@@ -69,7 +70,7 @@ FUNCTION_ID = 0
 
 
 def print_module_documentation(module):
-    print module.__name__
+    print(module.__name__)
     filename = os.path.join(DOCUMENTATION_DIR, 'modules',
                             module.__name__ + '.html')
     docfile = open(filename, 'w')
@@ -227,7 +228,7 @@ def print_function_code(identifier, name, fun):
     try:
         code = "".join(inspect.getsourcelines(fun)[0])
     except IOError:
-        print "WARNING: could not get source code of %s" % fun
+        print("WARNING: could not get source code of %s" % fun)
         code = ''
     code = trim(code, 0)
     code = code.replace('<', '&lt;')

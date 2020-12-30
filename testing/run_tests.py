@@ -50,6 +50,7 @@ to deal with reading an arbitrary number of tests from a file.
 
 from __future__ import absolute_import
 
+from __future__ import print_function
 import sys, getopt, traceback, types
 
 import tarsqi
@@ -119,20 +120,20 @@ class TarsqiEntityTest(TarsqiTest):
                 result = PASS if tag is None else FAIL
             self.results[result] += 1
             entity_spec = "%s(%s:%s)=%s" % (self.tag, self.o1, self.o2, self.find_tag)
-            print "  %-30s %-30s %s" % (self.name, entity_spec, result)
+            print("  %-30s %-30s %s" % (self.name, entity_spec, result))
             for attr, val in self.attributes:
                 attr_spec = "   %s=%s" % (attr, val.replace(' ', '_'))
                 if result == PASS:
                     attr_result = PASS if tag.attrs.get(attr) == val else FAIL
                     self.results[attr_result] += 1
-                    print "  %-30s %-30s %s" % (self.name, attr_spec, attr_result)
+                    print("  %-30s %-30s %s" % (self.name, attr_spec, attr_result))
                 else:
-                    print "  %-30s %-30s %s" % (self.name, attr_spec, result)
+                    print("  %-30s %-30s %s" % (self.name, attr_spec, result))
         except:
             self.results[ERROR] += 1
-            print "  %-61s %s" % (self.name, ERROR)
+            print("  %-61s %s" % (self.name, ERROR))
             if SHOW_ERRORS:
-                print; traceback.print_exc(); print
+                print(); traceback.print_exc(); print()
 
 
 class TarsqiLinkTest(TarsqiTest):
@@ -168,12 +169,12 @@ class TarsqiLinkTest(TarsqiTest):
             link_spec = "%s(%s:%s-%s:%s)=%s" \
                         % (self.reltype, self.e1[0], self.e1[1],
                            self.e2[0], self.e2[1], self.find_tag)
-            print "  %-35s %-40s %s" % (self.name, link_spec, result)
+            print("  %-35s %-40s %s" % (self.name, link_spec, result))
         except:
             self.results[ERROR] += 1
-            print "  %-76s %s" % (self.name, ERROR)
+            print("  %-76s %s" % (self.name, ERROR))
             if SHOW_ERRORS:
-                print; traceback.print_exc(); print
+                print(); traceback.print_exc(); print()
 
 
 class GUTimeTest(TarsqiEntityTest):
@@ -256,12 +257,12 @@ class SputLinkTest(TarsqiTest):
             result = sorted(self.output) == sorted(observed_output)
             result = PASS if result else FAIL
             self.results[result] += 1
-            print "  %-35s %s" % (self.name, result)
+            print("  %-35s %s" % (self.name, result))
         except:
             self.results[ERROR] += 1
-            print "  %-76s %s" % (self.name, ERROR)
+            print("  %-76s %s" % (self.name, ERROR))
             if SHOW_ERRORS:
-                print; traceback.print_exc(); print
+                print(); traceback.print_exc(); print()
 
 
 def run_pipeline(pipeline, sentence):
@@ -342,7 +343,7 @@ class ModuleTest(object):
         self.tag = tag
 
     def run(self):
-        print "\n>>> Running %s Tests...\n" % self.module_name
+        print("\n>>> Running %s Tests...\n" % self.module_name)
         results = {PASS: 0, FAIL: 0, ERROR: 0}
         for test_specification in self.test_specifications:
             if self.tag:
@@ -354,7 +355,7 @@ class ModuleTest(object):
             results[FAIL] += test.results[FAIL]
             results[ERROR] += test.results[ERROR]
         p, f, e = results[PASS], results[FAIL], results[ERROR]
-        print "\nTOTALS:  PASS=%s  FAIL=%s  ERROR=%s\n" % (p, f, e)
+        print("\nTOTALS:  PASS=%s  FAIL=%s  ERROR=%s\n" % (p, f, e))
         SUMMARY.append([self.module_name, p, f, e])
 
 
@@ -394,13 +395,13 @@ def test_sputlink():
 
 
 def print_summary():
-    print "\nSUMMARY:\n"
-    print "   %-15s    %-10s  %-10s  %s" % ('', ' PASS', ' FAIL',  'ERROR')
+    print("\nSUMMARY:\n")
+    print("   %-15s    %-10s  %-10s  %s" % ('', ' PASS', ' FAIL',  'ERROR'))
     for module, p, f, e in SUMMARY:
-        print "   %-15s    %5s       %5s       %5s" % (module, p, f, e)
-    print
+        print("   %-15s    %5s       %5s       %5s" % (module, p, f, e))
+    print()
     if f or e:
-        print "   THERE WERE FAILURES OR ERRORS\n"
+        print("   THERE WERE FAILURES OR ERRORS\n")
 
 
 if __name__ == '__main__':

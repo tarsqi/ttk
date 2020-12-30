@@ -583,6 +583,8 @@ There were no comprehensions over tuples.
 
 ### 3.8.  Iterators
 
+See commits [e06c50ab](https://github.com/tarsqi/ttk/commit/e06c50ab534d4cf33165cd669a1c05474dd46d61) and [aad98acc](https://github.com/tarsqi/ttk/commit/aad98acc1e30a546a1df6f306f8555a59aa1e945) for changes made in this section.
+
 [https://portingguide.readthedocs.io/en/latest/iterators.html](https://portingguide.readthedocs.io/en/latest/iterators.html)
 
 ```
@@ -604,20 +606,38 @@ $ python-modernize -wnf libmodernize.fixes.fix_xrange_six .
 
 Imported range from six.moves, added some list functions around results, and removed xrange().
 
+```
+$ python-modernize -wnf libmodernize.fixes.fix_next .
+```
+
+Changed one occurence of the next() method.
+
+
+
+### 3.9. Built-in functions
+
+[https://portingguide.readthedocs.io/en/latest/builtins.html](https://portingguide.readthedocs.io/en/latest/builtins.html)
+
+Ran all the fixers mentioned in the link above.
+
+Some comments:
+
+- Use of `file` as in `isinstance(f, file)` was not fixed but does not appear to exist . In Python 3 this would cause name errors.
+- There was no use of `execfile`, `reload`, `intern` or `coerce`.
+
+
+
 
 
 ## 4.  Remaining thingies
 
 List of steps still remaining.
 
-- Other core object changes
-  - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
-- built-in functions
-  
-  - [https://portingguide.readthedocs.io/en/latest/builtins.html](https://portingguide.readthedocs.io/en/latest/builtins.html)
 - comparing and sorting, including rich comparison operators
   - [https://portingguide.readthedocs.io/en/latest/comparisons.html](https://portingguide.readthedocs.io/en/latest/comparisons.html)
   - [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html)
+- Other core object changes
+   - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
 - Other changes
    - [https://portingguide.readthedocs.io/en/latest/etc.html](https://portingguide.readthedocs.io/en/latest/etc.html)
 

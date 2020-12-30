@@ -106,6 +106,7 @@ VARIABLES:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import sys, os, time, getopt
 
 import root
@@ -117,6 +118,7 @@ from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
 from utilities import logger
 from utilities.file import read_config
+from six.moves import input
 
 TTK_ROOT = os.environ['TTK_ROOT']
 CONFIG_FILE = os.path.join(TTK_ROOT, 'config.txt')
@@ -353,9 +355,9 @@ class Options(object):
             setattr(self, adjusted_opt, value)
 
     def pp(self):
-        print "OPTIONS:"
+        print("OPTIONS:")
         for option in sorted(self._options.keys()):
-            print "   %-18s  -->  %s" % (option, self._options[option])
+            print("   %-18s  -->  %s" % (option, self._options[option]))
 
 
 class TarsqiError(Exception):
@@ -425,9 +427,9 @@ class TarsqiWrapper(object):
                               "input or output arguments\n%s" % _usage_string())
 
     def pp(self):
-        print "\n<TarsqiWrapper>"
-        print "   inpath  =", self.inpath
-        print "   outpath =", self.outpath, "\n"
+        print("\n<TarsqiWrapper>")
+        print("   inpath  =", self.inpath)
+        print("   outpath =", self.outpath, "\n")
         self.options.pp()
 
     def run(self):
@@ -463,10 +465,10 @@ class TarsqiWrapper(object):
         if not os.path.isdir(self.outpath):
             os.makedirs(self.outpath)
         else:
-            print "WARNING: Directory %s already exists" % self.outpath
-            print "WARNING: Existing files in %s will be overwritten" % self.outpath
-            print "Continue? (y/n)\n?",
-            answer = raw_input()
+            print("WARNING: Directory %s already exists" % self.outpath)
+            print("WARNING: Existing files in %s will be overwritten" % self.outpath)
+            print("Continue? (y/n)\n?", end=' ')
+            answer = input()
             if answer != 'y':
                 exit()
         for filename in os.listdir(self.inpath):
@@ -475,7 +477,7 @@ class TarsqiWrapper(object):
             if (os.path.isfile(infile)
                     and os.path.basename(infile)[0] != '.'
                     and os.path.basename(infile)[-1] != '~'):
-                print infile
+                print(infile)
                 Tarsqi(self.options, infile, outfile).process_document()
 
     def _run_tarsqi_on_file(self):
@@ -488,7 +490,7 @@ def run_profiler(args):
     """Wrap running Tarsqi in the profiler."""
     import profile
     command = "TarsqiWrapper([%s]).run()" % ','.join(['"'+x+'"' for x in args])
-    print 'Running profiler on:', command
+    print('Running profiler on:', command)
     profile.run(command, os.path.abspath(PROFILER_OUTPUT))
 
 

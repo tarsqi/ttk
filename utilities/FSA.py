@@ -420,10 +420,10 @@ class FSA(object):
         # Copying
         #
         def create(self, *args):
-                return apply(self.__class__, args)
+                return self.__class__(*args)
         
         def copy(self, *args):
-                fsa = apply(self.__class__, args)
+                fsa = self.__class__(*args)
                 if hasattr(self, 'label'):
                         fsa.label = self.label
                 return fsa
@@ -432,7 +432,7 @@ class FSA(object):
                 return self.tuple() + (self.getArcMetadata(),)
         
         def coerce(self, klass):
-                return apply(klass, self.creationArgs())
+                return klass(*self.creationArgs())
         
         
         #
@@ -829,7 +829,7 @@ class FSA(object):
                         return self
                 if len(self.states) > NUMPY_DETERMINIZATION_CUTOFF and NumFSAUtils and not self.getArcMetadata():
                         #debugFile.write( "\n..............determinzed option 1")
-                        data = apply(NumFSAUtils.determinize, self.tuple() + (self.epsilonClosure,))
+                        data = NumFSAUtils.determinize(*self.tuple() + (self.epsilonClosure,))
                         result = apply(self.copy, data).sorted()
                         result._isDeterminized = 1
                         return result

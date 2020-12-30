@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
 from io import open
@@ -41,7 +42,7 @@ class BlinkerRuleDictionary(object):
 
     def pp(self):
         for i in range(1,7):
-            print "\nBLINKER RULES TYPE %d:\n\n" % i
+            print("\nBLINKER RULES TYPE %d:\n\n" % i)
             for rule in self.rules[i]:
                 rule.pp()
 
@@ -71,9 +72,9 @@ class BlinkerRule(object):
         return '<BlinkerRule ' + self.id + '>'
     
     def pp(self):
-        print "<BlinkerRule %s>" % self.id
+        print("<BlinkerRule %s>" % self.id)
         for attr, val in sorted(self.attrs.items()):
-            print "   %-12s  =  %s" % (attr, val)
+            print("   %-12s  =  %s" % (attr, val))
 
 
 

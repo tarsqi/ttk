@@ -19,6 +19,7 @@ this directory and use that instead.
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, sys, six.moves.cPickle
 from io import open
 
@@ -33,7 +34,7 @@ from . import slinkPredicates
 from . import alinkPredicates
 
 
-print "Pickling dictionaries..."
+print("Pickling dictionaries...")
 slink_dictionaries = [(slinkPredicates.nounDict, "slinkNouns"),
                       (slinkPredicates.adjDict, "slinkAdjs"),
                       (slinkPredicates.verbDict, "slinkVerbs"),
@@ -43,5 +44,5 @@ slink_dictionaries = [(slinkPredicates.nounDict, "slinkNouns"),
 for (dictionary, name) in slink_dictionaries:
     fname = "%s.pickle" % name
     pickleFile = open(fname, 'w')
-    print "Writing %s to %s" % (name, fname)
+    print("Writing %s to %s" % (name, fname))
     six.moves.cPickle.dump(dictionary, pickleFile)

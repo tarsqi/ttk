@@ -22,6 +22,7 @@ The only difference is in the second column (no relation versus a relation).
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 import os, codecs, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree
@@ -411,18 +412,18 @@ class ContextFeaturesET(ContextFeatures):
 
 def _debug(text):
     if DEBUG:
-        print text
+        print(text)
 
 
 def _debug_vector(vector_type, vector, indent=''):
     if DEBUG:
         text = "%s %s%s" % (vector_type, vector, indent)
         for line in textwrap.wrap(text, 100):
-            print "%s%s" % (indent, line)
+            print("%s%s" % (indent, line))
 
 
 def _debug_leafnodes(element, s):
     if DEBUG:
-        print("\n%s %s\n" % (element.begin, s))
+        print(("\n%s %s\n" % (element.begin, s)))
         for n in s.leaf_nodes():
-            print '  ', n
+            print('  ', n)
