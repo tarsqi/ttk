@@ -12,9 +12,9 @@ There are three possible results for a test: pass, fail or error.
 
 These test are not intended for extensive testing of coverage.
 
-Usage:
+Usage (run this from the parent directory):
 
-   $ python run_tests.py OPTIONS*
+   $ python -m testing.run_tests OPTIONS*
 
 The following options are available:
 

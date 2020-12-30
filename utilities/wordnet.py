@@ -272,7 +272,7 @@ class Word(object):
         positions = {}
         for sense in self.getSenses():
             positions[sense.position] = 1
-        return positions.keys()
+        return list(positions.keys())
 
     adjectivePositions = getAdjectivePositions # backwards compatability
     
@@ -900,7 +900,7 @@ class Dictionary(object):
     def keys(self):
         """Return a sorted list of strings that index words in this
         dictionary."""
-        return map(lambda key: key.replace(' ', '_'), self.indexFile.keys())
+        return map(lambda key: key.replace(' ', '_'), list(self.indexFile.keys()))
     
     def has_key(self, form):
         """Return true iff the argument indexes a word in this dictionary.
@@ -910,7 +910,7 @@ class Dictionary(object):
         >>> N.has_key('inu')
         0
         """
-        return self.indexFile.has_key(form)
+        return form in self.indexFile
     
     #
     # Testing
@@ -1018,7 +1018,7 @@ class _IndexFile(object):
     
     def keys(self):
         if hasattr(self, 'indexCache'):
-            keys = self.indexCache.keys()
+            keys = list(self.indexCache.keys())
             keys.sort()
             return keys
         else:
@@ -1029,12 +1029,20 @@ class _IndexFile(object):
                 if not line: break
                 keys.append(entryKey(line))
             return keys
-    
+
+    # Deprecated
     def has_key(self, key):
         if hasattr(self, 'indexCache'):
-            return self.indexCache.has_key(key)
+            return key in self.indexCache
         return self.get(key) != None
-    
+
+    # Added for Python 3 compatibility
+    def __contains__(self, key):
+        if hasattr(self, 'indexCache'):
+            return key in self.indexCache
+        return self.get(key) != None
+
+
     #
     # Index file
     #

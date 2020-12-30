@@ -64,11 +64,11 @@ def compare_files(fname1, fname2):
     slinks1_idx = group_on_offsets(slinks1, events1_idx)
     slinks2_idx = group_on_offsets(slinks2, events2_idx)
     result = []
-    for offsets in difference(slinks1_idx.keys(), slinks2_idx.keys()):
+    for offsets in difference(list(slinks1_idx.keys()), list(slinks2_idx.keys())):
         result.append([offsets, "<<<"] + slinks1_idx[offsets])
-    for offsets in difference(slinks2_idx.keys(), slinks1_idx.keys()):
+    for offsets in difference(list(slinks2_idx.keys()), list(slinks1_idx.keys())):
         result.append([offsets, ">>>"] + slinks2_idx[offsets])
-    for offsets in intersection(slinks1_idx.keys(), slinks2_idx.keys()):
+    for offsets in intersection(list(slinks1_idx.keys()), list(slinks2_idx.keys())):
         link1 = slinks1_idx[offsets][0]
         link2 = slinks2_idx[offsets][0]
         for attr in ATTRS:

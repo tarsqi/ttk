@@ -404,12 +404,12 @@ Line 1747:  raise 'extra character in pattern (possibly ")" )'
 Line 856:   raise "unimplemented"
 ```
 
-Changed those manually by adding wrapping Exception around all strings.
+Changed those manually by wrapping Exception around all strings.
 
 Some instances were not found by the modernize script:
 
 ```
-$  python utilities/find.py 'raise '
+$ python utilities/find.py 'raise '
 ./components/evita/features.py ==  else: raise "ERROR: unknown modal form: "+str(form)
 ./components/evita/features.py ==  else: raise "ERROR: unknown raise form: "+str(form)
 ./utilities/wordnet.py         ==  raise "unknown attribute " + key
@@ -428,7 +428,7 @@ Raising non-exceptions were all caught I think.
 Removing `sys.exc_type`, `sys.exc_value`, `sys.exc_traceback`:
 
 ```
-python utilities/find.py "sys.exc_"
+$ python utilities/find.py "sys.exc_"
 ./tarsqi.py       ==   % (name, sys.exc_type, sys.exc_value))
 ./tarsqi.py       ==   sys.stderr.write("ERROR: %s\n" % sys.exc_value)
 ./tarsqi.py       ==   sys.exit('ERROR: ' + str(sys.exc_value))
@@ -441,7 +441,7 @@ These were manually fixed.
 
 Did not look at the exception scope case.
 
-The command line invocation for the iteration case seems to be wrong becuase it was the same as for the new except syntax. RUnning it did give cryptic notes on files that needed to be modified.
+The command line invocation for the iteration case seems to be wrong because it was the same as for the new except syntax. Running it again did give cryptic notes on files that needed to be modified.
 
 ```
 $ python-modernize -wnf lib2to3.fixes.fix_except .
@@ -478,7 +478,7 @@ RefactoringTool: ./utilities/wordnet.py
 
 ### 3.6.  Standard library
 
-[htps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html](tps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html)
+Based on [htps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html](tps://portingguide.readthedocs.io/en/latest/stdlib-reorg.html). See commit [d91c0936](https://github.com/tarsqi/ttk/commit/d91c0936aac679bce530bfafcf16da46c35f43a2) for all changes made in this section (the commit contains a few other things too though, just removing or replacing some utilities).
 
 <u>Renamed modules</u>
 
@@ -513,16 +513,77 @@ Manually replaced all functions used in this module with string methods, there a
 
 
 
+### 3.6.  Numbers and dictionaries and comprehensions
+
+<u>Numbers</u>
+
+[https://portingguide.readthedocs.io/en/latest/numbers.html](https://portingguide.readthedocs.io/en/latest/numbers.html)
+
+The part on division was already done in section 3.1.
+
+Special methods: there are no occurrences of `__div__`.
+
+Unification of int and long:
+
+```
+$ python-modernize -wnf lib2to3.fixes.fix_long .
+$ python-modernize -wnf lib2to3.fixes.fix_numliterals .
+```
+
+These made no changes.
+
+In Python 2, canonical representations of long integers included the L suffix. For example, repr(2**64) was 18446744073709551616L on most systems. In Python 3, the suffix does not appear. Note that this only affected repr, the string representation (given by str() or print()) had no suffix. The canonical representations are rarely used, except in doctests. Did not check for this, so some doctests may be broken.
+
+Octal literals
+
+```
+$ python-modernize -wnf lib2to3.fixes.fix_numliterals .
+```
+
+This made no changes.
+
+<u>Dictionaries</u>
+
+[https://portingguide.readthedocs.io/en/latest/dicts.html](https://portingguide.readthedocs.io/en/latest/dicts.html)
+
+```
+$ python-modernize -wnf lib2to3.fixes.fix_has_key .
+```
+
+This worked, but I also made a manual change to `utilities/wordnet.py`, which had implemented `has_key()` for a class, by adding a `__contains__()` method to the same class.
+
+Key order is not necessarily guaranteed anymore. This issue can be detected by running the code under Python 2 with `PYTHONHASHSEED=random`:
+
+```
+$ PYTHONHASHSEED=random python tarsqi.py data/in/simple-xml/tiny.xml out.xml
+$ PYTHONHASHSEED=random python testing/run_tests.py
+```
+
+This did not unearth any problems.
+
+```
+$ python-modernize -wnf libmodernize.fixes.fix_dict_six .
+```
+
+Mostly added list() around keys and values. Did manually remove a few. Code should be revisited later.
+
+There were no cases where `iterkeys()` and its friends were used so did not use any six wrappers there.
+
+<u>Comprehensions</u>
+
+[https://portingguide.readthedocs.io/en/latest/comprehensions.html](https://portingguide.readthedocs.io/en/latest/comprehensions.html)
+
+Did not check whether there was any leaking of comprehenzion variables. When running the code in Python 3 name errors may pop up. There could be issues with iteration variables that were set before the comprehension, hard to find, good luck with that, but unlikely to be an issue.
+
+There were no comprehensions over tuples. 
+
+
+
 ## 4.  Remaining thingies
 
 List of steps still remaining.
 
-- numbers and dictionaries and comprehensions
-  - [https://portingguide.readthedocs.io/en/latest/numbers.html](https://portingguide.readthedocs.io/en/latest/numbers.html)
-  - [https://portingguide.readthedocs.io/en/latest/dicts.html](https://portingguide.readthedocs.io/en/latest/dicts.html)
-  - [https://portingguide.readthedocs.io/en/latest/comprehensions.html](https://portingguide.readthedocs.io/en/latest/comprehensions.html)
 - Other core object changes
-  
   - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
 - iterators
   
@@ -537,6 +598,8 @@ List of steps still remaining.
    - [https://portingguide.readthedocs.io/en/latest/etc.html](https://portingguide.readthedocs.io/en/latest/etc.html)
 
 After that we can run `python-modernize` ,`pylint --py3k` and `python -3` when running tarsqi.py and the testing and regression scripts.
+
+Maybe check [http://python3porting.com/stdlib.html#removed-modules](http://python3porting.com/stdlib.html#removed-modules).
 
 Followed by `2to3`.
 

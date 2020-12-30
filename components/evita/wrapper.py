@@ -53,7 +53,7 @@ class EvitaWrapper(object):
                 # [3,4,5,6,7,8] since offset 9 points to the period.
                 offsets = range(event.begin, event.end)
                 for off in offsets:
-                    if imported_events.has_key(off):
+                    if off in imported_events:
                         logger.warning("Overlapping imported events")
                     imported_events[off] = event
         return imported_events

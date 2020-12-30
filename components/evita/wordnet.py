@@ -53,7 +53,7 @@ def someSensesAreEvents(lemma):
 def _lookupLemmaInDBM(lemma, dbm):
     """Look up lemma in database."""
     # has_key on dbm returns 0 or 1, hence the if-then-else
-    return True if dbm.has_key(lemma) else False
+    return True if lemma in dbm else False
 
 def _lookupLemmaInTXT(lemma, fh):
     """Look up lemma in text file."""

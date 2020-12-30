@@ -55,11 +55,11 @@ def compare_files(fname1, fname2):
         tags2 = dom2.getElementsByTagName(tag)
         tags1_idx = group_on_start(tags1)
         tags2_idx = group_on_start(tags2)
-        for begin in difference(tags1_idx.keys(), tags2_idx.keys()):
+        for begin in difference(list(tags1_idx.keys()), list(tags2_idx.keys())):
             result.append([begin, "<  " + node_as_string(tags1_idx[begin], text1)])
-        for begin in difference(tags2_idx.keys(), tags1_idx.keys()):
+        for begin in difference(list(tags2_idx.keys()), list(tags1_idx.keys())):
             result.append([begin, ">  " + node_as_string(tags2_idx[begin], text2)])
-        for begin in intersection(tags1_idx.keys(), tags2_idx.keys()):
+        for begin in intersection(list(tags1_idx.keys()), list(tags2_idx.keys())):
             n1 = tags1_idx[begin]
             n2 = tags2_idx[begin]
             for attr in ATTRS:

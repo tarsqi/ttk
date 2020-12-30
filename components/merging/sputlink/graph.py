@@ -331,7 +331,7 @@ class Graph(object):
     def pp_nodes(self):
         """Print all nodes with their edges_in and edges_out attributes to
         standard output."""
-        ids = self.nodes.keys()
+        ids = list(self.nodes.keys())
         ids.sort(compare_id)
         for id in ids:
             self.nodes[id].pretty_print()
@@ -343,7 +343,7 @@ class Graph(object):
             html_graph_prefix(fh)
         fh.write(u"<table cellpadding=0 cellspacing=0 border=0>\n")
         fh.write(u"<tr><td>\n")
-        nodes = self.nodes.keys()
+        nodes = list(self.nodes.keys())
         nodes.sort(compare_id)
         self._html_nodes_table(fh, nodes)
         fh.write(u"</td>\n\n")

@@ -333,7 +333,7 @@ class Options(object):
 
     def items(self):
         """Simplistic way to do dictionary emulation."""
-        return self._options.items()
+        return list(self._options.items())
 
     def getopt(self, option_name, default=None):
         """Return the option, use None as default."""

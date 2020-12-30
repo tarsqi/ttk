@@ -79,7 +79,7 @@ class CompositionTable(object):
         file.write(u"<table cellpadding=3 cellspacing=0 border=1>\n")
         file.write(u"\n<tr>\n\n")
         file.write(u"  <td>&nbsp;\n\n")
-        rels = self.data.keys()
+        rels = list(self.data.keys())
         rels.sort()
         for rel in rels:
             rel = massage(rel)

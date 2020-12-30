@@ -244,12 +244,12 @@ def getIndex(form, pos='noun'):
     transformed string until a match is found or all the different
     strings have been tried. It returns a Word or None."""
     def trySubstitutions(trySubstitutions, form, substitutions, lookup=1, dictionary=dictionaryFor(pos)):
-        if lookup and dictionary.has_key(form):
+        if lookup and form in dictionary:
             return dictionary[form]
         elif substitutions:
             (old, new) = substitutions[0]
             substitute = form.replace(old, new) and substitute != form
-            if substitute and dictionary.has_key(substitute):
+            if substitute and substitute in dictionary:
                 return dictionary[substitute]
             return              trySubstitutions(trySubstitutions, form, substitutions[1:], lookup=0) or \
                 (substitute and trySubstitutions(trySubstitutions, substitute, substitutions[1:]))
@@ -313,7 +313,7 @@ def morphy(form, pos='noun', collect=0):
         exceptions = binarySearchFile(excfile, form)
         if exceptions:
             form = exceptions[exceptions.find(' ')+1:-1]
-        if lookup and dictionary.has_key(form):
+        if lookup and form in dictionary:
             if collect:
                 collection.append(form)
             else:

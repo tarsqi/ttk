@@ -471,7 +471,7 @@ class FSA(object):
                 return hasattr(self, '_arcMetadata')
         
         def getArcMetadata(self):
-                return getattr(self, '_arcMetadata', {}).items()
+                return list(getattr(self, '_arcMetadata', {}).items())
         
         def setArcMetadata(self, list):
                 arcMetadata = {}
@@ -750,7 +750,7 @@ class FSA(object):
                         for _, s, _ in self.transitionsFrom(state):
                                 if s not in states:
                                         states.append(s)
-                states = stateMap.values()
+                states = list(stateMap.values())
                 transitions = map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions)
                 arcMetadata = map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata())
                 copy = self.copy(states, self.alphabet, transitions, stateMap[self.initialState], map(stateMap.get, self.finalStates), arcMetadata)
@@ -932,8 +932,8 @@ class FSA(object):
                                                         targets = destinationMap[nextSet] = destinationMap.get(nextSet) or []
                                                         targets.append(state)
                                                 #print 'destinationMap from', set, label, ' =', destinationMap
-                                                if len(destinationMap.values()) > 1:
-                                                        values = destinationMap.values()
+                                                if len(list(destinationMap.values())) > 1:
+                                                        values = list(destinationMap.values())
                                                         #print 'splitting', destinationMap.keys()
                                                         for value in values:
                                                                 value.sort()
@@ -1371,8 +1371,8 @@ def matchDict(label, input):
         and its second position is the atomic value or list of atomic values
         that need to be negated: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
         """        
-        labelKeys = label.keys()
-        inputKeys = input.keys()
+        labelKeys = list(label.keys())
+        inputKeys = list(input.keys())
         for key in labelKeys:
                 #print "KEY:", key, "VALUE:", label[key]
                 if key in inputKeys:

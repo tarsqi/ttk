@@ -209,7 +209,7 @@ class Vector(object):
         return False
 
     def sorted_features(self):
-        return sorted(self.features.keys(), compare_features)
+        return sorted(list(self.features.keys()), compare_features)
 
     def add_feature(self, feat, val):
         self.features[abbreviate(feat)] = val
@@ -374,7 +374,7 @@ class ContextFeatures(object):
                 self.v2_idx = i
 
     def items(self):
-        return self.features.items()
+        return list(self.features.items())
 
     def get(self, feature):
         return self.features.get(feature)

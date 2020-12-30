@@ -63,8 +63,8 @@ class Node(object):
         """Print the node with its edges_in and edges_out attributes to standard
         output."""
         print "\n", self
-        e_in = self.edges_in.keys()
-        e_out = self.edges_out.keys()
+        e_in = list(self.edges_in.keys())
+        e_out = list(self.edges_out.keys())
         e_in.sort(compare_id)
         e_out.sort(compare_id)
         print "  i [%s]" % (' '.join(e_in))

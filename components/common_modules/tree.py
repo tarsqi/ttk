@@ -449,7 +449,7 @@ class TarsqiTree(object):
         eids = sorted(self.events.keys())
         for eid in eids:
             print "\n   ", eid, '=> {',
-            attrs = self.events[eid].keys()
+            attrs = list(self.events[eid].keys())
             attrs.sort()
             for attr in attrs:
                 print "%s=%s" % (attr, str(self.events[eid][attr])),

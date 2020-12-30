@@ -158,6 +158,8 @@ class SourceParserTTK(SourceParser):
         o2 = node.getAttribute('end')
         o1 = int(o1) if o1 else -1
         o2 = int(o2) if o2 else -1
+        # TODO: why not use the following?
+        #   dict([(k, v) for (k, v) in nore.attributes.items() if ...])
         attrs = dict(node.attributes.items())
         attrs = dict([(k, v) for (k, v) in attrs.items()
                       if k not in ('begin', 'end')])

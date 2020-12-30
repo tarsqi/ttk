@@ -312,7 +312,7 @@ class XmlDocument:
             link_ids[link_id] = True
         new_id = 1
         while True:
-            if not link_ids.has_key(new_id):
+            if new_id not in link_ids:
                 return "l%d" % new_id
             new_id = new_id + 1
             
