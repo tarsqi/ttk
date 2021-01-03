@@ -264,7 +264,7 @@ def _retrieve_from_index(identifier, tagtype, event_idx, timex_idx):
 
 def precision(tp, fp):
     try:
-        return (tp / (tp + fp)
+        return (tp / (tp + fp))
     except ZeroDivisionError:
         return None
 
@@ -640,14 +640,40 @@ class EntityAnnotation(object):
     def __str__(self):
         return "<EntityAnnotation %s:%s %s>" % (self.begin, self.end, self.attrs)
 
-    def __cmp__(self, other):
-        begin_cmp = cmp(self.begin, other.begin)
-        if begin_cmp != 0:
-            return begin_cmp
-        end_cmp = cmp(self.end, other.end)
-        if end_cmp != 0:
-            return end_cmp
-        return cmp(self.begin_head, other.begin_head)
+    def __eq__(self, other):
+        return (self.begin == other.begin) \
+            and (self.end == other.end) \
+            and (self.begin_head == other.begin_head)
+
+    def __ne__(self, other):
+        return (self.begin != other.begin) \
+            or (self.end != other.end) \
+            or (self.begin_head != other.begin_head)
+
+    def __lt__(self, other):
+        return self._compare(other) < 0
+
+    def __le__(self, other):
+        return self._compare(other) <= 0
+
+    def __gt__(self, other):
+        return self._compare(other) > 0
+
+    def __ge__(self, other):
+        return self._compare(other) >= 0
+
+    def _compare(self, other):
+        # TODO: revisit this later, it is Python3 compliant, but that's about
+        # the best you can say
+        def comp(x, y):
+            return (x > y) - (x < y)
+        begin_comp = comp(self.begin, other.begin)
+        if begin_comp != 0:
+            return begin_comp
+        end_comp = comp(self.end, other.end)
+        if end_comp != 0:
+            return end_comp
+        return comp(self.begin_head, other.begin_head)
 
     def overlaps_with(self, other):
         return not (self.end <= other.begin or other.end <= self.begin)

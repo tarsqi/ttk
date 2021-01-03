@@ -618,7 +618,7 @@ Changed one occurence of the next() method.
 
 [https://portingguide.readthedocs.io/en/latest/builtins.html](https://portingguide.readthedocs.io/en/latest/builtins.html)
 
-Ran all the fixers mentioned in the link above.
+Ran all the fixers mentioned in the link above, all changes are in commit [a8bc653b](https://github.com/tarsqi/ttk/commit/a8bc653bc4f6f5a08d060053095e5aabe11d12fa).
 
 Some comments:
 
@@ -627,17 +627,71 @@ Some comments:
 
 
 
+### 3.10. Comparing and sorting
+
+[https://portingguide.readthedocs.io/en/latest/comparisons.html](https://portingguide.readthedocs.io/en/latest/comparisons.html)
+[http://python3porting.com/preparing.html](http://python3porting.com/preparing.html)
+
+All manual changes, searching for uses of `cmp` and `__cmp__`.
+
+&para; `components/classifier/vectors.py`
+
+Sorting was done for printing the vectors and used a couple of helper functions, but it looks like a simple sort on the keys worked the same so I removed the code that did the comparison.
+
+&para; `components/common_modules/constituent.py`
+
+This is more complicated because the `Consituent.__cmp__` was set up to allow the FSA module to compare  objects of different types:
+
+```python
+def __cmp__(self, other):
+    # NOTE: in some cases the matchLabel method in FSA.py checks for
+    # equality of a constituent and a string using == in which case this
+    # method is invoked, which would throw an error without the first two
+    # lines
+    if isinstance(other, type('')):
+        return 1
+    return cmp(self.begin, other.begin)
+```
+Now it looks like that comment was nonsense. In fact, there is no `matchLabel` method, but there is a `labelMatches` method, and the above function never appears to be called from the latter. Also, the above method is called from *_distributeNode_V* in the *features* module or from *_get_tag_vectors_for_sentence* in the *vectors* module, so no FSA origin here.
+
+Anyway, replaced `__cmp__` with the rich comparison operators.
+
+Then somehow an error with the FSA did show up when using the equals operator. Turns out the label can be 'ALL' and then the comparison chokes. Edited labelMatches so that if the label is ALL the match always succeeds. This may be wrong, but no tests broke.
+
+&para; `components/merging/sputlink/rules/objects.py`
+
+Use of comparison for Point Links does not appear to be used in runtime code, so commented it out for now. TODO: when running *generateRules* comparisons may be needed.
+
+&para; `components/merging/wrapper.py`
+
+Somewhat tricky since the comparison function parses the origin field of the link and looks at the component name and the associated confidence score if the component is the classifier. Cannot just give the origin as the key. Used key function that generates a floeat from the origin attribute.
+
+&para; `docmodel/document.py` and `testing/evaluate.py`
+
+Used rich comparison operators to replace `__cmp__`, but used the contents of the old comparison method in a utility method.
+
+&para; `utilities/convert.py`
+
+Replaced comparison operator with rich comparison operators.
+
+&para; `utilities/make_documentation.py`
+
+Replaced cmp arugment with key argument on sort. Also needed to make a lot of string explicitly unidoce strings.
+
+&para; `utilities/wordnet.py`
+
+Could have dealt with uses of `cmp` by using `comp` and define the latter as before and with uses of `__cmp__` by doing the `_compare` thing as with some of the others above.
+
+In fact, I did nothing, just commented out methods and functions that used `cmp` or `__cmp__`. This module is not used in the runtime version and will be retired.
+
 
 
 ## 4.  Remaining thingies
 
 List of steps still remaining.
 
-- comparing and sorting, including rich comparison operators
-  - [https://portingguide.readthedocs.io/en/latest/comparisons.html](https://portingguide.readthedocs.io/en/latest/comparisons.html)
-  - [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html)
 - Other core object changes
-   - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
+  - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
 - Other changes
    - [https://portingguide.readthedocs.io/en/latest/etc.html](https://portingguide.readthedocs.io/en/latest/etc.html)
 
@@ -645,7 +699,11 @@ After that we can run `python-modernize` ,`pylint --py3k` and `python -3` when r
 
 Maybe check [http://python3porting.com/stdlib.html#removed-modules](http://python3porting.com/stdlib.html#removed-modules).
 
-Followed by `2to3`.
+Run make_documentation.py.
+
+Version and save last Python2 compliant version.
+
+Run `2to3`.
 
 Remove from future imports and calls to six library.
 

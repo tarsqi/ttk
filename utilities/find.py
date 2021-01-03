@@ -13,10 +13,12 @@ def search_file(name, search_term):
         line_number = 0
         for line in fh:
             line_number += 1
-            line = line.rstrip()
+            line = line.strip()
+            if line.startswith('#'):
+                continue
             if search_term in line:
                 loc = "%s:%d" % (name, line_number)
-                print(("%-30s  ==  %s" %  (loc, line.strip())))
+                print(("%-30s  ==  %s" %  (loc, line)))
 
 
 for root, dirs, files in os.walk(".", topdown=False):

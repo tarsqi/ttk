@@ -280,14 +280,14 @@ class Word(object):
 
     adjectivePositions = getAdjectivePositions # backwards compatability
     
-    def __cmp__(self, other):
-        """
-        >>> N['cat'] < N['dog']
-        1
-        >>> N['dog'] < V['dog']
-        1
-        """
-        return _compareInstances(self, other, ('pos', 'form'))
+#    def __cmp__(self, other):
+#        """
+#        >>> N['cat'] < N['dog']
+#        1
+#        >>> N['dog'] < V['dog']
+#        1
+#        """
+#        return _compareInstances(self, other, ('pos', 'form'))
     
     def __str__(self):
         """Return a human-readable representation.
@@ -474,8 +474,8 @@ class Synset(object):
             return str(self)
         return "getSynset" + repr((self.pos, self.offset))
     
-    def __cmp__(self, other):
-        return _compareInstances(self, other, ('pos', 'offset'))
+#    def __cmp__(self, other):
+#        return _compareInstances(self, other, ('pos', 'offset'))
     
     #
     # Sequence protocol (a Synset's elements are its senses).
@@ -656,10 +656,13 @@ class Sense(object):
 
     word = getWord # backwards compatability
 
-    def __cmp__(self, other):
-        def senseIndex(sense, synset=self.synset):
-            return _index(sense, synset.getSenses(), testfn=lambda a,b: a.form == b.form)
-        return _compareInstances(self, other, ('synset',)) or cmp(senseIndex(self), senseIndex(other))
+#    def __cmp__(self, other):
+#        def senseIndex(sense, synset=self.synset):
+#            return _index(sense,
+#                          synset.getSenses(),
+#                          testfn=lambda a,b: a.form == b.form)
+#        return _compareInstances(self, other, ('synset',)) \
+#            or cmp(senseIndex(self), senseIndex(other))
 
 
 class Pointer(object):
@@ -739,14 +742,16 @@ class Pointer(object):
             return str(self)
         return "<" + str(self) + ">"
     
-    def __cmp__(self, other):
-        diff = _compareInstances(self, other, ('pos', 'sourceOffset'))
-        if diff:
-            return diff
-        synset = self.source()
-        def pointerIndex(sense, synset=synset):
-            return _index(sense, synset.getPointers(), testfn=lambda a,b: not _compareInstances(a, b, ('type', 'sourceIndex', 'targetIndex')))
-        return cmp(pointerIndex(self), pointerIndex(other))
+#    def __cmp__(self, other):
+#        diff = _compareInstances(self, other, ('pos', 'sourceOffset'))
+#        if diff:
+#            return diff
+#        synset = self.source()
+#        def pointerIndex(sense, synset=synset):
+#            return _index(sense,
+#                          synset.getPointers(),
+#                          testfn=lambda a,b: not _compareInstances(a, b, ('type', 'sourceIndex', 'targetIndex')))
+#        return cmp(pointerIndex(self), pointerIndex(other))
 
 
 # Loading the lexnames
@@ -1103,18 +1108,18 @@ def _requirePointerType(pointerType):
         raise TypeError(repr(pointerType) + " is not a pointer type")
     return pointerType
 
-def _compareInstances(a, b, fields):
-    """"Return -1, 0, or 1 according to a comparison first by type,
-    then by class, and finally by each of fields."""
-    if not hasattr(b, '__class__'):
-        return cmp(type(a), type(b))
-    elif a.__class__ != b.__class__:
-        return cmp(a.__class__, b.__class__)
-    for field in fields:
-        diff = cmp(getattr(a, field), getattr(b, field))
-        if diff:
-            return diff
-    return 0
+#def _compareInstances(a, b, fields):
+#    """"Return -1, 0, or 1 according to a comparison first by type,
+#    then by class, and finally by each of fields."""
+#    if not hasattr(b, '__class__'):
+#        return cmp(type(a), type(b))
+#    elif a.__class__ != b.__class__:
+#        return cmp(a.__class__, b.__class__)
+#    for field in fields:
+#        diff = cmp(getattr(a, field), getattr(b, field))
+#        if diff:
+#            return diff
+#    return 0
 
 def _equalsIgnoreCase(a, b):
     """Return true iff a and b have the same lowercase representation.

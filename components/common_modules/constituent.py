@@ -54,14 +54,23 @@ class Constituent(object):
     def __nonzero__(self):
         return True
 
-    def __cmp__(self, other):
-        # NOTE: in some cases the matchLabel method in FSA.py checks for
-        # equality of a constituent and a string using == in which case this
-        # method is invoked, which would throw an error without the first two
-        # lines
-        if isinstance(other, type('')):
-            return 1
-        return cmp(self.begin, other.begin)
+    def __eq__(self, other):
+        return self.begin == other.begin
+
+    def __ne__(self, other):
+        return self.begin != other.begin
+
+    def __lt__(self, other):
+        return self.begin < other.begin
+
+    def __le__(self, other):
+        return self.begin <= other.begin
+
+    def __gt__(self, other):
+        return self.begin > other.begin
+
+    def __ge__(self, other):
+        return self.begin >= other.begin
 
     def __len__(self):
         """Returns the lenght of the dtrs variable."""

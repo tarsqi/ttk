@@ -568,19 +568,42 @@ class Tag(object):
         return "<Tag %s %s:%s {%s }>" % \
                (self.name, self.begin, self.end, attrs)
 
-    def __cmp__(self, other):
+    # Tag comparisons are based on offsets alone
+
+    def __eq__(self, other):
+        return self.begin == other.begin and self.end == other.end
+
+    def __ne__(self, other):
+        return self.begin != other.begin or self.end != other.end
+
+    def __lt__(self, other):
+        return self._compare(other) < 0
+
+    def __le__(self, other):
+        return self._compare(other) <= 0
+
+    def __gt__(self, other):
+        return self._compare(other) > 0
+
+    def __ge__(self, other):
+        return self._compare(other) >= 0
+
+    def _compare(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with
         an earlier begin will be ranked before tags with a later begin, with
         equal begins the tag with the higher end will be ranked first. Tags with
         no begin (that is, it is set to -1) will be ordered at the end. The
         order of two tags with the same begin and end is undefined."""
+        # TODO: this is a bit of a cluge and should be revisited later
+        def comp(x, y):
+            return (x > y) - (x < y)
         if self.begin == -1:
             return 1
         if other.begin == -1:
             return -1
-        begin_cmp = cmp(self.begin, other.begin)
-        end_cmp = cmp(other.end, self.end)
-        return end_cmp if begin_cmp == 0 else begin_cmp
+        begin_comp = comp(self.begin, other.begin)
+        end_comp = comp(other.end, self.end)
+        return end_comp if begin_comp == 0 else begin_comp
 
     @staticmethod
     def new_attr(attr, attrs):

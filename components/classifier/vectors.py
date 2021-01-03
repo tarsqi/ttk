@@ -155,21 +155,6 @@ def make_vector(tarsqidoc, s, tag):
         return None
 
 
-def compare_features(f1, f2):
-    """Comparison method for feature sorting."""
-    def get_prefix(feature):
-        if feature.startswith('e1-'): return 'e1'
-        if feature.startswith('e2-'): return 'e2'
-        if feature.startswith('e-'): return 'e'
-        if feature.startswith('t-'): return 't'
-        return 'x'
-    prefixes = {'e': 1, 't': 2, 'e1': 3, 'e2': 4}
-    p1 = get_prefix(f1)
-    p2 = get_prefix(f2)
-    prefix_comparison = cmp(p1, p2)
-    return cmp(f1, f2) if prefix_comparison == 0 else prefix_comparison
-
-
 def abbreviate(attr):
     """Abbreviate the feature name, but abbreviate only the part without the
     prefix (which can be e-, t-, e1- or e2-)."""
@@ -199,7 +184,7 @@ class Vector(object):
 
     def __str__(self):
         feats = []
-        for feat in self.sorted_features():
+        for feat in sorted(self.features.keys()):
             val = self.features[feat]
             feats.append("%s=%s" % (feat, val))
         return ' '.join(feats)
@@ -209,9 +194,6 @@ class Vector(object):
 
     def is_timex_vector(self):
         return False
-
-    def sorted_features(self):
-        return sorted(list(self.features.keys()), compare_features)
 
     def add_feature(self, feat, val):
         self.features[abbreviate(feat)] = val
@@ -260,7 +242,7 @@ class PairVector(Vector):
 
     def __init__(self, tarsqidoc, prefix1, vector1, prefix2, vector2):
         """Initialize a pair vector from two object vectors by setting an
-        identifier and by adding the features of th eobject vectors."""
+        identifier and by adding the features of the object vectors."""
         self.tarsqidoc = tarsqidoc
         self.filename = self._get_filename()
         self.source = (vector1.source, vector2.source)

@@ -522,8 +522,23 @@ class KnowtatorAnnotation(object):
         self.attributes = {}
         self.relations = []
 
-    def __cmp__(self, other):
-        return cmp(self.start, other.start)
+    def __eq__(self, other):
+        return self.start == other.start
+
+    def __ne__(self, other):
+        return self.start != other.start
+
+    def __lt__(self, other):
+        return self.start < other.start
+
+    def __le__(self, other):
+        return self.start <= other.start
+
+    def __gt__(self, other):
+        return self.start > other.start
+
+    def __ge__(self, other):
+        return self.start >= other.start
 
     def __str__(self):
         return "<annotation %s %s %s-%s '%s'>" \

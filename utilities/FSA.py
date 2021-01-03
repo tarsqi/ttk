@@ -1325,7 +1325,9 @@ def labelMatches(label, input):
         #print "LABEL MATCHES: "+label+"  "+ str(input)+"?"
         #logger.out('label =', label)
         #logger.out('input =', input.__class__.__name__)
-        if (type(label) is StringType and (label[0] == '{' or label[-1] == '}')):
+        if label == 'ALL':
+                return True
+        elif (type(label) is StringType and (label[0] == '{' or label[-1] == '}')):
                 """Pattern expression has been given in a Python dictionary format """
                 #print ">>> LABEL %s is string with curly brackets" % label
                 label = labelDict(label)
