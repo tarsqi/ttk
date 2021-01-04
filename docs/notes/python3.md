@@ -632,7 +632,7 @@ Some comments:
 [https://portingguide.readthedocs.io/en/latest/comparisons.html](https://portingguide.readthedocs.io/en/latest/comparisons.html)
 [http://python3porting.com/preparing.html](http://python3porting.com/preparing.html)
 
-All manual changes, searching for uses of `cmp` and `__cmp__`.
+All manual changes, searching for uses of `cmp` and `__cmp__`. All changes are in commit [8f1bc1dc](https://github.com/tarsqi/ttk/commit/8f1bc1dcee9d5a5861799ad3883d573da0f229c2).
 
 &para; `components/classifier/vectors.py`
 
@@ -686,28 +686,38 @@ In fact, I did nothing, just commented out methods and functions that used `cmp`
 
 
 
+### 3.11. Other changes
+
+[https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
+[https://portingguide.readthedocs.io/en/latest/etc.html](https://portingguide.readthedocs.io/en/latest/etc.html)
+
+The FSA and wordnet utilities both use `__getslice__`. The FSA module used `__getslice__` on the Sequence class, which already had a `__getitem__` method so I just removed `__getslice__`. Did the sa efor the wordnet module.
+
+Replaced `__nonzero__` in wordnet with `__bool__`, but kept backwards comaptibility.
+
+Did NOT check whether there was anything funky going on with bound versus unbound methods.
+
+The doctest module is only used in the wordnet module, which will be deprecated, so no need to check it.
+
+
+
 ## 4.  Remaining thingies
 
-List of steps still remaining.
+List of steps still remaining. This is after all the conservative backward compatible changes in section 3 (that is, the code still runs on Python2).
 
-- Other core object changes
-  - [https://portingguide.readthedocs.io/en/latest/core-obj-misc.html](https://portingguide.readthedocs.io/en/latest/core-obj-misc.html)
-- Other changes
-   - [https://portingguide.readthedocs.io/en/latest/etc.html](https://portingguide.readthedocs.io/en/latest/etc.html)
+&para; Run `python-modernize` ,`pylint --py3k` and `python -3` when running tarsqi.py and the testing and regression scripts.
 
-After that we can run `python-modernize` ,`pylint --py3k` and `python -3` when running tarsqi.py and the testing and regression scripts.
+&para; Maybe check [http://python3porting.com/stdlib.html#removed-modules](http://python3porting.com/stdlib.html#removed-modules).
 
-Maybe check [http://python3porting.com/stdlib.html#removed-modules](http://python3porting.com/stdlib.html#removed-modules).
+&para; Run make_documentation.py.
 
-Run make_documentation.py.
+&para; Version and save last Python2 compliant version.
 
-Version and save last Python2 compliant version.
+&para; Run `2to3`.
 
-Run `2to3`.
+&para; Remove from future imports and calls to six library.
 
-Remove from future imports and calls to six library.
-
-Also see:
+&para; Also see:
 
 - http://python-future.org/automatic_conversion.html
 - http://python-future.org/compatible_idioms.html

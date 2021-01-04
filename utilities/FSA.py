@@ -1628,9 +1628,6 @@ class Sequence(object):
                 else:
                         return
 
-        def __getslice__(self, i, j):
-                return self.sequence[i:j]
-
         def __len__(self):
                 return len(self.sequence)
 
@@ -1675,6 +1672,7 @@ class Sequence(object):
         def getNextBorder(self, index):
                 try: return self.bordersDict[index]
                 except: return -1                
+
 
 class SyntaxSequence(Sequence):
 

@@ -312,8 +312,10 @@ class Word(object):
     #
     # Sequence protocol (a Word's elements are its Senses)
     #
-    def __nonzero__(self):
+    def __bool__(self):
         return 1
+
+    __nonzero == __bool__
     
     def __len__(self):
         return len(self.getSenses())
@@ -321,8 +323,8 @@ class Word(object):
     def __getitem__(self, index):
         return self.getSenses()[index]
     
-    def __getslice__(self, i, j):
-        return self.getSenses()[i:j]
+    #def __getslice__(self, i, j):
+    #    return self.getSenses()[i:j]
 
 
 class Synset(object):
@@ -480,9 +482,11 @@ class Synset(object):
     #
     # Sequence protocol (a Synset's elements are its senses).
     #
-    def __nonzero__(self):
+    def __bool__(self):
         return 1
     
+    __nonzero == __bool__
+
     def __len__(self):
         """
         >>> len(N['dog'][0].synset)
@@ -509,8 +513,8 @@ class Synset(object):
                   _index(idx, [sense.form for sense in senses], _equalsIgnoreCase)
         return senses[idx]
     
-    def __getslice__(self, i, j):
-        return self.getSenses()[i:j]
+    #def __getslice__(self, i, j):
+    #    return self.getSenses()[i:j]
 
 
 class Sense(object):
@@ -840,7 +844,7 @@ class Dictionary(object):
     #
     # Sequence protocol (a Dictionary's items are its Words)
     #
-    def __nonzero__(self):
+    def __bool__(self):
         """Return false.  (This is to avoid scanning the whole index file
         to compute len when a Dictionary is used in test position.)
         
@@ -849,6 +853,8 @@ class Dictionary(object):
         """
         return 1
     
+    __nonzero == __bool__
+
     def __len__(self):
         """Return the number of index entries.
         
@@ -859,16 +865,16 @@ class Dictionary(object):
             self.length = len(self.indexFile)
         return self.length
     
-    def __getslice__(self, a, b):
-        results = []
-        if type(a) == type('') and type(b) == type(''):
-            raise Exception("unimplemented")
-        elif type(a) == type(1) and type(b) == type(1):
-            for i in range(a, b):
-                results.append(self[i])
-        else:
-            raise TypeError
-        return results
+    #def __getslice__(self, a, b):
+    #    results = []
+    #    if type(a) == type('') and type(b) == type(''):
+    #        raise Exception("unimplemented")
+    #    elif type(a) == type(1) and type(b) == type(1):
+    #        for i in range(a, b):
+    #            results.append(self[i])
+    #    else:
+    #        raise TypeError
+    #    return results
 
     def __getitem__(self, index):
         """If index is a String, return the Word whose form is
@@ -974,8 +980,10 @@ class _IndexFile(object):
     #
     # Sequence protocol (an _IndexFile's items are its lines)
     #
-    def __nonzero__(self):
+    def __bool__(self):
         return 1
+
+    __nonzero == __bool__
     
     def __len__(self):
         if hasattr(self, 'indexCache'):
@@ -989,8 +997,10 @@ class _IndexFile(object):
             lines = lines + 1
         return lines
     
-    def __nonzero__(self):
+    def __bool__(self):
         return 1
+
+    __nonzero == __bool__
     
     def __getitem__(self, index):
         if isinstance(index, StringType):
