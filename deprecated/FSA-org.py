@@ -346,6 +346,8 @@ from types import InstanceType, ListType, TupleType, IntType, LongType, DictType
 from six.moves import map
 from six.moves import filter
 from six.moves import range
+from functools import reduce
+
 IntegerTypes = (IntType, LongType)
 
 try:

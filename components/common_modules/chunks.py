@@ -9,7 +9,7 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 
 from __future__ import absolute_import
 from __future__ import print_function
-import types
+
 from xml.sax.saxutils import quoteattr
 
 import library.forms as forms
@@ -588,7 +588,7 @@ class VerbChunk(Chunk):
         # TODO: when there is a Slinket regression test, see what happens when
         # we remove this one --> NOTHING
         fsaCounter = -1
-        if not isinstance(fsa_list, types.ListType):
+        if not isinstance(fsa_list, list):
             # TODO: this happens for example when Slinket processes "I was
             # delighted to see advertised.", find out why, once we do, we can
             # remove this method and just have the one on Constituent

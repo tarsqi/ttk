@@ -76,7 +76,7 @@ def compare_date(date1, date2, creation_year_int):
 
 
 def year_alpha_to_digit(year, creation_year_int):
-    year_int = None
+    year_int = -999999
     if(year.isdigit()):
         year_int = int(year)
     elif(re.match("BC", year)):
@@ -93,6 +93,8 @@ def year_alpha_to_digit(year, creation_year_int):
 def compare_year(year1, year2, creation_year_int):
     '''year1 and year2 both are of string type.
     return: the link between two years'''
+
+    # TODO: this function sucks, review it
 
     if (year1[0] == "X" or year2[0] == "X"):
         return "VAGUE"

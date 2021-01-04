@@ -5,7 +5,6 @@ Some utilities common to all the objects in the common_modules module.
 """
 
 from __future__ import absolute_import
-import types
 
 from library import forms
 from utilities import logger
@@ -13,7 +12,7 @@ from utilities import logger
 
 def get_tokens(node_or_sequence):
     """Get tokens from a node or sequence."""
-    if type(node_or_sequence) in (types.TupleType, types.ListType):
+    if type(node_or_sequence) in (tuple, list):
         return get_tokens_from_sequence(node_or_sequence)
     else:
         return get_tokens_from_node(node_or_sequence)

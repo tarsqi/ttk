@@ -19,10 +19,10 @@ class SlinketDicts(object):
     def load(self):
         """Load the Slinket dictionaries if they have not been loaded yet."""
         if not self.slinkVerbsDict:
-            self.slinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkVerbs.pickle")))
-            self.slinkNounsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkNouns.pickle")))
-            self.slinkAdjsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkAdjs.pickle")))
-            self.alinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "alinkVerbs.pickle")))
-            self.alinkNounsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "alinkNouns.pickle")))
-        
+            self.slinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkVerbs.pickle"), 'rb'))
+            self.slinkNounsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkNouns.pickle"), 'rb'))
+            self.slinkAdjsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkAdjs.pickle"), 'rb'))
+            self.alinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "alinkVerbs.pickle"), 'rb'))
+            self.alinkNounsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "alinkNouns.pickle"), 'rb'))
+
 SLINKET_DICTS = SlinketDicts()

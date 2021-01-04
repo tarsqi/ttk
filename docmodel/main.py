@@ -10,7 +10,7 @@ required they should be added to source_parser.py and metadata_parser.py.
 """
 
 from __future__ import absolute_import
-import os, xml
+import os, xml, re
 
 from docmodel.source_parser import SourceParserXML, SourceParserText
 from docmodel.source_parser import SourceParserTTK, SourceParserLIF
@@ -75,11 +75,19 @@ def guess_source(filename_or_string):
         content = fh.read(chars_to_read)
         fh.close()
     content = content.strip()
-    first_tag = Xml(content).get_first_tag()
-    if first_tag == 'ttk':
-        return 'ttk'
+    tag_expression = '<([^> ]+)[^>]*>'
+    result = re.search(tag_expression, content)
+    if result is None:
+        return 'text'
     else:
-        return 'text' if first_tag is None else 'xml'
+        tag = result.group(1)
+        return 'ttk' if tag.lower() == 'ttk' else 'xml'
+    
+    #first_tag = Xml(content).get_first_tag()
+    #if first_tag == 'ttk':
+    #    return 'ttk'
+    #else:
+    #    return 'text' if first_tag is None else 'xml'
 
 
 class Xml(object):

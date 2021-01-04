@@ -36,10 +36,11 @@ from __future__ import print_function
 import os
 import sys
 import inspect
-from types import ClassType, FunctionType, MethodType, TypeType
+from types import FunctionType, MethodType
 
 from .modules import MODULES
 from io import open
+import six
 
 # Set this to True if you want the sources for all functions written to files
 # that are linked to from the module page, this slows down the code quite a bit
@@ -143,7 +144,7 @@ def print_function_documentation(docfile, functions):
 def get_classes(module):
     classes = []
     for (key, val) in module.__dict__.items():
-        if type(val) in (ClassType, TypeType):
+        if type(val) == type:
             # ignore those that do not have the right module mentioned in their
             # dictionary, this also gets rid of things like ListType, which do
             # not have a value for __module__
@@ -240,7 +241,7 @@ def get_docstring(object):
     docstring = u''
     if object.__doc__:
         docstring = object.__doc__
-    return unicode(trim(protect(docstring)))
+    return six.text_type(trim(protect(docstring)))
 
 
 def print_docstring(object, docfile, prefix=''):
@@ -278,14 +279,14 @@ def trim(docstring, linenum=1):
     lines = docstring.expandtabs().splitlines()
     # Determine minimum indentation (first line doesn't count for
     # docstrings):
-    indent = sys.maxint
+    indent = sys.maxsize
     for line in lines[linenum:]:
         stripped = line.lstrip()
         if stripped:
             indent = min(indent, len(line) - len(stripped))
     # Remove indentation (first line is special):
     trimmed = [lines[0].strip()]
-    if indent < sys.maxint:
+    if indent < sys.maxsize:
         for line in lines[1:]:
             trimmed.append(line[indent:].rstrip())
     # Strip off trailing and leading blank lines:

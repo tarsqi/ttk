@@ -32,7 +32,7 @@ to change this.
 from __future__ import absolute_import
 from __future__ import print_function
 import re
-from StringIO import StringIO
+from io import StringIO
 from xml.sax.saxutils import escape
 
 from .abbreviation import dict_abbrevs

@@ -26,7 +26,6 @@ docmodel.document.Tag.
 
 from __future__ import absolute_import
 from __future__ import print_function
-from types import StringType
 
 from utilities import logger
 from components.common_modules.tree import create_tarsqi_tree
@@ -321,7 +320,7 @@ class Sentence(object):
         for t in self.sentence:
             ss = '   '+str(t) if in_chunk else str(t)
             print(ss)
-            if type(t) == StringType:
+            if type(t) == str:
                 in_chunk = not in_chunk
 
 

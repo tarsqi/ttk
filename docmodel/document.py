@@ -7,13 +7,16 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 from __future__ import absolute_import
 from __future__ import print_function
-import os, sys, codecs, StringIO, itertools, time
+
+import os, sys, codecs, itertools, time
+from io import StringIO
 from xml.sax.saxutils import escape, quoteattr
 from subprocess import Popen, PIPE
 
 from library.main import LIBRARY
 from utilities import logger
 from io import open
+import six
 
 
 TIMEX = LIBRARY.timeml.TIMEX
@@ -215,8 +218,10 @@ class TarsqiDocument(object):
                 ttk_tag = tag.as_ttk_tag()
                 # This became needed after allowing any text in the value of the
                 # form and lemma attribute.
+                # NOTE: got rid of the errors='ignore' argument because it did not seem to be
+                # needed and it caused an error in python3
                 if isinstance(ttk_tag, str):
-                    ttk_tag = unicode(ttk_tag, errors='ignore')
+                    ttk_tag = six.text_type(ttk_tag)
                 fh.write("  %s\n" % ttk_tag)
             except UnicodeDecodeError:
                 # Not sure why this happened, but there were cases where the
@@ -265,7 +270,7 @@ class SourceDoc(object):
         self.filename = filename
         self.xmldecl = None
         # initialize as a string buffer, will be a string later
-        self.text_buffer = StringIO.StringIO()
+        self.text_buffer = StringIO()
         self.text = ""
         self.processing_instructions = {}
         self.comments = {}
@@ -605,6 +610,9 @@ class Tag(object):
         end_comp = comp(other.end, self.end)
         return end_comp if begin_comp == 0 else begin_comp
 
+    # just here to suppress a -3 warning
+    __hash__ = None
+
     @staticmethod
     def new_attr(attr, attrs):
         # TODO: See the comment in __init__, I have a strong feeling that there
@@ -717,8 +725,11 @@ class ProcessingStep(object):
     def _get_git_commit():
         command = 'git rev-parse --short HEAD'
         close_fds = False if sys.platform == 'win32' else True
-        return Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
-                     close_fds=close_fds).stdout.read().strip()
+        commit = Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
+                       close_fds=close_fds).stdout.read()
+        if isinstance(commit, bytes):
+            commit = commit.decode(encoding='utf8')
+        return commit.strip()
 
     def as_xml(self):
         return "<processing_step %s%s%s%s/>" \

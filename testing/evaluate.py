@@ -41,7 +41,11 @@ OPTIONS:
 
 """
 
-import os, sys, shutil, copy, getopt, StringIO
+from __future__ import absolute_import
+from __future__ import print_function
+import os, sys, shutil, copy, getopt
+from io import StringIO
+from six.moves import range
 
 sys.path.insert(0, '..')
 sys.path.insert(0, '.')
@@ -110,7 +114,7 @@ def create_system_files_from_gold_standard(gold_dir, system_dir, limit):
     """Take the TTK files in gold_dir and create TTK files in system_dir that have
     the same text and docelement tags, do not have the other tarsqi tags from
     the gold standard and have tags as added by the current system."""
-    print system_dir
+    print(system_dir)
     if os.path.exists(system_dir):
         exit("Error: directory %s already exists" % system_dir)
     else:
@@ -123,7 +127,7 @@ def create_system_files_from_gold_standard(gold_dir, system_dir, limit):
         count += 1
         if count > limit:
             break
-        print fname
+        print(fname)
         gold_file = os.path.join(gold_dir, fname)
         system_file = os.path.join(system_dir, fname)
         create_system_file_from_gold_standard(gold_file, system_file)
@@ -150,12 +154,12 @@ def create_system_file_from_gold_standard(gold_file, system_file):
     tarsqidoc.print_all(system_file)
 
 
-def compare_dirs(gold_dir, system_dir, limit=sys.maxint):
+def compare_dirs(gold_dir, system_dir, limit=sys.maxsize):
     """Generate the precision, recall and f-score numbers for the directories."""
     fstats = []
     fnames = _collect_files(gold_dir, system_dir, limit)
     for fname in fnames:
-        print fname
+        print(fname)
         fstats.append(
             FileStatistics(os.path.join(gold_dir, fname),
                            os.path.join(system_dir, fname)))
@@ -164,12 +168,12 @@ def compare_dirs(gold_dir, system_dir, limit=sys.maxint):
 
 
 def view_differences(gold_dir, system_dir, display_dir, display_choices,
-                     limit=sys.maxint):
+                     limit=sys.maxsize):
     """Create HTML files that view the differences."""
     display_dir = _create_display_dir(display_dir)
     fnames = _collect_files(gold_dir, system_dir, limit)
     for fname in fnames:
-        print fname
+        print(fname)
         FileStatistics(os.path.join(gold_dir, fname),
                        os.path.join(system_dir, fname),
                        display_dir, display_choices)
@@ -293,20 +297,20 @@ def _as_float_string(f):
 
 
 def _offset_warning(message, tag, offsets):
-    print "WARNING: %s" % message
-    print "         %s" % offsets
-    print "         %s" % tag.as_ttk_tag()
+    print("WARNING: %s" % message)
+    print("         %s" % offsets)
+    print("         %s" % tag.as_ttk_tag())
 
 
 def print_annotations(annotations, tag=None):
     for tagname in sorted(annotations):
         if tag is not None and tag != tagname:
             continue
-        print "\n", tagname
+        print("\n", tagname)
         for offsets in sorted(annotations[tagname]):
             attrs = annotations[tagname][offsets].items()
             attrs_str = ' '.join(["%s=%s" % (a,v) for a,v in attrs])
-            print "  %s %s" % (offsets, attrs_str)
+            print("  %s %s" % (offsets, attrs_str))
 
 
 class FileStatistics(object):
@@ -347,7 +351,7 @@ class DirectoryStatistics(FileStatistics):
             self.events, self.timexes, self.alinks, self.slinks, self.tlinks)
 
     def pp(self):
-        print "\n%s\n" % self
+        print("\n%s\n" % self)
 
 
 class EntityStatistics(object):
@@ -772,7 +776,7 @@ class Alignment(object):
     def _get_tagged_fragment(self, p1, p2, text):
         def tag(cl, text): return "<sup class=%s>%s</sup>" % (cl, text)
         def brc(cl, bracket): return "<span class=%s>%s</span>" % (cl, bracket)
-        output = StringIO.StringIO()
+        output = StringIO()
         for i in range(0, p2-p1):
             i_adjusted = i + p1
             if i_adjusted in self.open_idx['s']:
@@ -816,7 +820,7 @@ if __name__ == '__main__':
 
     gold = os.path.abspath(opts.get('--gold'))
     system = os.path.abspath(opts.get('--system'))
-    limit = int(opts.get('--limit', sys.maxint))
+    limit = int(opts.get('--limit', sys.maxsize))
     out = opts.get('--out')
 
     display = opts.get('--display')

@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
-from types import ListType, TupleType
+
 from pprint import pprint
 
 from utilities import logger
@@ -82,6 +82,9 @@ class Constituent(object):
 
     def __str__(self):
         return "<%s %d:%d>" % (self.__class__.__name__, self.begin, self.end)
+
+    # just here to suppress a -3 warning
+    __hash__ = None
 
     def includes(self, tag):
         """Returns True if tag is positioned inside the consituent."""
@@ -235,9 +238,9 @@ class Constituent(object):
         # such thing the method will return True
         for feat in description.keys():
             value = description[feat]
-            if type(value) is TupleType:
+            if type(value) is tuple:
                 if value[0] == '^':
-                    if type(value[1]) is ListType:
+                    if type(value[1]) is list:
                         if self.feature_value(feat) in value[1]:
                             return False
                     else:
@@ -245,7 +248,7 @@ class Constituent(object):
                             return False
                 else:
                     raise Exception("ERROR specifying description of pattern")
-            elif type(value) is ListType:
+            elif type(value) is list:
                 if self.feature_value(feat) not in value:
                     if self.isChunk() and feat == 'text':
                         if self._getHeadText() not in value:

@@ -11,7 +11,7 @@ recognition.
 
 from __future__ import absolute_import
 from __future__ import print_function
-from types import ListType, InstanceType
+
 from pprint import pprint
 
 import utilities.stemmer as stemmer

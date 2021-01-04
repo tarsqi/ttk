@@ -51,7 +51,7 @@ to deal with reading an arbitrary number of tests from a file.
 from __future__ import absolute_import
 
 from __future__ import print_function
-import sys, getopt, traceback, types
+import sys, getopt, traceback
 
 import tarsqi
 
@@ -105,7 +105,7 @@ class TarsqiEntityTest(TarsqiTest):
         for specification_element in test_specification[4:]:
             if specification_element is None:
                 self.find_tag = False
-            elif isinstance(specification_element, types.TupleType):
+            elif isinstance(specification_element, tuple):
                 self.attributes.append(specification_element)
 
     def run(self, pipeline):

@@ -221,7 +221,7 @@ class SourceParserXML(SourceParser):
         # self.parser.ParseFile(open(filename))
         # NOTE: actually, the above line needed to replaced with the following
         # while preparing to port code to Python3.
-        content = open(filename).read()
+        content = codecs.open(filename).read()
         self.parser.Parse(content)
         self.sourcedoc.finish()
         tarsqidoc.sourcedoc = self.sourcedoc

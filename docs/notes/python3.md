@@ -699,25 +699,340 @@ Did NOT check whether there was anything funky going on with bound versus unboun
 
 The doctest module is only used in the wordnet module, which will be deprecated, so no need to check it.
 
+All changes made for this section are in [f38c2c0c](https://github.com/tarsqi/ttk/commit/f38c2c0caa5dfc2cd155c90aa6121dd5489dbdba).
 
 
-## 4.  Remaining thingies
 
-List of steps still remaining. This is after all the conservative backward compatible changes in section 3 (that is, the code still runs on Python2).
+## 4.  More
 
-&para; Run `python-modernize` ,`pylint --py3k` and `python -3` when running tarsqi.py and the testing and regression scripts.
+All the above were changes from the conservative porting guide, making heavy use of python-modernize fixers.
 
-&para; Maybe check [http://python3porting.com/stdlib.html#removed-modules](http://python3porting.com/stdlib.html#removed-modules).
 
-&para; Run make_documentation.py.
 
-&para; Version and save last Python2 compliant version.
+### 4.1.  Running Python with the -3 option
 
-&para; Run `2to3`.
+```
+python -3 tarsqi.py --trap-errors=False data/in/simple-xml/evita-test.xml out.xml
+```
 
-&para; Remove from future imports and calls to six library.
+Several alerts from this:
 
-&para; Also see:
+- There was one case of division in evita.rule.FeatureRule where integer division was used and which really needed to be integer division, so used // instead of /.
+
+- FSA uses reduce, needs to be imported from functools
+
+- `DeprecationWarning: Overriding __eq__ blocks inheritance of __hash__ in 3.x`
+
+  Occurred for document.Tag and constituent.Constituent so the warning does not really apply since I do not put instances of those classes in sets. Used to following to suppress the warning
+  ` __hash__ = None`
+
+- `SyntaxWarning: tuple parameter unpacking has been removed in 3.x`
+  This showed up for FSA after reduce was imported (not before) and then disappeared again after the prefious fix.
+
+```
+python -3 -m testing.run_tests
+```
+
+This gave a couple of warnings:
+
+```
+components/blinker/compare.py:151: DeprecationWarning: comparing unequal types not supported in 3.x
+components/blinker/compare.py:153: DeprecationWarning: comparing unequal types not supported in 3.x
+components/merging/sputlink/graph.py:348: DeprecationWarning: the cmp argument is not supported in 3.x
+```
+
+For the first two: added a test to make sure both variables are integers (the function with the problems has many other issues though). However, this broke the tests because they relied on None being smaller then a given integer. So instead made sure that year_alpha_to_digit always returns an integer (the code still has problems though).
+
+For the second, this is about a sort function that uses a comparison function instead of a key function while not using cmp= so my search did not find it. This was in pretty print functions so I just removed the comparison function. Note that there may be more cases of this, so I checked all instances of sort and sorted. Found another case in sputlink.objects, which was also in a pretty print function so just got rid of the comparison function.
+
+```
+python -3 -m testing.regression --evita
+```
+
+No warnings with this.
+
+
+
+### 4.2.  python-modernize
+
+Just running `python-modernize .` gives a bunch of hints.
+
+Use `isinstance(thingie, list)` instead of `isinstance(thingie, types.ListType)`. Changed all of those.
+
+Replacing `unicode()` with `six.text_type()`.
+
+Use list when you have something like items(). Did not change this, in most cases this will be fine.
+
+Many issues in `testing/evaluate.py`, which seems to have not undergone some of the fixes used in section 3. Ran the following (but deleted the list() functions around items() methods):
+
+```
+python-modernize -w testing/evaluate.py 
+```
+
+
+
+### 4.3.  Using PyLint
+
+Just running it on a bunch of files and see what comes up.
+
+Replace `import StringIO` with `from io import StringIO`.
+
+Replace `sys.maxint` with `sys.maxsize`.
+
+
+
+### 4.4.  Other stuff
+
+The above do not find all instances of *ListType* and others in the types module, should replace *ListType* with *list*, *TupleType* with *tuple*, etcetera. These were all relatively simple, a few notes:
+
+- When dealing with *LongType* and *IntType*, you can just use *int*.
+- make_documentation has *ClassType* and *TypeType*, these were both turned into *type*.
+- FSA uses *InstanceType*, see below.
+- The wordnet module was not fixed here.
+
+On the FSA issue. It does not seem easy in Python3 to test whether something is an instance of a user-defined class. But you can do the following
+
+```python
+def is_user_defined(x):
+  	return type(x).__module__ != 'builtins'
+  
+class X(object):
+    pass
+```
+
+```python
+>>> is_user_defined(1)
+False
+>>> is_user_defined('1')
+False
+>>> x = X()
+>>> is_user_defined(x)
+True
+```
+
+And instead of testing for *InstanceType* with `type(x) == InstanceType` you do `is_user_defined(x)`. The FSA code in question does not appear to be used by Tarsqi, so not sure how to test it.
+
+
+
+### 4.5.   Running tarsqi.py with python 3
+
+```
+python3 tarsqi.py --trap-errors=False data/in/simple-xml/all.xml out.xml
+```
+
+ `The first the issue was loading the FSA's. Changed the mode for opening pattern files in `library/patterns.py`: 
+
+```python
+def openfile(basename):
+    return open(os.path.join(DIR_PATTERNS, basename), 'rb')
+```
+
+This still worked in Python 2.7, but in Python 3.8.5 it gave
+
+```
+File "/Users/marc/Desktop/projects/tarsqi/code/ttk/git/ttk/utilities/FSA.py", line 757
+transitions = list(map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions))
+```
+
+The problem is in the brackets, removed them all.
+
+And then 
+
+```
+  File ".../components/preprocessing/wrapper.py", line 491, in tag_text
+    text += "\n.\n"
+TypeError: can't concat str to bytes
+```
+
+Needed some encoding and decoding in the calls to the tagger:
+
+```diff
+@@ -489,6 +488,7 @@ class TreeTagger(object):
+         # not clear why this is. Later in this method we pop off the extra tag
+         # that we get because of this. TODO: it would be better to deal with
+         # this in a more general way, see multiprocessing.Pool with a timeout.
++        text = text.decode("utf-8")
+         text += "\n.\n"
+         args = (self.process.stdin, text)
+         thread = threading.Thread(target=_write_to_stdin, args=args)
+
+@@ -497,6 +497,7 @@ class TreeTagger(object):
+         collect = False
+         while True:
+             line = self.process.stdout.readline().strip()
++            line = line.decode(encoding='utf8')
+             if line == START_TEXT:
+                 collect = True
+             elif line == END_TEXT:
+@@ -509,10 +510,12 @@ class TreeTagger(object):
+ def _write_to_stdin(pipe, text):
+-    pipe.write("%s\n" % START_TEXT)
++    def write(s, p):
++        pipe.write(s.encode(encoding='utf8'))
++    write("%s\n" % START_TEXT, pipe)
+     if text:
+-        pipe.write("%s\n" % text)
++        write("%s\n" % text, pipe)
+         # NOTE. Without the following the tagger will hang. Do not try to make
+         # it shorter, it may need at least a space, but I have no idea why.
+-        pipe.write("%s\n.\ndummy sentence\n.\n" % END_TEXT)
++        write("%s\n.\ndummy sentence\n.\n" % END_TEXT, pipe)
+         pipe.flush()
+```
+
+Next problem was loading Slinket dictionaries:
+
+```
+File ".../library/slinket/main.py", line 22, in load
+self.slinkVerbsDict = six.moves.cPickle.load(open(os.path.join(DIR_DICTS, "slinkVerbs.pickle")))
+TypeError: a bytes-like object is required, not 'str'
+```
+
+Changed the mode for opening files.
+
+Next:
+
+```
+File ".../ttk/docmodel/document.py", line 222, in _print_tags
+    ttk_tag = six.text_type(ttk_tag, errors='ignore')
+TypeError: decoding str is not supported
+```
+
+Fixed this by getting rid of `errors='ignore'` argument.
+
+**And now we can run the sample script throughPython 3.8.5.**
+
+Minor issue: in the output, the git_commit field of the processing step is now a bytestring:
+
+```xml
+<processing_step  ttk_version="2.2.0" git_commit="b'f38c2c0'" ... />
+```
+
+Edited the `_get_git_commit()` method a bit to deal with this.
+
+**Big issues**:
+
+- When running the tests there are a lot of fails. 
+- When running on Python 2.7, any non-asci character now breaks, check whether this was always the case and if not where it came in. This was NOT always the case, the error was introduced in the commit asociated with section 4.4 (string handling). 
+
+Looking at the second big issue...
+
+Checked out commit c378f68 (the first one that gave the error, established experimentally) and got the diff with HEAD~1. Then split the diff of commit into 40 patches, one for each file. Apply patches 1-16 gave no trouble. Then we had patch 17:
+
+```diff
+diff --git a/docmodel/main.py b/docmodel/main.py
+index 9d1149a..5ac0c76 100644
+--- a/docmodel/main.py
++++ b/docmodel/main.py
+@@ -21,6 +21,7 @@ from docmodel.metadata_parser import MetadataParserATEE, MetadataParserRTE3
+ from docmodel.docstructure_parser import DocumentStructureParser
+ 
+ from utilities import logger
++from io import open
+```
+
+and this broke with
+
+```
+Traceback (most recent call last):
+  File "tarsqi.py", line 529, in <module>
+    TarsqiWrapper(sys.argv[1:]).run()
+  File "tarsqi.py", line 444, in run
+    self._run_tarsqi_on_file()
+  File "tarsqi.py", line 483, in _run_tarsqi_on_file
+    Tarsqi(self.options, self.inpath, self.outpath).process_document()
+  File "tarsqi.py", line 165, in __init__
+    self.options.set_source_format(guess_source(self.input))
+  File "/Users/marc/Downloads/ttk/docmodel/main.py", line 79, in guess_source
+    first_tag = Xml(content).get_first_tag()
+  File "/Users/marc/Downloads/ttk/docmodel/main.py", line 109, in get_first_tag
+    self.parser.Parse(self.content)
+UnicodeEncodeError: 'ascii' codec can't encode character u'\u27f9' in position 108: ordinal not in range(128)
+```
+
+The deal is that io.open() gives you a `<type 'unicode'>` string and open() gives you `<type 'str'>`. And that string is handed to the [xmlparser.Parse](https://docs.python.org/2/library/pyexpat.html#xml.parsers.expat.xmlparser.Parse) method, which fails on unicode strings, which is just grand. Note that the xmlparser was created using the UTF-8 encoding.
+
+Don't really know what to do with this and decided to avoid using XML parsing for guessing what the source format is and instead just used a regular expression to find the first tag:
+
+```python
+def guess_source(filename_or_string):
+    chars_to_read = 1000
+    content = filename_or_string[:chars_to_read]
+    if os.path.exists(filename_or_string):
+        fh = open(filename_or_string)
+        content = fh.read(chars_to_read)
+        fh.close()
+    content = content.strip()
+    tag_expression = '<([^> ]+)[^>]*>'
+    result = re.search(tag_expression, content)
+    if result is None:
+        return 'text'
+    else:
+        tag = result.group(1)
+        return 'ttk' if tag.lower() == 'ttk' else 'xml'
+```
+
+This took the error away. Saved main.py on the Desktop.
+
+Well, nice try, but the error came back with the very next patch on `docmodel/source_parser.py`.
+
+Okay, time to go to *codecs*, apparently *io.open()* does not deal with unicode. Edited the parse_file method of SourceParserXML: 
+
+```python
+    def parse_file(self, filename, tarsqidoc):
+        """Parses filename and returns a SourceDoc. Uses the ParseFile routine
+        of the expat parser, where all the handlers are set up to fill in the
+        text and tags in SourceDoc."""
+        self.sourcedoc = SourceDoc(filename)
+        # TODO: should this be codecs.open() for non-ascii?
+        # self.parser.ParseFile(open(filename))
+        # NOTE: actually, the above line needed to replaced with the following
+        # while preparing to port code to Python3.
+        #content = open(filename).read()
+        content = codecs.open(filename).read()
+        self.parser.Parse(content)
+        self.sourcedoc.finish()
+        tarsqidoc.sourcedoc = self.sourcedoc
+```
+
+Applied the above changes to `docmodel/main.py` and  `docmodel/source_parser.py` at the tip of the `79-python3` branch and this took care of the problem.
+
+
+
+## 5.  Passing the unit tests
+
+The second big issue from above remains and many tests fails:
+
+```
+$ python3 -m testing.run_tests
+
+                       PASS        FAIL       ERROR
+   GUTime                 6           1           0
+   Evita                 14          22           0
+   Slinket Alink          0           1           0
+   Slinket Slink          2          25           0
+   S2T                    0           3           0
+   Blinker                4           3           0
+   SputLink               4           0           0
+```
+
+In Python 2.7 there is only the one fail for GUTime.
+
+Also, all regression tests fail.
+
+
+
+## 6.  Remaining thingies
+
+&para;  Run make_documentation.py.
+
+&para;  Version and save last Python2 compliant version.
+
+&para;  Run `2to3`. (In case the conservative way skipped a lot of steps to maintain compatibility)
+
+&para;  Remove from future imports and calls to six library.
+
+&para;  Also see:
 
 - http://python-future.org/automatic_conversion.html
 - http://python-future.org/compatible_idioms.html

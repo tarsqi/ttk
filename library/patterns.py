@@ -8,7 +8,7 @@ DIR_PATTERNS = os.path.join(TTK_ROOT, 'library', 'evita', 'patterns')
 
 
 def openfile(basename):
-    return open(os.path.join(DIR_PATTERNS, basename))
+    return open(os.path.join(DIR_PATTERNS, basename), 'rb')
 
 
 # EVITA PATTERNS

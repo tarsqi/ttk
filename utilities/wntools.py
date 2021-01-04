@@ -31,7 +31,9 @@ Usage
 
 from __future__ import absolute_import
 from io import open
+from functools import reduce
 from six.moves import map
+
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "2.0"
 

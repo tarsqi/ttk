@@ -333,7 +333,8 @@ class Graph(object):
         """Print all nodes with their edges_in and edges_out attributes to
         standard output."""
         ids = list(self.nodes.keys())
-        ids.sort(compare_id)
+        # removed compare_id comparison function for python 3 compatibility
+        ids.sort()
         for id in ids:
             self.nodes[id].pretty_print()
 
@@ -345,7 +346,8 @@ class Graph(object):
         fh.write(u"<table cellpadding=0 cellspacing=0 border=0>\n")
         fh.write(u"<tr><td>\n")
         nodes = list(self.nodes.keys())
-        nodes.sort(compare_id)
+        # removed compare_id comparison function for python 3 compatibility
+        nodes.sort()
         self._html_nodes_table(fh, nodes)
         fh.write(u"</td>\n\n")
         fh.write(u"<td valign=top>\n")

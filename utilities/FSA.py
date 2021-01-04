@@ -334,13 +334,13 @@ April 2005:
 
 from __future__ import absolute_import
 import string, os, tempfile
-from types import InstanceType, ListType, TupleType, IntType, LongType, DictType, StringType
+#from types import InstanceType
+from functools import reduce
+
 from six.moves import map
 from six.moves import filter
 from six.moves import range
-IntegerTypes = (IntType, LongType)
 
-#from utilities import logger
 from . import logger
 
 try:
@@ -376,7 +376,7 @@ class FSA(object):
         #
         def makeStateTable(self, default=None):
                 for state in self.states:
-                        if type(state) != IntType:
+                        if type(state) != int:
                                 return {}
                 if reduce(min, self.states) < 0: return {}
                 if reduce(max, self.states) > max(100, len(self.states) * 2): return {}
@@ -454,7 +454,7 @@ class FSA(object):
                 return labels
         
         def nextAvailableState(self):
-                return reduce(max, [s for s in self.states if type(s) in IntegerTypes], -1) + 1
+                return reduce(max, [s for s in self.states if type(s) == int], -1) + 1
         
         def transitionsFrom(self, state):
                 try:
@@ -754,8 +754,10 @@ class FSA(object):
                                 if s not in states:
                                         states.append(s)
                 states = list(stateMap.values())
-                transitions = list(map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions))
-                arcMetadata = list(map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata()))
+                transitions = list(map(lambda s0, s1, l, m=stateMap: (m[s0], m[s1], l), self.transitions))
+                #transitions = list(map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions))
+                arcMetadata = list(map(lambda s0, s1, label, data, m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata()))
+                #arcMetadata = list(map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata()))
                 copy = self.copy(states, self.alphabet, transitions, stateMap[self.initialState], list(map(stateMap.get, self.finalStates)), arcMetadata)
                 copy._isSorted = 1
                 return copy
@@ -787,8 +789,10 @@ class FSA(object):
                                 return NULL_FSA
                         else:
                                 return NULL_FSA.coerce(self.__class__)
-                transitions = list(filter(lambda (s0, s1, _), states=states:s0 in states and s1 in states, transitions))
-                arcMetadata = list(filter(lambda ((s0, s1, _), __), states=states: s0 in states and s1 in states, self.getArcMetadata()))  #R: added underscore
+                transitions = list(filter(lambda s0, s1, _, states=states:s0 in states and s1 in states, transitions))
+                #transitions = list(filter(lambda (s0, s1, _), states=states:s0 in states and s1 in states, transitions))
+                arcMetadata = list(filter(lambda s0, s1, _, __, states=states: s0 in states and s1 in states, self.getArcMetadata()))  #R: added underscore
+                #arcMetadata = list(filter(lambda ((s0, s1, _), __), states=states: s0 in states and s1 in states, self.getArcMetadata()))  #R: added underscore
                 result = self.copy(states, alpha, transitions, initial, list(filter(lambda s, states=states:s in states, finals)), arcMetadata).sorted()
                 result._isTrimmed = 1
                 return result
@@ -839,7 +843,8 @@ class FSA(object):
                 while index < len(stateSets):
                         #debugFile.write( "\n..............determinzed option 2")
                         stateSet, index = stateSets[index], index + 1
-                        localTransitions = list(filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions))
+                        localTransitions = list(filter(lambda s0, s1, l, set=stateSet:l and s0 in set, self.transitions))
+                        #localTransitions = list(filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions))
                         if localTransitions:
                                 #debugFile.write( "\n..............determinzed option 2.1")
                                 localLabels = [_____label[2] for _____label in localTransitions]  #R: added an underscore
@@ -943,8 +948,10 @@ class FSA(object):
                                                         states[index:index+1] = list(map(tuple, values))
                                                         changed = 1
                                                         break
-                transitions = removeDuplicates(list(map(lambda (s0,s1,label), m=partitionMap:(m[s0], m[s1], label), transitions0)))
-                arcMetadata = list(map(lambda ((s0, s1, label), data), m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata()))
+                transitions = removeDuplicates(list(map(lambda s0, s1, label, m=partitionMap:(m[s0], m[s1], label), transitions0)))
+                #transitions = removeDuplicates(list(map(lambda (s0,s1,label), m=partitionMap:(m[s0], m[s1], label), transitions0)))
+                arcMetadata = list(map(lambda s0, s1, label, data, m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata()))
+                #arcMetadata = list(map(lambda ((s0, s1, label), data), m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata()))
                 if not alpha0:
                         newTransitions = consolidateTransitions(transitions)
                         if arcMetadata:
@@ -1155,7 +1162,8 @@ def intersection(a, b):
                                                         arcMetadata.append((transition, a.getArcMetadataFor((sa0, sa1, la))))
                                                 if b.getArcMetadataFor((sa0, sa1, la)):
                                                         arcMetadata.append((transition, b.getArcMetadataFor((sa0, sa1, la))))
-        finals = list(filter(lambda (s0, s1), f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states))
+        finals = list(filter(lambda s0, s1, f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states))
+        #finals = list(filter(lambda (s0, s1), f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states))
         return a.create(states, alpha0, transitions, states[0], finals, arcMetadata).sorted()
 
 def iteration(fsa, min=1, max=None):
@@ -1252,64 +1260,54 @@ def trim(fsa):
 # Label operations
 #
 
+def is_user_defined(x):
+        return type(x).__module__ != 'builtins'
+
+
 TRACE_LABEL_OPERATIONS = 0
 
 def labelComplements(label, alphabet):
-        #debugFile.write( "\n\nEntering labelComplementSSS...........")
         complement = labelComplement(label, alphabet) or []
         if TRACE_LABEL_OPERATIONS:
                 pass
-                #log('complement(%s) = %s' % (label, complement))
-        if  type(complement) != ListType:
+        if  type(complement) != list:
                 complement = [complement]
         return complement
 
 def labelComplement(label, alphabet):
-        #debugFile.write( "\n\nEntering labelComplement...........")
-        if type(label) == InstanceType:
-                #debugFile.write( "\nHERE.......1")
+        #if type(label) == InstanceType:
+        if is_user_defined(label):
                 return label.complement()
         elif alphabet:
-                #debugFile.write( "\nHERE.......2")
                 return list(filter(lambda s, s1=label:s != s1, alphabet))
         elif label == ANY:
-                #debugFile.write( "\nHERE.......3")
                 return None
         else:
-                #debugFile.write( "\nHERE.......4")
                 return symbolComplement(label)
 
 def labelIntersection(l1, l2):
         intersection = _labelIntersection(l1, l2)
         if TRACE_LABEL_OPERATIONS:
             pass
-            #log('intersection(%s, %s) = %s' % (l1, l2, intersection))
         return intersection
 
 def _labelIntersection(l1, l2):
-#        debugFile.write( "\n\n--------\nLABELS:"+ l1 +" " + l2 + "\n--------\n")
         if l1 == l2:
-        #if l1 == l2 or l1 == ANY:       
-#                debugFile.write( "\n\nSOLUTION 1")
                 return l1
         #todo: is the following ever true
         elif not l1 or not l2:
-#                debugFile.write( "\n\nSOLUTION 2")
                 return None
         elif l1 == ANY:
-#                debugFile.write( "\n\nSOLUTION 3")
                 return l2
         elif l2 == ANY:
-#                debugFile.write( "\n\nSOLUTION 4")
                 return l1
-        elif type(l1) == InstanceType:
-#                debugFile.write( "\n\nSOLUTION 5")
+        #elif type(l1) == InstanceType:
+        elif is_user_defined(l1):
                 return l1.intersection(l2)
-        elif type(l2) == InstanceType:
-#                debugFile.write( "\n\nSOLUTION 6")
+        #elif type(l2) == InstanceType:
+        elif is_user_defined(l2):
                 return l2.intersection(l1)
         else:
-#                debugFile.write( "\n\nSOLUTION 7")
                 return symbolIntersection(l1, l2)
 
 def labelString(label):
@@ -1321,45 +1319,24 @@ def labelDict(label):
         return eval(label)
 
 def labelMatches(label, input):
-        #log( "\n\nLABEL MATCHES:"+label+"  "+ str(input)+"?")
-        #print "LABEL MATCHES: "+label+"  "+ str(input)+"?"
-        #logger.out('label =', label)
-        #logger.out('input =', input.__class__.__name__)
         if label == 'ALL':
                 return True
-        elif (type(label) is StringType and (label[0] == '{' or label[-1] == '}')):
+        elif (type(label) is str and (label[0] == '{' or label[-1] == '}')):
                 """Pattern expression has been given in a Python dictionary format """
-                #print ">>> LABEL %s is string with curly brackets" % label
                 label = labelDict(label)
-                #print "LABEL in FSA (1): "+str(label)
-                #log("\tMATCH (0.1), STRING:"+str(input))
-                #print "\t\tINPUT class name: "+str(input.__class__.__name__)
                 if getattr(input, '__class__').__name__ in [
                                 'Constituent', 'Chunk', 'NounChunk', 'VerbChunk',
                                 'Token', 'AdjectiveToken', 'EventTag', 'TimexTag']:
-                        """Specific for Evita"""
-                        #print ">>> class is in Constituent...."
-                        #print "EVITA: LABEL in FSA (2): "+str(label)
-                        #print ">>> input is ", input
-                        #logger.out('forwarding to input.matchConstituent')
+                        # this is specific to Evita
                         return input.matchConstituent(label)
-                elif type(input) is DictType:
-                        """ Open to other dictionary-based object matching applications"""
-                        #print "NON-EVITA: LABEL in FSA (2): "+str(label)
-                        #logger.out('forwarding to _matchDict')
+                elif type(input) is dict:
+                        # Open to other dictionary-based object matching applications
                         return matchDict(label, input)
                 else:
-                        #print "LABEL:", label, "\nINPUT:", input.nodeType
                         raise Exception("ERROR: possibly label is in dict format, but not the input")
         elif type(label) == InstanceType and hasattr(label, 'matches'):
-                #debugFile.write("\n\tMATCH (1)")
-                #print "\n\tMATCH (1)"
-                #logger.out('MATCH (1)')
                 return label.matches(input)
         else:
-                #debugFile.write("\n\tMATCH (2)")
-                #print "\n\tMATCH (2)"
-                #logger.out('MATCH (2)')
                 return label == input    
         
 def matchDict(label, input):
@@ -1382,11 +1359,11 @@ def matchDict(label, input):
                 #print "KEY:", key, "VALUE:", label[key]
                 if key in inputKeys:
                     value = label[key]
-                    if type(value) is TupleType:
+                    if type(value) is tuple:
                         #print "\t\t......TUPLE TYPE"
                         if value[0] == '^':
                             value = value[1]
-                            if type(value) is ListType:
+                            if type(value) is list:
                                 if input[key] in value:
                                     return 0
                             else:
@@ -1394,7 +1371,7 @@ def matchDict(label, input):
                                     return 0
                         else:
                             raise Exception("ERROR specifying description of pattern")
-                    elif type(value) is ListType:
+                    elif type(value) is list:
                         #print "\t\t......LIST TYPE"
                         if input[key] not in value:
                             return 0
@@ -1513,7 +1490,7 @@ def constructLabelMap(labels, alphabet, includeComplements=0):
 
 def symbolComplement(symbol):
         #debugFile.write( "\nSYMBOL: "+str(symbol))
-        if type(symbol) is not StringType:
+        if type(symbol) is not str:
                 symbol = str(symbol)
         if '&' in symbol:
                 #debugFile.write( "\nSYMBOL .........1")
@@ -1527,11 +1504,11 @@ def symbolComplement(symbol):
 
 
 def symbolIntersection(s1, s2):
-        if type(s1) is StringType:
+        if type(s1) is str:
                 set1 = s1.split('&')
         else: set1 = [str(s1)]
 
-        if type(s2) is StringType:
+        if type(s2) is str:
                 set2 = s2.split('&')
         else: set2 = [str(s2)]
                 
@@ -1542,7 +1519,7 @@ def symbolIntersection(s1, s2):
                 if symbol not in set1:
                         set1.append(symbol)
                         
-        if type(s1) is StringType:
+        if type(s1) is str:
                 #debugFile.write( "\nS1:"+s1)
                 nonNegatedSymbols = [s for s in set1 if s[0] != '~']
         else:
@@ -1639,7 +1616,7 @@ class Sequence(object):
                 previousBorder[currentSubpattern] = 0   # Index of previous bar in currentSubpattern
                 for i in range(len(self.sequence)):
                     #print "ITEM:", i, self.sequence[i], "CURRENT SUBPATTERN:", currentSubpattern
-                    if type(self.sequence[i]) is StringType : 
+                    if type(self.sequence[i]) is str : 
                         if self.sequence[i] == '(':
                                 currentSubpattern = currentSubpattern+1
                                 #print "\tCURRENT SUBPATTERN:", currentSubpattern
@@ -1689,8 +1666,8 @@ class SyntaxSequence(Sequence):
             for item in self.description:
                     #debugFile.write( "\nITEM: "+str(item))
                     if len(item) > 1:
-                            #if type(item) is StringType:
-                            if type(item) is not StringType:
+                            #if type(item) is str:
+                            if type(item) is not str:
                                     item = str(item)
                                     
                             if item[0] in ['(','[','|']:
