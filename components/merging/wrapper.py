@@ -16,6 +16,7 @@ TODO:
 
 """
 
+from __future__ import absolute_import
 import os
 
 from library.tarsqi_constants import LINK_MERGER, S2T, BLINKER, CLASSIFIER
@@ -37,7 +38,7 @@ RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
-class MergerWrapper:
+class MergerWrapper(object):
 
     """Wraps the merging code, including Sputlink's temporal closure code."""
 
@@ -50,8 +51,8 @@ class MergerWrapper:
         add resulting links to the TarsqiDocument."""
         cp = ConstraintPropagator(self.tarsqidoc)
         tlinks = self.tarsqidoc.tags.find_tags(LIBRARY.timeml.TLINK)
-        # use a primitive sort to order the links on how good they are
-        tlinks = sorted(tlinks, compare_links)
+        # order the links on how good they are
+        tlinks = sorted(tlinks, key=sort_on_confidence, reverse=True)
         cp.queue_constraints(self.tarsqidoc.tags.find_tags(LIBRARY.timeml.TLINK))
         cp.propagate_constraints()
         cp.reduce_graph()
@@ -86,28 +87,21 @@ class MergerWrapper:
         self.tarsqidoc.tags.add_tag(TLINK, -1, -1, attrs)
 
 
-def compare_links(link1, link2):
-    """Compare the two links and decide which one of them is more likely to be
-    correct. Rather primitive for now. We consider S2T links the best, then links
-    derived by Blinker, then links derived by the classifier. Classifier links
-    themselves are ordered using their classifier-assigned confidence scores."""
-    o1, o2 = link1.attrs[ORIGIN], link2.attrs[ORIGIN]
-    if o1.startswith('S2T'):
-        return 0 if o2.startswith('S2T') else -1
-    elif o1.startswith('BLINKER'):
-        if o2.startswith('S2T'):
-            return 1
-        elif o2.startswith('BLINKER'):
-            return 0
-        elif o2.startswith('CLASSIFIER'):
-            return -1
-    elif o1.startswith('CLASSIFIER'):
-        if o2.startswith('CLASSIFIER'):
-            o1_confidence = float(o1[11:])
-            o2_confidence = float(o2[11:])
-            return cmp(o2_confidence, o1_confidence)
-        else:
-            return 1
+def sort_on_confidence(link):
+    """Sort key for determining how good we think a link is. Rather primitive for
+    now. We consider S2T links the best, then links derived by Blinker, then
+    links derived by the classifier. Classifier links themselves are ordered
+    using their classifier-assigned confidence scores."""
+    origin = link.attrs[ORIGIN]
+    if origin.startswith(S2T):
+        return 3.0
+    elif origin.startswith(BLINKER):
+        return 2.0
+    elif origin.startswith(CLASSIFIER):
+        confidence = float(origin[11:])
+        return 1.0 + confidence
+    else:
+        return 0
 
 
 def tlink_arg1_attr(identifier):

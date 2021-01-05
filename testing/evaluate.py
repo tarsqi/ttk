@@ -41,10 +41,16 @@ OPTIONS:
 
 """
 
-import os, sys, shutil, copy, getopt, StringIO
+from __future__ import absolute_import
+from __future__ import print_function
+import os, sys, shutil, copy, getopt
+from io import StringIO
+from six.moves import range
 
 sys.path.insert(0, '..')
 sys.path.insert(0, '.')
+
+from __future__ import division
 
 import tarsqi
 from library.main import LIBRARY
@@ -108,7 +114,7 @@ def create_system_files_from_gold_standard(gold_dir, system_dir, limit):
     """Take the TTK files in gold_dir and create TTK files in system_dir that have
     the same text and docelement tags, do not have the other tarsqi tags from
     the gold standard and have tags as added by the current system."""
-    print system_dir
+    print(system_dir)
     if os.path.exists(system_dir):
         exit("Error: directory %s already exists" % system_dir)
     else:
@@ -121,7 +127,7 @@ def create_system_files_from_gold_standard(gold_dir, system_dir, limit):
         count += 1
         if count > limit:
             break
-        print fname
+        print(fname)
         gold_file = os.path.join(gold_dir, fname)
         system_file = os.path.join(system_dir, fname)
         create_system_file_from_gold_standard(gold_file, system_file)
@@ -148,12 +154,12 @@ def create_system_file_from_gold_standard(gold_file, system_file):
     tarsqidoc.print_all(system_file)
 
 
-def compare_dirs(gold_dir, system_dir, limit=sys.maxint):
+def compare_dirs(gold_dir, system_dir, limit=sys.maxsize):
     """Generate the precision, recall and f-score numbers for the directories."""
     fstats = []
     fnames = _collect_files(gold_dir, system_dir, limit)
     for fname in fnames:
-        print fname
+        print(fname)
         fstats.append(
             FileStatistics(os.path.join(gold_dir, fname),
                            os.path.join(system_dir, fname)))
@@ -162,12 +168,12 @@ def compare_dirs(gold_dir, system_dir, limit=sys.maxint):
 
 
 def view_differences(gold_dir, system_dir, display_dir, display_choices,
-                     limit=sys.maxint):
+                     limit=sys.maxsize):
     """Create HTML files that view the differences."""
     display_dir = _create_display_dir(display_dir)
     fnames = _collect_files(gold_dir, system_dir, limit)
     for fname in fnames:
-        print fname
+        print(fname)
         FileStatistics(os.path.join(gold_dir, fname),
                        os.path.join(system_dir, fname),
                        display_dir, display_choices)
@@ -262,14 +268,14 @@ def _retrieve_from_index(identifier, tagtype, event_idx, timex_idx):
 
 def precision(tp, fp):
     try:
-        return float(tp) / (tp + fp)
+        return (tp / (tp + fp))
     except ZeroDivisionError:
         return None
 
 
 def recall(tp, fn):
     try:
-        return float(tp) / (tp + fn)
+        return tp / (tp + fn)
     except ZeroDivisionError:
         return None
 
@@ -291,20 +297,20 @@ def _as_float_string(f):
 
 
 def _offset_warning(message, tag, offsets):
-    print "WARNING: %s" % message
-    print "         %s" % offsets
-    print "         %s" % tag.as_ttk_tag()
+    print("WARNING: %s" % message)
+    print("         %s" % offsets)
+    print("         %s" % tag.as_ttk_tag())
 
 
 def print_annotations(annotations, tag=None):
     for tagname in sorted(annotations):
         if tag is not None and tag != tagname:
             continue
-        print "\n", tagname
+        print("\n", tagname)
         for offsets in sorted(annotations[tagname]):
             attrs = annotations[tagname][offsets].items()
             attrs_str = ' '.join(["%s=%s" % (a,v) for a,v in attrs])
-            print "  %s %s" % (offsets, attrs_str)
+            print("  %s %s" % (offsets, attrs_str))
 
 
 class FileStatistics(object):
@@ -345,7 +351,7 @@ class DirectoryStatistics(FileStatistics):
             self.events, self.timexes, self.alinks, self.slinks, self.tlinks)
 
     def pp(self):
-        print "\n%s\n" % self
+        print("\n%s\n" % self)
 
 
 class EntityStatistics(object):
@@ -430,7 +436,7 @@ class LinkStatistics(object):
 
     def accuracy(self):
         try:
-            return float(self.correct) / (self.correct + self.incorrect)
+            return self.correct / (self.correct + self.incorrect)
         except ZeroDivisionError:
             return None
 
@@ -638,14 +644,40 @@ class EntityAnnotation(object):
     def __str__(self):
         return "<EntityAnnotation %s:%s %s>" % (self.begin, self.end, self.attrs)
 
-    def __cmp__(self, other):
-        begin_cmp = cmp(self.begin, other.begin)
-        if begin_cmp != 0:
-            return begin_cmp
-        end_cmp = cmp(self.end, other.end)
-        if end_cmp != 0:
-            return end_cmp
-        return cmp(self.begin_head, other.begin_head)
+    def __eq__(self, other):
+        return (self.begin == other.begin) \
+            and (self.end == other.end) \
+            and (self.begin_head == other.begin_head)
+
+    def __ne__(self, other):
+        return (self.begin != other.begin) \
+            or (self.end != other.end) \
+            or (self.begin_head != other.begin_head)
+
+    def __lt__(self, other):
+        return self._compare(other) < 0
+
+    def __le__(self, other):
+        return self._compare(other) <= 0
+
+    def __gt__(self, other):
+        return self._compare(other) > 0
+
+    def __ge__(self, other):
+        return self._compare(other) >= 0
+
+    def _compare(self, other):
+        # TODO: revisit this later, it is Python3 compliant, but that's about
+        # the best you can say
+        def comp(x, y):
+            return (x > y) - (x < y)
+        begin_comp = comp(self.begin, other.begin)
+        if begin_comp != 0:
+            return begin_comp
+        end_comp = comp(self.end, other.end)
+        if end_comp != 0:
+            return end_comp
+        return comp(self.begin_head, other.begin_head)
 
     def overlaps_with(self, other):
         return not (self.end <= other.begin or other.end <= self.begin)
@@ -744,7 +776,7 @@ class Alignment(object):
     def _get_tagged_fragment(self, p1, p2, text):
         def tag(cl, text): return "<sup class=%s>%s</sup>" % (cl, text)
         def brc(cl, bracket): return "<span class=%s>%s</span>" % (cl, bracket)
-        output = StringIO.StringIO()
+        output = StringIO()
         for i in range(0, p2-p1):
             i_adjusted = i + p1
             if i_adjusted in self.open_idx['s']:
@@ -788,7 +820,7 @@ if __name__ == '__main__':
 
     gold = os.path.abspath(opts.get('--gold'))
     system = os.path.abspath(opts.get('--system'))
-    limit = int(opts.get('--limit', sys.maxint))
+    limit = int(opts.get('--limit', sys.maxsize))
     out = opts.get('--out')
 
     display = opts.get('--display')

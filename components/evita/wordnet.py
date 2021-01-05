@@ -4,9 +4,11 @@ Module to access list of nominals havested from WordNet.
 
 """
 
+from __future__ import absolute_import
 from library import forms
 import utilities.binsearch as binsearch
 import utilities.logger as logger
+from io import open
 
 
 # Open dbm's with information about nominal events. If that does not work, open
@@ -51,7 +53,7 @@ def someSensesAreEvents(lemma):
 def _lookupLemmaInDBM(lemma, dbm):
     """Look up lemma in database."""
     # has_key on dbm returns 0 or 1, hence the if-then-else
-    return True if dbm.has_key(lemma) else False
+    return True if lemma in dbm else False
 
 def _lookupLemmaInTXT(lemma, fh):
     """Look up lemma in text file."""

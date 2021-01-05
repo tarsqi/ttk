@@ -21,11 +21,14 @@ The only difference is in the second column (no relation versus a relation).
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, codecs, textwrap
 
 from components.common_modules.tree import create_tarsqi_tree
 from library.main import LIBRARY
 from utilities import logger
+from six.moves import range
 
 
 DEBUG = False
@@ -152,21 +155,6 @@ def make_vector(tarsqidoc, s, tag):
         return None
 
 
-def compare_features(f1, f2):
-    """Comparison method for feature sorting."""
-    def get_prefix(feature):
-        if feature.startswith('e1-'): return 'e1'
-        if feature.startswith('e2-'): return 'e2'
-        if feature.startswith('e-'): return 'e'
-        if feature.startswith('t-'): return 't'
-        return 'x'
-    prefixes = {'e': 1, 't': 2, 'e1': 3, 'e2': 4}
-    p1 = get_prefix(f1)
-    p2 = get_prefix(f2)
-    prefix_comparison = cmp(p1, p2)
-    return cmp(f1, f2) if prefix_comparison == 0 else prefix_comparison
-
-
 def abbreviate(attr):
     """Abbreviate the feature name, but abbreviate only the part without the
     prefix (which can be e-, t-, e1- or e2-)."""
@@ -184,10 +172,10 @@ class Vector(object):
         self.tarsqidoc = tarsqidoc
         self.source = source
         self.sentence = sentence
-        string = tarsqidoc.sourcedoc.text[source.begin:source.end]
-        string = '_'.join(string.split())
+        s = tarsqidoc.sourcedoc.text[source.begin:source.end]
+        s = '_'.join(s.split())
         self.features = {TAG: source_tag,
-                         STRING: string,
+                         STRING: s,
                          SYNTAX: self.source.syntax()}
         for feat in features:
             val = self.get_value(feat)
@@ -196,7 +184,7 @@ class Vector(object):
 
     def __str__(self):
         feats = []
-        for feat in self.sorted_features():
+        for feat in sorted(self.features.keys()):
             val = self.features[feat]
             feats.append("%s=%s" % (feat, val))
         return ' '.join(feats)
@@ -206,9 +194,6 @@ class Vector(object):
 
     def is_timex_vector(self):
         return False
-
-    def sorted_features(self):
-        return sorted(self.features.keys(), compare_features)
 
     def add_feature(self, feat, val):
         self.features[abbreviate(feat)] = val
@@ -257,7 +242,7 @@ class PairVector(Vector):
 
     def __init__(self, tarsqidoc, prefix1, vector1, prefix2, vector2):
         """Initialize a pair vector from two object vectors by setting an
-        identifier and by adding the features of th eobject vectors."""
+        identifier and by adding the features of the object vectors."""
         self.tarsqidoc = tarsqidoc
         self.filename = self._get_filename()
         self.source = (vector1.source, vector2.source)
@@ -373,7 +358,7 @@ class ContextFeatures(object):
                 self.v2_idx = i
 
     def items(self):
-        return self.features.items()
+        return list(self.features.items())
 
     def get(self, feature):
         return self.features.get(feature)
@@ -409,18 +394,18 @@ class ContextFeaturesET(ContextFeatures):
 
 def _debug(text):
     if DEBUG:
-        print text
+        print(text)
 
 
 def _debug_vector(vector_type, vector, indent=''):
     if DEBUG:
         text = "%s %s%s" % (vector_type, vector, indent)
         for line in textwrap.wrap(text, 100):
-            print "%s%s" % (indent, line)
+            print("%s%s" % (indent, line))
 
 
 def _debug_leafnodes(element, s):
     if DEBUG:
-        print("\n%s %s\n" % (element.begin, s))
+        print(("\n%s %s\n" % (element.begin, s)))
         for n in s.leaf_nodes():
-            print '  ', n
+            print('  ', n)

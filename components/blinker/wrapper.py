@@ -4,11 +4,13 @@ Contains the Blinker wrapper.
 
 """
 
+from __future__ import absolute_import
 from library.tarsqi_constants import BLINKER
 from components.blinker.main import Blinker
 
 
-class BlinkerWrapper:
+class BlinkerWrapper(object):
+    
     """Wrapper for Blinker."""
 
     def __init__(self, document):

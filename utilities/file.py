@@ -1,7 +1,9 @@
 """Module containing simple file utilities."""
 
+from __future__ import absolute_import
 import os
 import pickle
+from io import open
 
 
 def file_contents(filename):
@@ -39,7 +41,7 @@ def write_text_to_file(text, filename):
 
 def open_pickle_file(fname):
     """Return the contents of a pickle file."""
-    with open(fname, 'r') as fh:
+    with open(fname, 'rb') as fh:
         return pickle.load(fh)
 
 

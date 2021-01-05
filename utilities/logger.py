@@ -51,16 +51,19 @@ be turned on and off with
 #   send an object with a print operation instead
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import inspect
+from io import open
 
 logger = None
 
 STDOUT_PRINTING = True
 
 
-class Logger:
+class Logger(object):
 
     """The Logger class, has no other function than to store the logging
     level and the log file."""
@@ -71,11 +74,11 @@ class Logger:
         self.errors = 0
         self.warnings = 0
         self.html_file = open(filename + '.html', 'w')
-        self.html_file.write("<html>\n")
-        self.html_file.write("<head>\n<style>\n")
-        self.html_file.write("body, td { font-family:courier,monospace; }\n")
-        self.html_file.write("</style>\n</head>\n")
-        self.html_file.write("<body>\n\n<table cellpadding=5>\n\n")
+        self.html_file.write(u"<html>\n")
+        self.html_file.write(u"<head>\n<style>\n")
+        self.html_file.write(u"body, td { font-family:courier,monospace; }\n")
+        self.html_file.write(u"</style>\n</head>\n")
+        self.html_file.write(u"<body>\n\n<table cellpadding=5>\n\n")
 
 
 def initialize_logger(filename, level=2):
@@ -162,10 +165,10 @@ def _log(message_type, log_string):
         message_type = '<font color=blue>' + message_type + '</font>'
     # if message_type == 'DEBUG':
     #    message_type = '<font color=green>' + message_type + '</font>'
-    logger.html_file.write("\n<tr>\n")
-    logger.html_file.write("  <td valign=top>%s\n" % (message_type))
-    logger.html_file.write("  <td valign=top>%s\n" % (trace))
-    logger.html_file.write("  <td valign=top>%s\n" % (log_string))
+    logger.html_file.write(u"\n<tr>\n")
+    logger.html_file.write(u"  <td valign=top>%s\n" % (message_type))
+    logger.html_file.write(u"  <td valign=top>%s\n" % (trace))
+    logger.html_file.write(u"  <td valign=top>%s\n" % (log_string))
     logger.html_file.flush()
 
 
@@ -192,12 +195,12 @@ def out(*args):
         file = path_elements[-1]
         file = file.replace('.py', '')
         prefix = 'LOG (' + str(depth) + ') [' + file + '.' + function + ']'
-        print prefix + ' ',
+        print(prefix + ' ', end=' ')
         for arg in args:
-            print arg,
-        print
+            print(arg, end=' ')
+        print()
 
 
 def outnl():
     if STDOUT_PRINTING:
-        print
+        print()

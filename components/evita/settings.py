@@ -4,6 +4,7 @@ Settings that determine the behaviour of Evita components.
 
 """
 
+from __future__ import print_function
 DEBUG = False
 
 
@@ -26,7 +27,7 @@ EVITA_NOM_WNPRIMSENSE_ONLY = True
 
 
 if DEBUG:
-    print "EVITA_NOM_DISAMB = %s" % EVITA_NOM_DISAMB
-    print "EVITA_NOM_CONTEXT = %s" % EVITA_NOM_CONTEXT
-    print "EVITA_NOM_WNPRIMSENSE_ONLY = %s" % EVITA_NOM_WNPRIMSENSE_ONLY
+    print("EVITA_NOM_DISAMB = %s" % EVITA_NOM_DISAMB)
+    print("EVITA_NOM_CONTEXT = %s" % EVITA_NOM_CONTEXT)
+    print("EVITA_NOM_WNPRIMSENSE_ONLY = %s" % EVITA_NOM_WNPRIMSENSE_ONLY)
 

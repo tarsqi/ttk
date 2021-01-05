@@ -7,7 +7,9 @@ Much of the functionality of Evita and Slinket is delegated to chunks.
 
 """
 
-import types
+from __future__ import absolute_import
+from __future__ import print_function
+
 from xml.sax.saxutils import quoteattr
 
 import library.forms as forms
@@ -28,6 +30,9 @@ from components.evita.settings import EVITA_NOM_CONTEXT
 from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
 
 from utilities import logger
+from io import open
+from six.moves import map
+from six.moves import range
 
 
 # Get the Bayesian event recognizer
@@ -194,9 +199,9 @@ class Chunk(Constituent):
         return True
 
     def pretty_print(self, indent=0):
-        print "%s<%s position=%s %d-%d checkedEvents=%s event=%s eid=%s>" % \
+        print("%s<%s position=%s %d-%d checkedEvents=%s event=%s eid=%s>" % \
             (indent * ' ', self.__class__.__name__, self.position,
-             self.begin, self.end, self.checkedEvents, self.event, self.eid)
+             self.begin, self.end, self.checkedEvents, self.event, self.eid))
         for tok in self.dtrs:
             tok.pretty_print(indent + 2)
 
@@ -289,9 +294,8 @@ class NounChunk(Chunk):
                 is_event = self._run_classifier(lemma)
                 logger.debug("  baysian classifier result ==> %s" % is_event)
                 return is_event
-            except bayes.DisambiguationError, (strerror):
-                pass
-                logger.debug("  DisambiguationError: %s" % unicode(strerror))
+            except bayes.DisambiguationError as e:
+                logger.debug("  DisambiguationError: %s" % e)
         # check whether primary sense or some of the senses are events
         if EVITA_NOM_WNPRIMSENSE_ONLY:
             is_event = wordnet.primarySenseIsEvent(lemma)
@@ -308,7 +312,7 @@ class NounChunk(Chunk):
         # TODO: we now miss multiple events in a chunk
         if imported_events is None:
             imported_events = {}
-        offsets = range(self.begin, self.end)
+        offsets = list(range(self.begin, self.end))
         # Get the tags for all characters in the entire span and then get the
         # head of the list, that is, the contiguous sequence of Tags at the end
         # of the range.
@@ -394,9 +398,11 @@ class VerbChunk(Chunk):
         to do."""
         vcf_list = VChunkFeaturesList(verbchunk=self)
         _debug_vcf(vcf_list)
-        vcf_list = [vcf for vcf in vcf_list if vcf.is_wellformed()]
-        if vcf_list:
-            for vcf in vcf_list[:-1]:
+        # This is the list of all VChunkFeatures instances inside of the
+        # VChunkFeaturesList instance.
+        vcfs = [vcf for vcf in vcf_list if vcf.is_wellformed()]
+        if vcfs:
+            for vcf in vcfs[:-1]:
                 if not vcf.isAuxVerb():
                     self._conditionallyAddEvent(vcf)
             if not self.isNotEventCandidate(vcf_list[-1]):
@@ -584,7 +590,7 @@ class VerbChunk(Chunk):
         # TODO: when there is a Slinket regression test, see what happens when
         # we remove this one --> NOTHING
         fsaCounter = -1
-        if not isinstance(fsa_list, types.ListType):
+        if not isinstance(fsa_list, list):
             # TODO: this happens for example when Slinket processes "I was
             # delighted to see advertised.", find out why, once we do, we can
             # remove this method and just have the one on Constituent
@@ -595,7 +601,7 @@ class VerbChunk(Chunk):
             lenSubstring = fsa.acceptsSubstringOf(sentence_slice)
             if lenSubstring:
                 if DEBUG:
-                    print "Succesful application of %s" % fsa.fsaname
+                    print("Succesful application of %s" % fsa.fsaname)
                 return (lenSubstring, fsaCounter)
         else:
             return (0, fsaCounter)
@@ -605,17 +611,17 @@ class VerbChunk(Chunk):
         verbfeatureslist = VChunkFeaturesList(tokens=token_list)
         GramMultiVChunk = verbfeatureslist[0]
         self._conditionallyAddEvent(GramMultiVChunk)
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
     def _processEventInMultiNChunk(self, features, substring, imported_events):
         nounChunk = substring[-1]
         nounChunk.createEvent(features, imported_events)
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
     def _processEventInMultiAChunk(self, features, substring):
         adjToken = substring[-1]
         adjToken.createAdjEvent(features)
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
     def _processDoubleEventInMultiAChunk(self, features, substring):
         """Tagging EVENT in both VerbChunk and AdjectiveToken. In this case the
@@ -624,7 +630,7 @@ class VerbChunk(Chunk):
         self._conditionallyAddEvent(features)
         adjToken = substring[-1]
         adjToken.createAdjEvent()
-        map(update_event_checked_marker, substring)
+        list(map(update_event_checked_marker, substring))
 
 
 def _debug_vcf(vcf_list):
@@ -632,7 +638,7 @@ def _debug_vcf(vcf_list):
     if len(vcf_list) > 0 and DEBUG:
         for vcf in vcf_list:
             if DEBUG:
-                print ' ',
+                print(' ', end=' ')
                 vcf.pp()
     for vcf in vcf_list:
         logger.debug(vcf.as_verbose_string())

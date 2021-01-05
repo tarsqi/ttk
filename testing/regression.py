@@ -3,24 +3,25 @@
 Regression test for the Tarsqi components. Currently only for Evita and within
 evita only loads some verbal event cases.
 
-Usage:
+USAGE, this needs to be run from the parent directory with the -m option:
 
-$ python regression.py --evita
+$ python -m testing.regression --evita
 
    Runs all available Evita tests and stores the results in directories
    results/evita-XX where the XX denotes a particular Evita test. Files in the
-   results directories are timestamped.
+   results directories are timestamped. This will also generate new reports.
 
-$ python regression.py --report
+$ python -m testing.regression --report
 
-   Generate HTML reports of all available tests.
+   Generate HTML reports of all available tests. The reports are written to
+   results/html.
 
-$ python regression.py --purge TEST_CASE TIMESTAMP
+$ python -m testing.regression --purge TEST_CASE TIMESTAMP
 
    Purge the resuts data for a particular test case at a particular timestamp
    and update the report. An example test case would be evita-vg.
 
-$ python regression.py --create-event-vg-cases
+$ python -m testing.regression --create-event-vg-cases
 
    Creates test cases from cases/input/timebank-events-vg.txt and puts them in
    cases/cases-evita-vg.tab. This needs to be run only once.
@@ -40,10 +41,15 @@ indicate whether a tag was found at the indicated offsets. Results are + or -.
 """
 
 
+from __future__ import absolute_import
+
+from __future__ import print_function
 import os, sys, getopt, time, glob
 
-import path
 import tarsqi
+from io import open
+from six.moves import input
+
 
 def load_cases(fname):
     """return a list of all test cases in fname."""
@@ -55,7 +61,7 @@ def load_cases(fname):
         o1 = int(o1)
         o2 = int(o2)
         cases.append(Case(identifier, sentence, o1, o2))
-    print "Loaded %d test cases from fname" % len(cases)
+    print("Loaded %d test cases from fname" % len(cases))
     return cases
 
 
@@ -85,6 +91,7 @@ def create_name_generator(names):
         return name
     return name_generator
 
+
 def create_event_vg_cases():
     """Create cases for verbal events, using timebank-events-vg.txt."""
     name_generator = create_name_generator({})
@@ -109,7 +116,8 @@ def create_event_vg_cases():
         o1 = o2 - last_token_length
         name = name_generator("%s-%s" % (chunkclass, vg))
         out.write("VG-%s\t%s\t%s\t%s\n" % (name, sentence, o1, o2))
-    print "Created", outfile
+    print("Created", outfile)
+
 
 def run_evita():
     load_tagger()
@@ -125,7 +133,8 @@ def run_evita():
             true += 1
         else:
             false += 1
-    print "True=%s False=%s" % (true, false)
+    print("True=%s False=%s" % (true, false))
+
 
 def check_tag(pipeline, sentence, tag, o1, o2):
     """Return True if sentence has tag between offsets o1 and o2."""
@@ -137,10 +146,12 @@ def check_tag(pipeline, sentence, tag, o1, o2):
             return True
     return False, tags
 
+
 def load_tagger():
     # a dummy run just to get the tagger messages out of the way
     #tarsqi.process_string("Fido barks.", [('--pipeline', 'PREPROCESSOR')])
     tarsqi.process_string("Fido barks.", pipeline='PREPROCESSOR')
+
 
 def timestamp():
     return time.strftime('%Y%m%d-%H%M%S')
@@ -174,10 +185,10 @@ class ReportGenerator(object):
 
     def write_index(self):
         """Create the idex for all results."""
-        self.index_fh.write("<html>\n<body>\n")
+        self.index_fh.write(u"<html>\n<body>\n")
         for name in self.cases:
-            self.index_fh.write("<a href=cases-%s.html>%s</a>\n" % (name, name))
-        self.index_fh.write("</body>\n</html>\n")
+            self.index_fh.write(u"<a href=cases-%s.html>%s</a>\n" % (name, name))
+        self.index_fh.write(u"</body>\n</html>\n")
 
     def write_cases(self):
         """Create the file with results for all cases."""
@@ -185,23 +196,23 @@ class ReportGenerator(object):
             self.case = case
             self.case_file = os.path.join(self.html_dir, "cases-%s.html" % case)
             self.case_fh = open(self.case_file, 'w')
-            print "writing", self.case_file
+            print("writing", self.case_file)
             self._load_cases()
             self._load_case_results()
             self._write_case_report()
 
     def _load_cases(self):
-        self.case_input_file = "%s/cases-%s.tab" % (self.cases_dir, self.case)
+        self.case_input_file = u"%s/cases-%s.tab" % (self.cases_dir, self.case)
         self.case_input_fh = open(self.case_input_file)
-        print "  reading cases in", self.case_input_file
+        print("  reading cases in", self.case_input_file)
         self.case_input = {}
         for case in load_cases(self.case_input_file):
             self.case_input[case.identifier] = case
 
     def _load_case_results(self):
         self.case_results = {}
-        for results_file in glob.glob("%s/%s/*.tab" % (self.results_dir, self.case)):
-            print '  reading results from', results_file
+        for results_file in glob.glob(u"%s/%s/*.tab" % (self.results_dir, self.case)):
+            print('  reading results from', results_file)
             timestamp = os.path.splitext(os.path.basename(results_file))[0]
             self.case_results[timestamp] = {}
             for line in open(results_file):
@@ -214,31 +225,33 @@ class ReportGenerator(object):
         for ts in timestamps:
             for identifier in self.case_results[ts].keys():
                 identifiers[identifier] = True
-        self.case_fh.write("<html>\n</body>\n")
-        self.case_fh.write("<head>\n<style>\n")
-        self.case_fh.write(".tag { color: blue; xfont-weight: bold; }\n")
-        self.case_fh.write("</style>\n</head>\n")
-        self.case_fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
-        self.case_fh.write("<tr>")
-        self.case_fh.write("  <td>&nbsp;")
+        self.case_fh.write(u"<html>\n</body>\n")
+        self.case_fh.write(u"<head>\n<style>\n")
+        self.case_fh.write(u".tag { color: blue; xfont-weight: bold; }\n")
+        self.case_fh.write(u"</style>\n</head>\n")
+        self.case_fh.write(u"<table cellpadding=5 cellspacing=0 border=1>\n")
+        self.case_fh.write(u"<tr>\n")
+        self.case_fh.write(u"  <td>&nbsp;</td>\n")
         for ts in timestamps:
-            self.case_fh.write("  <td>%s" % ts[2:8])
-        self.case_fh.write("  <td>o1")
-        self.case_fh.write("  <td>o2")
-        self.case_fh.write("  <td>sentence")
+            self.case_fh.write(u"  <td>%s</td>\n" % ts[2:8])
+        self.case_fh.write(u"  <td>o1</td>\n")
+        self.case_fh.write(u"  <td>o2</td>\n")
+        self.case_fh.write(u"  <td>sentence</td>\n")
+        self.case_fh.write(u"</tr>\n")
         for identifier in sorted(identifiers.keys()):
-            self.case_fh.write("<tr style=\"white-space:nowrap\">")
-            self.case_fh.write("  <td>%s" % identifier)
+            self.case_fh.write(u"<tr style=\"white-space:nowrap\">\n")
+            self.case_fh.write(u"  <td>%s</td>\n" % identifier)
             for ts in timestamps:
-                self.case_fh.write("  <td>%s" % self.case_results[ts].get(identifier, '&nbsp;'))
+                self.case_fh.write(u"  <td>%s</td>\n" % self.case_results[ts].get(identifier, '&nbsp;'))
             case = self.case_input[identifier]
-            self.case_fh.write("  <td align=right>%s" % case.o1)
-            self.case_fh.write("  <td align=right>%s" % case.o2)
-            self.case_fh.write("  <td>%s<span class=\"tag\">%s</span>%s"
+            self.case_fh.write(u"  <td align=right>%s</td>\n" % case.o1)
+            self.case_fh.write(u"  <td align=right>%s</td>\n" % case.o2)
+            self.case_fh.write(u"  <td>%s<span class=\"tag\">%s</span>%s</td>\n"
                                % (case.sentence[:case.o1],
                                   case.sentence[case.o1:case.o2],
                                   case.sentence[case.o2:]))
-        self.case_fh.write("</table>")
+            self.case_fh.write(u"</tr>\n")
+        self.case_fh.write(u"</table>\n")
 
 
 def generate_report():
@@ -246,6 +259,7 @@ def generate_report():
     generator =  ReportGenerator()
     generator.write_index()
     generator.write_cases()
+
 
 def purge_result(args):
     """Delete the results of one particular run of a case, the args parameter is
@@ -258,14 +272,14 @@ def purge_result(args):
                                 case, "%s.tab" % timestamp)
     results_file_was_removed = False
     if os.path.isfile(results_file):
-        print "Remove %s? (y/n)" % results_file
-        print "?",
-        answer = raw_input()
+        print("Remove %s? (y/n)" % results_file)
+        print("?", end=' ')
+        answer = input()
         if answer.strip() == 'y':
             os.remove(results_file)
             results_file_was_removed = True
     else:
-        print "Warning: incorrect case or timestamp"
+        print("Warning: incorrect case or timestamp")
     if results_file_was_removed:
         generate_report()
 
@@ -277,8 +291,12 @@ if __name__ == '__main__':
     if not opts:
         exit("Nothing to do")
     for opt, val in opts:
-        if opt == '--create-event-vg-cases': create_event_vg_cases()
-        elif opt == '--evita': run_evita()
-        elif opt == '--gutime': run_gutime()
-        elif opt == '--report': generate_report()
-        elif opt == '--purge': purge_result(args)
+        if opt == '--create-event-vg-cases':
+            create_event_vg_cases()
+        elif opt == '--evita':
+            run_evita()
+            generate_report()
+        elif opt == '--report':
+            generate_report()
+        elif opt == '--purge':
+            purge_result(args)

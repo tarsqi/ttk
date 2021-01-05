@@ -36,15 +36,18 @@ SourceParserLIF
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import codecs
 import xml.parsers.expat
 from xml.dom import minidom
 
 from docmodel.document import SourceDoc, ProcessingStep
 from utilities.lif import Container, LIF
+from io import open
 
 
-class SourceParser:
+class SourceParser(object):
 
     DEBUG = False
 
@@ -156,6 +159,8 @@ class SourceParserTTK(SourceParser):
         o2 = node.getAttribute('end')
         o1 = int(o1) if o1 else -1
         o2 = int(o2) if o2 else -1
+        # TODO: why not use the following?
+        #   dict([(k, v) for (k, v) in nore.attributes.items() if ...])
         attrs = dict(node.attributes.items())
         attrs = dict([(k, v) for (k, v) in attrs.items()
                       if k not in ('begin', 'end')])
@@ -168,7 +173,7 @@ def print_dom(node, indent=0):
         return
     if node.nodeType == minidom.Node.TEXT_NODE and not node.data.strip():
         return
-    print "%s%s" % (indent * ' ', node)
+    print("%s%s" % (indent * ' ', node))
     for childnode in node.childNodes:
         print_dom(childnode, indent + 3)
 
@@ -213,7 +218,11 @@ class SourceParserXML(SourceParser):
         text and tags in SourceDoc."""
         self.sourcedoc = SourceDoc(filename)
         # TODO: should this be codecs.open() for non-ascii?
-        self.parser.ParseFile(open(filename))
+        # self.parser.ParseFile(open(filename))
+        # NOTE: actually, the above line needed to replaced with the following
+        # while preparing to port code to Python3.
+        content = codecs.open(filename).read()
+        self.parser.Parse(content)
         self.sourcedoc.finish()
         tarsqidoc.sourcedoc = self.sourcedoc
 
@@ -278,8 +287,8 @@ class SourceParserXML(SourceParser):
             p1 = "%s-%s" % (self.parser.CurrentLineNumber,
                             self.parser.CurrentColumnNumber)
             p2 = "%s" % self.parser.CurrentByteIndex
-            print("%-5s  %-4s    %s" %
-                  (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest])))
+            print(("%-5s  %-4s    %s" %
+                  (p1, p2, "  ".join(["%-8s" % replace_newline(x) for x in rest]))))
 
 
 def replace_newline(text):

@@ -4,6 +4,8 @@ Responsible for loading the libraries and other top-level processing.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import re
 
 from utilities import logger
@@ -13,6 +15,7 @@ from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.tree import create_tarsqi_tree
 from components.blinker.compare import compare_date
+from six.moves import range
 
 
 TIMEX = LIBRARY.timeml.TIMEX
@@ -136,7 +139,7 @@ class Blinker (TarsqiComponent):
             sentence = self.doctree[si]
             r3_main_event = None
             if _DEBUG:
-                print "processing sentence", si
+                print("processing sentence", si)
 
             # iterate over elements within a sentence
             for i in range(len(sentence)):
@@ -166,7 +169,7 @@ class Blinker (TarsqiComponent):
                         and element.isVerbChunk() \
                         and event.attrs['class'] == 'REPORTING':
                     if _DEBUG:
-                        print "applying type 5 rules"
+                        print("applying type 5 rules")
                     self._apply_type5_rules(sentence, event, i)
 
             # R3: if no main event in sentence
@@ -193,7 +196,7 @@ class Blinker (TarsqiComponent):
                                 event2.attrs[EIID],
                                 "%s-Rule-%s" % (BLINKER, rule.id))
                 if _DEBUG:
-                    print "RULE %s fired!" % rule.rule_number
+                    print("RULE %s fired!" % rule.rule_number)
                 return
 
     def _apply_type5_rules(self, sentence, event1, position):
@@ -217,11 +220,11 @@ class Blinker (TarsqiComponent):
         # forward
 
         if _DEBUG:
-            print "inside rule application function"
+            print("inside rule application function")
             sentence.pretty_print()
         for i in range(position+1, len(sentence)):
             if _DEBUG:
-                print "processing element", i
+                print("processing element", i)
             element = sentence[i]
 
             # quote
@@ -255,7 +258,7 @@ class Blinker (TarsqiComponent):
                                         event2.attrs[EIID],
                                         "%s-Rule-%s" % (BLINKER, rule.id))
                         if _DEBUG:
-                            print "RULE %s fired!" % rule.rule_number
+                            print("RULE %s fired!" % rule.rule_number)
                         # apply the first matching rule
                         return
 
@@ -266,7 +269,7 @@ class Blinker (TarsqiComponent):
         direct = 'INDIRECT'
         for i in range(position-1, -1, -1):   # ..,3,2,1,0
             if _DEBUG:
-                print "processing element", i
+                print("processing element", i)
             element = sentence[i]
 
             # quote
@@ -284,20 +287,20 @@ class Blinker (TarsqiComponent):
                                  if direct in rule.attrs['sentType']]
                 if _DEBUG:
                     _pp_events(event1, event2)
-                    print "Applying rules for sentence type:", \
-                        direct, len(current_rules), "rules"
+                    print("Applying rules for sentence type:", \
+                        direct, len(current_rules), "rules")
                 for rule in current_rules:
                     # if attribute not set in the rule, accept any value
                     for att in ['class', 'tense', 'aspect']:
                         if 'arg2.'+att not in rule.attrs:
                             rule.attrs['arg2.'+att] = [event2.attrs[att]]
                     if _DEBUG:
-                        print "RULE %s (%s):" % (rule.rule_number,
-                                                 rule.attrs['sentType'][0])
-                        print rule.attrs['arg1.class'], rule.attrs['arg1.tense'], \
-                            rule.attrs['arg1.aspect']
-                        print rule.attrs['arg2.class'], rule.attrs['arg2.tense'], \
-                            rule.attrs['arg2.aspect']
+                        print("RULE %s (%s):" % (rule.rule_number,
+                                                 rule.attrs['sentType'][0]))
+                        print(rule.attrs['arg1.class'], rule.attrs['arg1.tense'], \
+                            rule.attrs['arg1.aspect'])
+                        print(rule.attrs['arg2.class'], rule.attrs['arg2.tense'], \
+                            rule.attrs['arg2.aspect'])
                     # check that specified values match
                     if event2.attrs['class'] in rule.attrs['arg2.class'] and \
                        event2.attrs['tense'] in rule.attrs['arg2.tense'] and \
@@ -309,7 +312,7 @@ class Blinker (TarsqiComponent):
                                         event2.attrs['eiid'],
                                         origin)
                         if _DEBUG:
-                            print "RULE %s fired!" % rule.rule_number
+                            print("RULE %s fired!" % rule.rule_number)
                         # apply the first matching rule
                         return
 
@@ -344,8 +347,8 @@ class Blinker (TarsqiComponent):
                 eiid = event.attrs[EIID]
                 tid = timex.attrs[TID]
                 if _DEBUG:
-                    print "FOUND: [%s] %s [%s] --> %s" % \
-                        (event.dtrs[0].getText(), signal, timex.getText(), rel)
+                    print("FOUND: [%s] %s [%s] --> %s" % \
+                        (event.dtrs[0].getText(), signal, timex.getText(), rel))
                 self._add_tlink(rel, eiid, tid, "%s-Type-2-%s" % (BLINKER, signal))
                 return
 
@@ -437,8 +440,8 @@ def _fix_timex_val(date):
 
 
 def _pp_events(event1, event2):
-    print(event1.dtrs[0].getText(), event2.dtrs[0].getText())
-    print('   e1', event1.dtrs[0].getText(), event1.attrs['class'],
-          event1.attrs['tense'], event1.attrs['aspect'])
-    print('   e2', event2.dtrs[0].getText(), event2.attrs['class'],
-          event2.attrs['tense'], event2.attrs['aspect'])
+    print((event1.dtrs[0].getText(), event2.dtrs[0].getText()))
+    print(('   e1', event1.dtrs[0].getText(), event1.attrs['class'],
+          event1.attrs['tense'], event1.attrs['aspect']))
+    print(('   e2', event2.dtrs[0].getText(), event2.attrs['class'],
+          event2.attrs['tense'], event2.attrs['aspect']))

@@ -4,12 +4,14 @@ Python wrapper around the Mallet Classifier
 
 """
 
+from __future__ import absolute_import
 import os
 
 from library.tarsqi_constants import CLASSIFIER
 from library.main import LIBRARY
 from utilities import logger, mallet
 from components.classifier import vectors
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
@@ -25,7 +27,7 @@ RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
 
-class ClassifierWrapper:
+class ClassifierWrapper(object):
 
     """Wraps the maxent link classifier."""
 

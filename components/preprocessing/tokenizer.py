@@ -29,13 +29,17 @@ to change this.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import re
-from StringIO import StringIO
+from io import StringIO
 from xml.sax.saxutils import escape
 
-from abbreviation import dict_abbrevs
-from abbreviation import dict_end_abbrevs
-from abbreviation import dict_initial_tokens
+from .abbreviation import dict_abbrevs
+from .abbreviation import dict_end_abbrevs
+from .abbreviation import dict_initial_tokens
+from six.moves import filter
+from six.moves import range
 
 
 abbrev_pattern = re.compile(r'^([A-Z]\.)+$')
@@ -64,7 +68,7 @@ def token_is_abbreviation(token):
     return token in dict_abbrevs or abbrev_pattern.search(token)
 
 
-class Tokenizer:
+class Tokenizer(object):
 
     """Class to create lex tags and s tags given a text string that is not
     modified. The lexes and sentences are gathered in the variables with the
@@ -144,7 +148,7 @@ class Tokenizer:
 
         def has_eos(puncts):
             token_has_eos = (lambda token: token[2] in ('.', '?', '!'))
-            return filter( token_has_eos, puncts)
+            return list(filter( token_has_eos, puncts))
 
         if self.tokens:
             first = self._first_token_start()
@@ -344,7 +348,7 @@ class Tokenizer:
             self.closing_sents[s[1]] = s
 
 
-class TokenizedText:
+class TokenizedText(object):
 
     """This class takes a list of sentences of the form (begin_offset, end_offset)
     and a list of tokens of the form (begin_offset, end_offset, text), and
@@ -410,13 +414,13 @@ class TokenizedText:
             s.print_as_string()
 
     def print_as_xmlstring(self):
-        print "<TOKENS>"
+        print("<TOKENS>")
         for s in self.sentences:
             s.print_as_xmlstring()
-        print "</TOKENS>"
+        print("</TOKENS>")
 
 
-class TokenizedSentence:
+class TokenizedSentence(object):
 
     def __init__(self, b, e):
         self.begin = b
@@ -436,16 +440,16 @@ class TokenizedSentence:
         return [(t.text, t) for t in self.tokens]
 
     def print_as_string(self):
-        print ' '.join([t.text for t in self.tokens])
+        print(' '.join([t.text for t in self.tokens]))
 
     def print_as_xmlstring(self):
-        print '<s>'
+        print('<s>')
         for t in self.tokens:
             t.print_as_xmlstring(indent='  ')
-        print '</s>'
+        print('</s>')
 
 
-class TokenizedLex:
+class TokenizedLex(object):
 
     def __init__(self, b, e, text):
         self.begin = b
@@ -465,11 +469,11 @@ class TokenizedLex:
         return [(self.text, self)]
 
     def print_as_string(self, indent=''):
-        print self.text
+        print(self.text)
 
     def print_as_xmlstring(self, indent=''):
-        print "%s<lex begin=\"%d\" end=\"%d\">%s</lex>" % \
-              (indent, self.begin, self.end, escape(self.text))
+        print("%s<lex begin=\"%d\" end=\"%d\">%s</lex>" % \
+              (indent, self.begin, self.end, escape(self.text)))
 
 
 if __name__ == '__main__':
@@ -484,6 +488,6 @@ if __name__ == '__main__':
         text = tk.tokenize_text()
     # print tk.sentences
     # print tk.lexes
-    print tk.get_tokenized_as_xml()
-    print tk.get_tokenized_as_string()
-    print "\nDONE, processing time was %.3f seconds\n" % (time() - t1)
+    print(tk.get_tokenized_as_xml())
+    print(tk.get_tokenized_as_string())
+    print("\nDONE, processing time was %.3f seconds\n" % (time() - t1))

@@ -6,9 +6,22 @@ are saved in the current directory.
 
 The pickle files should be moved to the dictionaries directory.
 
+TODO:
+
+The code in slinkPredicates.py and alinkPredicates.py depended on the old way of
+importing TimeML specifications and was not updated to usie the TarsqiLibrary in
+library.main. For now I used the hack of adding an old timeMLspec.py file to
+this directory and use that instead.
+
 """
 
-import os, sys, cPickle
+
+
+
+from __future__ import absolute_import
+from __future__ import print_function
+import os, sys, six.moves.cPickle
+from io import open
 
 sys.path.append('../..')
 
@@ -17,11 +30,11 @@ sys.path.append('../..')
 # variable is not used so we hand in a dummy value
 os.environ['TTK_ROOT'] = 'DUMMY'
 
-import slinkPredicates
-import alinkPredicates
+from . import slinkPredicates
+from . import alinkPredicates
 
 
-print "Pickling dictionaries..."
+print("Pickling dictionaries...")
 slink_dictionaries = [(slinkPredicates.nounDict, "slinkNouns"),
                       (slinkPredicates.adjDict, "slinkAdjs"),
                       (slinkPredicates.verbDict, "slinkVerbs"),
@@ -31,5 +44,5 @@ slink_dictionaries = [(slinkPredicates.nounDict, "slinkNouns"),
 for (dictionary, name) in slink_dictionaries:
     fname = "%s.pickle" % name
     pickleFile = open(fname, 'w')
-    print "Writing %s to %s" % (name, fname)
-    cPickle.dump(dictionary, pickleFile)
+    print("Writing %s to %s" % (name, fname))
+    six.moves.cPickle.dump(dictionary, pickleFile)

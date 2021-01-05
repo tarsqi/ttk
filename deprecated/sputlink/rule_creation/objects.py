@@ -1,5 +1,6 @@
 
 
+from __future__ import print_function
 class ObjectList:
     """Class that provides interface for global PointLink and Link data
     bases. Just a wrapper around a list. Assumes that all elements are 
@@ -94,13 +95,13 @@ class EventNode(Node):
         return "EventNode(%s,%s,%s)" % (self.id, self.string,self.eventClass)
 
     def printVerbosely(self):
-        print "\nEVENT(%s %s %s)" % (self.id, self.string, self.eventClass)
-        print "  inLinks:"
+        print("\nEVENT(%s %s %s)" % (self.id, self.string, self.eventClass))
+        print("  inLinks:")
         for link in self.inLinks:
-            print "    %s --(%s,%s)--> SELF" % (link.begin, link.id, link.relation)
-        print "  outLinks:"
+            print("    %s --(%s,%s)--> SELF" % (link.begin, link.id, link.relation))
+        print("  outLinks:")
         for link in self.outLinks:
-            print "    SELF --(%s,%s)--> %s" % (link.id, link.relation, link.end)
+            print("    SELF --(%s,%s)--> %s" % (link.id, link.relation, link.end))
         
 
 class TimexNode(Node):
@@ -140,12 +141,12 @@ class Point(AbstractNode):
         return Point(newEnvironment,self.interval,self.boundary)
 
     def printVerbosely(self):
-        print "\nPoint(%s)" % (self.id)
-        print "  %s - %s" % (self.interval,self.boundary)
-        print "  inLinks:"
-        for link in self.inLinks: print "      ", link
-        print "  outLinks:"
-        for link in self.outLinks: print "      ", link
+        print("\nPoint(%s)" % (self.id))
+        print("  %s - %s" % (self.interval,self.boundary))
+        print("  inLinks:")
+        for link in self.inLinks: print("      ", link)
+        print("  outLinks:")
+        for link in self.outLinks: print("      ", link)
 
 
 class AbstractLink(TemporalObject):
@@ -200,21 +201,21 @@ class Link(AbstractLink):
 
     def printVerbosely(self):
         def printPLinks(point):
-            print "      inLinks:"
-            for link in point.inLinks: print "           ", link
-            print "      outLinks:"
-            for link in point.outLinks: print "           ", link
-        print "\nTimeML_Link(%s)" % (self.id)
-        print "  %s" % (string.upper(self.relation))
-        print "  %s" % (self.begin)
-        print "    %s" % (self.begin.begin)
+            print("      inLinks:")
+            for link in point.inLinks: print("           ", link)
+            print("      outLinks:")
+            for link in point.outLinks: print("           ", link)
+        print("\nTimeML_Link(%s)" % (self.id))
+        print("  %s" % (string.upper(self.relation)))
+        print("  %s" % (self.begin))
+        print("    %s" % (self.begin.begin))
         printPLinks(self.begin.begin)
-        print "    %s" % (self.begin.end)
+        print("    %s" % (self.begin.end))
         printPLinks(self.begin.end)
-        print "  %s" % (self.end)
-        print "    %s" % (self.end.begin)
+        print("  %s" % (self.end))
+        print("    %s" % (self.end.begin))
         printPLinks(self.end.begin)
-        print "    %s" % (self.end.end)
+        print("    %s" % (self.end.end))
         printPLinks(self.end.end)
 
 

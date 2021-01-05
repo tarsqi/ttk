@@ -1,4 +1,7 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os, sys
+from io import open
 
 
 def elements_file():
@@ -56,12 +59,12 @@ def load_rules():
     return rules
 
 
-class Date:
+class Date(object):
 
     name = 'Date'
 
 
-class TimexElement:
+class TimexElement(object):
 
     def is_word_list(self):
         return False
@@ -88,7 +91,7 @@ class WordList(TimexElement):
         pass
         
     def pp(self):
-        print "%s = %s" % (self.name, ' '.join(list(self.words)))
+        print("%s = %s" % (self.name, ' '.join(list(self.words))))
 
 
 class RegularExpression(TimexElement):
@@ -107,17 +110,17 @@ class RegularExpression(TimexElement):
         return True
 
     def pp(self):
-        print "%s = %s" % (self.name, self.regexp)
+        print("%s = %s" % (self.name, self.regexp))
 
 
-class CombinationRule:
+class CombinationRule(object):
 
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
 
     def pp(self):
-        print "%s --> %s" % (self.lhs, ' '.join(self.rhs))
+        print("%s --> %s" % (self.lhs, ' '.join(self.rhs)))
 
 
 def get_class(class_name):
@@ -142,7 +145,7 @@ class SimpleTime(object):
             rule.pp()
 
     def extract_times(self, text):
-        print 'On <TIMEX3 type="DATE" val="2012-04-25>April 25th, 2012</TIMEX3>, they approached the border.'
+        print('On <TIMEX3 type="DATE" val="2012-04-25>April 25th, 2012</TIMEX3>, they approached the border.')
 
 
 if __name__ == '__main__':

@@ -5,12 +5,18 @@ This module contains TarsqiDocument and some of the classes used by it.
 
 """
 
-import os, sys, codecs, StringIO, itertools, time
+from __future__ import absolute_import
+from __future__ import print_function
+
+import os, sys, codecs, itertools, time
+from io import StringIO
 from xml.sax.saxutils import escape, quoteattr
 from subprocess import Popen, PIPE
 
 from library.main import LIBRARY
 from utilities import logger
+from io import open
+import six
 
 
 TIMEX = LIBRARY.timeml.TIMEX
@@ -33,7 +39,7 @@ RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 TTK_ROOT = os.environ['TTK_ROOT']
 
 
-class TarsqiDocument:
+class TarsqiDocument(object):
 
     """An instance of TarsqiDocument should contain all information that may be
     needed by the wrappers to do their work. It includes the source, metadata,
@@ -105,18 +111,18 @@ class TarsqiDocument:
         self.tags.add_tag('EVENT', begin, end, attrs)
 
     def pp(self, source_tags=True, tarsqi_tags=True):
-        print "\n", self, "\n"
+        print("\n", self, "\n")
         for key, value in self.metadata.items():
-            print "   metadata.%-14s  -->  %s" % (key, value)
+            print("   metadata.%-14s  -->  %s" % (key, value))
         for key, value in self.options.items():
-            print "   options.%-15s  -->  %s" % (key, value)
+            print("   options.%-15s  -->  %s" % (key, value))
         if source_tags and not self.sourcedoc.tags.is_empty():
-            print "\nSOURCE_TAGS:"
+            print("\nSOURCE_TAGS:")
             self.sourcedoc.tags.pp()
         if tarsqi_tags and not self.tags.is_empty():
-            print "\nTARSQI_TAGS:"
+            print("\nTARSQI_TAGS:")
             self.tags.pp()
-        print
+        print()
 
     def next_event_id(self):
         self.counters[EVENT] += 1
@@ -212,8 +218,10 @@ class TarsqiDocument:
                 ttk_tag = tag.as_ttk_tag()
                 # This became needed after allowing any text in the value of the
                 # form and lemma attribute.
+                # NOTE: got rid of the errors='ignore' argument because it did not seem to be
+                # needed and it caused an error in python3
                 if isinstance(ttk_tag, str):
-                    ttk_tag = unicode(ttk_tag, errors='ignore')
+                    ttk_tag = six.text_type(ttk_tag)
                 fh.write("  %s\n" % ttk_tag)
             except UnicodeDecodeError:
                 # Not sure why this happened, but there were cases where the
@@ -240,7 +248,7 @@ class TarsqiDocument:
         return sentences
 
 
-class SourceDoc:
+class SourceDoc(object):
 
     """A SourceDoc is created by a SourceParser and contains source data and
     annotations of those data. The source data are put in the text variable as a
@@ -262,7 +270,7 @@ class SourceDoc:
         self.filename = filename
         self.xmldecl = None
         # initialize as a string buffer, will be a string later
-        self.text_buffer = StringIO.StringIO()
+        self.text_buffer = StringIO()
         self.text = ""
         self.processing_instructions = {}
         self.comments = {}
@@ -314,12 +322,12 @@ class SourceDoc:
 
     def pp(self):
         """Print source and tags."""
-        print "\n<SourceDoc on '%s'>\n" % self.filename
-        print self.text.encode('utf-8').strip()
-        print "\nMETADATA:", self.metadata
-        print "\nTAGS:"
+        print("\n<SourceDoc on '%s'>\n" % self.filename)
+        print(self.text.encode('utf-8').strip())
+        print("\nMETADATA:", self.metadata)
+        print("\nTAGS:")
         self.tags.pp()
-        print
+        print()
         # print "XMLDECL:", self.xmldecl
         # print "COMMENTS:", self.comments
         # print "PROCESSING:", self.processing_instructions
@@ -330,7 +338,7 @@ class SourceDoc:
         fh.write(self.text.encode('utf-8'))
 
 
-class TagRepository:
+class TagRepository(object):
 
     """Class that provides access to the tags for a document. An instance of this
     class is used for the DocSource instance, other instances will be used for
@@ -517,21 +525,21 @@ class TagRepository:
 
     def pp_tags(self, indent=''):
         for tag in self.tags:
-            print "%s%s" % (indent, tag)
+            print("%s%s" % (indent, tag))
 
     def pp_opening_tags(self):
-        print '<TagRepository>.opening_tags'
+        print('<TagRepository>.opening_tags')
         for offset, taglist in sorted(self.opening_tags.items()):
-            print("   %d "
-                  % offset, "\n         ".join([x.__str__() for x in taglist]))
+            print(("   %d "
+                  % offset, "\n         ".join([x.__str__() for x in taglist])))
 
     def pp_closing_tags(self):
-        print '<TagRepository>.closing_tags'
+        print('<TagRepository>.closing_tags')
         for offset, tagdict in sorted(self.closing_tags.items()):
-            print "   %d " % offset, tagdict
+            print("   %d " % offset, tagdict)
 
 
-class Tag:
+class Tag(object):
 
     """A Tag has a name, a begin offset, an end offset and a dictionary of
     attributes. All arguments are handed in by the code that creates the Tag
@@ -565,19 +573,45 @@ class Tag:
         return "<Tag %s %s:%s {%s }>" % \
                (self.name, self.begin, self.end, attrs)
 
-    def __cmp__(self, other):
+    # Tag comparisons are based on offsets alone
+
+    def __eq__(self, other):
+        return self.begin == other.begin and self.end == other.end
+
+    def __ne__(self, other):
+        return self.begin != other.begin or self.end != other.end
+
+    def __lt__(self, other):
+        return self._compare(other) < 0
+
+    def __le__(self, other):
+        return self._compare(other) <= 0
+
+    def __gt__(self, other):
+        return self._compare(other) > 0
+
+    def __ge__(self, other):
+        return self._compare(other) >= 0
+
+    def _compare(self, other):
         """Order two Tags based on their begin offset and end offsets. Tags with
         an earlier begin will be ranked before tags with a later begin, with
         equal begins the tag with the higher end will be ranked first. Tags with
         no begin (that is, it is set to -1) will be ordered at the end. The
         order of two tags with the same begin and end is undefined."""
+        # TODO: this is a bit of a cluge and should be revisited later
+        def comp(x, y):
+            return (x > y) - (x < y)
         if self.begin == -1:
             return 1
         if other.begin == -1:
             return -1
-        begin_cmp = cmp(self.begin, other.begin)
-        end_cmp = cmp(other.end, self.end)
-        return end_cmp if begin_cmp == 0 else begin_cmp
+        begin_comp = comp(self.begin, other.begin)
+        end_comp = comp(other.end, self.end)
+        return end_comp if begin_comp == 0 else begin_comp
+
+    # just here to suppress a -3 warning
+    __hash__ = None
 
     @staticmethod
     def new_attr(attr, attrs):
@@ -691,8 +725,11 @@ class ProcessingStep(object):
     def _get_git_commit():
         command = 'git rev-parse --short HEAD'
         close_fds = False if sys.platform == 'win32' else True
-        return Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
-                     close_fds=close_fds).stdout.read().strip()
+        commit = Popen(command, shell=True, stdout=PIPE, stderr=PIPE,
+                       close_fds=close_fds).stdout.read()
+        if isinstance(commit, bytes):
+            commit = commit.decode(encoding='utf8')
+        return commit.strip()
 
     def as_xml(self):
         return "<processing_step %s%s%s%s/>" \

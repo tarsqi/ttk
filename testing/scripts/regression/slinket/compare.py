@@ -41,6 +41,8 @@ attributes removed from the event for readability):
 # TODO: and how about highlighting the events in the fragment
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 from xml.dom.minidom import parse
@@ -63,11 +65,11 @@ def compare_files(fname1, fname2):
     slinks1_idx = group_on_offsets(slinks1, events1_idx)
     slinks2_idx = group_on_offsets(slinks2, events2_idx)
     result = []
-    for offsets in difference(slinks1_idx.keys(), slinks2_idx.keys()):
+    for offsets in difference(list(slinks1_idx.keys()), list(slinks2_idx.keys())):
         result.append([offsets, "<<<"] + slinks1_idx[offsets])
-    for offsets in difference(slinks2_idx.keys(), slinks1_idx.keys()):
+    for offsets in difference(list(slinks2_idx.keys()), list(slinks1_idx.keys())):
         result.append([offsets, ">>>"] + slinks2_idx[offsets])
-    for offsets in intersection(slinks1_idx.keys(), slinks2_idx.keys()):
+    for offsets in intersection(list(slinks1_idx.keys()), list(slinks2_idx.keys())):
         link1 = slinks1_idx[offsets][0]
         link2 = slinks2_idx[offsets][0]
         for attr in ATTRS:
@@ -111,13 +113,13 @@ def print_results(diffs, text):
         left_context = text[p1-20:p1]
         right_context = text[p2:p2+20]
         fragment = text[p1:p2]
-        print "%s  %s" % (direction, offsets)
-        print "     %s[%s]%s" % (left_context, fragment, right_context)
-        print "     %s" % node_as_string(slink)
-        print "        %s" % node_as_string(e1)
-        print "        %s" % node_as_string(e2)
+        print("%s  %s" % (direction, offsets))
+        print("     %s[%s]%s" % (left_context, fragment, right_context))
+        print("     %s" % node_as_string(slink))
+        print("        %s" % node_as_string(e1))
+        print("        %s" % node_as_string(e2))
     if diffs:
-        print "%d differences in %d lines" % (len(diffs), len(text.split("\n")))
+        print("%d differences in %d lines" % (len(diffs), len(text.split("\n"))))
 
 
 if __name__ == '__main__':

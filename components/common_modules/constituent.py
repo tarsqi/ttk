@@ -1,11 +1,14 @@
-from types import ListType, TupleType
+from __future__ import absolute_import
+from __future__ import print_function
+
 from pprint import pprint
 
 from utilities import logger
 from library.main import LIBRARY
+from six.moves import range
 
 
-class Constituent:
+class Constituent(object):
 
     """An abstract class that contains some methods that are identical for Chunks
     and Tokens plus a couple of default methods.
@@ -51,14 +54,23 @@ class Constituent:
     def __nonzero__(self):
         return True
 
-    def __cmp__(self, other):
-        # NOTE: in some cases the matchLabel method in FSA.py checks for
-        # equality of a constituent and a string using == in which case this
-        # method is invoked, which would throw an error without the first two
-        # lines
-        if isinstance(other, type('')):
-            return 1
-        return cmp(self.begin, other.begin)
+    def __eq__(self, other):
+        return self.begin == other.begin
+
+    def __ne__(self, other):
+        return self.begin != other.begin
+
+    def __lt__(self, other):
+        return self.begin < other.begin
+
+    def __le__(self, other):
+        return self.begin <= other.begin
+
+    def __gt__(self, other):
+        return self.begin > other.begin
+
+    def __ge__(self, other):
+        return self.begin >= other.begin
 
     def __len__(self):
         """Returns the lenght of the dtrs variable."""
@@ -70,6 +82,9 @@ class Constituent:
 
     def __str__(self):
         return "<%s %d:%d>" % (self.__class__.__name__, self.begin, self.end)
+
+    # just here to suppress a -3 warning
+    __hash__ = None
 
     def includes(self, tag):
         """Returns True if tag is positioned inside the consituent."""
@@ -223,17 +238,17 @@ class Constituent:
         # such thing the method will return True
         for feat in description.keys():
             value = description[feat]
-            if type(value) is TupleType:
+            if type(value) is tuple:
                 if value[0] == '^':
-                    if type(value[1]) is ListType:
+                    if type(value[1]) is list:
                         if self.feature_value(feat) in value[1]:
                             return False
                     else:
                         if self.feature_value(feat) == value[1]:
                             return False
                 else:
-                    raise "ERROR specifying description of pattern"
-            elif type(value) is ListType:
+                    raise Exception("ERROR specifying description of pattern")
+            elif type(value) is list:
                 if self.feature_value(feat) not in value:
                     if self.isChunk() and feat == 'text':
                         if self._getHeadText() not in value:
@@ -272,7 +287,7 @@ class Constituent:
         pprint(vars(self))
 
     def pretty_print(self):
-        print "<<pretty_print() not defined for this object>>"
+        print("<<pretty_print() not defined for this object>>")
 
     # SLINKET METHODS
     # There is some serious redundancy here, refactor these methods.

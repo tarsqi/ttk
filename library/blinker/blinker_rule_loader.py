@@ -1,5 +1,9 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
+from io import open
+from six.moves import range
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
@@ -18,7 +22,7 @@ re_rule_header = re.compile('ruleNum=(\d+)-(\d+)')
 re_attribute = re.compile('(.*)=(.*)')
 
 
-class BlinkerRuleDictionary:
+class BlinkerRuleDictionary(object):
 
     """Convenience class to store the Blinker rules. Doesn't do a
     lot more than that at this point."""
@@ -38,7 +42,7 @@ class BlinkerRuleDictionary:
 
     def pp(self):
         for i in range(1,7):
-            print "\nBLINKER RULES TYPE %d:\n\n" % i
+            print("\nBLINKER RULES TYPE %d:\n\n" % i)
             for rule in self.rules[i]:
                 rule.pp()
 
@@ -48,7 +52,7 @@ class BlinkerRuleDictionary:
         
                     
     
-class BlinkerRule:
+class BlinkerRule(object):
 
     """Implements the Blinker rule object."""
     
@@ -68,9 +72,9 @@ class BlinkerRule:
         return '<BlinkerRule ' + self.id + '>'
     
     def pp(self):
-        print "<BlinkerRule %s>" % self.id
+        print("<BlinkerRule %s>" % self.id)
         for attr, val in sorted(self.attrs.items()):
-            print "   %-12s  =  %s" % (attr, val)
+            print("   %-12s  =  %s" % (attr, val))
 
 
 
@@ -108,7 +112,7 @@ def read_syntactic_rules(rule_file):
             if val[0] != '(':
                 val = [val]
             else:
-                val = str.split(val[1:-1], '|')
+                val = val[1:-1].split('|')
             current_rule.set_attribute(att, val)
             continue
 

@@ -1,12 +1,14 @@
 
+from __future__ import absolute_import
 import os
 
-from graph import Graph
-from objects import Constraint
-from mappings import translate_timeml_relation, invert_interval_relation
-from utils import CompositionTable
-from utils import html_graph_prefix
+from .graph import Graph
+from .objects import Constraint
+from .mappings import translate_timeml_relation, invert_interval_relation
+from .utils import CompositionTable
+from .utils import html_graph_prefix
 from library.main import LIBRARY
+from io import open
 
 DEBUG = False
 DEBUG = True
@@ -32,7 +34,7 @@ TIMEX = LIBRARY.timeml.TIMEX
 TID = LIBRARY.timeml.TID
 
 
-class ConstraintPropagator:
+class ConstraintPropagator(object):
 
     """Main SputLink class. Instance variables:
 
@@ -128,7 +130,7 @@ class ConstraintPropagator:
     def _debug_print_cycle(self, constraint=None):
         if DEBUG:
             fname = "cycle-%02d.html" % self.graph.cycle
-            self.cycles_fh.write("<p>Cycle %s - <b>%s</b></p>\n"
+            self.cycles_fh.write(u"<p>Cycle %s - <b>%s</b></p>\n"
                                  % (self.graph.cycle, constraint))
             graph_file = os.path.join(TTK_ROOT, 'data', 'tmp', fname)
             self.graph.pp_html(filehandle=self.cycles_fh)

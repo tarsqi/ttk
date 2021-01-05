@@ -1,6 +1,8 @@
 
+from __future__ import print_function
 
-class ObjectList:
+
+class ObjectList(object):
     """Class that provides interface for global PointLink and Link data
     bases. Just a wrapper around a list. Assumes that all elements are 
     temporal objects because it uses isTrivial to skip some elements
@@ -27,8 +29,7 @@ class ObjectList:
         return returnStr
 
 
-
-class TemporalObject:
+class TemporalObject(object):
     """Abstract class that is a super class of all link and node classes. Only
     responsible for providing unique IDs."""
     
@@ -51,7 +52,6 @@ class AbstractNode(TemporalObject):
         self.outLinks.append(pointlink)
         self.isDirty = 1
 
-        
 
 class Node(AbstractNode):
 
@@ -75,7 +75,7 @@ class Node(AbstractNode):
         self.end = Point(environment,self,"end")
         # PLink initialization takes care of adding links to points
         # and to environment
-        self.pointLinks.append(PLink(environment,self.begin,'<',self.end))
+        self.pointLinks.append(PLink(environment, self.begin, '<', self.end))
         self.hasPoints = 1
 
 
@@ -94,18 +94,18 @@ class EventNode(Node):
         return "EventNode(%s,%s,%s)" % (self.id, self.string,self.eventClass)
 
     def printVerbosely(self):
-        print "\nEVENT(%s %s %s)" % (self.id, self.string, self.eventClass)
-        print "  inLinks:"
+        print("\nEVENT(%s %s %s)" % (self.id, self.string, self.eventClass))
+        print("  inLinks:")
         for link in self.inLinks:
-            print "    %s --(%s,%s)--> SELF" % (link.begin, link.id, link.relation)
-        print "  outLinks:"
+            print("    %s --(%s,%s)--> SELF" % (link.begin, link.id, link.relation))
+        print("  outLinks:")
         for link in self.outLinks:
-            print "    SELF --(%s,%s)--> %s" % (link.id, link.relation, link.end)
+            print("    SELF --(%s,%s)--> %s" % (link.id, link.relation, link.end))
         
 
 class TimexNode(Node):
 
-    def __init__(self,environment,timexString,timexClass,addPoints=1):
+    def __init__(self, environment, timexString, timexClass, addPoints=1):
         Node.__init__(self,environment)
         self.type = 'TIMEX3'
         self.string = timexString
@@ -117,7 +117,7 @@ class TimexNode(Node):
 
 class Point(AbstractNode):
 
-    def __init__(self,environment,interval,boundary):
+    def __init__(self, environment, interval, boundary):
         self.id = self.newID()
         self.interval = interval
         self.boundary = boundary
@@ -128,29 +128,29 @@ class Point(AbstractNode):
         # give the point a name derived from the name of the interval
         self.string = interval.string
         if boundary == 'begin':
-            self.string = "%s%s" % (self.string,1)
+            self.string = "%s%s" % (self.string, 1)
         if boundary == 'end':
-            self.string = "%s%s" % (self.string,2)
+            self.string = "%s%s" % (self.string, 2)
     def __str__(self):
-        return "Point(%s,%s,%s)" % (self.id,self.interval.string,self.boundary)
+        return "Point(%s,%s,%s)" % (self.id, self.interval.string, self.boundary)
 
     def copy(self,newEnvironment):
         """Only copies the interval and the boundaries, does not copy inlinks
         outlinks and anything else. Creates a new Point with unique id."""
-        return Point(newEnvironment,self.interval,self.boundary)
+        return Point(newEnvironment, self.interval, self.boundary)
 
     def printVerbosely(self):
-        print "\nPoint(%s)" % (self.id)
-        print "  %s - %s" % (self.interval,self.boundary)
-        print "  inLinks:"
-        for link in self.inLinks: print "      ", link
-        print "  outLinks:"
-        for link in self.outLinks: print "      ", link
+        print("\nPoint(%s)" % (self.id))
+        print("  %s - %s" % (self.interval, self.boundary))
+        print("  inLinks:")
+        for link in self.inLinks: print("      ", link)
+        print("  outLinks:")
+        for link in self.outLinks: print("      ", link)
 
 
 class AbstractLink(TemporalObject):
 
-    def __init__(self,begin,relation,end):
+    def __init__(self, begin, relation, end):
         """Create a new link. Perhaps add an existency check and
         return None if new link already exists."""
         self.id = self.newID()
@@ -163,7 +163,7 @@ class AbstractLink(TemporalObject):
 
     def __str__(self):
         return "LinkDescription  %s  %s  %s" % \
-               (self.begin,string.upper(self.relation),self.end)
+               (self.begin, self.relation.upper(), self.end)
 
     
 class Link(AbstractLink):
@@ -196,25 +196,25 @@ class Link(AbstractLink):
            
     def __str__(self):
         return "Link(%s)  %s --%s-->  %s" % \
-               (self.id, self.begin,string.upper(self.relation),self.end)
+               (self.id, self.begin, self.relation.upper(), self.end)
 
     def printVerbosely(self):
         def printPLinks(point):
-            print "      inLinks:"
-            for link in point.inLinks: print "           ", link
-            print "      outLinks:"
-            for link in point.outLinks: print "           ", link
-        print "\nTimeML_Link(%s)" % (self.id)
-        print "  %s" % (string.upper(self.relation))
-        print "  %s" % (self.begin)
-        print "    %s" % (self.begin.begin)
+            print("      inLinks:")
+            for link in point.inLinks: print("           ", link)
+            print("      outLinks:")
+            for link in point.outLinks: print("           ", link)
+        print("\nTimeML_Link(%s)" % (self.id))
+        print("  %s" % (self.relation.upper()))
+        print("  %s" % (self.begin))
+        print("    %s" % (self.begin.begin))
         printPLinks(self.begin.begin)
-        print "    %s" % (self.begin.end)
+        print("    %s" % (self.begin.end))
         printPLinks(self.begin.end)
-        print "  %s" % (self.end)
-        print "    %s" % (self.end.begin)
+        print("  %s" % (self.end))
+        print("    %s" % (self.end.begin))
         printPLinks(self.end.begin)
-        print "    %s" % (self.end.end)
+        print("    %s" % (self.end.end))
         printPLinks(self.end.end)
 
 
@@ -235,12 +235,12 @@ class PLink(AbstractLink):
     def asPrettyString(self):
         return "[%s %s %s]" % (self.begin.string, self.relation, self.end.string)
         
-    def __cmp__(self,other):
-        comparison1 = cmp(self.begin.string,other.begin.string)
-        if comparison1: return comparison1
-        comparison2 = cmp(self.end.string,other.end.string)
-        if comparison2: return comparison2
-        return cmp(self.relation,other.relation)
+#    def XXX__cmp__(self, other):
+#        comparison1 = cmp(self.begin.string, other.begin.string)
+#        if comparison1: return comparison1
+#        comparison2 = cmp(self.end.string, other.end.string)
+#        if comparison2: return comparison2
+#        return cmp(self.relation, other.relation)
         
     def __str__(self):
         return "PLink(%s) [%s.%s %s %s.%s]" % \

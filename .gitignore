@@ -13,3 +13,5 @@
 library/evita/dictionaries/wn*.db
 
 .idea
+
+utilities/get_issues.*

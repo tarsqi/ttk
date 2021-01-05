@@ -6,6 +6,8 @@ extra short output for consumption of Perl scripts.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 from objects import \
@@ -13,6 +15,8 @@ from objects import \
      Node, EventNode, TimexNode, Point, Link, PLink 
      
 from closure import Axiom, Closure
+from io import open
+from six.moves import range
 
 settings = {}
 settings['debug'] = 0
@@ -55,7 +59,7 @@ def initializeGlobalData():
     POINT_AXIOMS.add(Axiom('=','=','='))
 
 
-class Environment:
+class Environment(object):
 
     def __init__(self,id=0):
         self.id = id
@@ -185,14 +189,14 @@ class Environment:
                 str(self.POINTS) + "\n" + str(self.PLINKS)
 
     def printPointEnv(self):
-        print "\nENVIRONMENT(%s)\n" % (self.id) , \
-                str(self.POINTS) , "\n" , str(self.PLINKS), "\n" 
+        print("\nENVIRONMENT(%s)\n" % (self.id) , \
+                str(self.POINTS) , "\n" , str(self.PLINKS), "\n") 
 
     def printPLinks(self,fh=sys.stdout):
         fh.write("  %s\n" % self.asPLinkString())
 
 
-class EnvironmentFactory:
+class EnvironmentFactory(object):
 
     def allRelationCombinations(self):
         rels = []
@@ -311,12 +315,12 @@ class EnvironmentFactory:
             ENV2 = closedEnvironments[i]
             if ENV2.isConsistent:
                 consistentCount = consistentCount + 1
-                print "\nENVIRONMENT(%s)\n" % (ENV1.id)
+                print("\nENVIRONMENT(%s)\n" % (ENV1.id))
                 ENV1.printPLinks()
-                print "\nENVIRONMENT(%s)\n" % (ENV2.id)
+                print("\nENVIRONMENT(%s)\n" % (ENV2.id))
                 ENV2.printPLinks()
-                print
-        print "\n\nTotal number of consistent environments: %s\n\n" % (consistentCount)
+                print()
+        print("\n\nTotal number of consistent environments: %s\n\n" % (consistentCount))
 
     def filterConsistentEnvironments(self,environments):
         consistentEnvs = []
@@ -349,10 +353,10 @@ def filterPLinks(links,nodeName):
 
 def translateEnvironments(envs):
     for env in envs:
-        print; env.printPLinks()
-        print "\n  ==>  ",
-        print env.translateEnvironment('x','y')
-        print "\n"
+        print(); env.printPLinks()
+        print("\n  ==>  ", end=' ')
+        print(env.translateEnvironment('x','y'))
+        print("\n")
 
 
 def test1():
@@ -370,7 +374,7 @@ def test1():
     link3 = Link(ENV,node1,'after',node3)
     clos = Closure(ENV,"nodes")
     clos.computeClosure()
-    print ENV
+    print(ENV)
 
 
 def test2():
@@ -387,12 +391,12 @@ def test2():
             count = count + 1
             env3 = envFact.mergeEnvironments(env1,env2,'y')
             env4 = env3.close("points")
-            print "\nAXIOM_COMPILATION %s:\n" % (count)
+            print("\nAXIOM_COMPILATION %s:\n" % (count))
             env1.printPLinks()
             env2.printPLinks()
-            print "\n  ==>\n\n  [",
-            for plink in env4.getNewPLinks('y'): print plink.asPrettyString(),
-            print "]\n"
+            print("\n  ==>\n\n  [", end=' ')
+            for plink in env4.getNewPLinks('y'): print(plink.asPrettyString(), end=' ')
+            print("]\n")
 
             
 def test3():
@@ -424,7 +428,7 @@ def test3():
     
     # 2. MERGE X-Y and Y-Z ENVIRONMENTS AND RUN CLOSURE
     sys.stderr.write("Merging and running closure...\n")
-    indexes = range(len(envs1))
+    indexes = list(range(len(envs1)))
     #indexes = range(4)
     out = open("compositions_long.txt",'w')
     out2 = open("compositions_short.txt",'w')

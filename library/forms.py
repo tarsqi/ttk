@@ -17,6 +17,7 @@ and some compiled regular expressions:
 
 """
 
+from __future__ import absolute_import
 import os, sys, re, shelve, pickle
 
 TTK_ROOT = os.environ['TTK_ROOT']
