@@ -398,9 +398,11 @@ class VerbChunk(Chunk):
         to do."""
         vcf_list = VChunkFeaturesList(verbchunk=self)
         _debug_vcf(vcf_list)
-        vcf_list = [vcf for vcf in vcf_list if vcf.is_wellformed()]
-        if vcf_list:
-            for vcf in vcf_list[:-1]:
+        # This is the list of all VChunkFeatures instances inside of the
+        # VChunkFeaturesList instance.
+        vcfs = [vcf for vcf in vcf_list if vcf.is_wellformed()]
+        if vcfs:
+            for vcf in vcfs[:-1]:
                 if not vcf.isAuxVerb():
                     self._conditionallyAddEvent(vcf)
             if not self.isNotEventCandidate(vcf_list[-1]):

@@ -1,4 +1,5 @@
 
+
 # Porting to Python 3
 
 December 2020.
@@ -703,9 +704,11 @@ All changes made for this section are in [f38c2c0c](https://github.com/tarsqi/tt
 
 
 
-## 4.  More
+## 4.  Making it run on Python 3.8.5
 
-All the above were changes from the conservative porting guide, making heavy use of python-modernize fixers.
+All the above were changes from the conservative porting guide, making heavy use of python-modernize fixers. Here we use pylint and the python -3 parameter for hints and we run Python 3.8.5 on a sample file to see what breaks.
+
+All changes made are in commit [a4703f1b](https://github.com/tarsqi/ttk/commit/a4703f1bb010e9289198e7f179d53772fff4e73f).
 
 
 
@@ -753,7 +756,7 @@ No warnings with this.
 
 
 
-### 4.2.  python-modernize
+### 4.2.  Running python-modernize
 
 Just running `python-modernize .` gives a bunch of hints.
 
@@ -790,7 +793,7 @@ The above do not find all instances of *ListType* and others in the types module
 - FSA uses *InstanceType*, see below.
 - The wordnet module was not fixed here.
 
-On the FSA issue. It does not seem easy in Python3 to test whether something is an instance of a user-defined class. But you can do the following
+On the FSA issue. It does not seem obvious in Python3 how to test whether something is an instance of a user-defined class. But you can do the following
 
 ```python
 def is_user_defined(x):
@@ -820,7 +823,7 @@ And instead of testing for *InstanceType* with `type(x) == InstanceType` you do 
 python3 tarsqi.py --trap-errors=False data/in/simple-xml/all.xml out.xml
 ```
 
- `The first the issue was loading the FSA's. Changed the mode for opening pattern files in `library/patterns.py`: 
+ The first the issue was loading the FSA's. Changed the mode for opening pattern files in `library/patterns.py`:
 
 ```python
 def openfile(basename):
@@ -834,7 +837,7 @@ File "/Users/marc/Desktop/projects/tarsqi/code/ttk/git/ttk/utilities/FSA.py", li
 transitions = list(map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions))
 ```
 
-The problem is in the brackets, removed them all.
+The problem is in the brackets in lambda functions, removed them all.
 
 And then 
 
@@ -913,11 +916,11 @@ Edited the `_get_git_commit()` method a bit to deal with this.
 **Big issues**:
 
 - When running the tests there are a lot of fails. 
-- When running on Python 2.7, any non-asci character now breaks, check whether this was always the case and if not where it came in. This was NOT always the case, the error was introduced in the commit asociated with section 4.4 (string handling). 
+- When running on Python 2.7, any non-asci character now breaks, this was NOT always the case, the error was introduced in the commit asociated with section 4.4 (string handling). 
 
 Looking at the second big issue...
 
-Checked out commit c378f68 (the first one that gave the error, established experimentally) and got the diff with HEAD~1. Then split the diff of commit into 40 patches, one for each file. Apply patches 1-16 gave no trouble. Then we had patch 17:
+Checked out commit c378f68 (the first one that gave the error, established experimentally) and got the diff with HEAD~1. Then split the diff of commit into 40 patches, one for each file. Apply patches 1-16 gave no trouble. Then we have patch 17:
 
 ```diff
 diff --git a/docmodel/main.py b/docmodel/main.py
@@ -972,7 +975,7 @@ def guess_source(filename_or_string):
         return 'ttk' if tag.lower() == 'ttk' else 'xml'
 ```
 
-This took the error away. Saved main.py on the Desktop.
+This took the error away.
 
 Well, nice try, but the error came back with the very next patch on `docmodel/source_parser.py`.
 
@@ -984,18 +987,15 @@ Okay, time to go to *codecs*, apparently *io.open()* does not deal with unicode.
         of the expat parser, where all the handlers are set up to fill in the
         text and tags in SourceDoc."""
         self.sourcedoc = SourceDoc(filename)
-        # TODO: should this be codecs.open() for non-ascii?
-        # self.parser.ParseFile(open(filename))
-        # NOTE: actually, the above line needed to replaced with the following
-        # while preparing to port code to Python3.
-        #content = open(filename).read()
-        content = codecs.open(filename).read()
+        content = codecs.open(filename).read()  ## edited
         self.parser.Parse(content)
         self.sourcedoc.finish()
         tarsqidoc.sourcedoc = self.sourcedoc
 ```
 
-Applied the above changes to `docmodel/main.py` and  `docmodel/source_parser.py` at the tip of the `79-python3` branch and this took care of the problem.
+Applied the above changes to `docmodel/main.py` and  `docmodel/source_parser.py` at the tip of the `79-python3` branch and this took care of the problem. All the other patches were unproblematic.
+
+
 
 
 
@@ -1016,9 +1016,31 @@ $ python3 -m testing.run_tests
    SputLink               4           0           0
 ```
 
-In Python 2.7 there is only the one fail for GUTime.
+In Python 2.7 there is only the one fail for GUTime, everything else passes. Also, all Evita regression tests register negatives.
 
-Also, all regression tests fail.
+Took a little bit to find this, but the problems was in VerbChunk.createEvent(), which had this line:
+
+Took a little bit to find this, but the problems was in *VerbChunk.createEvent()*, which had this line:
+
+```python
+vcfs = [vcf for vcf in vcf_list if vcf.is_wellformed()]
+```
+
+And *is_wellformed* is defined as:
+
+```python
+def is_wellformed(self):
+    return self.trueChunk and self.head
+```
+
+The problem was that the above returns an instance of *tokens.Token* and that being a user-defined class without a *\__bool__* or *\__len__* method it evaluated to False, which is different from what Python 2.7 did. So just added:
+
+```python
+def __bool__(self):
+    return True
+```
+
+Now all unit tests pass (except for the one GUTime test) and the regression tests are back in line as well.
 
 
 

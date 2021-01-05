@@ -362,17 +362,16 @@ class VChunkFeatures(ChunkFeatures):
             % (self.tense, self.aspect, self.head.getText(), self.evClass) \
             + "\tnf_morph=%s modality=%s polarity=%s\n" \
             % (self.nf_morph, self.modality.replace(' ', '-'), self.polarity) \
+            + "\theadForm=%s headPos=%s preHead=%s preHeadForm=%s\n" \
+            % (self.headForm, self.headPos, self.preHead, self.preHeadForm) \
             + "\ttrueChunk: [%s]\n" % ', '.join(getWordPosList(self.trueChunk)) \
             + "\tnegative:  [%s]\n"  % ', '.join(getWordPosList(self.negative)) \
             + "\tinfinitive: [%s]\n"  % ', '.join(getWordPosList(self.infinitive)) \
             + "\tadverbs-pre: [%s]\n" % ', '.join(getWordPosList(self.adverbsPre)) \
             + "\tadverbs-post: [%s]\n" %  ', '.join(getWordPosList(self.adverbsPost))
 
-    def pp(self, verbose=False):
-        if verbose:
-            print(self.as_verbose_string())
-        else:
-            print(self)
+    def pp(self):
+        print(self.as_verbose_string())
 
 
 class VChunkFeaturesList(object):

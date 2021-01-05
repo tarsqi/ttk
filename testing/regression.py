@@ -230,26 +230,28 @@ class ReportGenerator(object):
         self.case_fh.write(u".tag { color: blue; xfont-weight: bold; }\n")
         self.case_fh.write(u"</style>\n</head>\n")
         self.case_fh.write(u"<table cellpadding=5 cellspacing=0 border=1>\n")
-        self.case_fh.write(u"<tr>")
-        self.case_fh.write(u"  <td>&nbsp;")
+        self.case_fh.write(u"<tr>\n")
+        self.case_fh.write(u"  <td>&nbsp;</td>\n")
         for ts in timestamps:
-            self.case_fh.write(u"  <td>%s" % ts[2:8])
-        self.case_fh.write(u"  <td>o1")
-        self.case_fh.write(u"  <td>o2")
-        self.case_fh.write(u"  <td>sentence")
+            self.case_fh.write(u"  <td>%s</td>\n" % ts[2:8])
+        self.case_fh.write(u"  <td>o1</td>\n")
+        self.case_fh.write(u"  <td>o2</td>\n")
+        self.case_fh.write(u"  <td>sentence</td>\n")
+        self.case_fh.write(u"</tr>\n")
         for identifier in sorted(identifiers.keys()):
-            self.case_fh.write(u"<tr style=\"white-space:nowrap\">")
-            self.case_fh.write(u"  <td>%s" % identifier)
+            self.case_fh.write(u"<tr style=\"white-space:nowrap\">\n")
+            self.case_fh.write(u"  <td>%s</td>\n" % identifier)
             for ts in timestamps:
-                self.case_fh.write(u"  <td>%s" % self.case_results[ts].get(identifier, '&nbsp;'))
+                self.case_fh.write(u"  <td>%s</td>\n" % self.case_results[ts].get(identifier, '&nbsp;'))
             case = self.case_input[identifier]
-            self.case_fh.write(u"  <td align=right>%s" % case.o1)
-            self.case_fh.write(u"  <td align=right>%s" % case.o2)
-            self.case_fh.write(u"  <td>%s<span class=\"tag\">%s</span>%s"
+            self.case_fh.write(u"  <td align=right>%s</td>\n" % case.o1)
+            self.case_fh.write(u"  <td align=right>%s</td>\n" % case.o2)
+            self.case_fh.write(u"  <td>%s<span class=\"tag\">%s</span>%s</td>\n"
                                % (case.sentence[:case.o1],
                                   case.sentence[case.o1:case.o2],
                                   case.sentence[case.o2:]))
-        self.case_fh.write(u"</table>")
+            self.case_fh.write(u"</tr>\n")
+        self.case_fh.write(u"</table>\n")
 
 
 def generate_report():

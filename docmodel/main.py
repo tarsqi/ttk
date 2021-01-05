@@ -10,7 +10,7 @@ required they should be added to source_parser.py and metadata_parser.py.
 """
 
 from __future__ import absolute_import
-import os, xml, re
+import os, re
 
 from docmodel.source_parser import SourceParserXML, SourceParserText
 from docmodel.source_parser import SourceParserTTK, SourceParserLIF
@@ -82,38 +82,3 @@ def guess_source(filename_or_string):
     else:
         tag = result.group(1)
         return 'ttk' if tag.lower() == 'ttk' else 'xml'
-    
-    #first_tag = Xml(content).get_first_tag()
-    #if first_tag == 'ttk':
-    #    return 'ttk'
-    #else:
-    #    return 'text' if first_tag is None else 'xml'
-
-
-class Xml(object):
-
-    """Test class used for determining whether a string looks like it contains
-    XML. Note that it does not do a full XML parse and that the string handed in
-    is intended to be a prefix of the entire string or document that is being
-    tested."""
-
-    def __init__(self, content):
-        self.parser = xml.parsers.expat.ParserCreate(encoding='utf-8')
-        self.parser.StartElementHandler = self._handle_start
-        self.content = content
-        self.first_tag = None
-
-    def _handle_start(self, name, attrs):
-        if self.first_tag is None:
-            self.first_tag = name
-
-    def get_first_tag(self):
-        """Returns the first XML tag of the content. The content does not have to
-        be well-formed XML, as long as it starts with an optional XML declaration
-        followed by a tag it will return the tag name of that tag. Returns None
-        if there is no such tag."""
-        try:
-            self.parser.Parse(self.content)
-        except xml.parsers.expat.ExpatError:
-            pass
-        return self.first_tag

@@ -68,6 +68,9 @@ class Token(Constituent):
         else:
             raise IndexError("there is only one element in a Token")
 
+    def __bool__(self):
+        return True
+
     def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used in the
         pattern matching phase."""

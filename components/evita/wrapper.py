@@ -32,9 +32,7 @@ class EvitaWrapper(object):
         
     def process(self):
         """Hand in all document elements to Evita for processing. Document
-        elements are instances of Tag with name=docelement. This is a simple
-        approach that assumes that all document elements are processed the same
-        way."""
+        elements are instances of Tag with name=docelement."""
         imported_events = self._import_events()
         for element in self.document.elements():
             Evita(self.document, element, imported_events).process_element()
@@ -63,7 +61,7 @@ class EvitaWrapper(object):
     def _evaluate_results(self, imported_events):
         """Simplistic evaluation of how many of the imported events actually end
         up as events. Loops through all the events that should be imported and
-        checks whether one of its offsets is actually part of a event found by
+        checks whether one of its offsets is actually part of an event found by
         the system."""
         events_key = self.document.sourcedoc.tags.find_tags(EVENT)
         if not events_key:
