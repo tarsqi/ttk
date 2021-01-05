@@ -9,7 +9,7 @@
 
 <h1>The TARSQI Toolkit Manual</h1>
 
-<p class="subtitle">Release Notes and Manual for TTK Version 2.2.1. January 2021.
+<p class="subtitle">Release Notes and Manual for TTK Version 3.0.0. January 2021.
 
 <p class="navigation">
 [ <a href="#intro">introduction</a>
@@ -46,10 +46,16 @@ updates. A list of changes is maintained in
 the <a href="https://github.com/tarsqi/ttk/blob/master/CHANGELOG.md">changelog</a>
 on GitHub.</p>
 
-This version is the first version to run on both Python 2.7 and Python 3 (this
-was tested on Python 3.8.5). It will most likely also be the last version to do
-so since for the next version Python 2.7 support will be dropped and future
-compatibility with Python 2.7 will be accidental.
+This version bumps up the major version, which here does not reflect any major
+code changes relative to the previous version (version 2.2.1), but it does sync
+with moving all development from Python 2 to Python 3. Version 2.2.1 was the
+first version to run on both Python 2.7 and Python 3 (this was tested on Python
+3.8.5). This version is almost identical to 2.2.1, the only differences are in
+the documentation and some bookkeeping files like the top-level VERSION file.
+
+From now on Python 2.7 support will be dropped except for some grave unforeseen
+circumstances, and future compatibility of major version 3 with Python 2.7 will
+be accidental.
 
 
 <a name="prereq"></a>
@@ -57,8 +63,9 @@ compatibility with Python 2.7 will be accidental.
 <h2>2. Requirements and Installation</h2>
 
 <p>The toolkit runs on recent versions of Linux and Mac OSX (and should run on
-Windows, but see below). The code requires Python version 2.7, Perl version 5.8
-or newer and the Java Development Kit version 8 (version 7 will probably work as
+Windows, but see below). The code requires Python version 2.7 or version 3.8
+(perhaps older versions are fine, this was not tested yet), Perl version 5.8 or
+newer and the Java Development Kit version 8 (version 7 will probably work as
 well). Java is needed to run the third party software used by the toolkit.</p>
 
 <p>Two Python packages need to be installed:</p>
@@ -146,7 +153,7 @@ Fido sleeps today.
 &lt;metadata>
   &lt;dct value="20210105"/>
   &lt;processing_steps>
-  &lt;processing_step ttk_version="2.2.1" git_commit="bae1870" timestamp="20210105-145711"
+  &lt;processing_step ttk_version="3.0.0" git_commit="bae1870" timestamp="20210105-145711"
                    components="PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"/>
   &lt;/processing_steps>
 &lt;/metadata>

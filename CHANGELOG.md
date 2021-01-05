@@ -6,6 +6,12 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). L
 
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+
+
+## Version 3.0.0 — 2021-01-05
+
+- Identical to version 2.2.1 except for some changes in documentation and minor changes in this file and the version file.
+
 ## Version 2.2.1 — 2021-01-05
 
 - Changed code to make it run on both Python 2.7 and Python 3.8.5  (issue [#79](https://github.com/tarsqi/ttk/issues/79)).
