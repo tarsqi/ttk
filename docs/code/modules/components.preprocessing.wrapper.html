@@ -20,11 +20,11 @@ function view_code(id) {
 <pre>
 <a href=#ChunkerWrapper>ChunkerWrapper</a>
 <a href=#PreprocessorWrapper>PreprocessorWrapper</a>
+<a href=#TagId>TagId</a>
 <a href=#TaggerWrapper>TaggerWrapper</a>
 <a href=#TokenizerWrapper>TokenizerWrapper</a>
 <a href=#TreeTagger>TreeTagger</a>
 <a href=#Wrapper>Wrapper</a>
-<a href=#TagId>TagId</a>
 </pre>
 
 <pre>
@@ -88,6 +88,13 @@ TagRepository using the preprocessing result.</pre>
 <div class=function>_merge_tags(self, tokens, taggedItems)</div>
 </pre>
 </blockquote>
+
+<a name="TagId"/><div class="section">class TagId</div>
+<pre>
+<strong>Inherits from: object</strong>
+
+Class to provide fresh identifiers for lex, ng, vg and s tags.</pre>
+
 
 <a name="TaggerWrapper"/><div class="section">class TaggerWrapper</div>
 <pre>
@@ -212,12 +219,6 @@ Takes a unicode string and returns a list of objects, where each
 object is either the pair ('&lt;s&gt;', None) or a pair of a tokenized string
 and a TokenizedLex instance.</pre>
 </blockquote>
-
-<a name="TagId"/><div class="section">class TagId</div>
-<pre>
-
-Class to provide fresh identifiers for lex, ng, vg and s tags.</pre>
-
 
 <div class="section">module functions</div>
 <pre>

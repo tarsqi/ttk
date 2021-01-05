@@ -281,7 +281,7 @@ class VChunkFeatures(ChunkFeatures):
         return forms.RE_keep.match(self.headForm)
 
     def is_have(self):
-        return self.headForm in forms.have and self.headPos is not 'MD'
+        return self.headForm in forms.have and self.headPos != 'MD'
 
     def is_future_going_to(self):
         return len(self.trueChunk) > 1 \

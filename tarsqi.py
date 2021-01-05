@@ -56,7 +56,8 @@ USAGE
       --pipe
           With this option the script reads input from the standard input and
           writes output to standard output. Without it the script expects the
-          INPUT and OUTPUT arguments to be there.
+          INPUT and OUTPUT arguments to be there. Note that when you do this you
+          also need to use the --source-format option.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is

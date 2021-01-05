@@ -1001,6 +1001,8 @@ Applied the above changes to `docmodel/main.py` and  `docmodel/source_parser.py`
 
 ## 5.  Passing the unit tests
 
+Changes made in this section are in commit [a4703f1b](https://github.com/tarsqi/ttk/commit/a4703f1bb010e9289198e7f179d53772fff4e73f).
+
 The second big issue from above remains and many tests fails:
 
 ```
@@ -1040,7 +1042,7 @@ def __bool__(self):
     return True
 ```
 
-Now all unit tests pass (except for the one GUTime test) and the regression tests are back in line as well.
+Now all unit tests pass (except for that one pesky GUTime test) and the Evita regression tests are back in line as well.
 
 
 
