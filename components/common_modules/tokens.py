@@ -1,4 +1,6 @@
 
+from __future__ import absolute_import
+from __future__ import print_function
 from library import forms
 from library.main import LIBRARY
 from components.evita.event import Event
@@ -66,6 +68,9 @@ class Token(Constituent):
         else:
             raise IndexError("there is only one element in a Token")
 
+    def __bool__(self):
+        return True
+
     def feature_value(self, name):
         """Used by matchConstituent. Needs cases for all instance variables used in the
         pattern matching phase."""
@@ -79,7 +84,7 @@ class Token(Constituent):
                       EPOS, MOD, POL, EVENTID, EIID, CLASS]:
             return None
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def getText(self):
         """Return the text of the token."""
@@ -119,9 +124,9 @@ class Token(Constituent):
             eid = self.event_tag.attrs.get('eid')
             eiid = self.event_tag.attrs.get('eiid')
             event_string = " eid=%s eiid=%s" % (eid, eiid)
-        print "%s<%s position=%d %d-%d pos=%s text=%s%s>" % \
+        print("%s<%s position=%d %d-%d pos=%s text=%s%s>" % \
             (indent * ' ', self.__class__.__name__, self.position,
-             self.begin, self.end, self.pos, self.getText(), event_string)
+             self.begin, self.end, self.pos, self.getText(), event_string))
 
 
 class AdjectiveToken(Token):
@@ -155,7 +160,7 @@ class AdjectiveToken(Token):
                 return self.tree.events[self.eid].get(POS,'NONE')
             return self.tree.events[self.eid][name]
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def isAdjToken(self):
         return True

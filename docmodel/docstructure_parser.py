@@ -16,10 +16,11 @@ processing the elements one by one.
 """
 
 
+from __future__ import absolute_import
 from library.tarsqi_constants import DOCSTRUCTURE
 
 
-class DocumentStructureParser:
+class DocumentStructureParser(object):
 
     """Simple document structure parser used as a default if no structure tags are
     found in the tag repository of the TarsqiDocument."""

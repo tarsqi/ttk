@@ -27,6 +27,7 @@ Contains the Evita wrapper.</pre>
 
 <a name="EvitaWrapper"/><div class="section">class EvitaWrapper</div>
 <pre>
+<strong>Inherits from: object</strong>
 
 Wrapper for Evita.</pre>
 
@@ -38,9 +39,7 @@ Sets instance variables.</pre>
 <pre>
 <div class=function>process(self)</div>
 Hand in all document elements to Evita for processing. Document
-elements are instances of Tag with name=docelement. This is a simple
-approach that assumes that all document elements are processed the same
-way.</pre>
+elements are instances of Tag with name=docelement.</pre>
 </blockquote>
 <blockquote>
 <h3>Private Functions</h3>
@@ -48,7 +47,7 @@ way.</pre>
 <div class=function>_evaluate_results(self, imported_events)</div>
 Simplistic evaluation of how many of the imported events actually end
 up as events. Loops through all the events that should be imported and
-checks whether one of its offsets is actually part of a event found by
+checks whether one of its offsets is actually part of an event found by
 the system.</pre>
 <pre>
 <div class=function>_import_events(self)</div>

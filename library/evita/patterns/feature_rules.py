@@ -43,6 +43,7 @@ and VChunkFeatures control application of these rules.
 """
 
 
+from __future__ import absolute_import
 from library.forms import *
 
 

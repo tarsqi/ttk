@@ -1,5 +1,7 @@
 """Contains functionality specific to sentences in a tree."""
 
+from __future__ import absolute_import
+from __future__ import print_function
 from utilities import logger
 from components.common_modules.constituent import Constituent
 
@@ -50,11 +52,11 @@ class Sentence(Constituent):
     def pretty_print(self, tree=True, verbose=False, indent=0):
         """Pretty print the sentence by pretty printing all daughters"""
         if verbose:
-            print "SENTENCE %s\n" % self.position
-            print "  parent     =  %s" % self.parent
-            print "  eventList  =  %s\n" % self.eventList
+            print("SENTENCE %s\n" % self.position)
+            print("  parent     =  %s" % self.parent)
+            print("  eventList  =  %s\n" % self.eventList)
         else:
-            print "%s<Sentence position=%s %d-%d>" % (indent*' ', self.position, self.begin, self.end)
+            print("%s<Sentence position=%s %d-%d>" % (indent*' ', self.position, self.begin, self.end))
         if tree or verbose:
             for dtr in self.dtrs:
                 dtr.pretty_print(indent=indent+2)

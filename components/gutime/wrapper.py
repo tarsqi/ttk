@@ -25,7 +25,9 @@ on temporal functions in postTempEx.pl.
 
 """
 
-import os, sys, subprocess, codecs, StringIO
+from __future__ import absolute_import
+import os, sys, subprocess, codecs
+from io import StringIO
 from xml.dom.minidom import parse, parseString
 
 from components.preprocessing import chunker
@@ -45,7 +47,7 @@ USE_TMP_FILES = True
 DEBUG = False
 
 
-class GUTimeWrapper:
+class GUTimeWrapper(object):
 
     """Wrapper for GUTime."""
 
@@ -107,7 +109,7 @@ def _create_gutime_input(tarsqidoc, fname=None):
     if fname is not None:
         fh = codecs.open(fname, 'w', encoding='utf8')
     else:
-        fh = StringIO.StringIO()
+        fh = StringIO()
     closing_s_needed = False
     fh.write("<DOC>\n")
     fh.write("<DATE>%s</DATE>\n" % tarsqidoc.metadata.get('dct'))

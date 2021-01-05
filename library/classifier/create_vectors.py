@@ -93,10 +93,12 @@ the model that ships with the Tarsqi Toolkit.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, sys
 
-import path
-import root
+from . import path
+from . import root
 
 from tarsqi import Options
 from docmodel.document import TarsqiDocument
@@ -105,6 +107,7 @@ from docmodel.main import create_source_parser
 from components.classifier.vectors import collect_tarsqidoc_vectors
 
 from library.main import LIBRARY
+from io import open
 
 
 GOLD_DIR = os.path.join('data', 'gold')
@@ -160,11 +163,11 @@ def process_dir(gold_dir):
         if fname.startswith('.') or fname.endswith('~'):
             continue
         try:
-            print fname
+            print(fname)
             process_file(gold_dir, fname)
         except Exception as e:
-            print "WARNING: could not process %s" % fname
-            print "        ", sys.exc_info()[1]
+            print("WARNING: could not process %s" % fname)
+            print("        ", sys.exc_info()[1])
 
 
 def process_file(gold_dir, fname):

@@ -1,5 +1,8 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
@@ -12,7 +15,7 @@ re_reltype = re.compile('(.*)=(.*)')
 re_attribute = re.compile('(.*)=(.*)')
 
 
-class S2TRule:
+class S2TRule(object):
 
     """Implements the S2T rule object. An S2T rule consists of an ID
     number and a set of conditions including:
@@ -37,9 +40,9 @@ class S2TRule:
         return '<S2TRule ' + self.id + '>'
     
     def pp(self):
-        print "<S2TRule %s>" % self.id
+        print("<S2TRule %s>" % self.id)
         for attr, val in self.attrs.items():
-            print "  %s=\"%s\"" % (attr, val)
+            print("  %s=\"%s\"" % (attr, val))
 
 
 def read_rules():

@@ -6,6 +6,8 @@ Graphical User Interface for the Tarsqi Toolkit
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, sys, popen2, time, re
 
 import wx
@@ -14,11 +16,12 @@ import wx.html
 from xml.sax.saxutils import escape
 
 from tarsqi import Tarsqi
-from demo.display import HtmlGenerator
+from .demo.display import HtmlGenerator
 from docmodel.model import DocumentModel
 from docmodel.xml_parser import Parser
 from library.tarsqi_constants import PREPROCESSOR, GUTIME, EVITA, SLINKET, S2T
 from library.tarsqi_constants import CLASSIFIER, BLINKER, CLASSIFIER, LINK_MERGER
+from io import open
 
 TTK_ROOT = os.environ['TTK_ROOT']
 
@@ -263,7 +266,7 @@ class ControlFrame(TarsqiFrame):
             self.file_basename = dlg.GetFilename()
             self.file_dirname = dlg.GetDirectory()
             self.file_path = os.path.join(self.file_dirname, self.file_basename)
-            print "\nOPENING FILE:", self.file_path
+            print("\nOPENING FILE:", self.file_path)
             self.DisplayFilename(self.file_path)
             self.text_Info.SetValue(file_contents(self.file_path))
             self.parsed = False
@@ -280,7 +283,7 @@ class ControlFrame(TarsqiFrame):
             self.file_basename = 'x-' + str(time.time())
             self.file_dirname = self.indir_user
             self.file_path = os.path.join(self.file_dirname, self.file_basename)
-            print "\nOPENING FILE:", self.file_path
+            print("\nOPENING FILE:", self.file_path)
             self.WriteTextToFile(text, self.file_path)
             self.DisplayFilename(self.file_path)
             self.text_Info.SetValue(file_contents(self.file_path))
@@ -332,7 +335,7 @@ class ControlFrame(TarsqiFrame):
 
     def OnParse(self, e):
 
-        print 'PROCESSING FILE:', self.file_path
+        print('PROCESSING FILE:', self.file_path)
 
         base_path = os.path.join(self.displaydir, self.file_basename)
         self.file_out =  base_path + '.ALL.xml'
@@ -346,17 +349,17 @@ class ControlFrame(TarsqiFrame):
         options = {'trap_errors': trap_errors,
                    'pipeline': pipeline }
 
-        print 'DOCUMENT TYPE:', doc_type
-        print 'OPTIONS:'
+        print('DOCUMENT TYPE:', doc_type)
+        print('OPTIONS:')
         for option, val in options.items():
-            print "    %s -> %s" % (option, val)
+            print("    %s -> %s" % (option, val))
 
-        print 'PROCESSING...'
+        print('PROCESSING...')
         tc = Tarsqi(doc_type, options, self.file_path, self.file_out)
         tc.process()
         #self.text_Info.SetValue(file_contents(self.file_out))
         self.text_Info.SetValue(xml_tree(self.file_out))
-        print 'CREATED:', self.file_out
+        print('CREATED:', self.file_out)
 
         # Create display file using various intermediate files created
         # by the Tarsqi instance.
@@ -384,7 +387,7 @@ class ControlFrame(TarsqiFrame):
             frame = ResultFrame(self)
             frame.Show()
         else:
-            print 'WARNING: file not yet parsed'
+            print('WARNING: file not yet parsed')
 
 
 class ResultFrame(TarsqiFrame):
@@ -448,30 +451,30 @@ class ResultFrame(TarsqiFrame):
                ("TBox", self.OnTBox)])])
 
     def OnViewSlinket(self, e):
-        print 'Opening', self.file_display_sli
+        print('Opening', self.file_display_sli)
         self.DisplayFile(self.file_display_sli)
 
     def OnViewBlinker(self, e):
-        print 'Opening', self.file_display_bli
+        print('Opening', self.file_display_bli)
         self.DisplayFile(self.file_display_bli)
 
     def OnViewClassifier(self, e):
-        print 'Opening', self.file_display_cla
+        print('Opening', self.file_display_cla)
         self.DisplayFile(self.file_display_cla)
 
     def OnViewAll(self, e):
-        print 'Opening', self.file_display_all
+        print('Opening', self.file_display_all)
         self.DisplayFile(self.file_display_all)
 
     def OnViewMerged(self, e):
-        print 'Opening', self.file_display_mer
+        print('Opening', self.file_display_mer)
         self.DisplayFile(self.file_display_mer)
 
     def OnTango(self, e):
         os.chdir(self.tangodir)
         file = self.displaydir + os.sep + self.file_basename + '.ALL.xml'
         command = 'java -jar tango_v15.jar file=' + file
-        print 'OPENING TANGO:', command
+        print('OPENING TANGO:', command)
         popen2.popen2(command)
 
     def OnTBox(self, e):
@@ -653,11 +656,11 @@ class ComponentsWindow(wx.Window):
 
 
 def run_shell_command(command):
-    print 'RUNNING SHELL SCRIPT:', command
+    print('RUNNING SHELL SCRIPT:', command)
     r, e = popen2.popen2(command)
     for line in r.readlines():
-        print 'RUNNING COMMAND:', line,
-    print e
+        print('RUNNING COMMAND:', line, end=' ')
+    print(e)
 
 def file_contents(filename):
     """Return the contents of filename."""

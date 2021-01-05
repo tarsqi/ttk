@@ -14,10 +14,10 @@ Contains the wrappers for all preprocessing components.
 # about 40% so we want to keep the PreprocessorWrapper around.
 
 
+from __future__ import absolute_import
 import os, sys, threading
 from time import time
 from subprocess import PIPE, Popen
-from types import StringType, TupleType
 
 from utilities import logger
 from docmodel.document import Tag
@@ -26,6 +26,7 @@ from library.main import LIBRARY
 
 from components.preprocessing.tokenizer import Tokenizer, TokenizedLex
 from components.preprocessing.chunker import chunk_sentences
+from six.moves import zip
 
 
 # TreeTagger executables and parameter file
@@ -48,7 +49,7 @@ POS_MAPPINGS = { 'SENT': '.', 'NP': 'NNP', 'IN/that': 'IN' }
 treetagger = None
 
 
-class TagId():
+class TagId(object):
 
     """Class to provide fresh identifiers for lex, ng, vg and s tags."""
 
@@ -224,7 +225,7 @@ class PreprocessorWrapper(Wrapper):
                         ctag.end = last_ltag.end
                         self.document.tags.append(ctag)
                         ctag = None
-                elif type(token) == TupleType:
+                elif type(token) == tuple:
                     ltag = self._make_ltag(token)
                     self.document.tags.append(ltag)
                     if stag.begin is None:
@@ -244,7 +245,7 @@ class PreprocessorWrapper(Wrapper):
     @staticmethod
     def _is_tag(token):
         """Return True if token is a string starting with < and ending with >."""
-        return type(token) == StringType \
+        return type(token) == str \
             and token.startswith('<') \
             and token.endswith('>')
 
@@ -487,6 +488,7 @@ class TreeTagger(object):
         # not clear why this is. Later in this method we pop off the extra tag
         # that we get because of this. TODO: it would be better to deal with
         # this in a more general way, see multiprocessing.Pool with a timeout.
+        text = text.decode("utf-8")
         text += "\n.\n"
         args = (self.process.stdin, text)
         thread = threading.Thread(target=_write_to_stdin, args=args)
@@ -495,6 +497,7 @@ class TreeTagger(object):
         collect = False
         while True:
             line = self.process.stdout.readline().strip()
+            line = line.decode(encoding='utf8')
             if line == START_TEXT:
                 collect = True
             elif line == END_TEXT:
@@ -507,10 +510,12 @@ class TreeTagger(object):
 
 
 def _write_to_stdin(pipe, text):
-    pipe.write("%s\n" % START_TEXT)
+    def write(s, p):
+        pipe.write(s.encode(encoding='utf8'))
+    write("%s\n" % START_TEXT, pipe)
     if text:
-        pipe.write("%s\n" % text)
+        write("%s\n" % text, pipe)
         # NOTE. Without the following the tagger will hang. Do not try to make
         # it shorter, it may need at least a space, but I have no idea why.
-        pipe.write("%s\n.\ndummy sentence\n.\n" % END_TEXT)
+        write("%s\n.\ndummy sentence\n.\n" % END_TEXT, pipe)
         pipe.flush()

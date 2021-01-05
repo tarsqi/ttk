@@ -20,9 +20,11 @@ senses are events) is currently not used by Evita.
 
 """
 
+from __future__ import absolute_import
 import os
 import sys
 import anydbm
+from io import open
 
 # Open text versions of DBM files in Dicts directory.
 file1 = open(os.path.join('dictionaries', 'wnPrimSenseIsEvent.txt'), 'r')

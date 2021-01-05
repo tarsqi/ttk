@@ -9,7 +9,9 @@ recognition.
 # TODO: check whether these are used by Slinket, if so move it to common_modules
 
 
-from types import ListType, InstanceType
+from __future__ import absolute_import
+from __future__ import print_function
+
 from pprint import pprint
 
 import utilities.stemmer as stemmer
@@ -22,6 +24,8 @@ from library.evita.patterns.feature_rules import FEATURE_RULES
 from components.common_modules.utils import get_tokens, remove_interjections
 from components.common_modules.utils import contains_adverbs_only
 from components.evita.rule import FeatureRule
+from six.moves import zip
+from six.moves import range
 
 DEBUG = True
 DEBUG = False
@@ -53,11 +57,11 @@ def getWordPosList(constituents):
 
 def debug(text, newline=True):
     if DEBUG:
-        if newline: print text
-        else: print text,
+        if newline: print(text)
+        else: print(text, end=' ')
 
 
-class ChunkFeatures:
+class ChunkFeatures(object):
 
     """The subclasses of this class are used to add grammatical features to a
     NounChunk, VerbChunk or AdjectiveToken. It lives in the features variable
@@ -277,7 +281,7 @@ class VChunkFeatures(ChunkFeatures):
         return forms.RE_keep.match(self.headForm)
 
     def is_have(self):
-        return self.headForm in forms.have and self.headPos is not 'MD'
+        return self.headForm in forms.have and self.headPos != 'MD'
 
     def is_future_going_to(self):
         return len(self.trueChunk) > 1 \
@@ -295,13 +299,13 @@ class VChunkFeatures(ChunkFeatures):
     def normalizeMod(self, form):
         if form == 'ca': return 'can'
         elif form == "'d": return 'would'
-        else: raise "ERROR: unknown modal form: "+str(form)
+        else: raise Exception("ERROR: unknown modal form: "+str(form))
 
     def normalizeHave(self, form):
         if form == "'d": return 'had'
         elif form == "'s": return 'has'
         elif form == "'ve": return 'have'
-        else: raise "ERROR: unknown raise form: "+str(form)
+        else: raise Exception("ERROR: unknown raise form: "+str(form))
 
     def getPolarity(self):
         if self.negative:
@@ -358,20 +362,19 @@ class VChunkFeatures(ChunkFeatures):
             % (self.tense, self.aspect, self.head.getText(), self.evClass) \
             + "\tnf_morph=%s modality=%s polarity=%s\n" \
             % (self.nf_morph, self.modality.replace(' ', '-'), self.polarity) \
+            + "\theadForm=%s headPos=%s preHead=%s preHeadForm=%s\n" \
+            % (self.headForm, self.headPos, self.preHead, self.preHeadForm) \
             + "\ttrueChunk: [%s]\n" % ', '.join(getWordPosList(self.trueChunk)) \
             + "\tnegative:  [%s]\n"  % ', '.join(getWordPosList(self.negative)) \
             + "\tinfinitive: [%s]\n"  % ', '.join(getWordPosList(self.infinitive)) \
             + "\tadverbs-pre: [%s]\n" % ', '.join(getWordPosList(self.adverbsPre)) \
             + "\tadverbs-post: [%s]\n" %  ', '.join(getWordPosList(self.adverbsPost))
 
-    def pp(self, verbose=False):
-        if verbose:
-            print self.as_verbose_string()
-        else:
-            print self
+    def pp(self):
+        print(self.as_verbose_string())
 
 
-class VChunkFeaturesList:
+class VChunkFeaturesList(object):
 
     """This class is used to create a list of VChunkFeatures instances. What
     it does is (1) collecting information from a VerbChunk or a list of Tokens,
@@ -423,7 +426,7 @@ class VChunkFeaturesList:
         self._initialize_lists()
         self._distributeNodes()
         self._generate_features_list()
-        if DEBUG: print "\n", self
+        if DEBUG: print("\n", self)
 
     def _initialize_nodes(self):
         """Given the VerbChunk or a list of Tokens, set the nodes variable to
@@ -645,5 +648,5 @@ class VChunkFeaturesList:
             inf =  sep.join(["%s" % x.text for x in self.infMarkLists[i]])
             adv1 =  sep.join(["%s" % x.text for x in self.adverbsPreLists[i]])
             adv2 =  sep.join(["%s" % x.text for x in self.adverbsPostLists[i]])
-            print "      tc=[%s] inf=[%s] neg=[%s] adv1=[%s] adv2=[%s]" % \
-                (tc, inf, neg, adv1, adv2)
+            print("      tc=[%s] inf=[%s] neg=[%s] adv1=[%s] adv2=[%s]" % \
+                (tc, inf, neg, adv1, adv2))

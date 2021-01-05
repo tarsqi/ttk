@@ -17,6 +17,7 @@ useful output is created and fixing the errors is low priority.
 
 """
 
+from __future__ import absolute_import
 import os, sys, codecs
 from xml.dom.minidom import parse, parseString
 

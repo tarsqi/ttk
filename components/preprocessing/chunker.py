@@ -24,12 +24,14 @@ docmodel.document.Tag.
 # For more details see https://github.com/tarsqi/ttk/issues/63.
 
 
-from types import StringType
+from __future__ import absolute_import
+from __future__ import print_function
 
 from utilities import logger
 from components.common_modules.tree import create_tarsqi_tree
 
 from library.tarsqi_constants import GUTIME
+from six.moves import range
 
 DEBUG = False
 
@@ -99,7 +101,7 @@ def chunk_sentences(sentences, terms=None):
 
 # CLASSES
 
-class Sentence:
+class Sentence(object):
 
     """The work horse for the chunker."""
 
@@ -310,15 +312,15 @@ class Sentence:
     def pp_tokens(self):
         for e in self.sentence:
             if type(e) == type((None,)):
-                print e[0],
-        print
+                print(e[0], end=' ')
+        print()
 
     def pp(self):
         in_chunk = False
         for t in self.sentence:
             ss = '   '+str(t) if in_chunk else str(t)
-            print ss
-            if type(t) == StringType:
+            print(ss)
+            if type(t) == str:
                 in_chunk = not in_chunk
 
 
@@ -414,11 +416,11 @@ class ChunkUpdater(object):
     @staticmethod
     def _debug(orphan, sentence, nodes):
         if DEBUG:
-            print orphan
-            print '  ', sentence
+            print(orphan)
+            print('  ', sentence)
             for n in nodes:
-                print '  ', n
-                print '  ', n.tag
+                print('  ', n)
+                print('  ', n.tag)
 
 
 if __name__ == '__main__':

@@ -29,10 +29,15 @@ Usage
     [('raise' in {verb: raise, lift, elevate, get up, bring up}, 'lower' in {verb: lower, take down, let down, get down, bring down})]
 """
 
+from __future__ import absolute_import
+from io import open
+from functools import reduce
+from six.moves import map
+
 __author__  = "Oliver Steele <steele@osteele.com>"
 __version__ = "2.0"
 
-from wordnet import *
+from .wordnet import *
 
 #
 # Domain utilities
@@ -41,9 +46,9 @@ from wordnet import *
 def _requireSource(entity):
     if not hasattr(entity, 'pointers'):
         if isinstance(entity, Word):
-            raise TypeError, `entity` + " is not a Sense or Synset.  Try " + `entity` + "[0] instead."
+            raise TypeError(repr(entity) + " is not a Sense or Synset.  Try " + repr(entity) + "[0] instead.")
         else:
-            raise TypeError, `entity` + " is not a Sense or Synset"
+            raise TypeError(repr(entity) + " is not a Sense or Synset")
 
 def tree(source, pointerType):
     """
@@ -64,9 +69,9 @@ def tree(source, pointerType):
     >>> #pprint(tree(dog, HYPONYM)) # too verbose to include here
     """
     if isinstance(source,  Word):
-        return map(lambda s, t=pointerType:tree(s,t), source.getSenses())
+        return list(map(lambda s, t=pointerType:tree(s,t), source.getSenses()))
     _requireSource(source)
-    return [source] + map(lambda s, t=pointerType:tree(s,t), source.pointerTargets(pointerType))
+    return [source] + list(map(lambda s, t=pointerType:tree(s,t), source.pointerTargets(pointerType)))
 
 def closure(source, pointerType, accumulator=None):
     """Return the transitive closure of source under the pointerType
@@ -78,7 +83,7 @@ def closure(source, pointerType, accumulator=None):
     ['dog' in {noun: dog, domestic dog, Canis familiaris}, {noun: canine, canid}, {noun: carnivore}, {noun: placental, placental mammal, eutherian, eutherian mammal}, {noun: mammal}, {noun: vertebrate, craniate}, {noun: chordate}, {noun: animal, animate being, beast, brute, creature, fauna}, {noun: organism, being}, {noun: living thing, animate thing}, {noun: object, physical object}, {noun: entity}]
     """
     if isinstance(source, Word):
-        return reduce(union, map(lambda s, t=pointerType:tree(s,t), source.getSenses()))
+        return reduce(union, list(map(lambda s, t=pointerType:tree(s,t), source.getSenses())))
     _requireSource(source)
     if accumulator is None:
         accumulator = []
@@ -140,7 +145,7 @@ def equalsIgnoreCase(a, b):
     1
     """
     # test a == b first as an optimization where they're equal
-    return a == b or string.lower(a) == string.lower(b)
+    return a == b or a.lower() == b.lower()
 
 
 #
@@ -193,7 +198,7 @@ def product(u, v):
     >>> product("123", "abc")
     [('1', 'a'), ('1', 'b'), ('1', 'c'), ('2', 'a'), ('2', 'b'), ('2', 'c'), ('3', 'a'), ('3', 'b'), ('3', 'c')]
     """
-    return flatten1(map(lambda a, v=v:map(lambda b, a=a:(a,b), v), u))
+    return flatten1(list(map(lambda a, v=v:list(map(lambda b, a=a:(a,b), v)), u)))
 
 def removeDuplicates(sequence):
     """Return a copy of _sequence_ with equal items removed.
@@ -242,12 +247,12 @@ def getIndex(form, pos='noun'):
     transformed string until a match is found or all the different
     strings have been tried. It returns a Word or None."""
     def trySubstitutions(trySubstitutions, form, substitutions, lookup=1, dictionary=dictionaryFor(pos)):
-        if lookup and dictionary.has_key(form):
+        if lookup and form in dictionary:
             return dictionary[form]
         elif substitutions:
             (old, new) = substitutions[0]
-            substitute = string.replace(form, old, new) and substitute != form
-            if substitute and dictionary.has_key(substitute):
+            substitute = form.replace(old, new) and substitute != form
+            if substitute and substitute in dictionary:
                 return dictionary[substitute]
             return              trySubstitutions(trySubstitutions, form, substitutions[1:], lookup=0) or \
                 (substitute and trySubstitutions(trySubstitutions, substitute, substitutions[1:]))
@@ -295,7 +300,7 @@ def morphy(form, pos='noun', collect=0):
     'abacus'
     >>> morphy('hardrock', 'adv')
     """
-    from wordnet import _normalizePOS, _dictionaryFor
+    from .wordnet import _normalizePOS, _dictionaryFor
     pos = _normalizePOS(pos)
     excfile = open(os.path.join(WNSEARCHDIR, {NOUN: 'noun', VERB: 'verb', ADJECTIVE: 'adj', ADVERB: 'adv'}[pos] + '.exc'))
     substitutions = MORPHOLOGICAL_SUBSTITUTIONS[pos]
@@ -310,8 +315,8 @@ def morphy(form, pos='noun', collect=0):
         import string
         exceptions = binarySearchFile(excfile, form)
         if exceptions:
-            form = exceptions[string.find(exceptions, ' ')+1:-1]
-        if lookup and dictionary.has_key(form):
+            form = exceptions[exceptions.find(' ')+1:-1]
+        if lookup and form in dictionary:
             if collect:
                 collection.append(form)
             else:

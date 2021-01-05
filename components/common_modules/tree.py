@@ -1,5 +1,7 @@
 """Contains the TarsqiTree class."""
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import re
 from xml.sax.saxutils import escape, quoteattr
@@ -12,6 +14,7 @@ from components.common_modules.tags import EventTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
 from library.main import LIBRARY
 from utilities import logger
+from six.moves import range
 
 
 EVENT = LIBRARY.timeml.EVENT
@@ -293,7 +296,7 @@ class Node(object):
         return tree_element
 
     def pp(self, indent=0):
-        print "%s%s" % (indent * '  ', self)
+        print("%s%s" % (indent * '  ', self))
         for dtr in self.dtrs:
             dtr.pp(indent + 1)
 
@@ -304,7 +307,7 @@ class NodeInsertionError(Exception):
     is no place where it can go."""
 
 
-class TarsqiTree:
+class TarsqiTree(object):
 
     """Implements the shallow tree that is input to some of the Tarsqi components.
 
@@ -435,8 +438,8 @@ class TarsqiTree:
     def pretty_print(self):
         """Pretty printer that prints all instance variables and a neat representation
         of the sentences."""
-        print "\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.sourcedoc.filename
-        print "len(dtrs) = %s" % (len(self.dtrs))
+        print("\n<TarsqiTree filename=%s>\n" % self.tarsqidoc.sourcedoc.filename)
+        print("len(dtrs) = %s" % (len(self.dtrs)))
         self.pretty_print_tagged_events_dict()
         self.pretty_print_sentences()
         self.pretty_print_links(self.alinks)
@@ -444,23 +447,23 @@ class TarsqiTree:
         self.pretty_print_links(self.tlinks)
 
     def pretty_print_tagged_events_dict(self):
-        print 'events = {',
+        print('events = {', end=' ')
         eids = sorted(self.events.keys())
         for eid in eids:
-            print "\n   ", eid, '=> {',
-            attrs = self.events[eid].keys()
+            print("\n   ", eid, '=> {', end=' ')
+            attrs = list(self.events[eid].keys())
             attrs.sort()
             for attr in attrs:
-                print "%s=%s" % (attr, str(self.events[eid][attr])),
-            print '}'
-        print '}'
+                print("%s=%s" % (attr, str(self.events[eid][attr])), end=' ')
+            print('}')
+        print('}')
 
     def pretty_print_sentences(self):
         for sentence in self:
-            print
+            print()
             sentence.pretty_print(verbose=False)
-        print
+        print()
 
     def pretty_print_links(self, links):
         for link in links:
-            print ' ', link
+            print(' ', link)

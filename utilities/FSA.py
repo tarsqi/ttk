@@ -332,11 +332,16 @@ April 2005:
 """
 
 
+from __future__ import absolute_import
 import string, os, tempfile
-from types import InstanceType, ListType, TupleType, IntType, LongType, DictType, StringType
-IntegerTypes = (IntType, LongType)
+#from types import InstanceType
+from functools import reduce
 
-from utilities import logger
+from six.moves import map
+from six.moves import filter
+from six.moves import range
+
+from . import logger
 
 try:
         import NumFSAUtils
@@ -352,12 +357,12 @@ NUMPY_DETERMINIZATION_CUTOFF = 50
 
 #debugFile = open(os.getcwd()+'/FSAdebugOutput.txt', 'w')   
 
-class FSA:
+class FSA(object):
         def __init__(self, states, alphabet, transitions, initialState, finalStates, arcMetadata=[]):
                 if states == None:
                         states = self.collectStates(transitions, initialState, finalStates)
                 else:
-                        assert not filter(lambda s, states=states:s not in states, self.collectStates(transitions, initialState, finalStates))
+                        assert not list(filter(lambda s, states=states:s not in states, self.collectStates(transitions, initialState, finalStates)))
                 self.states = states
                 self.alphabet = alphabet
                 self.transitions = transitions
@@ -371,7 +376,7 @@ class FSA:
         #
         def makeStateTable(self, default=None):
                 for state in self.states:
-                        if type(state) != IntType:
+                        if type(state) != int:
                                 return {}
                 if reduce(min, self.states) < 0: return {}
                 if reduce(max, self.states) > max(100, len(self.states) * 2): return {}
@@ -415,10 +420,10 @@ class FSA:
         # Copying
         #
         def create(self, *args):
-                return apply(self.__class__, args)
+                return self.__class__(*args)
         
         def copy(self, *args):
-                fsa = apply(self.__class__, args)
+                fsa = self.__class__(*args)
                 if hasattr(self, 'label'):
                         fsa.label = self.label
                 return fsa
@@ -427,7 +432,7 @@ class FSA:
                 return self.tuple() + (self.getArcMetadata(),)
         
         def coerce(self, klass):
-                return apply(klass, self.creationArgs())
+                return klass(*self.creationArgs())
         
         
         #
@@ -449,7 +454,7 @@ class FSA:
                 return labels
         
         def nextAvailableState(self):
-                return reduce(max, filter(lambda s:type(s) in IntegerTypes, self.states), -1) + 1
+                return reduce(max, [s for s in self.states if type(s) == int], -1) + 1
         
         def transitionsFrom(self, state):
                 try:
@@ -469,7 +474,7 @@ class FSA:
                 return hasattr(self, '_arcMetadata')
         
         def getArcMetadata(self):
-                return getattr(self, '_arcMetadata', {}).items()
+                return list(getattr(self, '_arcMetadata', {}).items())
         
         def setArcMetadata(self, list):
                 arcMetadata = {}
@@ -580,7 +585,7 @@ class FSA:
                         states = newStates
                 """Returning the length of the list containing all states s in states
                 that are also in self.finalStates"""
-                return len(filter(lambda s, finals=self.finalStates: s in finals, states)) > 0
+                return len(list(filter(lambda s, finals=self.finalStates: s in finals, states))) > 0
                 #return len(filter(lambda s: s in self.finalStates, states)) > 0
 
         def acceptsSubstringOf(self, sequence):   #looking for Longest Subsequence
@@ -718,7 +723,7 @@ class FSA:
         #
         def complement(self):
                 states, alpha, transitions, start, finals = completion(self.determinized()).tuple()
-                return self.create(states, alpha, transitions, start, filter(lambda s,f=finals:s not in f, states))#.trimmed()
+                return self.create(states, alpha, transitions, start, list(filter(lambda s,f=finals:s not in f, states)))#.trimmed()
         
         
         #
@@ -748,10 +753,12 @@ class FSA:
                         for _, s, _ in self.transitionsFrom(state):
                                 if s not in states:
                                         states.append(s)
-                states = stateMap.values()
-                transitions = map(lambda (s0,s1,l),m=stateMap:(m[s0], m[s1], l), self.transitions)
-                arcMetadata = map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata())
-                copy = self.copy(states, self.alphabet, transitions, stateMap[self.initialState], map(stateMap.get, self.finalStates), arcMetadata)
+                states = list(stateMap.values())
+                transitions = list(map(lambda s0, s1, l, m=stateMap: (m[s0], m[s1], l), self.transitions))
+                #transitions = list(map(lambda (s0,s1,l), m=stateMap:(m[s0], m[s1], l), self.transitions))
+                arcMetadata = list(map(lambda s0, s1, label, data, m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata()))
+                #arcMetadata = list(map(lambda ((s0, s1, label), data), m=stateMap: ((m[s0], m[s1], label), data), self.getArcMetadata()))
+                copy = self.copy(states, self.alphabet, transitions, stateMap[self.initialState], list(map(stateMap.get, self.finalStates)), arcMetadata)
                 copy._isSorted = 1
                 return copy
         
@@ -782,9 +789,11 @@ class FSA:
                                 return NULL_FSA
                         else:
                                 return NULL_FSA.coerce(self.__class__)
-                transitions = filter(lambda (s0, s1, _), states=states:s0 in states and s1 in states, transitions)
-                arcMetadata = filter(lambda ((s0, s1, _), __), states=states: s0 in states and s1 in states, self.getArcMetadata())  #R: added underscore
-                result = self.copy(states, alpha, transitions, initial, filter(lambda s, states=states:s in states, finals), arcMetadata).sorted()
+                transitions = list(filter(lambda s0, s1, _, states=states:s0 in states and s1 in states, transitions))
+                #transitions = list(filter(lambda (s0, s1, _), states=states:s0 in states and s1 in states, transitions))
+                arcMetadata = list(filter(lambda s0, s1, _, __, states=states: s0 in states and s1 in states, self.getArcMetadata()))  #R: added underscore
+                #arcMetadata = list(filter(lambda ((s0, s1, _), __), states=states: s0 in states and s1 in states, self.getArcMetadata()))  #R: added underscore
+                result = self.copy(states, alpha, transitions, initial, list(filter(lambda s, states=states:s in states, finals)), arcMetadata).sorted()
                 result._isTrimmed = 1
                 return result
         
@@ -810,7 +819,7 @@ class FSA:
                                                 stateSets.append(target)
                 finalStates = []
                 for stateSet in stateSets:
-                        if filter(lambda s, finalStates=self.finalStates:s in finalStates, stateSet):
+                        if list(filter(lambda s, finalStates=self.finalStates:s in finalStates, stateSet)):
                                 finalStates.append(stateSet)
                 copy = self.copy(stateSets, alphabet, transitions, stateSets[0], finalStates).sorted()
                 copy._isTrimmed = 1
@@ -824,7 +833,7 @@ class FSA:
                         return self
                 if len(self.states) > NUMPY_DETERMINIZATION_CUTOFF and NumFSAUtils and not self.getArcMetadata():
                         #debugFile.write( "\n..............determinzed option 1")
-                        data = apply(NumFSAUtils.determinize, self.tuple() + (self.epsilonClosure,))
+                        data = NumFSAUtils.determinize(*self.tuple() + (self.epsilonClosure,))
                         result = apply(self.copy, data).sorted()
                         result._isDeterminized = 1
                         return result
@@ -834,10 +843,11 @@ class FSA:
                 while index < len(stateSets):
                         #debugFile.write( "\n..............determinzed option 2")
                         stateSet, index = stateSets[index], index + 1
-                        localTransitions = filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions)
+                        localTransitions = list(filter(lambda s0, s1, l, set=stateSet:l and s0 in set, self.transitions))
+                        #localTransitions = list(filter(lambda (s0,s1,l), set=stateSet:l and s0 in set, self.transitions))
                         if localTransitions:
                                 #debugFile.write( "\n..............determinzed option 2.1")
-                                localLabels = map(lambda(_,__,label):label, localTransitions)  #R: added an underscore
+                                localLabels = [_____label[2] for _____label in localTransitions]  #R: added an underscore
                                 #debugFile.write( "\n..............determinzed option 2.1.1")
                                 labelMap = constructLabelMap(localLabels, self.alphabet)
                                 #debugFile.write( "\n..............determinzed option 2.1.2")
@@ -871,7 +881,7 @@ class FSA:
                 finalStates = []
                 for stateSet in stateSets:
                         #debugFile.write( "\n..............determinzed option 3")
-                        if filter(lambda s,finalStates=self.finalStates:s in finalStates, stateSet):
+                        if list(filter(lambda s,finalStates=self.finalStates:s in finalStates, stateSet)):
                                 #debugFile.write( "\n..............determinzed option 3.1")
                                 finalStates.append(stateSet)
                 if arcMetadata:
@@ -881,7 +891,7 @@ class FSA:
                                 s1.sort()
                                 s1 = tuple(s1)
                                 return ((s0, s1, label), data)
-                        arcMetadata = map(fixArc, arcMetadata)
+                        arcMetadata = list(map(fixArc, arcMetadata))
                 result = self.copy(stateSets, self.alphabet, transitions, stateSets[0], finalStates, arcMetadata).sorted()
                 result._isDeterminized = 1
                 result._isTrimmed = 1
@@ -897,9 +907,9 @@ class FSA:
                 states0, alpha0, transitions0, initial0, finals0 = self.tuple()
                 sinkState = self.nextAvailableState()
                 labels = self.labels()
-                states = filter(None, [
+                states = [_f for _f in [
                                 tuple(filter(lambda s, finalStates=self.finalStates:s not in finalStates, states0)),
-                                tuple(filter(lambda s, finalStates=self.finalStates:s in finalStates, states0))])
+                                tuple(filter(lambda s, finalStates=self.finalStates:s in finalStates, states0))] if _f]
                 labelMap = {}
                 for state in states0:
                         for label in labels:
@@ -930,16 +940,18 @@ class FSA:
                                                         targets = destinationMap[nextSet] = destinationMap.get(nextSet) or []
                                                         targets.append(state)
                                                 #print 'destinationMap from', set, label, ' =', destinationMap
-                                                if len(destinationMap.values()) > 1:
-                                                        values = destinationMap.values()
+                                                if len(list(destinationMap.values())) > 1:
+                                                        values = list(destinationMap.values())
                                                         #print 'splitting', destinationMap.keys()
                                                         for value in values:
                                                                 value.sort()
-                                                        states[index:index+1] = map(tuple, values)
+                                                        states[index:index+1] = list(map(tuple, values))
                                                         changed = 1
                                                         break
-                transitions = removeDuplicates(map(lambda (s0,s1,label), m=partitionMap:(m[s0], m[s1], label), transitions0))
-                arcMetadata = map(lambda ((s0, s1, label), data), m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata())
+                transitions = removeDuplicates(list(map(lambda s0, s1, label, m=partitionMap:(m[s0], m[s1], label), transitions0)))
+                #transitions = removeDuplicates(list(map(lambda (s0,s1,label), m=partitionMap:(m[s0], m[s1], label), transitions0)))
+                arcMetadata = list(map(lambda s0, s1, label, data, m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata()))
+                #arcMetadata = list(map(lambda ((s0, s1, label), data), m=partitionMap:((m[s0], m[s1], label), data), self.getArcMetadata()))
                 if not alpha0:
                         newTransitions = consolidateTransitions(transitions)
                         if arcMetadata:
@@ -955,7 +967,7 @@ class FSA:
                                 arcMetadata = newArcMetadata
                         transitions = newTransitions
                 initial = partitionMap[initial0]
-                finals = removeDuplicates(map(lambda s, m=partitionMap:m[s], finals0))
+                finals = removeDuplicates(list(map(lambda s, m=partitionMap:m[s], finals0)))
                 result = self.copy(states, self.alphabet, transitions, initial, finals, arcMetadata).sorted()
                 result._isDeterminized = 1
                 result._isMinimized = 1
@@ -976,9 +988,9 @@ class FSA:
                 output = []
                 output.append('%s {' % (self.__class__.__name__,))
                 output.append('\tname = %s;' % (self.fsaname,))
-                output.append('\tinitialState = ' + `self.initialState` + ';')
+                output.append('\tinitialState = ' + repr(self.initialState) + ';')
                 if self.finalStates:
-                        output.append('\tfinalStates = ' + string.join(map(str, self.finalStates), ', ') + ';')
+                        output.append('\tfinalStates = ' + ', '.join(map(str, self.finalStates)) + ';')
                 transitions = list(self.transitions)
                 transitions.sort()
                 for transition in transitions:
@@ -986,11 +998,11 @@ class FSA:
                         additionalInfo = self.additionalTransitionInfoString(transition)
                         output.append('\t%s -> %s %s%s;' % (s0, s1, labelString(label), additionalInfo and ' ' + additionalInfo or ''));
                 output.append('}');
-                return string.join(output, '\n')
+                return '\n'.join(output)
         
         def additionalTransitionInfoString(self, transition):
                 if self.getArcMetadataFor(transition):
-                        return '<' + string.join(map(str, self.getArcMetadataFor(transition)), ', ') + '>'
+                        return '<' + ', '.join(map(str, self.getArcMetadataFor(transition))) + '>'
         
         def stateLabelString(self, state):
                 """A template method for specifying a state's label, for use in dot
@@ -1004,19 +1016,23 @@ class FSA:
                 output = []
                 output.append('digraph finite_state_machine {');
                 if self.finalStates:
-                                output.append('\tnode [shape = doublecircle]; ' + string.join(map(str, self.finalStates), '; ') + ';' );
+                        output.append('\tnode [shape = doublecircle]; '
+                                      + '; '.join(map(str, self.finalStates))
+                                      + ';' );
                 output.append('\tnode [shape = circle];');
                 output.append('\trankdir=LR;');
                 output.append('\t%s [style = bold];' % (self.initialState,))
                 for state in self.states:
                         if self.stateLabelString(state):
-                                output.append('\t%s [label = "%s"];' % (state, string.replace(self.stateLabelString(state), '\n', '\\n')))
+                                output.append('\t%s [label = "%s"];'
+                                              % (state, self.stateLabelString(state).replace('\n', '\\n')))
                 transitions = list(self.transitions)
                 transitions.sort()
                 for (s0, s1, label) in transitions:
-                        output.append('\t%s -> %s  [label = "%s"];' % (s0, s1, string.replace(labelString(label), '\n', '\\n')));
+                        output.append('\t%s -> %s  [label = "%s"];'
+                                      % (s0, s1, labelString(label).replace('\n', '\\n')));
                 output.append('}');
-                return string.join(output, '\n')
+                return '\n'.join(output)
         
         def view(self):
                 view(self.toDotString())
@@ -1092,7 +1108,7 @@ def concatenation(a, *args):
                 b = toFSA(b).sorted(a.nextAvailableState())
                 states0, alpha0, transitions0, initial0, finals0 = a.tuple()
                 states1, alpha1, transitions1, initial1, finals1 = b.tuple()
-                a = a.create(states0 + states1, alpha0, transitions0 + transitions1 + map(lambda  s0, s1=initial1:(s0, s1, EPSILON), finals0), initial0, finals1, a.getArcMetadata() + b.getArcMetadata())
+                a = a.create(states0 + states1, alpha0, transitions0 + transitions1 + list(map(lambda  s0, s1=initial1:(s0, s1, EPSILON), finals0)), initial0, finals1, a.getArcMetadata() + b.getArcMetadata())
         return a
 
 def containment(arg, occurrences=1):
@@ -1146,7 +1162,8 @@ def intersection(a, b):
                                                         arcMetadata.append((transition, a.getArcMetadataFor((sa0, sa1, la))))
                                                 if b.getArcMetadataFor((sa0, sa1, la)):
                                                         arcMetadata.append((transition, b.getArcMetadataFor((sa0, sa1, la))))
-        finals = filter(lambda (s0, s1), f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states)
+        finals = list(filter(lambda s0, s1, f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states))
+        #finals = list(filter(lambda (s0, s1), f0=finals0, f1=finals1:s0 in f0 and s1 in f1, states))
         return a.create(states, alpha0, transitions, states[0], finals, arcMetadata).sorted()
 
 def iteration(fsa, min=1, max=None):
@@ -1168,7 +1185,11 @@ def option(fsa):
 def reverse(fsa):
         states, alpha, transitions, initial, finals = fsa.tuple()
         newInitial = fsa.nextAvailableState()
-        return fsa.create(states + [newInitial], alpha, map(lambda (s0, s1, l):(s1, s0, l), transitions) + map(lambda s1, s0=newInitial:(s0, s1, EPSILON), finals), [initial])
+        return fsa.create(states + [newInitial],
+                          alpha,
+                          [(s0_s1_l[1], s0_s1_l[0], s0_s1_l[2]) for s0_s1_l in transitions]
+                          + list(map(lambda s1, s0=newInitial:(s0, s1, EPSILON), finals)),
+                          [initial])
 
 def union(*args):
         initial = 1
@@ -1213,11 +1234,11 @@ def completion(fsa):
         transitions = transitions[:]
         sinkState = fsa.nextAvailableState()
         for state in states:
-                labels = map(lambda (_, __, label):label, fsa.transitionsFrom(state)) #added underscore insecond argument
+                labels = [_____label1[2] for _____label1 in fsa.transitionsFrom(state)] #added underscore insecond argument
                 for label in complementLabelSet(labels, alphabet):
                         transitions.append((state, sinkState, label))  #added parenthesis pair 
         if alphabet:
-                transitions.extend(map(lambda symbol, s=sinkState:(s, s, symbol), alphabet))
+                transitions.extend(list(map(lambda symbol, s=sinkState:(s, s, symbol), alphabet)))
         else:
                 transitions.append((sinkState, sinkState, ANY))
         return fsa.copy(states + [sinkState], alphabet, transitions, start, finals, fsa.getArcMetadata())
@@ -1239,64 +1260,54 @@ def trim(fsa):
 # Label operations
 #
 
+def is_user_defined(x):
+        return type(x).__module__ != 'builtins'
+
+
 TRACE_LABEL_OPERATIONS = 0
 
 def labelComplements(label, alphabet):
-        #debugFile.write( "\n\nEntering labelComplementSSS...........")
         complement = labelComplement(label, alphabet) or []
         if TRACE_LABEL_OPERATIONS:
                 pass
-                #log('complement(%s) = %s' % (label, complement))
-        if  type(complement) != ListType:
+        if  type(complement) != list:
                 complement = [complement]
         return complement
 
 def labelComplement(label, alphabet):
-        #debugFile.write( "\n\nEntering labelComplement...........")
-        if type(label) == InstanceType:
-                #debugFile.write( "\nHERE.......1")
+        #if type(label) == InstanceType:
+        if is_user_defined(label):
                 return label.complement()
         elif alphabet:
-                #debugFile.write( "\nHERE.......2")
-                return filter(lambda s, s1=label:s != s1, alphabet)
+                return list(filter(lambda s, s1=label:s != s1, alphabet))
         elif label == ANY:
-                #debugFile.write( "\nHERE.......3")
                 return None
         else:
-                #debugFile.write( "\nHERE.......4")
                 return symbolComplement(label)
 
 def labelIntersection(l1, l2):
         intersection = _labelIntersection(l1, l2)
         if TRACE_LABEL_OPERATIONS:
             pass
-            #log('intersection(%s, %s) = %s' % (l1, l2, intersection))
         return intersection
 
 def _labelIntersection(l1, l2):
-#        debugFile.write( "\n\n--------\nLABELS:"+ l1 +" " + l2 + "\n--------\n")
         if l1 == l2:
-        #if l1 == l2 or l1 == ANY:       
-#                debugFile.write( "\n\nSOLUTION 1")
                 return l1
         #todo: is the following ever true
         elif not l1 or not l2:
-#                debugFile.write( "\n\nSOLUTION 2")
                 return None
         elif l1 == ANY:
-#                debugFile.write( "\n\nSOLUTION 3")
                 return l2
         elif l2 == ANY:
-#                debugFile.write( "\n\nSOLUTION 4")
                 return l1
-        elif type(l1) == InstanceType:
-#                debugFile.write( "\n\nSOLUTION 5")
+        #elif type(l1) == InstanceType:
+        elif is_user_defined(l1):
                 return l1.intersection(l2)
-        elif type(l2) == InstanceType:
-#                debugFile.write( "\n\nSOLUTION 6")
+        #elif type(l2) == InstanceType:
+        elif is_user_defined(l2):
                 return l2.intersection(l1)
         else:
-#                debugFile.write( "\n\nSOLUTION 7")
                 return symbolIntersection(l1, l2)
 
 def labelString(label):
@@ -1308,44 +1319,24 @@ def labelDict(label):
         return eval(label)
 
 def labelMatches(label, input):
-        #log( "\n\nLABEL MATCHES:"+label+"  "+ str(input)+"?")
-        #print "LABEL MATCHES: "+label+"  "+ str(input)+"?"
-        #logger.out('label =', label)
-        #logger.out('input =', input.__class__.__name__)
-        if (type(label) is StringType and (label[0] == '{' or label[-1] == '}')):
+        if label == 'ALL':
+                return True
+        elif (type(label) is str and (label[0] == '{' or label[-1] == '}')):
                 """Pattern expression has been given in a Python dictionary format """
-                #print ">>> LABEL %s is string with curly brackets" % label
                 label = labelDict(label)
-                #print "LABEL in FSA (1): "+str(label)
-                #log("\tMATCH (0.1), STRING:"+str(input))
-                #print "\t\tINPUT class name: "+str(input.__class__.__name__)
-                if (type(input) is InstanceType and
-                    input.__class__.__name__ in ['Constituent', 'Chunk', 'NounChunk',
-                                                 'VerbChunk', 'Token', 'AdjectiveToken',
-                                                 'EventTag', 'TimexTag']):
-                        """Specific for Evita"""
-                        #print ">>> input is InstanceType and class is in Constituent...."
-                        #print "EVITA: LABEL in FSA (2): "+str(label)
-                        #print ">>> input is ", input
-                        #logger.out('forwarding to input.matchConstituent')
+                if getattr(input, '__class__').__name__ in [
+                                'Constituent', 'Chunk', 'NounChunk', 'VerbChunk',
+                                'Token', 'AdjectiveToken', 'EventTag', 'TimexTag']:
+                        # this is specific to Evita
                         return input.matchConstituent(label)
-                elif type(input) is DictType:
-                        """ Open to other dictionary-based object matching applications"""
-                        #print "NON-EVITA: LABEL in FSA (2): "+str(label)
-                        #logger.out('forwarding to _matchDict')
+                elif type(input) is dict:
+                        # Open to other dictionary-based object matching applications
                         return matchDict(label, input)
                 else:
-                        #print "LABEL:", label, "\nINPUT:", input.nodeType
-                        raise "ERROR: possibly label is in dict format, but not the input"
+                        raise Exception("ERROR: possibly label is in dict format, but not the input")
         elif type(label) == InstanceType and hasattr(label, 'matches'):
-                #debugFile.write("\n\tMATCH (1)")
-                #print "\n\tMATCH (1)"
-                #logger.out('MATCH (1)')
                 return label.matches(input)
         else:
-                #debugFile.write("\n\tMATCH (2)")
-                #print "\n\tMATCH (2)"
-                #logger.out('MATCH (2)')
                 return label == input    
         
 def matchDict(label, input):
@@ -1362,25 +1353,25 @@ def matchDict(label, input):
         and its second position is the atomic value or list of atomic values
         that need to be negated: '^'. E.g., {..., 'headPos': ('^', 'MD') ...}
         """        
-        labelKeys = label.keys()
-        inputKeys = input.keys()
+        labelKeys = list(label.keys())
+        inputKeys = list(input.keys())
         for key in labelKeys:
                 #print "KEY:", key, "VALUE:", label[key]
                 if key in inputKeys:
                     value = label[key]
-                    if type(value) is TupleType:
+                    if type(value) is tuple:
                         #print "\t\t......TUPLE TYPE"
                         if value[0] == '^':
                             value = value[1]
-                            if type(value) is ListType:
+                            if type(value) is list:
                                 if input[key] in value:
                                     return 0
                             else:
                                 if input[key] == value:
                                     return 0
                         else:
-                            raise "ERROR specifying description of pattern"
-                    elif type(value) is ListType:
+                            raise Exception("ERROR specifying description of pattern")
+                    elif type(value) is list:
                         #print "\t\t......LIST TYPE"
                         if input[key] not in value:
                             return 0
@@ -1439,13 +1430,13 @@ TRACE_CONSTRUCT_LABEL_MAP = 0
 
 def consolidateTransitions(transitions):
         result = []
-        for s0, s1 in removeDuplicates(map(lambda (s0, s1, _):(s0,s1), transitions)):
+        for s0, s1 in removeDuplicates([(s0_s1__[0],s0_s1__[1]) for s0_s1__ in transitions]):
                 labels = []
                 for ss0, ss1, label in transitions:
                         if ss0 == s0 and ss1 == s1:
                                 labels.append(label)
                 if len(labels) > 1:
-                        reduced = reduce(unionLabelSets, map(lambda label:[label], labels))
+                        reduced = reduce(unionLabelSets, [[label] for label in labels])
                         if TRACE_LABEL_OPERATIONS or TRACE_CONSOLIDATE_TRANSITIONS:
                                 pass
                                 #log('consolidateTransitions(%s) -> %s' % (labels, reduced))
@@ -1499,26 +1490,26 @@ def constructLabelMap(labels, alphabet, includeComplements=0):
 
 def symbolComplement(symbol):
         #debugFile.write( "\nSYMBOL: "+str(symbol))
-        if type(symbol) is not StringType:
+        if type(symbol) is not str:
                 symbol = str(symbol)
-
         if '&' in symbol:
                 #debugFile.write( "\nSYMBOL .........1")
-                return map(symbolComplement, string.split(symbol, '&'))
+                return list(map(symbolComplement, symbol.split('&')))
         elif symbol[0] == '~':
                 #debugFile.write( "\nSYMBOL .........2")
                 return symbol[1:]
         else:
                 #debugFile.write( "\nSYMBOL .........3")
                 return '~' + str(symbol)
-              
-        
+
 
 def symbolIntersection(s1, s2):
-        if type(s1) is StringType: set1 = string.split(s1, '&')
+        if type(s1) is str:
+                set1 = s1.split('&')
         else: set1 = [str(s1)]
 
-        if type(s2) is StringType: set2 = string.split(s2, '&')
+        if type(s2) is str:
+                set2 = s2.split('&')
         else: set2 = [str(s2)]
                 
         for symbol in set1:
@@ -1528,9 +1519,9 @@ def symbolIntersection(s1, s2):
                 if symbol not in set1:
                         set1.append(symbol)
                         
-        if type(s1) is StringType:
+        if type(s1) is str:
                 #debugFile.write( "\nS1:"+s1)
-                nonNegatedSymbols = filter(lambda s:s[0] != '~', set1)
+                nonNegatedSymbols = [s for s in set1 if s[0] != '~']
         else:
                 nonNegatedSymbols = set1
                
@@ -1539,7 +1530,7 @@ def symbolIntersection(s1, s2):
         if nonNegatedSymbols:
                 return nonNegatedSymbols[0]
         set1.sort()
-        return string.join(set1, '&')
+        return '&'.join(set1)
 
 
 #
@@ -1551,12 +1542,12 @@ def singleton(symbol, alphabet=None, arcMetadata=None):
         fsa = FSA([0,1], alphabet, [(0, 1, symbol)], 0, [1])
         if arcMetadata:
                 fsa.setArcMetadataFor((0, 1, symbol), arcMetadata)
-        fsa.label = `symbol`
+        fsa.label = repr(symbol)
         return fsa
 
 def sequence(sequence, alphabet=None):
-        fsa = reduce(concatenation, map(lambda label, alphabet=alphabet:singleton(label, alphabet), sequence), EMPTY_STRING_FSA)
-        fsa.label = `sequence`
+        fsa = reduce(concatenation, list(map(lambda label, alphabet=alphabet:singleton(label, alphabet), sequence)), EMPTY_STRING_FSA)
+        fsa.label = repr(sequence)
         return fsa
 
 
@@ -1600,7 +1591,7 @@ print FSA_test.compileOP(['a', 'd', '+', 'e', '(', 'b', '|', 'c', ')', '(', 'f',
 print FSA_test.compileOP(['a', 'd', '+', 'e', '(', 'b', '|', 'c', ')', '(', 'f', '*', 'g', '|', 'h', ')', 'i'])
 """
 
-class Sequence:
+class Sequence(object):
 
         def __init__(self, pattern):
 #                print "\nENTERING SEQUENCE............\n"
@@ -1614,9 +1605,6 @@ class Sequence:
                 else:
                         return
 
-        def __getslice__(self, i, j):
-                return self.sequence[i:j]
-
         def __len__(self):
                 return len(self.sequence)
 
@@ -1628,7 +1616,7 @@ class Sequence:
                 previousBorder[currentSubpattern] = 0   # Index of previous bar in currentSubpattern
                 for i in range(len(self.sequence)):
                     #print "ITEM:", i, self.sequence[i], "CURRENT SUBPATTERN:", currentSubpattern
-                    if type(self.sequence[i]) is StringType : 
+                    if type(self.sequence[i]) is str : 
                         if self.sequence[i] == '(':
                                 currentSubpattern = currentSubpattern+1
                                 #print "\tCURRENT SUBPATTERN:", currentSubpattern
@@ -1647,7 +1635,7 @@ class Sequence:
                                         or because we are in a subpattern that resetted
                                         the currentSubpattern variable to 0 """
                                         if self.__class__.__name__ == "Sequence": pass
-                                        else: raise "ERROR (1): expression missing at least one '('"
+                                        else: raise Exception("ERROR (1): expression missing at least one '('")
                                         
                         elif self.sequence[i] == '|':
                                 try:
@@ -1656,11 +1644,12 @@ class Sequence:
                                 except: pass
                                 previousBorder[currentSubpattern] = i
                 if currentSubpattern != 0:
-                        raise "ERROR (2): expression missing at least one ')'"
+                        raise Exception("ERROR (2): expression missing at least one ')'")
                                 
         def getNextBorder(self, index):
                 try: return self.bordersDict[index]
                 except: return -1                
+
 
 class SyntaxSequence(Sequence):
 
@@ -1668,7 +1657,7 @@ class SyntaxSequence(Sequence):
                 #print "\nENTERING SYNTAX SEQUENCE............\n"
                 Sequence.__init__(self, description)
                 self.description = description
-                self.label = string.join(str(self.description), '_')
+                self.label = '_'.join(str(self.description))
                 self.sequence = self.atomizeDescription()
 
         def atomizeDescription(self):
@@ -1677,14 +1666,14 @@ class SyntaxSequence(Sequence):
             for item in self.description:
                     #debugFile.write( "\nITEM: "+str(item))
                     if len(item) > 1:
-                            #if type(item) is StringType:
-                            if type(item) is not StringType:
+                            #if type(item) is str:
+                            if type(item) is not str:
                                     item = str(item)
                                     
                             if item[0] in ['(','[','|']:
                                     #print "SIT 1"
                                     if len(item) > 1:
-                                        raise 'ERROR (1): check syntax for pattern: '+ str(self.description)
+                                        raise Exception('ERROR (1): check syntax for pattern: '+ str(self.description))
                                     else:
                                         res.append(item)
                             if item[0] == '~':
@@ -1695,13 +1684,13 @@ class SyntaxSequence(Sequence):
                             elif item[-1] in ['(','[','|']:
                                     #print "SIT 3"
                                     if len(item) > 1:
-                                        raise 'ERROR (2): check syntax for pattern: '+ str(self.description)
+                                        raise Exception('ERROR (2): check syntax for pattern: '+ str(self.description))
                                     else:
                                         pass
                             elif item[-1] in [')',']']:
                                     #print "SIT 4"
                                     if len(item) > 1:
-                                        raise 'ERROR (3): check syntax for pattern: '+ str(self.description)
+                                        raise Exception('ERROR (3): check syntax for pattern: '+ str(self.description))
                                     else:
                                         res.append(item)
                             elif item[-1] in ['*','+','?']:
@@ -1739,7 +1728,7 @@ def compileOP(description, **options):
 
 
         if index < len(pattern):
-                raise 'extra character in pattern (possibly ")" )'
+                raise Exception('extra character in pattern (possibly ")" )')
         fsa.label = pattern.label
         #debugFile.write( "\n=\n\tFSA MINIMIZED:\n\t\t")
         #debugFile.write(str(fsa.minimized()))
@@ -1829,6 +1818,7 @@ def compileSequenceOP(pattern, index, options):
                 ##debugFile.write( "\n\tcompileSequenceOP_FSA_Concat min:\n\t\t"+str(fsa.minimized()))
         return fsa, index
 
+
 def compileItemOP(pattern, index, options):
         ##debugFile.write( "\n\n\t\t\tCOMPILE ITEM OP")
         c = pattern[index]
@@ -1853,26 +1843,27 @@ def compileItemOP(pattern, index, options):
                 #print "ITS COMPLEMENT:", fsa
         else:
                 ##debugFile.write( "\nHERE 5:")
-#                #debugFile.write( "\nC:", c)
+                ##debugFile.write( "\nC:", c)
                 label = c
                 if options.get('multichar'):
-                #        #debugFile.write( "\nHERE 6:")
-                        while ((pattern[index] in string.letters or pattern[index] in string.digits) and
-                               index < len(pattern)):  ### CAL CANVIAR CONDICIONS string.letter!!!
-                 #               #debugFile.write( "\nHERE 7:")
+                        #debugFile.write( "\nHERE 6:")
+                        while ((pattern[index] in string.ascii_letters
+                                or pattern[index] in string.digits)
+                               and index < len(pattern)):  ### CAL CANVIAR CONDICIONS string.letter!!!
+                                #debugFile.write( "\nHERE 7:")
                                 label = label + pattern[index]
                                 index = index + 1
                 if pattern[index] == ':':
-                  #      #debugFile.write( "\nHERE 8:")
+                        #debugFile.write( "\nHERE 8:")
                         index = index + 1
                         upper = label
                         lower = pattern[index]
                         index = index + 1
                         if upper  == '0':
-                   #             #debugFile.write( "\nHERE 9:")
+                                #debugFile.write( "\nHERE 9:")
                                 upper  = EPSILON
                         if lower == '0':
-                    #            #debugFile.write( "\nHERE 10:")
+                                #debugFile.write( "\nHERE 10:")
                                 lower = EPSILON
                         label = (upper, lower)
                 fsa = singleton(label)
@@ -1887,7 +1878,7 @@ def compileItemOP(pattern, index, options):
                 elif c == '+':
                         fsa = iteration(fsa)
                 else:
-                        raise 'unimplemented'
+                        raise Exception('unimplemented')
         return fsa, index
 
 
@@ -1897,10 +1888,10 @@ def compileItemOP(pattern, index, options):
 
 def compileRE(s, **options):
         if not options.get('multichar'):
-                s = string.replace(s, ' ', '')
+                s = s.replace(' ', '')
         fsa, index = compileREExpr(s + ')', 0, options)
         if index < len(s):
-                raise 'extra ' + `')'`
+                raise Exception('extra ' + repr(')'))
         fsa.label = str(s)
         return fsa.minimized()
 
@@ -1965,7 +1956,7 @@ def compileItem(str, index, options):
                 elif c == '+':
                         fsa = iteration(fsa)
                 else:
-                        raise 'unimplemented'
+                        raise Exception('unimplemented')
         return fsa, index
 
 """

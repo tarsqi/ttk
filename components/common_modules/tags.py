@@ -5,10 +5,12 @@ Contains classes for TimeML tags.
 """
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 from library.main import LIBRARY
 from components.common_modules.constituent import Constituent
 from utilities import logger
-from utils import get_tokens
+from .utils import get_tokens
 
 
 EVENT = LIBRARY.timeml.EVENT
@@ -71,7 +73,7 @@ class EventTag(Tag):
         elif name == POL:
             return self._get_attribute(name, 'POS')
         elif name in ('text', FORM):
-            if self.tree.events.has_key(self.eid):
+            if self.eid in self.tree.events:
                 return self.tree.events[self.eid][FORM]
             else:
                 logger.warn("Event %s is not stored in the events on the TarsqiTree" % self)
@@ -85,7 +87,7 @@ class EventTag(Tag):
                 logger.warn("Returning 'epos' instead of 'pos' value")
                 return self.tree.events[self.eid][EPOS]
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def _get_attribute(self, name, default):
         try:
@@ -99,9 +101,9 @@ class EventTag(Tag):
     def pretty_print(self, indent=0):
         (eid, eiid, cl) = (self.attrs.get('eid'), self.attrs.get('eiid'),
                            self.attrs.get('class'))
-        print "%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
+        print("%s<%s position=%s %d-%d eid=%s eiid=%s class=%s>" % \
             (indent * ' ', self.__class__.__name__, self.position,
-             self.begin, self.end, eid, eiid, cl)
+             self.begin, self.end, eid, eiid, cl))
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
@@ -126,20 +128,20 @@ class TimexTag(Tag):
                       EVENTID, EIID, CLASS]:
             return None
         else:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def isTimex(self):
         return True
 
     def pretty_print(self, indent=0):
-        print "%s<%s tid=%s type=%s value=%s>" % \
+        print("%s<%s tid=%s type=%s value=%s>" % \
             (indent * ' ', self.__class__.__name__, self.attrs.get('tid'),
-             self.attrs.get('type'), self.attrs.get('value'))
+             self.attrs.get('type'), self.attrs.get('value')))
         for dtr in self.dtrs:
             dtr.pretty_print(indent+2)
 
 
-class LinkTag():
+class LinkTag(object):
 
     """Abstract class for all TimeML link tags. LinkTags are not constituents
     since they are never inserted in the hierarchical structure of a TarsqiTree,

@@ -4,9 +4,13 @@ Contains the Evita wrapper.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 from library.tarsqi_constants import EVITA
 from library.main import LIBRARY
 from components.evita.main import Evita
+from io import open
+from six.moves import range
 
 
 # Set this to True if you want to do a simplistic evaluation of how many of the
@@ -17,7 +21,7 @@ EVALUATE_EVENT_IMPORT = False
 EVENT = LIBRARY.timeml.EVENT
 
 
-class EvitaWrapper:
+class EvitaWrapper(object):
 
     """Wrapper for Evita."""
 
@@ -28,9 +32,7 @@ class EvitaWrapper:
         
     def process(self):
         """Hand in all document elements to Evita for processing. Document
-        elements are instances of Tag with name=docelement. This is a simple
-        approach that assumes that all document elements are processed the same
-        way."""
+        elements are instances of Tag with name=docelement."""
         imported_events = self._import_events()
         for element in self.document.elements():
             Evita(self.document, element, imported_events).process_element()
@@ -49,9 +51,9 @@ class EvitaWrapper:
                 # Use character offsets of all characters in the event, so if we
                 # have "He sleeps." with sleep from 3 to 9, then the offsets are
                 # [3,4,5,6,7,8] since offset 9 points to the period.
-                offsets = range(event.begin, event.end)
+                offsets = list(range(event.begin, event.end))
                 for off in offsets:
-                    if imported_events.has_key(off):
+                    if off in imported_events:
                         logger.warning("Overlapping imported events")
                     imported_events[off] = event
         return imported_events
@@ -59,11 +61,11 @@ class EvitaWrapper:
     def _evaluate_results(self, imported_events):
         """Simplistic evaluation of how many of the imported events actually end
         up as events. Loops through all the events that should be imported and
-        checks whether one of its offsets is actually part of a event found by
+        checks whether one of its offsets is actually part of an event found by
         the system."""
         events_key = self.document.sourcedoc.tags.find_tags(EVENT)
         if not events_key:
-            print  "Nothing to evaluate"
+            print("Nothing to evaluate")
         else:
             events_system = {}
             for e in self.document.tags.find_tags(EVENT):
@@ -75,9 +77,9 @@ class EvitaWrapper:
                     if i in events_system:
                         imported += 1
                         break
-            percentage = imported * 100 / len(events_key)
-            print "\n\nEVENTS TO BE IMPORTED:  %3s" % len(events_key)
-            print "FOUND BY SYSTEM:        %3s (%s%%)\n" % (imported, percentage)
+            percentage = imported * 100 // len(events_key)
+            print("\n\nEVENTS TO BE IMPORTED:  %3s" % len(events_key))
+            print("FOUND BY SYSTEM:        %3s (%s%%)\n" % (imported, percentage))
 
 
 def _pp_imported_events(imported_events):

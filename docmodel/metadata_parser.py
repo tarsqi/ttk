@@ -9,13 +9,14 @@ Current parsers only deal with the DCT.
 
 """
 
+from __future__ import absolute_import
 import re, time, os, sqlite3
 
 import utilities.logger as logger
 from library.main import LIBRARY
 
 
-class MetadataParser:
+class MetadataParser(object):
 
     """This is the minimal metadata parser that is used as a default. It selects
     the DCT from all available sources and picks one of them, or it uses today's

@@ -7,7 +7,11 @@ and are used by the VChunkFeatures class in Evita.
 """
 
 
-class FeatureRule:
+from __future__ import absolute_import
+from six.moves import range
+
+
+class FeatureRule(object):
 
     """Objects of this class contain a chunk and a feature rule and are tasked
     with matching the rule to the chunk."""
@@ -31,7 +35,7 @@ class FeatureRule:
         succesfull and return False otherwise."""
         rule_idx = 0
         chunk_idx = 0
-        for i in range(len(self.rule_lhs)/2):
+        for i in range(len(self.rule_lhs)//2):
             if not (self._matchWord(self.rule_lhs[rule_idx], chunk_idx) and
                     self._matchPos(self.rule_lhs[rule_idx+1], chunk_idx)):
                 return False

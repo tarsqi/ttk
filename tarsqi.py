@@ -56,7 +56,8 @@ USAGE
       --pipe
           With this option the script reads input from the standard input and
           writes output to standard output. Without it the script expects the
-          INPUT and OUTPUT arguments to be there.
+          INPUT and OUTPUT arguments to be there. Note that when you do this you
+          also need to use the --source-format option.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
@@ -105,6 +106,8 @@ VARIABLES:
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys, os, time, getopt
 
 import root
@@ -116,6 +119,7 @@ from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
 from utilities import logger
 from utilities.file import read_config
+from six.moves import input
 
 TTK_ROOT = os.environ['TTK_ROOT']
 CONFIG_FILE = os.path.join(TTK_ROOT, 'config.txt')
@@ -126,7 +130,7 @@ logger.initialize_logger(os.path.join(TTK_ROOT, 'data', 'logs', 'ttk_log'),
                          level=3)
 
 
-class Tarsqi:
+class Tarsqi(object):
 
     """Main Tarsqi class that drives all processing.
 
@@ -225,8 +229,9 @@ class Tarsqi:
             try:
                 wrapper(tarsqidocument).process()
             except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
                 logger.error("%s error:\n\t%s\n\t%s\n"
-                             % (name, sys.exc_type, sys.exc_value))
+                             % (name, exc_type, exc_value))
         else:
             wrapper(tarsqidocument).process()
         logger.info("%s DONE (%.3f seconds)" % (name, time.time() - t1))
@@ -331,7 +336,7 @@ class Options(object):
 
     def items(self):
         """Simplistic way to do dictionary emulation."""
-        return self._options.items()
+        return list(self._options.items())
 
     def getopt(self, option_name, default=None):
         """Return the option, use None as default."""
@@ -351,9 +356,9 @@ class Options(object):
             setattr(self, adjusted_opt, value)
 
     def pp(self):
-        print "OPTIONS:"
+        print("OPTIONS:")
         for option in sorted(self._options.keys()):
-            print "   %-18s  -->  %s" % (option, self._options[option])
+            print("   %-18s  -->  %s" % (option, self._options[option]))
 
 
 class TarsqiError(Exception):
@@ -373,7 +378,7 @@ def _read_arguments(args):
         (opts, args) = getopt.getopt(args, '', options)
         return opts, args
     except getopt.GetoptError:
-        sys.stderr.write("ERROR: %s\n" % sys.exc_value)
+        sys.stderr.write("ERROR: %s\n" % sys.exc_info()[1])
         sys.exit(_usage_string())
 
 
@@ -423,9 +428,9 @@ class TarsqiWrapper(object):
                               "input or output arguments\n%s" % _usage_string())
 
     def pp(self):
-        print "\n<TarsqiWrapper>"
-        print "   inpath  =", self.inpath
-        print "   outpath =", self.outpath, "\n"
+        print("\n<TarsqiWrapper>")
+        print("   inpath  =", self.inpath)
+        print("   outpath =", self.outpath, "\n")
         self.options.pp()
 
     def run(self):
@@ -461,10 +466,10 @@ class TarsqiWrapper(object):
         if not os.path.isdir(self.outpath):
             os.makedirs(self.outpath)
         else:
-            print "WARNING: Directory %s already exists" % self.outpath
-            print "WARNING: Existing files in %s will be overwritten" % self.outpath
-            print "Continue? (y/n)\n?",
-            answer = raw_input()
+            print("WARNING: Directory %s already exists" % self.outpath)
+            print("WARNING: Existing files in %s will be overwritten" % self.outpath)
+            print("Continue? (y/n)\n?", end=' ')
+            answer = input()
             if answer != 'y':
                 exit()
         for filename in os.listdir(self.inpath):
@@ -473,7 +478,7 @@ class TarsqiWrapper(object):
             if (os.path.isfile(infile)
                     and os.path.basename(infile)[0] != '.'
                     and os.path.basename(infile)[-1] != '~'):
-                print infile
+                print(infile)
                 Tarsqi(self.options, infile, outfile).process_document()
 
     def _run_tarsqi_on_file(self):
@@ -486,7 +491,7 @@ def run_profiler(args):
     """Wrap running Tarsqi in the profiler."""
     import profile
     command = "TarsqiWrapper([%s]).run()" % ','.join(['"'+x+'"' for x in args])
-    print 'Running profiler on:', command
+    print('Running profiler on:', command)
     profile.run(command, os.path.abspath(PROFILER_OUTPUT))
 
 
@@ -527,4 +532,4 @@ if __name__ == '__main__':
         else:
             TarsqiWrapper(sys.argv[1:]).run()
     except TarsqiError:
-        sys.exit('ERROR: ' + str(sys.exc_value))
+        sys.exit('ERROR: ' + str(sys.exc_info()[1]))

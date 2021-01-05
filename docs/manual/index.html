@@ -9,7 +9,7 @@
 
 <h1>The TARSQI Toolkit Manual</h1>
 
-<p class="subtitle">Release Notes and Manual for TTK Version 2.2.0. December 2018.
+<p class="subtitle">Release Notes and Manual for TTK Version 2.2.1. January 2021.
 
 <p class="navigation">
 [ <a href="#intro">introduction</a>
@@ -46,6 +46,11 @@ updates. A list of changes is maintained in
 the <a href="https://github.com/tarsqi/ttk/blob/master/CHANGELOG.md">changelog</a>
 on GitHub.</p>
 
+This version is the first version to run on both Python 2.7 and Python 3 (this
+was tested on Python 3.8.5). It will most likely also be the last version to do
+so since for the next version Python 2.7 support will be dropped and future
+compatibility with Python 2.7 will be accidental.
+
 
 <a name="prereq"></a>
 
@@ -53,11 +58,18 @@ on GitHub.</p>
 
 <p>The toolkit runs on recent versions of Linux and Mac OSX (and should run on
 Windows, but see below). The code requires Python version 2.7, Perl version 5.8
-or newer and the Java Development Kit (JDK) version 8 (version 7 will probably
-work as well). Java is needed for running the third party software used by the
-toolkit.</p>
+or newer and the Java Development Kit version 8 (version 7 will probably work as
+well). Java is needed to run the third party software used by the toolkit.</p>
 
-<p>Installation is a four step process:</p>
+<p>Two Python packages need to be installed:</p>
+
+<pre class="example">
+$ pip install future
+$ pip install six
+</pre>
+
+
+<p>With the requirements in place installation is a four step process:</p>
 
 <ol>
 
@@ -132,9 +144,9 @@ Fido sleeps today.
 
 &lt;/text>
 &lt;metadata>
-  &lt;dct value="20170113"/>
+  &lt;dct value="20210105"/>
   &lt;processing_steps>
-  &lt;processing_step ttk_version="2.2.0" git_commit="341ad95" timestamp="20201130-214225"
+  &lt;processing_step ttk_version="2.2.1" git_commit="bae1870" timestamp="20210105-145711"
                    components="PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"/>
   &lt;/processing_steps>
 &lt;/metadata>
@@ -163,9 +175,10 @@ Fido sleeps today.
 </pre>
 
 <p>Your output file will be slightly different in that the value in
-the <code>dct</code> tag will be the date you ran the test, there will also be
-minor format changes because some tags were put on two lines above for display
-purposes (TTK output has each tag on one line).</p>
+the <code>dct</code> tag will be the date you ran the test, and you will also
+have a different git commit in the processing step or no commit identifier at
+all. There will also be minor format changes because some tags were put on two
+lines above for display purposes (TTK output has each tag on one line).</p>
 
 <p><u>A note for Windows users</u>. TTK 1.0 depended on some software that did
 not run on Windows. The current version does not have that problem and the code

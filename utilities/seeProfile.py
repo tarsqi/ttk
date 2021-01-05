@@ -18,6 +18,7 @@ The Tarsqi toolkit profile in 'profile' can be created as follows:
 """
 
 
+from __future__ import absolute_import
 import pstats
 import sys
 

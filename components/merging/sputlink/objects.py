@@ -1,6 +1,9 @@
-from utils import intersect_lists
-from utils import intersect_relations
-from utils import compare_id
+from __future__ import absolute_import
+from __future__ import print_function
+
+from .utils import intersect_lists
+from .utils import intersect_relations
+from .utils import compare_id
 from library.main import LIBRARY
 
 TIMEX = LIBRARY.timeml.TIMEX
@@ -10,6 +13,7 @@ EIID = LIBRARY.timeml.EIID
 FORM = LIBRARY.timeml.FORM
 VALUE = LIBRARY.timeml.VALUE
 
+
 SIMPLE_RELS = ('<', 'm', 'di', 'si', 'fi', '=', '>', 'mi', 'd', 's', 'f')
 NORMALIZED_RELS = ('<', 'm', 'di', 'si', 'fi', '=')
 
@@ -17,7 +21,7 @@ NORMALIZED_RELATIONS = {rel: True for rel in NORMALIZED_RELS}
 SIMPLE_RELATIONS = {rel: True for rel in SIMPLE_RELS}
 
 
-class Node:
+class Node(object):
 
     """Implements the node objects of the graph.
 
@@ -61,16 +65,17 @@ class Node:
     def pretty_print(self):
         """Print the node with its edges_in and edges_out attributes to standard
         output."""
-        print "\n", self
-        e_in = self.edges_in.keys()
-        e_out = self.edges_out.keys()
-        e_in.sort(compare_id)
-        e_out.sort(compare_id)
-        print "  i [%s]" % (' '.join(e_in))
-        print "  o [%s]" % (' '.join(e_out))
+        print("\n", self)
+        e_in = list(self.edges_in.keys())
+        e_out = list(self.edges_out.keys())
+        # removed compare_id comparison function for python 3 compatibility
+        e_in.sort()
+        e_out.sort()
+        print("  i [%s]" % (' '.join(e_in)))
+        print("  o [%s]" % (' '.join(e_out)))
 
 
-class Edge:
+class Edge(object):
 
     """Implements the edges of the graph.
 
@@ -129,7 +134,7 @@ class Edge:
         return self.constraint.source not in ('user', 'user-inverted')
 
 
-class Constraint:
+class Constraint(object):
 
     """An object representing the constraint on an edge.
 
@@ -190,15 +195,15 @@ class Constraint:
 
     def pp_history(self, indent=''):
         if isinstance(self.history, tuple):
-            print("%s%s" % (indent, str(self.history[0])))
-            print("%s%s" % (indent, str(self.history[1])))
+            print(("%s%s" % (indent, str(self.history[0]))))
+            print(("%s%s" % (indent, str(self.history[1]))))
         elif self.history.__class__.__name__ == 'Tag':
             tlink = "TLINK(relType=%s)" % self.history.attrs.get('relType')
-            print("%s%s" % (indent, tlink))
+            print(("%s%s" % (indent, tlink)))
         elif self.history.__class__.__name__ == 'Constraint':
-            print("%s%s" % (indent, self.history))
+            print(("%s%s" % (indent, self.history)))
         else:
-            print("%sno history" % indent)
+            print(("%sno history" % indent))
 
     def history_string(self):
         if isinstance(self.history, tuple):

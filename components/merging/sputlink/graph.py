@@ -10,14 +10,17 @@ It is here where Allen's constraint propagation algorithm is implemented.
 # to be sufficient for our current purposes.
 
 
-from objects import Node, Edge, Constraint
-from utils import intersect_relations
-from utils import compare_id
-from utils import html_graph_prefix
-from mappings import invert_interval_relation
-from mappings import abbreviate_convex_relation
+from __future__ import absolute_import
+from __future__ import print_function
+from .objects import Node, Edge, Constraint
+from .utils import intersect_relations
+from .utils import compare_id
+from .utils import html_graph_prefix
+from .mappings import invert_interval_relation
+from .mappings import abbreviate_convex_relation
 from utilities import logger
 from library.main import LIBRARY
+from io import open
 
 DEBUG = True
 DEBUG = False
@@ -32,7 +35,7 @@ FORM = LIBRARY.timeml.FORM
 VALUE = LIBRARY.timeml.VALUE
 
 
-class Graph:
+class Graph(object):
 
     """Implements the graph object used in the constraint propagation algorithm.
 
@@ -329,8 +332,9 @@ class Graph:
     def pp_nodes(self):
         """Print all nodes with their edges_in and edges_out attributes to
         standard output."""
-        ids = self.nodes.keys()
-        ids.sort(compare_id)
+        ids = list(self.nodes.keys())
+        # removed compare_id comparison function for python 3 compatibility
+        ids.sort()
         for id in ids:
             self.nodes[id].pretty_print()
 
@@ -339,28 +343,29 @@ class Graph:
         fh = open(filename, 'w') if filename else filehandle
         if standalone:
             html_graph_prefix(fh)
-        fh.write("<table cellpadding=0 cellspacing=0 border=0>\n")
-        fh.write("<tr><td>\n")
-        nodes = self.nodes.keys()
-        nodes.sort(compare_id)
+        fh.write(u"<table cellpadding=0 cellspacing=0 border=0>\n")
+        fh.write(u"<tr><td>\n")
+        nodes = list(self.nodes.keys())
+        # removed compare_id comparison function for python 3 compatibility
+        nodes.sort()
         self._html_nodes_table(fh, nodes)
-        fh.write("</td>\n\n")
-        fh.write("<td valign=top>\n")
+        fh.write(u"</td>\n\n")
+        fh.write(u"<td valign=top>\n")
         self._html_added_table(fh)
-        fh.write("</td></tr>\n\n")
-        fh.write("</table>\n\n")
+        fh.write(u"</td></tr>\n\n")
+        fh.write(u"</table>\n\n")
         if standalone:
-            fh.write("</body>\n</html>\n\n")
+            fh.write(u"</body>\n</html>\n\n")
 
     def _html_nodes_table(self, fh, nodes):
-        fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
-        fh.write("\n<tr>\n\n")
-        fh.write("  <td>&nbsp;\n\n")
+        fh.write(u"<table cellpadding=5 cellspacing=0 border=1>\n")
+        fh.write(u"\n<tr>\n\n")
+        fh.write(u"  <td>&nbsp;\n\n")
         for identifier in nodes:
-            fh.write("  <td>%s\n" % identifier)
+            fh.write(u"  <td>%s\n" % identifier)
         for id1 in nodes:
-            fh.write("\n\n<tr align=center>\n\n")
-            fh.write("  <td align=left>%s\n" % id1)
+            fh.write(u"\n\n<tr align=center>\n\n")
+            fh.write(u"  <td align=left>%s\n" % id1)
             for id2 in nodes:
                 edge = self.edges[id1][id2]
                 rel = edge.relset
@@ -377,28 +382,28 @@ class Graph:
                     classes.append("nocell")
                     # rel = '&nbsp;'
                 classes = " class=\"%s\"" % ' '.join(classes)
-                fh.write("  <td width=25pt%s>%s\n" % (classes, rel))
-        fh.write("</table>\n\n")
+                fh.write(u"  <td width=25pt%s>%s\n" % (classes, rel))
+        fh.write(u"</table>\n\n")
 
     def _html_added_table(self, fh):
-        fh.write("<table cellpadding=5 cellspacing=0 border=1>\n")
+        fh.write(u"<table cellpadding=5 cellspacing=0 border=1>\n")
         if self.added:
-            fh.write("<tr><td>added<td colspan=2>derived from\n")
+            fh.write(u"<tr><td>added<td colspan=2>derived from\n")
         for c in self.added:
-            fh.write("<tr>\n  <td>%s</td>\n" % c)
+            fh.write(u"<tr>\n  <td>%s</td>\n" % c)
             if isinstance(c.history, tuple):
-                fh.write("  <td>%s\n" % str(c.history[0]))
-                fh.write("  <td>%s\n" % str(c.history[1]))
+                fh.write(u"  <td>%s\n" % str(c.history[0]))
+                fh.write(u"  <td>%s\n" % str(c.history[1]))
             elif c.history.__class__.__name__ == 'Tag':
                 tlink = "TLINK(relType=%s)" % c.history.attrs.get('relType')
-                fh.write("  <td colspan=2>%s\n" % tlink)
+                fh.write(u"  <td colspan=2>%s\n" % tlink)
             elif c.history.__class__.__name__ == 'Constraint':
-                fh.write("  <td colspan=2>%s\n" % c.history)
+                fh.write(u"  <td colspan=2>%s\n" % c.history)
             else:
-                fh.write("  <td colspan=2>&nbsp;\n")
-        fh.write("</table>\n\n")
+                fh.write(u"  <td colspan=2>&nbsp;\n")
+        fh.write(u"</table>\n\n")
 
 
 def debug(indent=0, str=''):
     if DEBUG:
-        print '  ' * indent, str
+        print('  ' * indent, str)

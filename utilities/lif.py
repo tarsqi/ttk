@@ -29,10 +29,13 @@ Example input files are in ../data/in/lif.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import codecs
 import json
 import subprocess
+from six.moves import range
 
 
 class LappsObject(object):
@@ -128,7 +131,7 @@ class LIF(LappsObject):
 
     def _get_new_view_id(self):
         ids = [view.id for view in self.views]
-        for i in xrange(1, sys.maxint):
+        for i in range(1, sys.maxsize):
             if "v%d" % i not in ids:
                 return "v%d" % i
 
@@ -191,9 +194,9 @@ class View(object):
         return d
 
     def pp(self):
-        print self
+        print(self)
         for contains in self.metadata["contains"].keys():
-            print '   ', contains
+            print('   ', contains)
 
 
 class Annotation(object):

@@ -40,7 +40,9 @@ the decreased size for the code is all due to cleanup and simplification.
 """
 
 
+from __future__ import absolute_import
 import os, sys, subprocess
+from io import open
 
 command = ['git', 'log', '-n', '1', '--date=short', '--pretty=format:"%ad %H"']
 result = subprocess.Popen(command, stdout=subprocess.PIPE).communicate()[0]

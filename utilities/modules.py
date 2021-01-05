@@ -7,7 +7,8 @@ needed as input to the analysis and documentation creation scripts.
 
 """
 
-import path
+from __future__ import absolute_import
+
 import tarsqi
 
 import components.blinker.compare

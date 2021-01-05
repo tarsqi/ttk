@@ -1,5 +1,9 @@
 
 
+from __future__ import absolute_import
+from io import open
+
+
 def intersect_relations(rels1, rels2):
     """Returns the intersection of two relation sets. Returns None if both
     of the two sets are None."""
@@ -38,7 +42,7 @@ def compare_id(a, b):
         return 1
 
 
-class CompositionTable:
+class CompositionTable(object):
 
     """Implements the 28 by 28 composition table. Takes care of loading
     the table from file and retrieving compositions from the table."""
@@ -68,31 +72,31 @@ class CompositionTable:
     def pp(self, filename):
         """Print an html table to filename."""
         file = open(filename, 'w')
-        file.write("<html>\n")
-        file.write("<head>\n<style type=\"text/css\">\n<!--\n")
-        file.write("body { font-size: 14pt }\n")
-        file.write("table { font-size: 14pt }\n")
-        file.write("-->\n</style>\n</head>\n")
-        file.write("<body>\n\n")
-        file.write("<table cellpadding=3 cellspacing=0 border=1>\n")
-        file.write("\n<tr>\n\n")
-        file.write("  <td>&nbsp;\n\n")
-        rels = self.data.keys()
+        file.write(u"<html>\n")
+        file.write(u"<head>\n<style type=\"text/css\">\n<!--\n")
+        file.write(u"body { font-size: 14pt }\n")
+        file.write(u"table { font-size: 14pt }\n")
+        file.write(u"-->\n</style>\n</head>\n")
+        file.write(u"<body>\n\n")
+        file.write(u"<table cellpadding=3 cellspacing=0 border=1>\n")
+        file.write(u"\n<tr>\n\n")
+        file.write(u"  <td>&nbsp;\n\n")
+        rels = list(self.data.keys())
         rels.sort()
         for rel in rels:
             rel = massage(rel)
-            file.write("  <td>%s\n" % rel)
+            file.write(u"  <td>%s\n" % rel)
         for r1 in rels:
-            file.write("\n\n<tr>\n\n")
+            file.write(u"\n\n<tr>\n\n")
             header = massage(r1)
-            file.write("  <td>%s\n" % header)
+            file.write(u"  <td>%s\n" % header)
             for r2 in rels:
                 r = self.data[r1][r2]
                 if r is None:
                     r = ' '
                 r = massage(r)
-                file.write("  <td>%s\n" % r)
-        file.write("</table>\n</body>\n</html>\n\n")
+                file.write(u"  <td>%s\n" % r)
+        file.write(u"</table>\n</body>\n</html>\n\n")
 
 
 def massage(str):
@@ -105,15 +109,15 @@ def massage(str):
 
 
 def html_graph_prefix(fh):
-    fh.write("<html>\n")
-    fh.write("<head>\n<style type=\"text/css\">\n<!--\n")
-    fh.write("body { font-size: 18pt }\n")
-    fh.write("table { font-size: 18pt; margin-left:20pt; }\n")
-    fh.write(".user { background-color: lightblue; }\n")
-    fh.write(".closure { background-color: pink;  }\n")
-    fh.write(".user-inverted { background-color: lightyellow; }\n")
-    fh.write(".closure-inverted { background-color: lightyellow; }\n")
-    fh.write(".nocell { background-color: lightgrey; }\n")
-    fh.write(".cycle { font-weight: bold; font-size: 18pt }\n")
-    fh.write("-->\n</style>\n</head>\n")
-    fh.write("<body>\n\n")
+    fh.write(u"<html>\n")
+    fh.write(u"<head>\n<style type=\"text/css\">\n<!--\n")
+    fh.write(u"body { font-size: 18pt }\n")
+    fh.write(u"table { font-size: 18pt; margin-left:20pt; }\n")
+    fh.write(u".user { background-color: lightblue; }\n")
+    fh.write(u".closure { background-color: pink;  }\n")
+    fh.write(u".user-inverted { background-color: lightyellow; }\n")
+    fh.write(u".closure-inverted { background-color: lightyellow; }\n")
+    fh.write(u".nocell { background-color: lightgrey; }\n")
+    fh.write(u".cycle { font-weight: bold; font-size: 18pt }\n")
+    fh.write(u"-->\n</style>\n</head>\n")
+    fh.write(u"<body>\n\n")

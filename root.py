@@ -11,6 +11,7 @@ of import statements.
 # TODO: I do not like this, is there a better way to deal with this?
 
 
+from __future__ import absolute_import
 import os
 
 scriptPath = os.path.abspath(__file__)

@@ -34,6 +34,8 @@ occurrences of the same tag name with the same begin and end.
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 from xml.dom.minidom import parse
@@ -54,11 +56,11 @@ def compare_files(fname1, fname2):
         tags2 = dom2.getElementsByTagName(tag)
         tags1_idx = group_on_start(tags1)
         tags2_idx = group_on_start(tags2)
-        for begin in difference(tags1_idx.keys(), tags2_idx.keys()):
+        for begin in difference(list(tags1_idx.keys()), list(tags2_idx.keys())):
             result.append([begin, "<  " + node_as_string(tags1_idx[begin], text1)])
-        for begin in difference(tags2_idx.keys(), tags1_idx.keys()):
+        for begin in difference(list(tags2_idx.keys()), list(tags1_idx.keys())):
             result.append([begin, ">  " + node_as_string(tags2_idx[begin], text2)])
-        for begin in intersection(tags1_idx.keys(), tags2_idx.keys()):
+        for begin in intersection(list(tags1_idx.keys()), list(tags2_idx.keys())):
             n1 = tags1_idx[begin]
             n2 = tags2_idx[begin]
             for attr in ATTRS:
@@ -89,9 +91,9 @@ def node_as_string(node, text):
 
 def print_results(diffs, text):
     for diff in sorted(diffs):
-        print diff[1]
+        print(diff[1])
     if diffs:
-        print "%d differences in %d lines" % (len(diffs), len(text.split("\n")))
+        print("%d differences in %d lines" % (len(diffs), len(text.split("\n"))))
 
 
 if __name__ == '__main__':
