@@ -19,9 +19,9 @@ function view_code(id) {
 
 <pre>
 <a href=#Options>Options</a>
+<a href=#Tarsqi>Tarsqi</a>
 <a href=#TarsqiError>TarsqiError</a>
 <a href=#TarsqiWrapper>TarsqiWrapper</a>
-<a href=#Tarsqi>Tarsqi</a>
 </pre>
 
 <pre>
@@ -83,7 +83,8 @@ USAGE
       --pipe
           With this option the script reads input from the standard input and
           writes output to standard output. Without it the script expects the
-          INPUT and OUTPUT arguments to be there.
+          INPUT and OUTPUT arguments to be there. Note that when you do this you
+          also need to use the --source-format option.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
@@ -193,51 +194,9 @@ for attributes (no dashes allowed), options with a dash are spelled with
 an underscore when they are instance variables.</pre>
 </blockquote>
 
-<a name="TarsqiError"/><div class="section">class TarsqiError</div>
-<pre>
-<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
-
-Tarsqi Exception class, so far only used in this file.</pre>
-
-
-<a name="TarsqiWrapper"/><div class="section">class TarsqiWrapper</div>
-<pre>
-<strong>Inherits from: object</strong>
-
-Class that wraps the Tarsqi class, taking care of some of the IO aspects.</pre>
-
-<blockquote>
-<h3>Public Functions</h3>
-<pre>
-<div class=function>__init__(self, args)</div>
-</pre>
-<pre>
-<div class=function>pp(self)</div>
-</pre>
-<pre>
-<div class=function>run(self)</div>
-Main method that is called when the script is executed from the command
-line. It creates a Tarsqi instance and lets it process the input. If the
-input is a directory, this method will iterate over the contents, setting up
-Tarsqi instances for all files in the directory. The arguments are the list
-of arguments given by the user on the command line.</pre>
-</blockquote>
-<blockquote>
-<h3>Private Functions</h3>
-<pre>
-<div class=function>_run_tarsqi_on_directory(self)</div>
-Run Tarsqi on all files in a directory.</pre>
-<pre>
-<div class=function>_run_tarsqi_on_file(self)</div>
-</pre>
-<pre>
-<div class=function>_run_tarsqi_on_pipe(self)</div>
-Read text from standard input and run tarsqi over it, then print the result
-to standard out.</pre>
-</blockquote>
-
 <a name="Tarsqi"/><div class="section">class Tarsqi</div>
 <pre>
+<strong>Inherits from: object</strong>
 
 Main Tarsqi class that drives all processing.
 
@@ -307,6 +266,49 @@ wrapper.</pre>
 <pre>
 <div class=function>_write_output(self)</div>
 Write the TarsqiDocument to the output file.</pre>
+</blockquote>
+
+<a name="TarsqiError"/><div class="section">class TarsqiError</div>
+<pre>
+<strong>Inherits from: <a href=exceptions.html#Exception>Exception</a></strong></strong>
+
+Tarsqi Exception class, so far only used in this file.</pre>
+
+
+<a name="TarsqiWrapper"/><div class="section">class TarsqiWrapper</div>
+<pre>
+<strong>Inherits from: object</strong>
+
+Class that wraps the Tarsqi class, taking care of some of the IO aspects.</pre>
+
+<blockquote>
+<h3>Public Functions</h3>
+<pre>
+<div class=function>__init__(self, args)</div>
+</pre>
+<pre>
+<div class=function>pp(self)</div>
+</pre>
+<pre>
+<div class=function>run(self)</div>
+Main method that is called when the script is executed from the command
+line. It creates a Tarsqi instance and lets it process the input. If the
+input is a directory, this method will iterate over the contents, setting up
+Tarsqi instances for all files in the directory. The arguments are the list
+of arguments given by the user on the command line.</pre>
+</blockquote>
+<blockquote>
+<h3>Private Functions</h3>
+<pre>
+<div class=function>_run_tarsqi_on_directory(self)</div>
+Run Tarsqi on all files in a directory.</pre>
+<pre>
+<div class=function>_run_tarsqi_on_file(self)</div>
+</pre>
+<pre>
+<div class=function>_run_tarsqi_on_pipe(self)</div>
+Read text from standard input and run tarsqi over it, then print the result
+to standard out.</pre>
 </blockquote>
 
 <div class="section">module functions</div>

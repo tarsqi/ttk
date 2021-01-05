@@ -41,6 +41,7 @@ TODO:
 
 <a name="MergerWrapper"/><div class="section">class MergerWrapper</div>
 <pre>
+<strong>Inherits from: object</strong>
 
 Wraps the merging code, including Sputlink's temporal closure code.</pre>
 
@@ -67,11 +68,11 @@ the final constraints in the graph used by the constraint propagator.</pre>
 
 <div class="section">module functions</div>
 <pre>
-<div class=function>compare_links(link1, link2)</div>
-Compare the two links and decide which one of them is more likely to be
-correct. Rather primitive for now. We consider S2T links the best, then links
-derived by Blinker, then links derived by the classifier. Classifier links
-themselves are ordered using their classifier-assigned confidence scores.</pre>
+<div class=function>sort_on_confidence(link)</div>
+Sort key for determining how good we think a link is. Rather primitive for
+now. We consider S2T links the best, then links derived by Blinker, then
+links derived by the classifier. Classifier links themselves are ordered
+using their classifier-assigned confidence scores.</pre>
 <pre>
 <div class=function>tlink_arg1_attr(identifier)</div>
 Return the TLINK attribute for the element linked given the identifier.</pre>

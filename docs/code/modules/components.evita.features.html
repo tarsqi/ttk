@@ -53,6 +53,7 @@ adjectives, return STATE otherwise.</pre>
 
 <a name="ChunkFeatures"/><div class="section">class ChunkFeatures</div>
 <pre>
+<strong>Inherits from: object</strong>
 
 The subclasses of this class are used to add grammatical features to a
 NounChunk, VerbChunk or AdjectiveToken. It lives in the features variable
@@ -190,7 +191,7 @@ content in the trueChunks core feature and there is a head.</pre>
 <div class=function>normalizeMod(self, form)</div>
 </pre>
 <pre>
-<div class=function>pp(self, verbose=False)</div>
+<div class=function>pp(self)</div>
 </pre>
 <pre>
 <div class=function>set_tense_and_aspect(self)</div>
@@ -202,6 +203,7 @@ and use the features from there (which might still be defaults).</pre>
 
 <a name="VChunkFeaturesList"/><div class="section">class VChunkFeaturesList</div>
 <pre>
+<strong>Inherits from: object</strong>
 
 This class is used to create a list of VChunkFeatures instances. What
 it does is (1) collecting information from a VerbChunk or a list of Tokens,

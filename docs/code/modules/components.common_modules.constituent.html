@@ -24,6 +24,7 @@ function view_code(id) {
 
 <a name="Constituent"/><div class="section">class Constituent</div>
 <pre>
+<strong>Inherits from: object</strong>
 
 An abstract class that contains some methods that are identical for Chunks
 and Tokens plus a couple of default methods.
@@ -44,11 +45,17 @@ docelement Tag.</pre>
 <blockquote>
 <h3>Public Functions</h3>
 <pre>
-<div class=function>__cmp__(self, other)</div>
+<div class=function>__eq__(self, other)</div>
+</pre>
+<pre>
+<div class=function>__ge__(self, other)</div>
 </pre>
 <pre>
 <div class=function>__getitem__(self, index)</div>
 Returns an element from the dtrs variable.</pre>
+<pre>
+<div class=function>__gt__(self, other)</div>
+</pre>
 <pre>
 <div class=function>__init__(self)</div>
 </pre>
@@ -56,8 +63,17 @@ Returns an element from the dtrs variable.</pre>
 <div class=function>__iter__(self)</div>
 </pre>
 <pre>
+<div class=function>__le__(self, other)</div>
+</pre>
+<pre>
 <div class=function>__len__(self)</div>
 Returns the lenght of the dtrs variable.</pre>
+<pre>
+<div class=function>__lt__(self, other)</div>
+</pre>
+<pre>
+<div class=function>__ne__(self, other)</div>
+</pre>
 <pre>
 <div class=function>__nonzero__(self)</div>
 </pre>

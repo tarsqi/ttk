@@ -2,9 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
-The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). Loosely because we do not keep separate sections within a version for additions and fixes etcetera, instead most logged changes will start with one of Added, Changed, Deprecated, Removed, Fixed, or Security.
+The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). Loosely because we do not keep separate sections within a version for additions and fixes etcetera, instead most logged changes will start with one of Added, Changed, Updated, Deprecated, Removed, Fixed, or Security.
 
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
+
+## Version 2.2.1 — 2021-01-05
+
+- Changed code to make it run on both Python 2.7 and Python 3.8.5  (issue [#79](https://github.com/tarsqi/ttk/issues/79)).
+- Updated documentation, included minor refactoring of code.
+- Added some past results of running the regression script.
 
 
 ## Version 2.2.0 — 2020-12-12

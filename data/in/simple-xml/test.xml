@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <?php echo "hopsasa" ?>
-<DOC id='34'><DOCID>Simple Test</DOCID>
+<DOC id='34' arrow="⟹"><DOCID>Simple Test</DOCID>
 
 <TEXT>
 Mr. Vinken got the flue on Nov. 29th. John fell after Mary pushed him? They
@@ -13,6 +13,8 @@ a great deal.
 John leaves today. "Dr. John <CRAP>(&lt;dork&gt; &amp; @#$)</CRAP> does not
 leave today. <CRAP>The Dr.</CRAP> The new Dr. Weird: [] We're in line and won't
 you know. My name "is" W.F. Hermans. <!-- comment -->
+
+⟹
 
 hopsasa
 </TEXT>
