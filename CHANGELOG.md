@@ -8,6 +8,13 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
 
+## Version 3.0.1 — 2021-03-02
+
+- Overhauled the documentation for GitHub pages.
+- Fixed issue with GUTime failing because working directory is not on search path anymore (issue [#105](https://github.com/tarsqi/ttk/issues/105)).
+- Fixed issue with warning in Python 3 (issue [#104](https://github.com/tarsqi/ttk/issues/104)).
+- Changed how the TTK_ROOT variable is loaded into the environment (issue [#103](https://github.com/tarsqi/ttk/issues/103)).
+
 ## Version 3.0.0 — 2021-01-05
 
 - Identical to version 2.2.1 except for some changes in documentation and minor changes in this file and the version file.

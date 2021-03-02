@@ -110,7 +110,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 import sys, os, time, getopt
 
-import root
+os.environ['TTK_ROOT'] = os.path.dirname(os.path.realpath(__file__))
+
 from components import COMPONENTS, valid_components
 from docmodel.document import TarsqiDocument
 from docmodel.main import guess_source
@@ -399,7 +400,7 @@ def _basename(path):
 def _set_working_directory():
     """Make sure we're in the right directory. If the toolkit crashed on a
     previous file we may be in a different directory. This may also be important
-    for those cases where the initially invoced script is not in the TTK_ROOT
+    for those cases where the initially invoked script is not in the TTK_ROOT
     directory, for example when you run the tests."""
     os.chdir(TTK_ROOT)
 

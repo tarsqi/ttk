@@ -9,7 +9,7 @@
 
 <h1>The TARSQI Toolkit Manual</h1>
 
-<p class="subtitle">Release Notes and Manual for TTK Version $VERSION. $DATE_STR.
+<p class="subtitle">Release Notes and Manual for TTK Version 3.0.1. March 2021.
 
 <p class="navigation">
  <a href="#intro">introduction</a>
@@ -48,7 +48,7 @@ maintained in
 the <a href="https://github.com/tarsqi/ttk/blob/master/CHANGELOG.md">changelog</a>
 on GitHub.</p>
 
-<p>The current version $VERSION has few code changes and is mostly concerned with
+<p>The current version 3.0.1 has few code changes and is mostly concerned with
 publishing documentation on GitHub Pages.</p>
 
 
@@ -65,8 +65,8 @@ well). Java is needed to run the third party software used by the toolkit.</p>
 <p>Two Python packages need to be installed:</p>
 
 <pre class="example">
-$$ pip install future
-$$ pip install six
+$ pip install future
+$ pip install six
 </pre>
 
 
@@ -131,7 +131,7 @@ the following at the prompt (we use the dollar sign as the prompt in all
 examples):</p>
 
 <pre class="example">
-$$ python tarsqi.py data/in/simple-xml/tiny.xml out.xml
+$ python tarsqi.py data/in/simple-xml/tiny.xml out.xml
 </pre>
 
 <p>If all is well you will now have a file named <code>out.xml</code> with
@@ -145,9 +145,9 @@ Fido sleeps today.
 
 &lt;/text>
 &lt;metadata>
-  &lt;dct value="$DATE"/>
+  &lt;dct value="20210302"/>
   &lt;processing_steps>
-  &lt;processing_step ttk_version="$VERSION" git_commit="bae1870" timestamp="$TIMESTAMP"
+  &lt;processing_step ttk_version="3.0.1" git_commit="bae1870" timestamp="20210302-160635"
                    components="PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER"/>
   &lt;/processing_steps>
 &lt;/metadata>
@@ -195,8 +195,8 @@ to the top-level directory of the distribution. You can run Tarsqi on a file or
 a directory and the general format of the command is as follows:</p>
 
 <pre class="example">
-$$ python tarsqi.py [OPTIONS] INFILE OUTFILE
-$$ python tarsqi.py [OPTIONS] INDIR OUTDIR
+$ python tarsqi.py [OPTIONS] INFILE OUTFILE
+$ python tarsqi.py [OPTIONS] INDIR OUTDIR
 </pre>
 
 <p>In the first invocation INFILE needs to exist but OUTFILE should not. In the
@@ -348,8 +348,8 @@ file. This is in fact the default pipeline.</p>
 the <code>--source-format</code> and <code>--pipeline</code> options:</p>
 
 <pre class="example">
-$$ python tarsqi.py --source-format xml --pipeline TOKENIZER test.xml test.tokenized.xml
-$$ python tarsqi.py --source-format ttk --pipeline TAGGER test.tokenized.xml test.tagged.xml
+$ python tarsqi.py --source-format xml --pipeline TOKENIZER test.xml test.tokenized.xml
+$ python tarsqi.py --source-format ttk --pipeline TAGGER test.tokenized.xml test.tagged.xml
 </pre>
 
 <p>Note how the second line uses the ttk source type because output is always in

@@ -32,6 +32,9 @@ my $printNCTs = 0;
 # Read one document at a time
 $/ = "<\/$docTag>";
 
+use File::Basename;
+use lib dirname (__FILE__);
+
 use  TempEx;
 use  TempEx qw($TEmonthabbr %Month2Num);
 
