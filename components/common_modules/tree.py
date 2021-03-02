@@ -414,7 +414,7 @@ class TarsqiTree(object):
             event_attrs['eiid'] = eiid
             # TODO: at least the second test does not seem needed anymore
             event_attrs = { k: v for k, v in event_attrs.items()
-                            if v is not None and k is not 'eventID' }
+                            if v is not None and k != 'eventID' }
             self.tarsqidoc.add_event(token.begin, token.end, event_attrs)
 
     def addLink(self, linkAttrs, linkType):
