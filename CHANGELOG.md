@@ -8,6 +8,12 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 
 
+## Current Changes
+
+- Added spaCy for tokenization and tagging.
+
+
+
 ## Version 3.0.1 — 2021-03-02
 
 - Overhauled the documentation for GitHub pages.

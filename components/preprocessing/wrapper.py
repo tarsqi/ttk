@@ -18,6 +18,9 @@ from __future__ import absolute_import
 import os, sys, threading
 from time import time
 from subprocess import PIPE, Popen
+from six.moves import zip
+
+import spacy
 
 from utilities import logger
 from docmodel.document import Tag
@@ -26,7 +29,19 @@ from library.main import LIBRARY
 
 from components.preprocessing.tokenizer import Tokenizer, TokenizedLex
 from components.preprocessing.chunker import chunk_sentences
-from six.moves import zip
+
+NLP = spacy.load("en_core_web_sm")
+
+#for component in NLP.component_names:
+#    if component not in ('tagger', 'attribute_ruler', 'lemmatizer', 'senter'):
+#        NLP.disable_pipe(component)
+#NLP.add_pipe('sentencizer')
+
+
+# We keep the old code around for a while during all the comparison testing, but
+# using spaCy is the default and in order to use the TreeTagger this should be
+# set to False. This is not available as a command line option at the moment.
+USE_SPACY = True
 
 
 # TreeTagger executables and parameter file
@@ -81,7 +96,35 @@ def normalize_POS(pos):
         return POS_MAPPINGS.get(pos, pos)
 
 
-def adjust_lex_offsets(tokens, offset):
+def extract_tags(doc):
+    """Extract tagged tokens from the spacy doc. Returns a list of lists of
+    tuples, where each tuple has the tex, the tag, the lemma and the offsets."""
+    tags = []
+    for s in doc.sents:
+        sentence = []
+        for t in s:
+            token = (t.text, t.tag_, t.lemma_, t.idx, t.idx + len(t))
+            if t.pos_ != 'SPACE':
+                sentence.append(token)
+        tags.append(sentence)
+    return tags
+
+
+def adjust_lex_offsets_on_tags(tags, offset):
+    """The tokenizer works on isolated strings from the document (that is, the
+    document elements), adding offsets relative to the beginning of that
+    string. But for the lex tags we need to relate the offset to the beginning
+    of the file, not to the beginning of some random string. This procedure is
+    used to increment offsets on tuples (and therefore creates new tuples)."""
+    for i, s in enumerate(tags):
+        new_s = []
+        for t in s:
+            new_t = (t[0], t[1], t[2], t[3] + offset, t[4] + offset)
+            new_s.append(new_t)
+        tags[i] = new_s
+
+
+def adjust_lex_offsets_on_tokens(tokens, offset):
     """The tokenizer works on isolated strings, adding offsets relative to the
     beginning of the string. But for the lex tags we need to relate the offset
     to the beginning of the file, not to the beginning of some random
@@ -110,6 +153,9 @@ class Wrapper(object):
         self.treetagger_dir = self.document.options.getopt('treetagger')
         self.treetagger = initialize_treetagger(self.treetagger_dir)
         self.tag_time = 0
+
+    def _init_spacy(self):
+        self.spacy_time = 0
 
     def _init_chunker(self):
         self.chunk_time = 0
@@ -148,6 +194,13 @@ class Wrapper(object):
         self.tag_time += time() - t1
         return text
 
+    def _spacy_text(self, text):
+        t1 = time()
+        doc = NLP(text)
+        tags = extract_tags(doc)
+        self.spacy_time += time() - t1
+        return tags
+
     def _chunk_text(self, text):
         """Takes a list of sentences and return the same sentences with chunk
         tags inserted."""
@@ -158,6 +211,13 @@ class Wrapper(object):
         return chunked_text
 
 
+def print_tags(tags):
+    for s in tags:
+        for t in s:
+            print(t, end=' ')
+        print()
+
+
 class PreprocessorWrapper(Wrapper):
 
     """Wrapper for the preprocessing components."""
@@ -166,27 +226,54 @@ class PreprocessorWrapper(Wrapper):
         """Set component_name, add the TarsqiDocument and initialize the
         TreeTagger."""
         Wrapper.__init__(self, PREPROCESSOR, tarsqidocument)
-        self._init_tokenizer()
-        self._init_tagger()
+        if USE_SPACY:
+            self._init_spacy()
+        else:
+            self._init_tokenizer()
+            self._init_tagger()
         self._init_chunker()
 
     def process(self):
+        TagId.reset()
+        if USE_SPACY:
+            self._process_with_spacy()
+        else:
+            self._process_with_treetagger()
+
+    def _process_with_treetagger(self):
         """Retrieve the element tags from the TarsqiDocument and hand the text
         for the elements as strings to the preprocessing chain. The result is a
         shallow tree with sentences and tokens. These are inserted into the
         TarsqiDocument's tags TagRepositories."""
-        TagId.reset()
         for element in self.document.elements():
             text = self.document.sourcedoc.text[element.begin:element.end]
             tokens = self._tokenize_text(text)
-            adjust_lex_offsets(tokens, element.begin)
-            text = self._tag_text(tokens)
+            adjust_lex_offsets_on_tokens(tokens, element.begin)
+            tags = self._tag_text(tokens)
             # TODO: add some code to get lemmas when the TreeTagger just gets
             # <unknown>, see https://github.com/tarsqi/ttk/issues/5
-            text = self._chunk_text(text)
-            self._export(text)
+            chunks = self._chunk_text(tags)
+            #print_tags(tags)
+            #print_tags(chunks)
+            self._export(chunks)
         logger.info("tokenizer processing time: %.3f seconds" % self.tokenize_time)
         logger.info("tagger processing time: %.3f seconds" % self.tag_time)
+        logger.info("chunker processing time: %.3f seconds" % self.chunk_time)
+
+    def _process_with_spacy(self):
+        """Retrieve the element tags from the TarsqiDocument and hand the text
+        for the elements as strings to the preprocessing chain. The result is a
+        shallow tree with sentences and tokens. These are inserted into the
+        TarsqiDocument's TagRepository."""
+        for element in self.document.elements():
+            text = self.document.sourcedoc.text[element.begin:element.end]
+            tags = self._spacy_text(text)
+            adjust_lex_offsets_on_tags(tags, element.begin)
+            chunks = self._chunk_text(tags)
+            #print_tags(tags)
+            #print_tags(chunks)
+            self._export(chunks)
+        logger.info("spacy processing time: %.3f seconds" % self.spacy_time)
         logger.info("chunker processing time: %.3f seconds" % self.chunk_time)
 
     def _merge_tags(self, tokens, taggedItems):
@@ -214,6 +301,9 @@ class PreprocessorWrapper(Wrapper):
         TagRepository using the preprocessing result."""
         ctag = None
         for sentence in text:
+            # We sometimes get empty sentences, skip them
+            if not sentence:
+                continue
             sentence_attrs = { 'id': TagId.next('s'), 'origin': PREPROCESSOR }
             stag = Tag('s', None, None, sentence_attrs)
             for token in sentence:
