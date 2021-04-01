@@ -21,25 +21,25 @@ USAGE
 
    OPTIONS
 
-      --source-format NAME
+      --source-format text|xml|ttk|lif|timebank|atee|rte3|db
           The format of the input; this reflects the source type of the document
           and allows components, especially the source parser and the metadata
           parser, to be sensitive to idiosyncratic properties of the text (for
-          example, the location of the DCT and the format of the text). If this
-          option is not specified then the system will try to guess one of
-          'xml', 'ttk' or 'text', and default to 'text' if no clues can be found
-          for the first two cases. Note that currently this guess will fail if
-          the --pipe option is used. There are five more types that can be used
-          to process the more specific sample data in data/in: lif for the data
-          in data/in/lif, timebank for data/in/TimeBank, atee for data/in/ATEE,
-          rte3 for data/in/RTE3 and db for data/in/db.
+          example, the location of the DCT and the format of the text). The
+          three most common formats are text, xml and ttk. If this option is not
+          specified then the system will use 'text' as the default. There are
+          five more types that can be used to process the more specific sample
+          data in data/in: lif for the data in data/in/lif, timebank for
+          data/in/TimeBank, atee for data/in/ATEE, rte3 for data/in/RTE3 and db
+          for data/in/db.
 
-      --target-format NAME
-          Output is almost always written in the TTK format. This option allows
-          you to overrule that, but at the moment the only other format that is
-          experimentally supported is the LIF format. If you use 'lif' for the
-          target format then LIF output will be printed. However, currently this
-          only works if the --source-format is also LIF.
+      --target-format ttk|lif
+          Output is almost always written in the TTK format and 'ttk' is the
+          default. This option allows you to overrule that, but at the moment
+          the only other format that is experimentally supported is the LIF
+          format. If you use 'lif' for the target format then LIF output will be
+          printed. However, currently this only works if the --source-format is
+          also LIF.
 
       --pipeline LIST
           Comma-separated list of Tarsqi components, defaults to the full
@@ -55,9 +55,8 @@ USAGE
 
       --pipe
           With this option the script reads input from the standard input and
-          writes output to standard output. Without it the script expects the
-          INPUT and OUTPUT arguments to be there. Note that when you do this you
-          also need to use the --source-format option.
+          writes output to standard output. Without this option the script
+          expects the INPUT and OUTPUT arguments to be there.
 
       --perl PATH
           Path to the Perl executable. Typically the operating system default is
@@ -114,7 +113,6 @@ os.environ['TTK_ROOT'] = os.path.dirname(os.path.realpath(__file__))
 
 from components import COMPONENTS, valid_components
 from docmodel.document import TarsqiDocument
-from docmodel.main import guess_source
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
@@ -165,8 +163,6 @@ class Tarsqi(object):
         self.output = outfile
         self.basename = _basename(infile) if infile else None
         self.options = opts if isinstance(opts, Options) else Options(opts)
-        if self.options.source_format is None:
-            self.options.set_source_format(guess_source(self.input))
         self.tarsqidoc = TarsqiDocument()
         self.tarsqidoc.add_options(self.options)
         if self.options.loglevel:
@@ -262,18 +258,14 @@ class Tarsqi(object):
 
 class Options(object):
 
-    """A class to keep track of all the options. Options can be accessed with
-    the getopt() method, but standard options are also accessable directly
-    through the following instance variables: source, dct, pipeline, pipe,
-    loglevel, trap_errors, import_event_tags, perl, mallet, treetagger,
-    classifier, ee_model and et_model. There is no instance variable access for
-    user-defined options in the config.txt file."""
-
-    # NOTE. This class is intended to be mostly read-only where values are
-    # typically not changed after initialization. The only current exception is
-    # the source attribute, which is set later if the value is None. We use the
-    # set_source() method for setting it so that the value is updated in both
-    # places.
+    """A class to keep track of all the options. Options can be accessed with the
+    getopt() method, but standard options are also accessable directly via the
+    following instance variables: source_format, target_format, dct, pipeline,
+    pipe, loglevel, trap_errors, import_events, perl, mallet, treetagger,
+    classifier, ee_model and et_model. It is very much possible that there are
+    user-defined options in the config.txt file that are not in the above list,
+    there is no instance variable access for those options and you always need
+    the getoptp() method for them."""
 
     def __init__(self, options):
         """Initialize options from the config file and the options handed in to
@@ -313,8 +305,8 @@ class Options(object):
         from config.txt that are user-specific. Note that due to naming rules
         for attributes (no dashes allowed), options with a dash are spelled with
         an underscore when they are instance variables."""
-        self.source_format = self.getopt('source-format')
-        self.target_format = self.getopt('target-format')
+        self.source_format = self.getopt('source-format', 'text')
+        self.target_format = self.getopt('target-format', 'ttk')
         self.dct = self.getopt('dct')
         self.pipeline = self.getopt('pipeline')
         self.pipe = self.getopt('pipe', False)
@@ -343,12 +335,7 @@ class Options(object):
         """Return the option, use None as default."""
         return self._options.get(option_name, default)
 
-    def set_source_format(self, value):
-        """Sets the source value, both in the dictionary and the instance
-        variable."""
-        self.set_option('source-format', value)
-
-    def set_option(self, opt, value):
+    def setopt(self, opt, value):
         """Sets the value of opt in self._options to value. If opt is also
         expressed as an instance variable then change that one as well."""
         self._options[opt] = value

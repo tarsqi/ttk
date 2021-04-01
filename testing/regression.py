@@ -61,7 +61,7 @@ def load_cases(fname):
         o1 = int(o1)
         o2 = int(o2)
         cases.append(Case(identifier, sentence, o1, o2))
-    print("Loaded %d test cases from fname" % len(cases))
+    print("Loaded %d test cases from %s" % (len(cases), fname))
     return cases
 
 
@@ -123,28 +123,38 @@ def run_evita():
     load_tagger()
     cases = load_cases('testing/cases/cases-evita-vg.tab')
     outfile = "testing/results/evita-vg/%s.tab" % timestamp()
-    fh = open(outfile, 'w')
-    true = 0
-    false = 0
-    for case in cases:
-        result = check_tag('PREPROCESSOR,EVITA', case.sentence, 'EVENT', case.o1, case.o2)
-        fh.write("%s\t%s\n" % (case.identifier, '+' if result is True else '-'))
-        if result is True:
-            true += 1
+    with open(outfile, 'w') as fh:
+        counts = {True: 0, False: 0}
+        for case in cases:
+            result = check_tag('PREPROCESSOR,EVITA', case.sentence, 'EVENT', case.o1, case.o2)
+            fh.write("%s\t%s\n" % (case.identifier, '+' if result is True else '-'))
+            counts[result] += 1
+        print("True=%s False=%s" % (counts[True], counts[False]))
+
+
+def compare_to_previous_evita_run():
+    files = glob.glob("testing/results/evita-vg/*.tab")
+    files = sorted([f for f in files if f.endswith('.tab')])
+    current_run = files[-1]
+    previous_run = files[-2]
+    with open(previous_run) as fh_previous, open(current_run) as fh_current:
+        str1 = fh_previous.read()
+        str2 = fh_current.read()
+        if str1 == str2:
+            print("Results are identical to the previous run.")
         else:
-            false += 1
-    print("True=%s False=%s" % (true, false))
+            print("Results are different from the previous run.")
 
 
 def check_tag(pipeline, sentence, tag, o1, o2):
-    """Return True if sentence has tag between offsets o1 and o2."""
-    # NOTE: apart from the options this is the same function as in unittests.py
+    """Return True if sentence has tag between offsets o1 and o2, return False
+    if there is no such tag."""
     td = tarsqi.process_string(sentence, pipeline=pipeline, loglevel='1')
     tags = td.tags.find_tags(tag)
     for t in tags:
         if t.begin == o1 and t.end == o2:
             return True
-    return False, tags
+    return False
 
 
 def load_tagger():
@@ -196,7 +206,7 @@ class ReportGenerator(object):
             self.case = case
             self.case_file = os.path.join(self.html_dir, "cases-%s.html" % case)
             self.case_fh = open(self.case_file, 'w')
-            print("writing", self.case_file)
+            print("Writing", self.case_file)
             self._load_cases()
             self._load_case_results()
             self._write_case_report()
@@ -204,7 +214,7 @@ class ReportGenerator(object):
     def _load_cases(self):
         self.case_input_file = u"%s/cases-%s.tab" % (self.cases_dir, self.case)
         self.case_input_fh = open(self.case_input_file)
-        print("  reading cases in", self.case_input_file)
+        #print("  reading cases in", self.case_input_file)
         self.case_input = {}
         for case in load_cases(self.case_input_file):
             self.case_input[case.identifier] = case
@@ -212,7 +222,7 @@ class ReportGenerator(object):
     def _load_case_results(self):
         self.case_results = {}
         for results_file in glob.glob(u"%s/%s/*.tab" % (self.results_dir, self.case)):
-            print('  reading results from', results_file)
+            #print('  reading results from', results_file)
             timestamp = os.path.splitext(os.path.basename(results_file))[0]
             self.case_results[timestamp] = {}
             for line in open(results_file):
@@ -296,6 +306,7 @@ if __name__ == '__main__':
         elif opt == '--evita':
             run_evita()
             generate_report()
+            compare_to_previous_evita_run()
         elif opt == '--report':
             generate_report()
         elif opt == '--purge':

@@ -6,7 +6,10 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/). L
 
 This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## Current
 
+- Removed cranky way to guess the source format (issue [#109](https://github.com/tarsqi/ttk/issues/109)).
+- Updates to the regression testing code.
 
 ## Version 3.0.1 — 2021-03-02
 
