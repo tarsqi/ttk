@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 import re
 
+### Why is this here? What is wrong with the file in the parent directory?
+
+
 """==============================================
 
 Variables for TimeML tags, attributes and  values

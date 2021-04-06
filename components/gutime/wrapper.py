@@ -31,7 +31,7 @@ from io import StringIO
 from xml.dom.minidom import parse, parseString
 
 from components.preprocessing import chunker
-from library.tarsqi_constants import GUTIME
+from library.tarsqi import GUTIME
 from utilities import logger
 
 

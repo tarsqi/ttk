@@ -12,6 +12,8 @@ The code in slinkPredicates.py and alinkPredicates.py depended on the old way of
 importing TimeML specifications and was not updated to usie the TarsqiLibrary in
 library.main. For now I used the hack of adding an old timeMLspec.py file to
 this directory and use that instead.
+==> the old way is restored again, so can get rid of timeMLspec.py
+
 
 """
 
@@ -20,6 +22,7 @@ this directory and use that instead.
 
 from __future__ import absolute_import
 from __future__ import print_function
+
 import os, sys, six.moves.cPickle
 from io import open
 

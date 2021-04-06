@@ -6,19 +6,19 @@ Contains the Evita wrapper.
 
 from __future__ import absolute_import
 from __future__ import print_function
-from library.tarsqi_constants import EVITA
-from library.main import LIBRARY
-from components.evita.main import Evita
+
 from io import open
+
 from six.moves import range
+
+from components.evita.main import Evita
+from library.tarsqi import EVITA
+from library.timeml import EVENT
 
 
 # Set this to True if you want to do a simplistic evaluation of how many of the
 # events that should be imported actually are imported.
 EVALUATE_EVENT_IMPORT = False
-
-
-EVENT = LIBRARY.timeml.EVENT
 
 
 class EvitaWrapper(object):

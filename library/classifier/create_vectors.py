@@ -95,7 +95,9 @@ the model that ships with the Tarsqi Toolkit.
 
 from __future__ import absolute_import
 from __future__ import print_function
+
 import os, sys
+from io import open
 
 from . import path
 from . import root
@@ -106,8 +108,7 @@ from docmodel.source_parser import SourceParser
 from docmodel.main import create_source_parser
 from components.classifier.vectors import collect_tarsqidoc_vectors
 
-from library.main import LIBRARY
-from io import open
+from library import timeml
 
 
 GOLD_DIR = os.path.join('data', 'gold')
@@ -115,27 +116,28 @@ GOLD_DIR = os.path.join('data', 'gold')
 ee_fh = open("vectors.ee", 'w')
 et_fh = open("vectors.et", 'w')
 
-TLINK = LIBRARY.timeml.TLINK
-RELTYPE = LIBRARY.timeml.RELTYPE
-EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
-TIME_ID = LIBRARY.timeml.TIME_ID
-RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
-RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
 
-BEFORE = LIBRARY.timeml.BEFORE
-IBEFORE = LIBRARY.timeml.IBEFORE
-BEGINS = LIBRARY.timeml.BEGINS
-BEGUN_BY = LIBRARY.timeml.BEGUN_BY
-DURING = LIBRARY.timeml.DURING
-DURING_INV = LIBRARY.timeml.DURING_INV
-IS_INCLUDED = LIBRARY.timeml.IS_INCLUDED
-SIMULTANEOUS = LIBRARY.timeml.SIMULTANEOUS
-IDENTITY = LIBRARY.timeml.IDENTITY
-INCLUDES = LIBRARY.timeml.INCLUDES
-ENDED_BY = LIBRARY.timeml.ENDED_BY
-ENDS = LIBRARY.timeml.ENDS
-IAFTER = LIBRARY.timeml.IAFTER
-AFTER = LIBRARY.timeml.AFTER
+TLINK = timeml.TLINK
+RELTYPE = timeml.RELTYPE
+EVENT_INSTANCE_ID = timeml.EVENT_INSTANCE_ID
+TIME_ID = timeml.TIME_ID
+RELATED_TO_EVENT_INSTANCE = timeml.RELATED_TO_EVENT_INSTANCE
+RELATED_TO_TIME = timeml.RELATED_TO_TIME
+
+BEFORE = timeml.BEFORE
+IBEFORE = timeml.IBEFORE
+BEGINS = timeml.BEGINS
+BEGUN_BY = timeml.BEGUN_BY
+DURING = timeml.DURING
+DURING_INV = timeml.DURING_INV
+IS_INCLUDED = timeml.IS_INCLUDED
+SIMULTANEOUS = timeml.SIMULTANEOUS
+IDENTITY = timeml.IDENTITY
+INCLUDES = timeml.INCLUDES
+ENDED_BY = timeml.ENDED_BY
+ENDS = timeml.ENDS
+IAFTER = timeml.IAFTER
+AFTER = timeml.AFTER
 
 INVERSE = {
     BEFORE: AFTER,

@@ -1,0 +1,116 @@
+# Variables for TimeML tags, attributes and  values
+# =================================================
+
+# SYNTAX. All variables are defined on one line, the values are strings or lists
+# of strings, enclosed in square brackets. Comments start with a '#' and are
+# ignored when this file is read.
+
+
+# Preprocessing tags and attributes
+# =================================
+
+SENTENCE = 's'
+NOUNCHUNK = 'ng'
+VERBCHUNK = 'vg'
+TOKEN = 'lex'
+LEX = 'lex'
+POS = 'pos'
+
+
+# POS Tags
+# ========
+
+POS_ADJ = 'JJ'
+POS_CD = 'CD'
+POS_PREP = 'IN'
+
+
+# TimeBank Processing
+# ===================
+
+# Classes declared in Chunk.py and used by ppParser.py, eventParser.py:
+
+ConstituentClassNames = ['Constituent', 'Chunk', 'NounChunk', 'VerbChunk', 'Token', 'AdjectiveToken']
+ChunkClassNames = ['Chunk', 'NounChunk', 'VerbChunk']
+EventConstituentClassNames = ChunkClassNames + ['AdjectiveToken']
+
+FORM = 'form'
+
+
+# TimeML spec
+# ===========
+
+TIMEML = 'TimeML'
+
+TIMEX = 'TIMEX3'
+TID = 'tid'
+TYPE = 'type'
+VALUE = 'value'
+
+SIGNAL = 'SIGNAL'
+
+EVENT = 'EVENT'
+EID = 'eid'
+EIID = 'eiid'
+EVENTID = 'eventID'
+CLASS = 'class'
+STEM = 'stem'
+EPOS = 'epos'             # NF_MORPH = 'nf_morph'
+TENSE = 'tense'
+ASPECT = 'aspect'
+MOD = 'modality'
+MODALITY = 'modality'
+POL = 'polarity'
+POLARITY = 'polarity'
+NO_FINITE = ['PRESPART', 'PASTPART', 'INFINITIVE']
+FINITE = ['PRESENT', 'PAST', 'FUTURE']
+
+MAKEINSTANCE = 'MAKEINSTANCE'
+
+TLINK = 'TLINK'
+SLINK = 'SLINK'
+ALINK = 'ALINK'
+LID = 'lid'
+
+RELTYPE = 'relType'
+EVENT_INSTANCE_ID = 'eventInstanceID'
+TIME_ID = 'timeID'
+SUBORDINATED_EVENT_INSTANCE = 'subordinatedEventInstance'
+RELATED_TO_EVENT_INSTANCE = 'relatedToEventInstance'
+RELATED_TO_TIME = 'relatedToTime'
+CONFIDENCE = 'confidence'
+ORIGIN = 'origin'
+SYNTAX = 'syntax'
+
+BEFORE = 'BEFORE'
+IBEFORE = 'IBEFORE'
+BEGINS = 'BEGINS'
+BEGUN_BY = 'BEGUN_BY'
+IS_INCLUDED = 'IS_INCLUDED'
+DURING = 'DURING'
+DURING_INV = 'DURING_INV'
+SIMULTANEOUS = 'SIMULTANEOUS'
+IDENTITY = 'IDENTITY'
+INCLUDES = 'INCLUDES'
+ENDED_BY = 'ENDED_BY'
+ENDS = 'ENDS'
+IAFTER = 'IAFTER'
+AFTER = 'AFTER'
+
+NOUN = 'NOUN'
+ADJECTIVE = 'ADJECTIVE'
+VERB = 'VERB'
+NONE = 'NONE'
+
+COUNTER_FACTIVE = 'COUNTER_FACTIVE'
+FACTIVE = 'FACTIVE'
+MODAL = 'MODAL'
+CONDITIONAL = 'CONDITIONAL'
+EVIDENTIAL = 'EVIDENTIAL'
+NEG_EVIDENTIAL = 'NEG_EVIDENTIAL'
+
+INIT = 'INITIATES'
+TERM = 'TERMINATES'
+CULM = 'CULMINATES'
+CONT = 'CONTINUES'
+REINIT = 'REINITIATES'

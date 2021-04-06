@@ -3,9 +3,10 @@ from __future__ import print_function
 
 from pprint import pprint
 
-from utilities import logger
-from library.main import LIBRARY
 from six.moves import range
+
+from utilities import logger
+from library import timeml
 
 
 class Constituent(object):
@@ -335,11 +336,11 @@ class Constituent(object):
                 eiid = event_context[length_of_match - 1].eiid
                 # print self, self.eiid
                 alinkAttrs = {
-                    LIBRARY.timeml.EVENT_INSTANCE_ID: self.eiid,
-                    LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE: eiid,
-                    LIBRARY.timeml.RELTYPE: reltype,
-                    LIBRARY.timeml.SYNTAX: fsa.fsaname }
-                self.tree.addLink(alinkAttrs, LIBRARY.timeml.ALINK)
+                    timeml.EVENT_INSTANCE_ID: self.eiid,
+                    timeml.RELATED_TO_EVENT_INSTANCE: eiid,
+                    timeml.RELTYPE: reltype,
+                    timeml.SYNTAX: fsa.fsaname }
+                self.tree.addLink(alinkAttrs, timeml.ALINK)
                 # for l in self.tree.alink_list: print '  ', l
                 logger.debug("ALINK CREATED")
                 return True
@@ -419,11 +420,11 @@ class Constituent(object):
                 reltype = get_reltype(reltype_list, i)
                 eiid = event_context[length_of_match - 1].eiid
                 slinkAttrs = {
-                    LIBRARY.timeml.EVENT_INSTANCE_ID: self.eiid,
-                    LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE: eiid,
-                    LIBRARY.timeml.RELTYPE: reltype,
-                    LIBRARY.timeml.SYNTAX: fsa.fsaname }
-                self.tree.addLink(slinkAttrs, LIBRARY.timeml.SLINK)
+                    timeml.EVENT_INSTANCE_ID: self.eiid,
+                    timeml.SUBORDINATED_EVENT_INSTANCE: eiid,
+                    timeml.RELTYPE: reltype,
+                    timeml.SYNTAX: fsa.fsaname }
+                self.tree.addLink(slinkAttrs, timeml.SLINK)
                 logger.debug("SLINK CREATED")
                 return True
             else:

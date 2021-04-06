@@ -1,8 +1,8 @@
 
 from __future__ import absolute_import
-from library.tarsqi_constants import PREPROCESSOR, TOKENIZER, TAGGER, CHUNKER
-from library.tarsqi_constants import GUTIME, EVITA, SLINKET
-from library.tarsqi_constants import S2T, CLASSIFIER, BLINKER, LINK_MERGER
+from library.tarsqi import PREPROCESSOR, TOKENIZER, TAGGER, CHUNKER
+from library.tarsqi import GUTIME, EVITA, SLINKET
+from library.tarsqi import S2T, CLASSIFIER, BLINKER, LINK_MERGER
 
 from .preprocessing.wrapper import PreprocessorWrapper
 from .preprocessing.wrapper import TokenizerWrapper

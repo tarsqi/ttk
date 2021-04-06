@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from components.common_modules.utils import get_words_as_string
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.tree import create_tarsqi_tree
-from library.tarsqi_constants import EVITA
+from library.tarsqi import EVITA
 from utilities import logger
 
 

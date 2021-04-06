@@ -19,14 +19,16 @@ import os, sys, threading
 from time import time
 from subprocess import PIPE, Popen
 
+from six.moves import zip
+
 from utilities import logger
 from docmodel.document import Tag
-from library.tarsqi_constants import PREPROCESSOR, TOKENIZER, TAGGER, CHUNKER
-from library.main import LIBRARY
-
 from components.preprocessing.tokenizer import Tokenizer, TokenizedLex
 from components.preprocessing.chunker import chunk_sentences
-from six.moves import zip
+
+from library.tarsqi import PREPROCESSOR, TOKENIZER, TAGGER, CHUNKER
+from library.timeml import EVENT
+
 
 
 # TreeTagger executables and parameter file
@@ -115,7 +117,7 @@ class Wrapper(object):
         self.chunk_time = 0
         if self.document.options.import_events:
             self.terms = {}
-            events = self.document.sourcedoc.tags.find_tags(LIBRARY.timeml.EVENT)
+            events = self.document.sourcedoc.tags.find_tags(EVENT)
             for event in events:
                 self.terms[event.begin] = event
 

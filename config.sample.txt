@@ -1,14 +1,13 @@
 # This is an example file with configuration options. You should make a copy of
 # this file and name it config.txt and make changes to the copy as needed.
 
-# Options can be changed here or in some cases on the command line when calling
-# the tarsqy.py script. Command line options will overwrite options specified
-# here.
+# Options can be changed here or in many cases on the command line when calling
+# the tarsqy.py script. In those cases, you can overrule an option named OPTION,
+# by using --OPTION on the command line. For example, to overrule source-format
+# option you can use --source-format on the command line.
 
 
-# The default pipeline, can be overridden with the --pipeline command line
-# option. LINK_MERGER is not included because it slows down so much on large
-# documents.
+# LINK_MERGER is not included because it slows down so much on large documents.
 
 pipeline = PREPROCESSOR,GUTIME,EVITA,SLINKET,S2T,BLINKER,CLASSIFIER
 
@@ -25,25 +24,21 @@ pipe = False
 perl = perl
 
 
-# Location of the IMS TreeTagger, can be overridden with the --treetagger
-# command line option. The default is the directory where the example build
-# script build/install-treetagger-osx.sh installs the TreeTagger.
+# Location of the IMS TreeTagger. The default is the directory where the example
+# build script build/install-treetagger-osx.sh installs the TreeTagger.
 
 treetagger = build/treetagger
 
 
 # Location of Mallet, this should be the directory that contains the bin
-# directory. This option can be overridden by the --mallet command line
-# option. The default is the directory where the example build script
+# directory. The default is the directory where the example build script
 # build/install-mallet-osx.sh installs Mallet.
 
 mallet = build/mallet/mallet-2.0.8
 
 
 # Other options used for the classifier, where ee-model and et-model should
-# refer to a model in components/classifier/models. These options can be
-# overridden by the --classifier, --ee-model and --et-model command line
-# options.
+# refer to a model in components/classifier/models.
 # TODO: allow absolute paths
 
 classifier = MaxEnt
@@ -51,32 +46,32 @@ ee-model = tb-vectors.ee.model
 et-model = tb-vectors.et.model
 
 
-# The source type of the document which allows components to be sensitive to
-# idiosyncratic properties of the text. By default, if the value is set to None,
-# the system tries to guess what the source type is (guessing 'xml', 'ttk' or
-# 'text'). The guess can be overruled here or by using the --source command line
-# option.
+# The source format of the document, which allows components to be sensitive to
+# idiosyncratic properties of the text. By default, the value is set to text.
 
-source = None
+source-format = text
 
 
 # Set log level to an integer from 0 to 4, the higher the level the more
 # messages will be written to the log. The default prints info, errors and
 # warnings, but no debugging statements. See utilities.logger for more
-# details. Can be overridden with --loglevel.
+# details.
 
 loglevel = 3
 
 
-# Error trapping, errors are trapped by default. Override with --trap-errors.
+# Errors are trapped by default.
 
 trap-errors = True
 
 
-# User configuration settings. Arbitray parameters can be added here and will
-# then be accessible to user-specific code. Below is just one parameter that is
-# used by example code that finds the DCT in a database (see MetadataParserDB in
-# docmodel.metadata_parser). These parameters cannot be overruled by command
-# line options.
+## User configuration settings.
+
+# Arbitrary parameters can be added here and will then be accessible to
+# user-specific code. These parameters cannot be overruled by command line
+# options.
+
+# Parameter used by example code that finds the DCT in a database (see
+# MetadataParserDB in docmodel.metadata_parser).
 
 dct-database = data/in/va/dct.sqlite

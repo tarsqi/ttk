@@ -30,7 +30,7 @@ from __future__ import print_function
 from utilities import logger
 from components.common_modules.tree import create_tarsqi_tree
 
-from library.tarsqi_constants import GUTIME
+from library.tarsqi import GUTIME
 from six.moves import range
 
 DEBUG = False

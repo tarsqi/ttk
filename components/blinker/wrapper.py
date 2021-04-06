@@ -5,7 +5,7 @@ Contains the Blinker wrapper.
 """
 
 from __future__ import absolute_import
-from library.tarsqi_constants import BLINKER
+from library.tarsqi import BLINKER
 from components.blinker.main import Blinker
 
 

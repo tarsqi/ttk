@@ -6,18 +6,10 @@ Chunk._processEventInChunk() or AdjectiveToken._processEventInToken().
 """
 
 from __future__ import absolute_import
-from library.main import LIBRARY
-from library.tarsqi_constants import EVITA
 
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-ORIGIN = LIBRARY.timeml.ORIGIN
-CLASS = LIBRARY.timeml.CLASS
-TENSE = LIBRARY.timeml.TENSE
-ASPECT = LIBRARY.timeml.ASPECT
-POS = LIBRARY.timeml.POS
-MODALITY = LIBRARY.timeml.MODALITY
-POLARITY = LIBRARY.timeml.POLARITY
+from library.tarsqi import EVITA
+from library.timeml import EID, EIID, ORIGIN, CLASS, TENSE, ASPECT
+from library.timeml import POS, MODALITY, POLARITY
 
 
 class Event(object):

@@ -11,10 +11,17 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 from xml.sax.saxutils import quoteattr
+from io import open
+
+from six.moves import map
+from six.moves import range
 
 import library.forms as forms
 import library.patterns as patterns
-from library.main import LIBRARY
+
+from library.timeml import EVENTID, EIID, CLASS, FORM, STEM, POS
+from library.timeml import TENSE, ASPECT, EPOS, MOD, POL, ORIGIN
+from library.timeml import NOUNCHUNK, VERBCHUNK
 
 from components.common_modules import utils
 from components.common_modules.constituent import Constituent
@@ -30,9 +37,6 @@ from components.evita.settings import EVITA_NOM_CONTEXT
 from components.evita.settings import EVITA_NOM_WNPRIMSENSE_ONLY
 
 from utilities import logger
-from io import open
-from six.moves import map
-from six.moves import range
 
 
 # Get the Bayesian event recognizer
@@ -44,23 +48,6 @@ DRIBBLE = False
 
 # Local throw-away debugging
 DEBUG = False
-
-
-EVENTID = LIBRARY.timeml.EVENTID
-EIID = LIBRARY.timeml.EIID
-CLASS = LIBRARY.timeml.CLASS
-FORM = LIBRARY.timeml.FORM
-STEM = LIBRARY.timeml.STEM
-POS = LIBRARY.timeml.POS
-TENSE = LIBRARY.timeml.TENSE
-ASPECT = LIBRARY.timeml.ASPECT
-EPOS = LIBRARY.timeml.EPOS
-MOD = LIBRARY.timeml.MOD
-POL = LIBRARY.timeml.POL
-ORIGIN = LIBRARY.timeml.ORIGIN
-
-NOUNCHUNK = LIBRARY.timeml.NOUNCHUNK
-VERBCHUNK = LIBRARY.timeml.VERBCHUNK
 
 
 def update_event_checked_marker(constituent_list):

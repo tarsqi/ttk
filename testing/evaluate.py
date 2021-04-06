@@ -43,17 +43,18 @@ OPTIONS:
 
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
+
 import os, sys, shutil, copy, getopt
 from io import StringIO
+
 from six.moves import range
 
 sys.path.insert(0, '..')
 sys.path.insert(0, '.')
 
-from __future__ import division
-
 import tarsqi
-from library.main import LIBRARY
+from library import timeml
 
 
 # Keep the directory this script was called from for later use (Tarsqi will
@@ -63,24 +64,24 @@ EXEC_DIR = os.getcwd()
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-EVENT = LIBRARY.timeml.EVENT
-TIMEX = LIBRARY.timeml.TIMEX
-ALINK = LIBRARY.timeml.ALINK
-SLINK = LIBRARY.timeml.SLINK
-TLINK = LIBRARY.timeml.TLINK
+EVENT = timeml.EVENT
+TIMEX = timeml.TIMEX
+ALINK = timeml.ALINK
+SLINK = timeml.SLINK
+TLINK = timeml.TLINK
 
 LINK_TAGS = (ALINK, SLINK, TLINK)
 TIMEML_TAGS = (EVENT, TIMEX, ALINK, SLINK, TLINK)
 
-TID = LIBRARY.timeml.TID
-EIID = LIBRARY.timeml.EIID
+TID = timeml.TID
+EIID = timeml.EIID
 
-RELTYPE = LIBRARY.timeml.RELTYPE
-TIME_ID = LIBRARY.timeml.TIME_ID
-EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
-RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
-RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
-SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
+RELTYPE = timeml.RELTYPE
+TIME_ID = timeml.TIME_ID
+EVENT_INSTANCE_ID = timeml.EVENT_INSTANCE_ID
+RELATED_TO_TIME = timeml.RELATED_TO_TIME
+RELATED_TO_EVENT_INSTANCE = timeml.RELATED_TO_EVENT_INSTANCE
+SUBORDINATED_EVENT_INSTANCE = timeml.SUBORDINATED_EVENT_INSTANCE
 
 
 # the four kinds of aligned entities

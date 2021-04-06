@@ -9,32 +9,19 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os, sys, codecs, itertools, time
-from io import StringIO
+from io import StringIO, open
 from xml.sax.saxutils import escape, quoteattr
 from subprocess import Popen, PIPE
 
-from library.main import LIBRARY
-from utilities import logger
-from io import open
 import six
 
+from utilities import logger
 
-TIMEX = LIBRARY.timeml.TIMEX
-EVENT = LIBRARY.timeml.EVENT
-ALINK = LIBRARY.timeml.ALINK
-SLINK = LIBRARY.timeml.SLINK
-TLINK = LIBRARY.timeml.TLINK
+from library.timeml import TIMEX, EVENT, ALINK, SLINK, TLINK
+from library.timeml import TID, EID, EIID, LID
+from library.timeml import TIME_ID, EVENT_INSTANCE_ID, RELATED_TO_TIME
+from library.timeml import SUBORDINATED_EVENT_INSTANCE, RELATED_TO_EVENT_INSTANCE
 
-TID = LIBRARY.timeml.TID
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-LID = LIBRARY.timeml.LID
-
-TIME_ID = LIBRARY.timeml.TIME_ID
-EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
-RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
-SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
-RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
 
 TTK_ROOT = os.environ['TTK_ROOT']
 

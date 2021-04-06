@@ -1,27 +1,16 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+
 from library import forms
-from library.main import LIBRARY
+from library.timeml import FORM, STEM , POS, POS_ADJ, POS_PREP, EPOS
+from library.timeml import TENSE, ASPECT, MOD, POL, EVENTID, EIID, CLASS
+
 from components.evita.event import Event
 from components.evita.features import AChunkFeatures
 from components.common_modules.constituent import Constituent
+
 from utilities import logger
-
-
-FORM = LIBRARY.timeml.FORM
-STEM = LIBRARY.timeml.STEM
-POS = LIBRARY.timeml.POS
-POS_ADJ = LIBRARY.timeml.POS_ADJ
-TENSE = LIBRARY.timeml.TENSE
-ASPECT = LIBRARY.timeml.ASPECT
-EPOS = LIBRARY.timeml.EPOS
-POS_PREP = LIBRARY.timeml.POS_PREP
-MOD = LIBRARY.timeml.MOD
-POL = LIBRARY.timeml.POL
-EVENTID = LIBRARY.timeml.EVENTID
-EIID = LIBRARY.timeml.EIID
-CLASS = LIBRARY.timeml.CLASS
 
 
 def token_class(pos):

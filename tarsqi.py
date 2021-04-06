@@ -265,7 +265,7 @@ class Options(object):
     classifier, ee_model and et_model. It is very much possible that there are
     user-defined options in the config.txt file that are not in the above list,
     there is no instance variable access for those options and you always need
-    the getoptp() method for them."""
+    the getopt() method for them."""
 
     def __init__(self, options):
         """Initialize options from the config file and the options handed in to

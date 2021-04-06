@@ -19,23 +19,18 @@ TODO:
 from __future__ import absolute_import
 import os
 
-from library.tarsqi_constants import LINK_MERGER, S2T, BLINKER, CLASSIFIER
-from library.main import LIBRARY
 from docmodel.document import Tag
 from components.common_modules.component import TarsqiComponent
 from components.merging.sputlink.main import ConstraintPropagator
 from components.merging.sputlink.mappings import translate_interval_relation
 
-TTK_ROOT = os.environ['TTK_ROOT']
+from library.tarsqi import LINK_MERGER, S2T, BLINKER, CLASSIFIER
+from library.timeml import TLINK, LID, RELTYPE, ORIGIN
+from library.timeml import EVENT_INSTANCE_ID, TIME_ID
+from library.timeml import RELATED_TO_EVENT_INSTANCE, RELATED_TO_TIME
 
-TLINK = LIBRARY.timeml.TLINK
-LID = LIBRARY.timeml.LID
-RELTYPE = LIBRARY.timeml.RELTYPE
-ORIGIN = LIBRARY.timeml.ORIGIN
-EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
-TIME_ID = LIBRARY.timeml.TIME_ID
-RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
-RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
+
+TTK_ROOT = os.environ['TTK_ROOT']
 
 
 class MergerWrapper(object):
@@ -50,10 +45,10 @@ class MergerWrapper(object):
         """Run the contraint propagator on all TLINKS in the TarsqiDocument and
         add resulting links to the TarsqiDocument."""
         cp = ConstraintPropagator(self.tarsqidoc)
-        tlinks = self.tarsqidoc.tags.find_tags(LIBRARY.timeml.TLINK)
+        tlinks = self.tarsqidoc.tags.find_tags(TLINK)
         # order the links on how good they are
         tlinks = sorted(tlinks, key=sort_on_confidence, reverse=True)
-        cp.queue_constraints(self.tarsqidoc.tags.find_tags(LIBRARY.timeml.TLINK))
+        cp.queue_constraints(self.tarsqidoc.tags.find_tags(TLINK))
         cp.propagate_constraints()
         cp.reduce_graph()
         self._update_tarsqidoc(cp)

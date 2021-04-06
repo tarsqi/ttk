@@ -7,30 +7,13 @@ Contains classes for TimeML tags.
 
 from __future__ import absolute_import
 from __future__ import print_function
-from library.main import LIBRARY
+
 from components.common_modules.constituent import Constituent
 from utilities import logger
 from .utils import get_tokens
 
-
-EVENT = LIBRARY.timeml.EVENT
-TIMEX = LIBRARY.timeml.TIMEX
-ALINK = LIBRARY.timeml.ALINK
-SLINK = LIBRARY.timeml.SLINK
-TLINK = LIBRARY.timeml.TLINK
-TID = LIBRARY.timeml.TID
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-EVENTID = LIBRARY.timeml.EVENTID
-CLASS = LIBRARY.timeml.CLASS
-TENSE = LIBRARY.timeml.TENSE
-ASPECT = LIBRARY.timeml.ASPECT
-EPOS = LIBRARY.timeml.EPOS
-MOD = LIBRARY.timeml.MOD
-POL = LIBRARY.timeml.POL
-FORM = LIBRARY.timeml.FORM
-STEM = LIBRARY.timeml.STEM
-POS = LIBRARY.timeml.POS
+from library.timeml import EVENT, TIMEX, ALINK, SLINK, TLINK, TID, EID, EIID, EVENTID
+from library.timeml import CLASS, TENSE, ASPECT, EPOS, MOD, POL, FORM, STEM, POS
 
 
 class Tag(Constituent):

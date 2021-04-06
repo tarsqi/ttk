@@ -23,31 +23,19 @@ The only difference is in the second column (no relation versus a relation).
 
 from __future__ import absolute_import
 from __future__ import print_function
+
 import os, codecs, textwrap
 
-from components.common_modules.tree import create_tarsqi_tree
-from library.main import LIBRARY
-from utilities import logger
 from six.moves import range
 
+from components.common_modules.tree import create_tarsqi_tree
+from utilities import logger
+
+from library.timeml import EVENT, EID, EIID, CLASS, STEM, EPOS
+from library.timeml import TENSE, ASPECT, MODALITY, POLARITY
+from library.timeml import TIMEX, TID, TYPE, VALUE
 
 DEBUG = False
-
-
-EVENT = LIBRARY.timeml.EVENT
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-CLASS = LIBRARY.timeml.CLASS
-STEM = LIBRARY.timeml.STEM
-EPOS = LIBRARY.timeml.EPOS
-TENSE = LIBRARY.timeml.TENSE
-ASPECT = LIBRARY.timeml.ASPECT
-MODALITY = LIBRARY.timeml.MODALITY
-POLARITY = LIBRARY.timeml.POLARITY
-TIMEX = LIBRARY.timeml.TIMEX
-TID = LIBRARY.timeml.TID
-TYPE = LIBRARY.timeml.TYPE
-VALUE = LIBRARY.timeml.VALUE
 
 
 # Determines what attributes to use for the object vectors

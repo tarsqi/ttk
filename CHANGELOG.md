@@ -8,6 +8,8 @@ This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## Current
 
+- Updated sample configuration file.
+- Made import of library constants more uniform.
 - Removed cranky way to guess the source format (issue [#109](https://github.com/tarsqi/ttk/issues/109)).
 - Updates to the regression testing code.
 

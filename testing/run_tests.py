@@ -49,8 +49,8 @@ to deal with reading an arbitrary number of tests from a file.
 
 
 from __future__ import absolute_import
-
 from __future__ import print_function
+
 import sys, getopt, traceback
 
 import tarsqi

@@ -13,7 +13,7 @@ from __future__ import absolute_import
 import re, time, os, sqlite3
 
 import utilities.logger as logger
-from library.main import LIBRARY
+from library.timeml import VALUE
 
 
 class MetadataParser(object):
@@ -223,5 +223,5 @@ def _get_dct_values(tag_repository):
     TagRepository."""
     timexes = [t for t in tag_repository.find_tags('TIMEX3')
                if t.attrs.get('functionInDocument') == 'CREATION_TIME']
-    values = [t.attrs.get(LIBRARY.timeml.VALUE) for t in timexes]
+    values = [t.attrs.get(VALUE) for t in timexes]
     return values

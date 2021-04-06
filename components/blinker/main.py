@@ -8,34 +8,20 @@ from __future__ import absolute_import
 from __future__ import print_function
 import re
 
+from six.moves import range
+
 from utilities import logger
-from library.tarsqi_constants import BLINKER
-from library.main import LIBRARY
-from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 from components.common_modules.component import TarsqiComponent
 from components.common_modules.tree import create_tarsqi_tree
 from components.blinker.compare import compare_date
-from six.moves import range
 
-
-TIMEX = LIBRARY.timeml.TIMEX
-TYPE = LIBRARY.timeml.TYPE
-VALUE = LIBRARY.timeml.VALUE
-EIID = LIBRARY.timeml.EIID
-TID = LIBRARY.timeml.TID
-LID = LIBRARY.timeml.LID
-POL = LIBRARY.timeml.POL
-TLINK = LIBRARY.timeml.TLINK
-RELTYPE = LIBRARY.timeml.RELTYPE
-ORIGIN = LIBRARY.timeml.ORIGIN
-EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
-RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
-TIME_ID = LIBRARY.timeml.TIME_ID
-RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
-
+from library.tarsqi import BLINKER
+from library.timeml import TIMEX, TYPE, VALUE, EIID, TID, LID, POL
+from library.timeml import TLINK, RELTYPE, ORIGIN, TIME_ID, RELATED_TO_TIME
+from library.timeml import RELATED_TO_EVENT_INSTANCE, EVENT_INSTANCE_ID
+from library.blinker.blinker_rule_loader import BlinkerRuleDictionary
 
 _DEBUG = False
-
 
 # possible quotation marks; should be imported from elsewhere
 QUOTES = ["``", '"', "'"]

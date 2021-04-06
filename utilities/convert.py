@@ -7,10 +7,10 @@ directory using the -m option.
 
    $ python -m utilities.convert --timebank2ttk TIMEBANK_DIR TTK_DIR
 
-   Converts TimeBank 1.2 as released by LDC into a version without makeinstance
-   tags using the TTK format. This should be run on the data/extra files in the
-   LDC distribution because those have the metadata that allow the TimeBank meta
-   data parser to find the DCT.
+   Converts TimeBank 1.2 as released by the LDC into the TTK format, without
+   including makeinstance tags. This should be run on the data/extra files in
+   the LDC distribution because those have the metadata that allow the TimeBank
+   meta data parser to find the DCT.
 
 2. Convert Thyme format into TTK.
 
@@ -74,43 +74,23 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import os, sys, getopt, codecs, time, glob
 from xml.dom import minidom, Node
+from io import open
 
 import tarsqi
 from docmodel.main import create_source_parser
 from docmodel.main import create_metadata_parser
 from docmodel.main import create_docstructure_parser
 from docmodel.document import TarsqiDocument, Tag, ProcessingStep
-from library.main import TarsqiLibrary
-from io import open
+
+from library.timeml import TIMEX, EVENT, MAKEINSTANCE, SIGNAL, ALINK, SLINK, TLINK
+from library.timeml import LID, TID, EID, EIID, EVENTID, TIME_ID, RELTYPE
+from library.timeml import EVENT_INSTANCE_ID, RELATED_TO_TIME
+from library.timeml import  RELATED_TO_EVENT_INSTANCE, SUBORDINATED_EVENT_INSTANCE
+
+TIMEML_TAGS = (TIMEX, EVENT, MAKEINSTANCE, SIGNAL, ALINK, SLINK, TLINK)
 
 DEBUG = True
 DEBUG = False
-
-LIBRARY = TarsqiLibrary()
-
-TIMEX = LIBRARY.timeml.TIMEX
-EVENT = LIBRARY.timeml.EVENT
-SIGNAL = LIBRARY.timeml.SIGNAL
-ALINK = LIBRARY.timeml.ALINK
-SLINK = LIBRARY.timeml.SLINK
-TLINK = LIBRARY.timeml.TLINK
-
-LID = LIBRARY.timeml.LID
-TID = LIBRARY.timeml.TID
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-EVENTID = LIBRARY.timeml.EVENTID
-
-RELTYPE = LIBRARY.timeml.RELTYPE
-TIME_ID = LIBRARY.timeml.TIME_ID
-EVENT_INSTANCE_ID = LIBRARY.timeml.EVENT_INSTANCE_ID
-RELATED_TO_TIME = LIBRARY.timeml.RELATED_TO_TIME
-RELATED_TO_EVENT_INSTANCE = LIBRARY.timeml.RELATED_TO_EVENT_INSTANCE
-SUBORDINATED_EVENT_INSTANCE = LIBRARY.timeml.SUBORDINATED_EVENT_INSTANCE
-
-MAKEINSTANCE = 'MAKEINSTANCE'
-
-TIMEML_TAGS = (TIMEX, EVENT, MAKEINSTANCE, SIGNAL, ALINK, SLINK, TLINK)
 
 
 ### CONVERTING TIMEBANK INTO TTK
@@ -128,7 +108,6 @@ def convert_timebank(timebank_dir, out_dir):
             print(fname)
             _convert_timebank_file(os.path.join(timebank_dir, fname),
                                    os.path.join(out_dir, fname))
-            break
 
 def _convert_timebank_file(infile, outfile):
     tarsqidoc = _get_tarsqidoc(infile, "timebank")

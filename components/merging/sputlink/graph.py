@@ -12,6 +12,8 @@ It is here where Allen's constraint propagation algorithm is implemented.
 
 from __future__ import absolute_import
 from __future__ import print_function
+from io import open
+
 from .objects import Node, Edge, Constraint
 from .utils import intersect_relations
 from .utils import compare_id
@@ -19,20 +21,11 @@ from .utils import html_graph_prefix
 from .mappings import invert_interval_relation
 from .mappings import abbreviate_convex_relation
 from utilities import logger
-from library.main import LIBRARY
-from io import open
+
+from library.timeml import TIMEX, TID, EVENT, EID, EIID, EVENTID, FORM, VALUE
 
 DEBUG = True
 DEBUG = False
-
-TIMEX = LIBRARY.timeml.TIMEX
-TID = LIBRARY.timeml.TID
-EVENT = LIBRARY.timeml.EVENT
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-EVENTID = LIBRARY.timeml.EVENTID
-FORM = LIBRARY.timeml.FORM
-VALUE = LIBRARY.timeml.VALUE
 
 
 class Graph(object):

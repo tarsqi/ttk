@@ -6,30 +6,19 @@ import sys
 import re
 from xml.sax.saxutils import escape, quoteattr
 
+from six.moves import range
+
 from docmodel.document import Tag
 from components.common_modules.sentence import Sentence
 from components.common_modules.chunks import NounChunk, VerbChunk
 from components.common_modules.tokens import token_class
 from components.common_modules.tags import EventTag, TimexTag
 from components.common_modules.tags import AlinkTag, SlinkTag, TlinkTag
-from library.main import LIBRARY
+
 from utilities import logger
-from six.moves import range
 
-
-EVENT = LIBRARY.timeml.EVENT
-TIMEX = LIBRARY.timeml.TIMEX
-ALINK = LIBRARY.timeml.ALINK
-SLINK = LIBRARY.timeml.SLINK
-TLINK = LIBRARY.timeml.TLINK
-EID = LIBRARY.timeml.EID
-EIID = LIBRARY.timeml.EIID
-EVENTID = LIBRARY.timeml.EVENTID
-SENTENCE = LIBRARY.timeml.SENTENCE
-NOUNCHUNK = LIBRARY.timeml.NOUNCHUNK
-VERBCHUNK = LIBRARY.timeml.VERBCHUNK
-LEX = LIBRARY.timeml.LEX
-POS = LIBRARY.timeml.POS
+from library.timeml import EVENT, TIMEX, ALINK, SLINK, TLINK, EID, EIID, EVENTID
+from library.timeml import SENTENCE, NOUNCHUNK, VERBCHUNK, LEX, POS
 
 
 def create_tarsqi_tree(tarsqidoc, element, links=False):
