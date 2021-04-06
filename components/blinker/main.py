@@ -69,15 +69,19 @@ class Blinker (TarsqiComponent):
         # about duplications (see https://github.com/tarsqi/ttk/issues/10 and
         # https://github.com/tarsqi/ttk/issues/13)
         timexes = self.tarsqidoc.tags.find_tags(TIMEX)
-        timexes = [t for t in timexes if t.attrs[TYPE] == 'DATE']
-        pairs = _timex_pairs(timexes)
+        filtered_timexes = []
+        for t in timexes:
+            if t.attrs[VALUE] in ('', None):
+                # Sometimes GUTime creates a TIMEX3 without value
+                logger.debug("Ignoring Timex without value: \n%s" % t)
+                continue
+            if t.attrs[TYPE] == 'DATE':
+                filtered_timexes.append(t)
+        pairs = _timex_pairs(filtered_timexes)
         for timex1, timex2 in pairs:
             try:
                 self._create_timex_link(timex1, timex2)
             except Exception:
-                # TODO: these are very common caused usually because one of the
-                # timexes does not have a value, should look into this and
-                # confirm this is always a GUTime issue.
                 logger.warn("Error linking:\n%s\n%s" % (timex1, timex2))
 
     def _create_timex_link(self, timex1, timex2):

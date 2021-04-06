@@ -31,8 +31,10 @@ from io import StringIO
 from xml.dom.minidom import parse, parseString
 
 from components.preprocessing import chunker
-from library.tarsqi import GUTIME
 from utilities import logger
+
+from library.tarsqi import GUTIME
+from library.timeml import TID, TYPE, VALUE, ORIGIN
 
 
 TTK_ROOT = os.environ['TTK_ROOT']
@@ -197,10 +199,12 @@ def _export_timex_tags(tarsqidoc, dom):
         if lexes:
             p1 = int(lexes[0].getAttribute('begin'))
             p2 = int(lexes[-1].getAttribute('end'))
-            attrs = {'tid': timex.getAttribute('tid'),
-                     'type': timex.getAttribute('TYPE'),
-                     'value': timex.getAttribute('VAL'),
-                     'origin': GUTIME}
+            attrs = {TID: timex.getAttribute('tid'),
+                     TYPE: timex.getAttribute('TYPE'),
+                     VALUE: timex.getAttribute('VAL'),
+                     ORIGIN: GUTIME}
+            if attrs[VALUE] in (None, ''):
+                logger.warn("Adding TIMEX3 without a value attribute:\n%s" % attrs)
             tarsqidoc.add_timex(p1, p2, attrs)
 
 
