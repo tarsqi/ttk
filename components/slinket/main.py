@@ -139,7 +139,11 @@ class Slinket (TarsqiComponent):
 
     def _add_links_to_document(self):
         for alink in self.doctree.alinks:
-            self._add_link(timeml.ALINK, alink.attrs)
+            if (alink.attrs[timeml.EVENT_INSTANCE_ID] is not None
+                and alink.attrs[timeml.RELATED_TO_EVENT_INSTANCE] is not None):
+                self._add_link(timeml.ALINK, alink.attrs)
+            else:
+                logger.warn("Not adding invalid ALink %s" % alink)
         for slink in self.doctree.slinks:
             self._add_link(timeml.SLINK, slink.attrs)
 

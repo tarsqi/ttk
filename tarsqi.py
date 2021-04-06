@@ -435,7 +435,7 @@ class TarsqiWrapper(object):
         elif os.path.isfile(self.inpath):
             self._run_tarsqi_on_file()
         else:
-            raise TarsqiError('Invalid input')
+            raise TarsqiError('Invalid input', self.inpath)
         logger.info("TOTAL PROCESSING TIME: %.3f seconds" % (time.time() - t0))
         logger.report(sys.stderr)
 
