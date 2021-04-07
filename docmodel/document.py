@@ -646,7 +646,7 @@ class Tag(object):
 
 class OpeningTag(Tag):
 
-    "Like Tag, but self.end is always None."""
+    """Like Tag, but self.end is always None."""
 
     def __init__(self, name, offset, attrs):
         Tag.__init__(self, name, offset, None, attrs)
@@ -661,7 +661,7 @@ class OpeningTag(Tag):
 
 class ClosingTag(Tag):
 
-    "Like Tag, but self.begin and self.attrs are always None."""
+    """Like Tag, but self.begin and self.attrs are always None."""
 
     def __init__(self, name, offset):
         Tag.__init__(self, name, None, offset, None)
